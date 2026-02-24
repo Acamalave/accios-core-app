@@ -247,11 +247,11 @@
 
 .orbit-world-glow {
   position: absolute;
-  top: -16px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 96px;
-  height: 96px;
+  width: 104px;
+  height: 104px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
@@ -265,8 +265,8 @@
 
 /* --- World Image (3D planet sphere) --- */
 .orbit-world-img {
-  width: 68px;
-  height: 68px;
+  width: 78px;
+  height: 78px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid rgba(124, 58, 237, 0.2);
@@ -359,9 +359,43 @@
     0 0 30px rgba(124, 58, 237, 0.2);
 }
 
-/* --- Click Pulse Feedback --- */
-.orbit-world--pulse .orbit-world-img {
-  animation: worldPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* --- Ripple wave container (centered on planet) --- */
+.orbit-world-ripples {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 78px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Individual ripple wave ring */
+.ripple-wave {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(167, 139, 250, 0.5);
+  animation: rippleExpand 1.6s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.2);
+}
+
+/* --- Active planet state (orbit paused, emitting waves) --- */
+.orbit-world--active .orbit-world-img {
+  border-color: var(--purple-400) !important;
+  box-shadow:
+    inset 0 0 16px rgba(124, 58, 237, 0.12),
+    0 0 20px rgba(124, 58, 237, 0.3),
+    0 0 45px rgba(124, 58, 237, 0.12),
+    0 0 80px rgba(124, 58, 237, 0.05) !important;
+}
+
+.orbit-world--active .orbit-world-name {
+  opacity: 1 !important;
+  text-shadow:
+    0 0 12px rgba(167, 139, 250, 0.6),
+    0 0 30px rgba(124, 58, 237, 0.3);
 }
 
 
@@ -490,8 +524,13 @@
   }
 
   .orbit-world-img {
-    width: 58px;
-    height: 58px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .orbit-world-ripples {
+    width: 64px;
+    height: 64px;
   }
 
   .orbit-world-name {
@@ -499,8 +538,8 @@
   }
 
   .orbit-world-glow {
-    width: 80px;
-    height: 80px;
+    width: 86px;
+    height: 86px;
   }
 
   .point-light {
@@ -538,9 +577,14 @@
   }
 
   .orbit-world-img {
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     border-width: 1.5px;
+  }
+
+  .orbit-world-ripples {
+    width: 54px;
+    height: 54px;
   }
 
   .orbit-world-name {
@@ -549,8 +593,8 @@
   }
 
   .orbit-world-glow {
-    width: 64px;
-    height: 64px;
+    width: 70px;
+    height: 70px;
     top: -8px;
   }
 

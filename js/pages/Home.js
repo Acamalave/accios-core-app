@@ -9,13 +9,14 @@ export class Home {
     this._orbitals = [];
     this._centerGlow = null;
     this._pointLights = null;
+    this._paused = false;        // orbit paused when a planet is clicked
+    this._activeWorld = null;    // which world is currently emitting waves
   }
 
   async render() {
     const user = this.currentUser;
     const isSuperAdmin = user?.role === 'superadmin';
 
-    // Loading state
     this.container.innerHTML = `
       <section class="home-page">
         <div class="home-content">
@@ -31,7 +32,6 @@ export class Home {
       </section>
     `;
 
-    // Role-based business fetching
     try {
       if (isSuperAdmin) {
         this.businesses = await userAuth.getAllBusinesses();
@@ -43,7 +43,6 @@ export class Home {
       this.businesses = [];
     }
 
-    // Render with orbital layout
     this.container.innerHTML = `
       <section class="home-page">
         <div class="home-content">
@@ -83,6 +82,7 @@ export class Home {
       return `
         <div class="orbit-world" data-business-id="${biz.id}" data-orbit-index="${index}">
           <div class="orbit-world-glow"></div>
+          <div class="orbit-world-ripples"></div>
           <div class="orbit-world-img">
             ${biz.logo
               ? `<img src="${biz.logo}" alt="${biz.nombre}" draggable="false" />`
@@ -100,14 +100,11 @@ export class Home {
 
     return `
       <div class="orbital-system" id="orbital-system-3d">
-        <!-- Single visible orbital ring (the track planets follow) -->
         <div class="orbital-ring"></div>
         <div class="orbital-ring orbital-ring--inner"></div>
 
-        <!-- Point lights container -->
         <div class="orbital-point-lights" id="orbital-point-lights"></div>
 
-        <!-- Central Hub -->
         <div class="orbital-center">
           <div class="orbital-center-glow" id="orbital-center-glow"></div>
           <div class="orbital-center-ring"></div>
@@ -115,23 +112,16 @@ export class Home {
           <span class="orbital-center-text">AC</span>
         </div>
 
-        <!-- Business Worlds (positioned by JS on the single orbit) -->
         ${worlds}
       </div>
     `;
   }
 
   // ─── Solar System Engine ──────────────────────────────
-  // All businesses orbit on ONE tilted plane (like Saturn's rings)
-  // The tilt creates 3D depth — back half = smaller/dimmer, front half = larger/sharper
 
   _initOrbitals() {
     const count = this.businesses.length;
-
-    // Orbital plane tilt (radians) — ~72° gives a more frontal perspective
-    // Higher = more "top-down", lower = more "side view"
     const TILT = 1.25;
-    // All businesses share one speed — slow, elegant motion
     const SPEED = 0.0012;
 
     this._orbitals = this.businesses.map((biz, i) => {
@@ -144,10 +134,10 @@ export class Home {
         el: null,
         glowEl: null,
         nameEl: null,
+        ripplesEl: null,
       };
     });
 
-    // Get DOM references
     const system = this.container.querySelector('#orbital-system-3d');
     if (!system) return;
 
@@ -160,10 +150,10 @@ export class Home {
         this._orbitals[i].el = el;
         this._orbitals[i].glowEl = el.querySelector('.orbit-world-glow');
         this._orbitals[i].nameEl = el.querySelector('.orbit-world-name');
+        this._orbitals[i].ripplesEl = el.querySelector('.orbit-world-ripples');
       }
     });
 
-    // Create point light elements
     if (this._pointLights) {
       this._pointLights.innerHTML = this._orbitals.map((_, i) =>
         `<div class="point-light" data-light="${i}"></div>`
@@ -184,82 +174,75 @@ export class Home {
       const r = getRect();
       const cx = r.width / 2;
       const cy = r.height / 2;
-      const orbitRadius = Math.min(cx, cy) * 0.7;
+      const orbitRadius = Math.min(cx, cy) * 0.68;
 
       let totalGlow = 0;
 
       for (const orb of this._orbitals) {
         if (!orb.el) continue;
 
-        // Advance orbit — slow, unified speed
-        orb.theta += orb.speed;
+        // Only advance orbit if NOT paused
+        if (!this._paused) {
+          orb.theta += orb.speed;
+        }
 
-        // ─── Single Plane 3D Math ───
-        // Circle in the XZ plane
         const cosT = Math.cos(orb.theta);
         const sinT = Math.sin(orb.theta);
 
         const x = orbitRadius * cosT;
         const zOrbit = orbitRadius * sinT;
 
-        // Tilt the plane — this "folds" the circle into 3D
         const cosTilt = Math.cos(orb.tilt);
         const sinTilt = Math.sin(orb.tilt);
-        const y = zOrbit * sinTilt;   // vertical displacement from tilt
-        const z = zOrbit * cosTilt;   // depth (behind/in front)
+        const y = zOrbit * sinTilt;
+        const z = zOrbit * cosTilt;
 
-        // Perspective projection
         const perspective = focalLength / (focalLength + z);
         const screenX = cx + x * perspective;
         const screenY = cy - y * perspective;
 
-        // Depth normalization: 0 = far back, 1 = close front
         const zNorm = (z + orbitRadius) / (2 * orbitRadius);
 
-        // ─── Premium depth-based properties ───
-        const scale = 0.55 + zNorm * 0.6;           // 0.55 → 1.15
-        const opacity = 0.35 + zNorm * 0.65;        // 0.35 → 1.0
-        const blur = zNorm < 0.25 ? (0.25 - zNorm) * 3.0 : 0; // only very far back gets slight blur
+        // ─── Larger planets, fully sharp, no blur ───
+        const scale = 0.65 + zNorm * 0.55;          // 0.65 → 1.2
+        const opacity = 0.45 + zNorm * 0.55;         // 0.45 → 1.0
         const zIndex = Math.round(zNorm * 100);
-        const borderAlpha = 0.1 + zNorm * 0.35;     // border gets brighter in front
-        const shadowSpread = zNorm * 22;             // glow intensifies in front
-        const nameOpacity = 0.15 + zNorm * 0.85;    // name fades behind
+        const borderAlpha = 0.12 + zNorm * 0.33;
+        const shadowSpread = zNorm * 24;
+        const nameOpacity = 0.2 + zNorm * 0.8;
 
-        // Apply transforms
+        // Apply — NO blur, fully crisp always
         orb.el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
         orb.el.style.left = `${screenX.toFixed(1)}px`;
         orb.el.style.top = `${screenY.toFixed(1)}px`;
         orb.el.style.opacity = opacity.toFixed(3);
-        orb.el.style.filter = blur > 0.08 ? `blur(${blur.toFixed(2)}px)` : 'none';
+        orb.el.style.filter = 'none';
         orb.el.style.zIndex = zIndex;
 
-        // Dynamic 3D sphere lighting on world image
+        // Dynamic sphere shadow
         const imgEl = orb.el.querySelector('.orbit-world-img');
         if (imgEl) {
           imgEl.style.borderColor = `rgba(124, 58, 237, ${borderAlpha.toFixed(3)})`;
           imgEl.style.boxShadow = `
-            inset 0 -6px 14px rgba(0, 0, 0, ${(0.2 + (1 - zNorm) * 0.3).toFixed(3)}),
-            inset 0 3px 8px rgba(167, 139, 250, ${(borderAlpha * 0.2).toFixed(3)}),
-            0 0 ${shadowSpread.toFixed(0)}px rgba(124, 58, 237, ${(borderAlpha * 0.45).toFixed(3)}),
-            0 ${Math.round(4 + zNorm * 6)}px ${Math.round(8 + zNorm * 12)}px rgba(0, 0, 0, ${(0.2 + zNorm * 0.15).toFixed(3)})
+            inset 0 -5px 12px rgba(0, 0, 0, ${(0.15 + (1 - zNorm) * 0.2).toFixed(3)}),
+            inset 0 3px 8px rgba(167, 139, 250, ${(borderAlpha * 0.15).toFixed(3)}),
+            0 0 ${shadowSpread.toFixed(0)}px rgba(124, 58, 237, ${(borderAlpha * 0.4).toFixed(3)}),
+            0 ${Math.round(3 + zNorm * 5)}px ${Math.round(6 + zNorm * 10)}px rgba(0, 0, 0, ${(0.15 + zNorm * 0.1).toFixed(3)})
           `;
         }
 
-        // Name opacity follows depth
         if (orb.nameEl) {
           orb.nameEl.style.opacity = nameOpacity.toFixed(3);
         }
 
-        // World glow (only visible when in front half)
         if (orb.glowEl) {
-          const glowOpacity = Math.max(0, (zNorm - 0.5) * 2) * 0.6;
+          const glowOpacity = Math.max(0, (zNorm - 0.5) * 2) * 0.5;
           orb.glowEl.style.opacity = glowOpacity.toFixed(3);
         }
 
-        // ─── Point Light ───
-        // Only emit light when in front half (zNorm > 0.4)
+        // Point Light
         const proximity = 1 - Math.min(Math.sqrt(x * x + (y * 0.5) * (y * 0.5)) / orbitRadius, 1);
-        const lightIntensity = zNorm > 0.4 ? Math.pow(proximity, 2) * 0.35 : 0;
+        const lightIntensity = zNorm > 0.4 ? Math.pow(proximity, 2) * 0.3 : 0;
         totalGlow += lightIntensity;
 
         if (this._pointLights) {
@@ -273,33 +256,51 @@ export class Home {
         }
       }
 
-      // Center glow responds to nearby planets
       if (this._centerGlow) {
         const centerIntensity = Math.min(totalGlow, 1);
         const glowScale = 1 + centerIntensity * 0.3;
-        this._centerGlow.style.opacity = (0.25 + centerIntensity * 0.5).toFixed(3);
+        this._centerGlow.style.opacity = (0.25 + centerIntensity * 0.45).toFixed(3);
         this._centerGlow.style.transform = `scale(${glowScale.toFixed(3)})`;
       }
     };
 
-    // ─── Entrance animation — staggered reveal ───
+    // Entrance animation
     const worldEls = this.container.querySelectorAll('.orbit-world');
     worldEls.forEach((el, i) => {
       el.style.opacity = '0';
       el.style.transform = 'translate(-50%, -50%) scale(0.3)';
-      el.style.filter = 'blur(8px)';
       setTimeout(() => {
-        el.style.transition = 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1), filter 1s ease';
+        el.style.transition = 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1)';
         el.style.opacity = '1';
-        el.style.filter = 'blur(0)';
         setTimeout(() => {
-          el.style.transition = 'none'; // remove so JS animation runs smoothly
+          el.style.transition = 'none';
         }, 1100);
       }, 500 + i * 250);
     });
 
-    // Start animation loop
     this._animId = requestAnimationFrame(animate);
+  }
+
+  // ─── Ripple wave spawner ───
+  _spawnRipples(worldEl) {
+    const ripplesContainer = worldEl.querySelector('.orbit-world-ripples');
+    if (!ripplesContainer) return;
+
+    // Clear previous ripples
+    ripplesContainer.innerHTML = '';
+
+    // Spawn 3 staggered ripple waves
+    for (let i = 0; i < 3; i++) {
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple-wave';
+      ripple.style.animationDelay = `${i * 0.4}s`;
+      ripplesContainer.appendChild(ripple);
+
+      // Clean up after animation
+      ripple.addEventListener('animationend', () => {
+        ripple.remove();
+      }, { once: true });
+    }
   }
 
   _buildEmptyState() {
@@ -322,33 +323,77 @@ export class Home {
   }
 
   _attachListeners() {
-    // SuperAdmin button
     this.container.querySelector('#home-superadmin-btn')?.addEventListener('click', () => {
       window.location.hash = '#superadmin';
     });
 
-    // Logout
     this.container.querySelector('#home-logout')?.addEventListener('click', () => {
       userAuth.clearSession();
       window.location.hash = '#login';
       window.location.reload();
     });
 
-    // Business world clicks — subtle pulse only
+    // Business world clicks — pause orbit + emit frequency waves
     this.container.querySelectorAll('.orbit-world').forEach(world => {
       world.addEventListener('click', () => {
-        world.classList.add('orbit-world--pulse');
-        world.addEventListener('animationend', () => {
-          world.classList.remove('orbit-world--pulse');
-        }, { once: true });
+        if (this._activeWorld === world) {
+          // Click same planet again → resume orbit, stop waves
+          this._paused = false;
+          this._activeWorld = null;
+          world.classList.remove('orbit-world--active');
+          return;
+        }
+
+        // Deactivate previous
+        if (this._activeWorld) {
+          this._activeWorld.classList.remove('orbit-world--active');
+        }
+
+        // Pause orbit and activate this planet
+        this._paused = true;
+        this._activeWorld = world;
+        world.classList.add('orbit-world--active');
+
+        // Spawn ripple waves
+        this._spawnRipples(world);
+
+        // Keep spawning waves while active
+        this._rippleInterval && clearInterval(this._rippleInterval);
+        this._rippleInterval = setInterval(() => {
+          if (this._activeWorld === world) {
+            this._spawnRipples(world);
+          } else {
+            clearInterval(this._rippleInterval);
+          }
+        }, 1600);
       });
     });
+
+    // Click on empty space → resume orbit
+    const systemEl = this.container.querySelector('#orbital-system-3d');
+    if (systemEl) {
+      systemEl.addEventListener('click', (e) => {
+        if (e.target === systemEl || e.target.classList.contains('orbital-ring') || e.target.classList.contains('orbital-center')) {
+          if (this._paused) {
+            this._paused = false;
+            if (this._activeWorld) {
+              this._activeWorld.classList.remove('orbit-world--active');
+              this._activeWorld = null;
+            }
+            this._rippleInterval && clearInterval(this._rippleInterval);
+          }
+        }
+      });
+    }
   }
 
   unmount() {
     if (this._animId) {
       cancelAnimationFrame(this._animId);
       this._animId = null;
+    }
+    if (this._rippleInterval) {
+      clearInterval(this._rippleInterval);
     }
   }
 }
