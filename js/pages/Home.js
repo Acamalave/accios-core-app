@@ -106,6 +106,8 @@ export class Home {
         <div class="orbital-point-lights" id="orbital-point-lights"></div>
 
         <div class="orbital-center">
+          <div class="orbital-center-corona"></div>
+          <div class="orbital-center-corona orbital-center-corona--outer"></div>
           <div class="orbital-center-glow" id="orbital-center-glow"></div>
           <div class="orbital-center-ring"></div>
           <div class="orbital-center-ring orbital-center-ring--reverse"></div>
@@ -219,15 +221,36 @@ export class Home {
         orb.el.style.filter = 'none';
         orb.el.style.zIndex = zIndex;
 
-        // Dynamic sphere shadow
+        // Dynamic sphere shadow + sun illumination
         const imgEl = orb.el.querySelector('.orbit-world-img');
         if (imgEl) {
+          // ─── Sun illumination direction ───
+          // Calculate angle from planet to center (where the sun is)
+          const relX = screenX - cx;
+          const relY = screenY - cy;
+          const relDist = Math.sqrt(relX * relX + relY * relY) || 1;
+          const toCenterX = -relX / relDist;  // normalized direction toward sun
+          const toCenterY = -relY / relDist;
+
+          // Map light position onto sphere surface for ::before gradient
+          const sunX = 50 + toCenterX * 25;   // 25% → 75%
+          const sunY = 50 + toCenterY * 25;
+          imgEl.style.setProperty('--sun-x', `${sunX.toFixed(1)}%`);
+          imgEl.style.setProperty('--sun-y', `${sunY.toFixed(1)}%`);
+
+          // Sun-facing edge glow (purple light on the side facing center)
+          const edgeGlowX = (toCenterX * (3 + zNorm * 5)).toFixed(1);
+          const edgeGlowY = (toCenterY * (3 + zNorm * 5)).toFixed(1);
+          const sunGlowAlpha = (0.08 + zNorm * 0.22).toFixed(3);
+          const sunGlowSpread = Math.round(10 + zNorm * 14);
+
           imgEl.style.borderColor = `rgba(124, 58, 237, ${borderAlpha.toFixed(3)})`;
           imgEl.style.boxShadow = `
             inset 0 -5px 12px rgba(0, 0, 0, ${(0.15 + (1 - zNorm) * 0.2).toFixed(3)}),
             inset 0 3px 8px rgba(167, 139, 250, ${(borderAlpha * 0.15).toFixed(3)}),
             0 0 ${shadowSpread.toFixed(0)}px rgba(124, 58, 237, ${(borderAlpha * 0.4).toFixed(3)}),
-            0 ${Math.round(3 + zNorm * 5)}px ${Math.round(6 + zNorm * 10)}px rgba(0, 0, 0, ${(0.15 + zNorm * 0.1).toFixed(3)})
+            0 ${Math.round(3 + zNorm * 5)}px ${Math.round(6 + zNorm * 10)}px rgba(0, 0, 0, ${(0.15 + zNorm * 0.1).toFixed(3)}),
+            ${edgeGlowX}px ${edgeGlowY}px ${sunGlowSpread}px rgba(167, 139, 250, ${sunGlowAlpha})
           `;
         }
 
@@ -258,8 +281,8 @@ export class Home {
 
       if (this._centerGlow) {
         const centerIntensity = Math.min(totalGlow, 1);
-        const glowScale = 1 + centerIntensity * 0.3;
-        this._centerGlow.style.opacity = (0.25 + centerIntensity * 0.45).toFixed(3);
+        const glowScale = 1 + centerIntensity * 0.2;
+        this._centerGlow.style.opacity = (0.5 + centerIntensity * 0.35).toFixed(3);
         this._centerGlow.style.transform = `scale(${glowScale.toFixed(3)})`;
       }
     };

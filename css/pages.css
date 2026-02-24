@@ -127,7 +127,7 @@
     0 0 8px rgba(124, 58, 237, 0.015);
 }
 
-/* --- Central Hub (3D sun/nucleus sphere) --- */
+/* --- Central Hub (Luminous Purple Sun) --- */
 .orbital-center {
   position: absolute;
   top: 50%;
@@ -138,27 +138,33 @@
   border-radius: 50%;
   background:
     radial-gradient(
-      ellipse 55% 45% at 38% 32%,
-      rgba(167, 139, 250, 0.3) 0%,
-      transparent 50%
+      ellipse 50% 40% at 38% 30%,
+      rgba(220, 200, 255, 0.35) 0%,
+      transparent 45%
     ),
     radial-gradient(
       circle at 50% 50%,
-      rgba(124, 58, 237, 0.15) 0%,
-      rgba(30, 15, 60, 0.9) 60%,
+      rgba(190, 165, 255, 0.45) 0%,
+      rgba(145, 100, 245, 0.3) 20%,
+      rgba(124, 58, 237, 0.25) 40%,
+      rgba(80, 30, 180, 0.15) 60%,
+      rgba(30, 15, 60, 0.85) 80%,
       rgba(8, 4, 20, 0.95) 100%
     );
-  border: 1.5px solid rgba(124, 58, 237, 0.3);
+  border: 1.5px solid rgba(167, 139, 250, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
+  animation: sunCoreShimmer 5s ease-in-out infinite;
   box-shadow:
-    inset 0 -8px 20px rgba(0, 0, 0, 0.4),
-    inset 0 4px 12px rgba(167, 139, 250, 0.12),
-    0 0 20px rgba(124, 58, 237, 0.15),
-    0 0 45px rgba(124, 58, 237, 0.08),
-    0 0 90px rgba(124, 58, 237, 0.04);
+    inset 0 -6px 16px rgba(0, 0, 0, 0.35),
+    inset 0 4px 10px rgba(220, 200, 255, 0.08),
+    0 0 15px rgba(167, 139, 250, 0.5),
+    0 0 35px rgba(124, 58, 237, 0.35),
+    0 0 60px rgba(124, 58, 237, 0.2),
+    0 0 100px rgba(124, 58, 237, 0.12),
+    0 0 160px rgba(124, 58, 237, 0.05);
 }
 
 .orbital-center-text {
@@ -173,20 +179,50 @@
   z-index: 2;
 }
 
-.orbital-center-glow {
+/* Sun corona — inner ring */
+.orbital-center-corona {
   position: absolute;
-  inset: -45px;
+  inset: -35px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(124, 58, 237, 0.18) 0%,
-    rgba(124, 58, 237, 0.05) 40%,
+    rgba(167, 139, 250, 0.12) 0%,
+    rgba(124, 58, 237, 0.06) 45%,
     transparent 70%
   );
-  opacity: 0.25;
+  animation: sunPulse 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Sun corona — outer halo */
+.orbital-center-corona--outer {
+  inset: -90px;
+  background: radial-gradient(
+    circle,
+    rgba(124, 58, 237, 0.05) 0%,
+    rgba(124, 58, 237, 0.015) 50%,
+    transparent 70%
+  );
+  animation: sunPulse 7s ease-in-out infinite reverse;
+}
+
+.orbital-center-glow {
+  position: absolute;
+  inset: -80px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(167, 139, 250, 0.22) 0%,
+    rgba(124, 58, 237, 0.12) 25%,
+    rgba(124, 58, 237, 0.04) 50%,
+    transparent 70%
+  );
+  opacity: 0.5;
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
   will-change: opacity, transform;
+  animation: sunBreath 5s ease-in-out infinite;
 }
 
 .orbital-center-ring {
@@ -278,7 +314,7 @@
   /* border-color and box-shadow driven by JS depth */
 }
 
-/* 3D sphere lighting overlay — subtle curvature effect */
+/* 3D sphere lighting — dynamic sun illumination via CSS vars */
 .orbit-world-img::before {
   content: '';
   position: absolute;
@@ -286,14 +322,15 @@
   border-radius: 50%;
   background:
     radial-gradient(
-      ellipse 50% 40% at 35% 28%,
-      rgba(220, 210, 255, 0.12) 0%,
-      transparent 50%
+      ellipse 55% 45% at var(--sun-x, 35%) var(--sun-y, 28%),
+      rgba(167, 139, 250, 0.22) 0%,
+      rgba(167, 139, 250, 0.06) 35%,
+      transparent 60%
     ),
     radial-gradient(
       ellipse 100% 100% at 50% 50%,
-      transparent 55%,
-      rgba(0, 0, 0, 0.35) 100%
+      transparent 50%,
+      rgba(0, 0, 0, 0.4) 100%
     );
   z-index: 3;
   pointer-events: none;
@@ -520,7 +557,15 @@
   }
 
   .orbital-center-glow {
-    inset: -32px;
+    inset: -50px;
+  }
+
+  .orbital-center-corona {
+    inset: -25px;
+  }
+
+  .orbital-center-corona--outer {
+    inset: -60px;
   }
 
   .orbit-world-img {
@@ -573,7 +618,15 @@
   }
 
   .orbital-center-glow {
-    inset: -24px;
+    inset: -35px;
+  }
+
+  .orbital-center-corona {
+    inset: -18px;
+  }
+
+  .orbital-center-corona--outer {
+    inset: -45px;
   }
 
   .orbit-world-img {
