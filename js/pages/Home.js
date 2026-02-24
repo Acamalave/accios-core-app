@@ -333,31 +333,29 @@ export class Home {
       window.location.reload();
     });
 
+    // IDs that show the "coming soon" popup
+    const comingSoonIds = ['xazai', 'gregoria'];
+
     // Business world clicks — pause orbit + emit frequency waves
     this.container.querySelectorAll('.orbit-world').forEach(world => {
       world.addEventListener('click', () => {
         if (this._activeWorld === world) {
-          // Click same planet again → resume orbit, stop waves
           this._paused = false;
           this._activeWorld = null;
           world.classList.remove('orbit-world--active');
           return;
         }
 
-        // Deactivate previous
         if (this._activeWorld) {
           this._activeWorld.classList.remove('orbit-world--active');
         }
 
-        // Pause orbit and activate this planet
         this._paused = true;
         this._activeWorld = world;
         world.classList.add('orbit-world--active');
 
-        // Spawn ripple waves
         this._spawnRipples(world);
 
-        // Keep spawning waves while active
         this._rippleInterval && clearInterval(this._rippleInterval);
         this._rippleInterval = setInterval(() => {
           if (this._activeWorld === world) {
@@ -366,6 +364,13 @@ export class Home {
             clearInterval(this._rippleInterval);
           }
         }, 1600);
+
+        // Show coming-soon popup for specific businesses
+        const bizId = world.dataset.businessId;
+        if (comingSoonIds.includes(bizId)) {
+          const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
+          this._showComingSoonPopup(bizName);
+        }
       });
     });
 
@@ -385,6 +390,55 @@ export class Home {
         }
       });
     }
+  }
+
+  // ─── Futuristic "Coming Soon" popup ───
+  _showComingSoonPopup(businessName) {
+    // Remove any existing popup
+    const existing = document.querySelector('.coming-soon-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'coming-soon-overlay';
+    overlay.innerHTML = `
+      <div class="coming-soon-popup">
+        <div class="coming-soon-scanline"></div>
+        <div class="coming-soon-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div class="coming-soon-badge">En desarrollo</div>
+        <h3 class="coming-soon-title">${businessName}</h3>
+        <p class="coming-soon-text">
+          Estamos construyendo este ecosistema digital.<br>
+          Muy pronto estara disponible.
+        </p>
+        <div class="coming-soon-bar">
+          <div class="coming-soon-bar-fill"></div>
+        </div>
+        <button class="coming-soon-close">Entendido</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Animate in
+    requestAnimationFrame(() => {
+      overlay.classList.add('coming-soon-overlay--visible');
+    });
+
+    // Close handlers
+    const close = () => {
+      overlay.classList.remove('coming-soon-overlay--visible');
+      overlay.classList.add('coming-soon-overlay--closing');
+      setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector('.coming-soon-close').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
   }
 
   unmount() {
