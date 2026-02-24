@@ -219,7 +219,7 @@ export class Home {
         // ─── Premium depth-based properties ───
         const scale = 0.55 + zNorm * 0.6;           // 0.55 → 1.15
         const opacity = 0.35 + zNorm * 0.65;        // 0.35 → 1.0
-        const blur = (1 - zNorm) * 2.0;             // 2px → 0
+        const blur = zNorm < 0.25 ? (0.25 - zNorm) * 3.0 : 0; // only very far back gets slight blur
         const zIndex = Math.round(zNorm * 100);
         const borderAlpha = 0.1 + zNorm * 0.35;     // border gets brighter in front
         const shadowSpread = zNorm * 22;             // glow intensifies in front
