@@ -128,10 +128,11 @@ export class Home {
   _initOrbitals() {
     const count = this.businesses.length;
 
-    // Single orbital plane tilt (radians) — ~55° creates good depth perspective
-    const TILT = 0.95;
-    // All businesses share one speed — unified solar system feel
-    const SPEED = 0.0015;
+    // Orbital plane tilt (radians) — ~72° gives a more frontal perspective
+    // Higher = more "top-down", lower = more "side view"
+    const TILT = 1.25;
+    // All businesses share one speed — slow, elegant motion
+    const SPEED = 0.0012;
 
     this._orbitals = this.businesses.map((biz, i) => {
       const thetaOffset = (Math.PI * 2 / count) * i;
@@ -215,14 +216,14 @@ export class Home {
         // Depth normalization: 0 = far back, 1 = close front
         const zNorm = (z + orbitRadius) / (2 * orbitRadius);
 
-        // ─── Premium depth-based properties (subtle, refined) ───
-        const scale = 0.6 + zNorm * 0.5;           // 0.6 → 1.1
-        const opacity = 0.4 + zNorm * 0.6;          // 0.4 → 1.0
-        const blur = (1 - zNorm) * 1.8;             // 1.8px → 0
+        // ─── Premium depth-based properties ───
+        const scale = 0.55 + zNorm * 0.6;           // 0.55 → 1.15
+        const opacity = 0.35 + zNorm * 0.65;        // 0.35 → 1.0
+        const blur = (1 - zNorm) * 2.0;             // 2px → 0
         const zIndex = Math.round(zNorm * 100);
-        const borderAlpha = 0.12 + zNorm * 0.28;    // border gets brighter in front
-        const shadowSpread = zNorm * 18;             // glow intensifies in front
-        const nameOpacity = 0.2 + zNorm * 0.8;      // name fades behind
+        const borderAlpha = 0.1 + zNorm * 0.35;     // border gets brighter in front
+        const shadowSpread = zNorm * 22;             // glow intensifies in front
+        const nameOpacity = 0.15 + zNorm * 0.85;    // name fades behind
 
         // Apply transforms
         orb.el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
@@ -232,13 +233,15 @@ export class Home {
         orb.el.style.filter = blur > 0.08 ? `blur(${blur.toFixed(2)}px)` : 'none';
         orb.el.style.zIndex = zIndex;
 
-        // Dynamic border glow on world image
+        // Dynamic 3D sphere lighting on world image
         const imgEl = orb.el.querySelector('.orbit-world-img');
         if (imgEl) {
           imgEl.style.borderColor = `rgba(124, 58, 237, ${borderAlpha.toFixed(3)})`;
           imgEl.style.boxShadow = `
-            inset 0 0 12px rgba(124, 58, 237, ${(borderAlpha * 0.3).toFixed(3)}),
-            0 0 ${shadowSpread.toFixed(0)}px rgba(124, 58, 237, ${(borderAlpha * 0.4).toFixed(3)})
+            inset 0 -6px 14px rgba(0, 0, 0, ${(0.2 + (1 - zNorm) * 0.3).toFixed(3)}),
+            inset 0 3px 8px rgba(167, 139, 250, ${(borderAlpha * 0.2).toFixed(3)}),
+            0 0 ${shadowSpread.toFixed(0)}px rgba(124, 58, 237, ${(borderAlpha * 0.45).toFixed(3)}),
+            0 ${Math.round(4 + zNorm * 6)}px ${Math.round(8 + zNorm * 12)}px rgba(0, 0, 0, ${(0.2 + zNorm * 0.15).toFixed(3)})
           `;
         }
 
