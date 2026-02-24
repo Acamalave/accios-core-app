@@ -1,0 +1,299 @@
+import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from './firebase.js';
+
+const SESSION_KEY = 'accios-user-session';
+
+class UserAuth {
+
+  // ─── PIN Hashing ───────────────────────────────────────
+  async hashPin(pin) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin + 'accios-core-salt-v2');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // ─── Phone Formatting ─────────────────────────────────
+  formatPhone(phone) {
+    let cleaned = phone.replace(/\D/g, '');
+    if (cleaned.startsWith('507')) {
+      return '+' + cleaned;
+    }
+    if (cleaned.length === 8 || cleaned.length === 7) {
+      return '+507' + cleaned;
+    }
+    return '+' + cleaned;
+  }
+
+  // ─── User Lookup ──────────────────────────────────────
+  async lookupPhone(phone) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        return { exists: true, data: { id: snap.id, ...snap.data() } };
+      }
+      return { exists: false, data: null };
+    } catch (e) {
+      console.error('Phone lookup failed:', e);
+      throw new Error('Error al buscar el usuario');
+    }
+  }
+
+  // ─── PIN Management ───────────────────────────────────
+  async createPin(phone, pin) {
+    const formatted = this.formatPhone(phone);
+    const pinHash = await this.hashPin(pin);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      await updateDoc(docRef, {
+        pinHash,
+        updatedAt: new Date().toISOString(),
+      });
+      return true;
+    } catch (e) {
+      console.error('Create PIN failed:', e);
+      throw new Error('Error al crear el PIN');
+    }
+  }
+
+  async verifyPin(phone, pin) {
+    const formatted = this.formatPhone(phone);
+    const pinHash = await this.hashPin(pin);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      const snap = await getDoc(docRef);
+      if (snap.exists() && snap.data().pinHash === pinHash) {
+        await updateDoc(docRef, { lastLogin: new Date().toISOString() });
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('Verify PIN failed:', e);
+      return false;
+    }
+  }
+
+  // ─── Session Management ───────────────────────────────
+  saveSession(userData) {
+    const session = {
+      phone: userData.phone || userData.id,
+      name: userData.name,
+      role: userData.role,
+      businesses: userData.businesses || [],
+      savedAt: Date.now(),
+      expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  }
+
+  getSession() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const session = JSON.parse(raw);
+      if (Date.now() > session.expiresAt) {
+        this.clearSession();
+        return null;
+      }
+      return session;
+    } catch {
+      this.clearSession();
+      return null;
+    }
+  }
+
+  isLoggedIn() {
+    return this.getSession() !== null;
+  }
+
+  getCurrentUser() {
+    return this.getSession();
+  }
+
+  clearSession() {
+    localStorage.removeItem(SESSION_KEY);
+  }
+
+  // ─── User CRUD (SuperAdmin) ───────────────────────────
+  async createUser({ phone, name, role, businesses }) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      await setDoc(docRef, {
+        phone: formatted,
+        name,
+        role: role || 'client',
+        businesses: businesses || [],
+        pinHash: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastLogin: null,
+      });
+      return true;
+    } catch (e) {
+      console.error('Create user failed:', e);
+      throw new Error('Error al crear usuario');
+    }
+  }
+
+  async updateUser(phone, updates) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Update user failed:', e);
+      throw new Error('Error al actualizar usuario');
+    }
+  }
+
+  async deleteUser(phone) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      await deleteDoc(docRef);
+      return true;
+    } catch (e) {
+      console.error('Delete user failed:', e);
+      throw new Error('Error al eliminar usuario');
+    }
+  }
+
+  async getAllUsers() {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get all users failed:', e);
+      return [];
+    }
+  }
+
+  // ─── Business CRUD (SuperAdmin) ───────────────────────
+  async createBusiness({ id, nombre, logo, contenido_valor }) {
+    try {
+      const docRef = doc(db, 'businesses', id);
+      await setDoc(docRef, {
+        nombre,
+        logo: logo || '',
+        contenido_valor: contenido_valor || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      return true;
+    } catch (e) {
+      console.error('Create business failed:', e);
+      throw new Error('Error al crear negocio');
+    }
+  }
+
+  async updateBusiness(id, updates) {
+    try {
+      const docRef = doc(db, 'businesses', id);
+      await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Update business failed:', e);
+      throw new Error('Error al actualizar negocio');
+    }
+  }
+
+  async deleteBusiness(id) {
+    try {
+      const docRef = doc(db, 'businesses', id);
+      await deleteDoc(docRef);
+      return true;
+    } catch (e) {
+      console.error('Delete business failed:', e);
+      throw new Error('Error al eliminar negocio');
+    }
+  }
+
+  async getAllBusinesses() {
+    try {
+      const snap = await getDocs(collection(db, 'businesses'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get all businesses failed:', e);
+      return [];
+    }
+  }
+
+  async getBusiness(id) {
+    try {
+      const docRef = doc(db, 'businesses', id);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) return { id: snap.id, ...snap.data() };
+      return null;
+    } catch (e) {
+      console.error('Get business failed:', e);
+      return null;
+    }
+  }
+
+  // ─── User-Business Linking ────────────────────────────
+  // The "businesses" array on each user document acts as our
+  // User_Business_Rel join table. This is more efficient in
+  // Firestore than a separate collection for a simple many-to-many.
+
+  async linkBusinessToUser(phone, businessId) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) throw new Error('Usuario no encontrado');
+
+      const current = snap.data().businesses || [];
+      if (!current.includes(businessId)) {
+        current.push(businessId);
+        await updateDoc(docRef, { businesses: current, updatedAt: new Date().toISOString() });
+      }
+      return true;
+    } catch (e) {
+      console.error('Link business failed:', e);
+      throw new Error('Error al vincular negocio');
+    }
+  }
+
+  async unlinkBusinessFromUser(phone, businessId) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) throw new Error('Usuario no encontrado');
+
+      const current = snap.data().businesses || [];
+      const updated = current.filter(b => b !== businessId);
+      await updateDoc(docRef, { businesses: updated, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Unlink business failed:', e);
+      throw new Error('Error al desvincular negocio');
+    }
+  }
+
+  async getUserBusinesses(phone) {
+    const formatted = this.formatPhone(phone);
+    try {
+      const docRef = doc(db, 'users', formatted);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return [];
+
+      const businessIds = snap.data().businesses || [];
+      const businesses = [];
+      for (const bizId of businessIds) {
+        const biz = await this.getBusiness(bizId);
+        if (biz) businesses.push(biz);
+      }
+      return businesses;
+    } catch (e) {
+      console.error('Get user businesses failed:', e);
+      return [];
+    }
+  }
+}
+
+export default new UserAuth();

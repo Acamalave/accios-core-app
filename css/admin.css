@@ -1,0 +1,283 @@
+/* ===== SUPER ADMIN PAGE ===== */
+.superadmin-page {
+  padding: var(--space-6) var(--space-5);
+  padding-top: max(var(--space-6), env(safe-area-inset-top));
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.superadmin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.superadmin-back {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.superadmin-back:hover {
+  color: var(--text-primary);
+}
+
+.superadmin-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.superadmin-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.superadmin-tab {
+  padding: var(--space-2) var(--space-4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.superadmin-tab.active {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: transparent;
+}
+
+.superadmin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.superadmin-table th,
+.superadmin-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.superadmin-table th {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.superadmin-table td {
+  font-size: 0.9rem;
+}
+
+.superadmin-table tr:hover td {
+  background: rgba(124, 58, 237, 0.05);
+}
+
+/* === Admin Buttons === */
+.sa-btn {
+  padding: var(--space-1) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sa-btn:hover {
+  border-color: var(--purple-500);
+  color: var(--purple-400);
+}
+
+.sa-btn--primary {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: transparent;
+}
+
+.sa-btn--primary:hover {
+  transform: translateY(-1px);
+  color: white;
+}
+
+.sa-btn--danger:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* === Badges === */
+.sa-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sa-badge--admin { background: rgba(124,58,237,0.15); color: var(--purple-400); }
+.sa-badge--superadmin { background: rgba(234,179,8,0.15); color: #eab308; }
+.sa-badge--client { background: rgba(16,185,129,0.15); color: #10b981; }
+
+/* === Modal === */
+.sa-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+}
+
+.sa-modal-content {
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sa-modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+}
+
+.sa-form-group {
+  margin-bottom: var(--space-4);
+}
+
+.sa-form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.sa-form-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.sa-form-input:focus {
+  border-color: var(--purple-500);
+}
+
+.sa-form-select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.sa-form-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+.sa-biz-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.sa-biz-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  background: rgba(124,58,237,0.15);
+  border-radius: 99px;
+  font-size: 0.8rem;
+  color: var(--purple-400);
+}
+
+/* === Stats Row === */
+.sa-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.sa-stat {
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.sa-stat-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+}
+
+.sa-stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .superadmin-page { padding: var(--space-4) var(--space-3); }
+  .superadmin-tabs { flex-wrap: nowrap; }
+  .superadmin-table { font-size: 0.8rem; }
+  .superadmin-table th, .superadmin-table td { padding: var(--space-2); }
+  .sa-modal-content { width: 95%; padding: var(--space-4); }
+  .sa-btn { padding: var(--space-1) var(--space-2); font-size: 0.75rem; }
+}
+
+@media (max-width: 480px) {
+  .superadmin-page { padding: var(--space-3) var(--space-2); }
+  .superadmin-table th, .superadmin-table td { padding: var(--space-1) var(--space-2); font-size: 0.75rem; }
+}

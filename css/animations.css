@@ -1,0 +1,197 @@
+/* === Page Transitions === */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-exit {
+  animation: pageExit 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* === Staggered Card Entry === */
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.stagger-in > * {
+  animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-in > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger-in > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-in > *:nth-child(4) { animation-delay: 0.20s; }
+.stagger-in > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-in > *:nth-child(6) { animation-delay: 0.30s; }
+
+/* === Pulse Glow === */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(124, 58, 237, 0.3); }
+  50%      { box-shadow: 0 0 15px rgba(124, 58, 237, 0.6); }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* === Toast Animations === */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+  }
+}
+
+/* === Fade In === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* === Slide Up === */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease forwards;
+}
+
+/* === Monolith Rise Entry === */
+@keyframes monolithRise {
+  0% {
+    opacity: 0;
+    transform: translateY(80px) scaleY(0.85);
+    filter: blur(6px) brightness(1.5);
+  }
+  40% {
+    opacity: 0.7;
+    filter: blur(2px) brightness(1.2);
+  }
+  70% {
+    transform: translateY(-8px) scaleY(1.02);
+    filter: blur(0) brightness(1.05);
+  }
+  85% {
+    transform: translateY(3px) scaleY(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    filter: blur(0) brightness(1);
+  }
+}
+
+/* === Monolith Scanning Line === */
+@keyframes monolithScanline {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.7;
+  }
+  45% {
+    transform: translateY(300px);
+    opacity: 0.2;
+  }
+  46%, 100% {
+    opacity: 0;
+  }
+}
+
+/* === Indicator Pulse (LED) === */
+@keyframes indicatorPulse {
+  0%, 100% {
+    opacity: 0.5;
+    box-shadow: 0 0 4px rgba(167, 139, 250, 0.4);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.9), 0 0 20px rgba(124, 58, 237, 0.4);
+  }
+}
+
+/* === Staggered Monolith Entry === */
+.monolith-stagger > .monolith-wrapper {
+  animation: monolithRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.monolith-stagger > .monolith-wrapper:nth-child(1) { animation-delay: 0.15s; }
+.monolith-stagger > .monolith-wrapper:nth-child(2) { animation-delay: 0.35s; }
+.monolith-stagger > .monolith-wrapper:nth-child(3) { animation-delay: 0.55s; }
+.monolith-stagger > .monolith-wrapper:nth-child(4) { animation-delay: 0.75s; }
+.monolith-stagger > .monolith-wrapper:nth-child(5) { animation-delay: 0.95s; }
+
+/* === Ambient Glow Pulse === */
+@keyframes ambientPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+/* === Haptic feedback for native feel === */
+@keyframes tapFeedback {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+.tap-feedback:active {
+  animation: tapFeedback 0.15s ease;
+}
