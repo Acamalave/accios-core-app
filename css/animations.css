@@ -185,39 +185,25 @@
   50% { opacity: 0.8; }
 }
 
-/* === Orbital System Animations === */
-@keyframes orbitRotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+/* === 3D Orbital System Animations === */
 
-@keyframes orbitCounterRotate {
-  from { transform: translateX(-50%) rotate(0deg); }
-  to   { transform: translateX(-50%) rotate(-360deg); }
-}
-
-@keyframes orbitWorldAppear {
-  from {
-    opacity: 0;
-    scale: 0.3;
-    filter: blur(8px);
-  }
-  to {
-    opacity: 1;
-    scale: 1;
-    filter: blur(0);
-  }
-}
-
-@keyframes worldPulse {
-  0%   { transform: scale(1); box-shadow: 0 0 12px rgba(124, 58, 237, 0.12); }
-  50%  { transform: scale(1.2); box-shadow: 0 0 35px rgba(124, 58, 237, 0.5); }
-  100% { transform: scale(1); box-shadow: 0 0 12px rgba(124, 58, 237, 0.12); }
-}
-
+/* Center dashed ring spin */
 @keyframes orbitSpin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
+}
+
+/* Decorative orbit paths slow drift */
+@keyframes orbitPathDrift {
+  from { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(0deg); }
+  to   { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(360deg); }
+}
+
+/* World click pulse (applied to .orbit-world-img) */
+@keyframes worldPulse {
+  0%   { transform: scale(1); box-shadow: 0 0 12px rgba(124, 58, 237, 0.12); }
+  50%  { transform: scale(1.25); box-shadow: 0 0 40px rgba(124, 58, 237, 0.55); }
+  100% { transform: scale(1); box-shadow: 0 0 12px rgba(124, 58, 237, 0.12); }
 }
 
 /* === Haptic feedback for native feel === */
