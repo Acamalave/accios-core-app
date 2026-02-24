@@ -37,6 +37,10 @@ class Router {
     this.container.innerHTML = '';
     this.currentHash = route.full;
 
+    // Clear any lingering modals from previous pages
+    const modalRoot = document.getElementById('modal-root');
+    if (modalRoot) modalRoot.innerHTML = '';
+
     // Notify app to mount correct page
     if (this.onNavigate) await this.onNavigate(route);
 
