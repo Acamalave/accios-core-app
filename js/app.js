@@ -111,11 +111,7 @@ class App {
   _onLogin(userData) {
     this.currentUser = userAuth.getSession();
 
-    if (userData.role === 'superadmin') {
-      router.navigate('superadmin');
-      return;
-    }
-
+    // SuperAdmin goes to home (can navigate to admin via shield button)
     router.navigate('home');
   }
 
