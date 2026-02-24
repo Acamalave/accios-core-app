@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from './firebase.js';
+import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from './firebase.js';
 
 const SESSION_KEY = 'accios-user-session';
 
@@ -291,6 +291,49 @@ class UserAuth {
       return businesses;
     } catch (e) {
       console.error('Get user businesses failed:', e);
+      return [];
+    }
+  }
+  // ─── Onboarding Responses ────────────────────────────
+
+  async saveOnboardingResponse(phone, businessId, data) {
+    const formatted = this.formatPhone(phone);
+    const docId = `${formatted}_${businessId}`;
+    try {
+      const docRef = doc(db, 'onboarding_responses', docId);
+      await setDoc(docRef, {
+        ...data,
+        userId: formatted,
+        businessId,
+        updatedAt: new Date().toISOString(),
+      }, { merge: true });
+      return true;
+    } catch (e) {
+      console.error('Save onboarding response failed:', e);
+      throw new Error('Error al guardar respuesta de onboarding');
+    }
+  }
+
+  async getOnboardingResponse(phone, businessId) {
+    const formatted = this.formatPhone(phone);
+    const docId = `${formatted}_${businessId}`;
+    try {
+      const docRef = doc(db, 'onboarding_responses', docId);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) return { id: snap.id, ...snap.data() };
+      return null;
+    } catch (e) {
+      console.error('Get onboarding response failed:', e);
+      return null;
+    }
+  }
+
+  async getAllOnboardingResponses() {
+    try {
+      const snap = await getDocs(collection(db, 'onboarding_responses'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get all onboarding responses failed:', e);
       return [];
     }
   }

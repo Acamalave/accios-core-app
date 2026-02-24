@@ -7,6 +7,7 @@ export class SuperAdmin {
     this.tab = 'users';
     this.users = [];
     this.businesses = [];
+    this.onboardingResponses = [];
   }
 
   async render() {
@@ -40,6 +41,7 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'users' ? 'active' : ''}" data-tab="users">Usuarios</button>
           <button class="superadmin-tab ${this.tab === 'businesses' ? 'active' : ''}" data-tab="businesses">Negocios</button>
           <button class="superadmin-tab ${this.tab === 'linking' ? 'active' : ''}" data-tab="linking">Vincular</button>
+          <button class="superadmin-tab ${this.tab === 'onboarding' ? 'active' : ''}" data-tab="onboarding">Expedientes</button>
         </div>
 
         <div id="sa-content">
@@ -64,9 +66,10 @@ export class SuperAdmin {
   }
 
   async _loadData() {
-    [this.users, this.businesses] = await Promise.all([
+    [this.users, this.businesses, this.onboardingResponses] = await Promise.all([
       userAuth.getAllUsers(),
       userAuth.getAllBusinesses(),
+      userAuth.getAllOnboardingResponses(),
     ]);
   }
 
@@ -77,6 +80,8 @@ export class SuperAdmin {
     const totalUsers = this.users.length;
     const totalBiz = this.businesses.length;
     const totalLinks = this.users.reduce((sum, u) => sum + (u.businesses || []).length, 0);
+    const totalOnboarding = this.onboardingResponses.length;
+    const completedOnboarding = this.onboardingResponses.filter(r => r.completedAt).length;
 
     statsEl.innerHTML = `
       <div class="glass-card sa-stat">
@@ -91,6 +96,10 @@ export class SuperAdmin {
         <div class="sa-stat-value">${totalLinks}</div>
         <div class="sa-stat-label">Vinculos</div>
       </div>
+      <div class="glass-card sa-stat">
+        <div class="sa-stat-value">${completedOnboarding}/${totalOnboarding}</div>
+        <div class="sa-stat-label">Expedientes</div>
+      </div>
     `;
   }
 
@@ -100,6 +109,8 @@ export class SuperAdmin {
       this._renderUsers(content);
     } else if (this.tab === 'businesses') {
       this._renderBusinesses(content);
+    } else if (this.tab === 'onboarding') {
+      this._renderOnboarding(content);
     } else {
       this._renderLinking(content);
     }
@@ -302,6 +313,104 @@ export class SuperAdmin {
         }
       });
     });
+  }
+
+  // ─── ONBOARDING TAB ───────────────────────────────────
+
+  _renderOnboarding(content) {
+    const rows = this.onboardingResponses.map(resp => {
+      const answeredCount = Object.values(resp.answers || {}).filter(a => a && a.trim()).length;
+      const status = resp.completedAt
+        ? '<span class="sa-badge sa-badge--superadmin">Completado</span>'
+        : `<span class="sa-badge sa-badge--client">En progreso (${answeredCount}/12)</span>`;
+      const date = resp.completedAt
+        ? new Date(resp.completedAt).toLocaleDateString('es-PA')
+        : resp.updatedAt ? new Date(resp.updatedAt).toLocaleDateString('es-PA') : '-';
+
+      return `
+        <tr>
+          <td><strong>${resp.userName || resp.userId}</strong></td>
+          <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">${resp.businessId}</td>
+          <td>${status}</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">${date}</td>
+          <td>
+            <button class="sa-btn" data-view-onboarding="${resp.id}">Ver</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    content.innerHTML = `
+      <div class="glass-card" style="overflow-x: auto; padding: 0;">
+        <table class="superadmin-table">
+          <thead>
+            <tr><th>Talento</th><th>Negocio</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>${rows || '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay expedientes</td></tr>'}</tbody>
+        </table>
+      </div>
+    `;
+
+    content.querySelectorAll('[data-view-onboarding]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const resp = this.onboardingResponses.find(r => r.id === btn.dataset.viewOnboarding);
+        if (resp) this._showOnboardingModal(resp);
+      });
+    });
+  }
+
+  _showOnboardingModal(resp) {
+    const SECTION_NAMES = [
+      { title: 'I. Protocolo de Hospitalidad', keys: ['q1','q2','q3','q4'] },
+      { title: 'II. El Circulo de Confianza', keys: ['q5','q6','q7','q8'] },
+      { title: 'III. Psicologia de Escena', keys: ['q9','q10','q11','q12'] },
+    ];
+    const Q_TITLES = {
+      q1: 'El Combustible Exacto', q2: 'El Rescate de Emergencia',
+      q3: 'El Entorno Ideal', q4: 'El "No-Go" Visual y Gastrico',
+      q5: 'El Complice de Riesgo', q6: 'El Ancla a Tierra',
+      q7: 'La Linea Roja Invisible', q8: 'Veto Absoluto',
+      q9: 'La Mentira de Sociedad', q10: 'El Boton Rojo',
+      q11: 'El Superpoder de Negociacion', q12: 'El Trofeo Invisible',
+    };
+
+    let answersHTML = '';
+    for (const section of SECTION_NAMES) {
+      answersHTML += `<div style="margin-bottom: var(--space-5);">
+        <div style="font-size: 0.75rem; font-weight: 600; color: var(--purple-400); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid rgba(124,58,237,0.1);">${section.title}</div>`;
+      for (const key of section.keys) {
+        const answer = resp.answers?.[key];
+        answersHTML += `
+          <div style="margin-bottom: var(--space-3);">
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 2px;">${Q_TITLES[key]}</div>
+            <div style="font-size: 0.85rem; color: ${answer ? 'var(--text-muted)' : 'var(--text-dim)'}; line-height: 1.6; font-style: ${answer ? 'italic' : 'normal'};">
+              ${answer ? `"${answer}"` : 'Sin respuesta'}
+            </div>
+          </div>`;
+      }
+      answersHTML += '</div>';
+    }
+
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 560px; max-height: 80vh; overflow-y: auto;">
+          <h3 class="sa-modal-title">Expediente: ${resp.userName || resp.userId}</h3>
+          <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: var(--space-5);">
+            ${resp.completedAt ? 'Completado el ' + new Date(resp.completedAt).toLocaleDateString('es-PA') : 'En progreso'}
+          </div>
+          ${answersHTML}
+          <div class="sa-form-actions">
+            <button class="sa-btn sa-btn--primary" id="sa-modal-cancel">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
   }
 
   // ─── USER MODAL ────────────────────────────────────────

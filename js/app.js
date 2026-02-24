@@ -6,6 +6,7 @@ import userAuth from './services/userAuth.js';
 import { Login } from './pages/Login.js';
 import { Home } from './pages/Home.js';
 import { SuperAdmin } from './pages/SuperAdmin.js';
+import { Onboarding } from './pages/Onboarding.js';
 
 class App {
   constructor() {
@@ -94,6 +95,10 @@ class App {
 
       case 'superadmin':
         pageInstance = new SuperAdmin(this.content);
+        break;
+
+      case 'onboarding':
+        pageInstance = new Onboarding(this.content, this.currentUser, route.sub);
         break;
 
       default:

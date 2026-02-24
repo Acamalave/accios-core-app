@@ -388,8 +388,14 @@ export class Home {
           }
         }, 1600);
 
-        // Show coming-soon popup for specific businesses
+        // MDN Podcast → onboarding experience
         const bizId = world.dataset.businessId;
+        if (bizId === 'mdn-podcast') {
+          window.location.hash = '#onboarding/mdn-podcast';
+          return;
+        }
+
+        // Show coming-soon popup for specific businesses
         if (comingSoonIds.includes(bizId)) {
           const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
           this._showComingSoonPopup(bizName);
