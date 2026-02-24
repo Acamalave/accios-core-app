@@ -132,6 +132,212 @@
 
 
 /* ═══════════════════════════════════════════════
+   TERMINAL / CINEMATIC SEQUENCES
+   ═══════════════════════════════════════════════ */
+
+.ob-terminal {
+  width: 100%;
+  background:
+    linear-gradient(
+      175deg,
+      rgba(124, 58, 237, 0.05) 0%,
+      rgba(4, 2, 12, 0.96) 20%,
+      rgba(2, 1, 8, 0.98) 100%
+    );
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 0 40px rgba(124, 58, 237, 0.08),
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(167, 139, 250, 0.1);
+  animation: obTerminalEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
+.ob-terminal--visible,
+.ob-terminal:not(.ob-terminal--compact) {
+  animation: obTerminalEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ob-terminal--exit {
+  animation: obTerminalExit 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+/* Terminal header bar */
+.ob-terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: rgba(124, 58, 237, 0.06);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+}
+
+.ob-terminal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.ob-terminal-dot--red { background: rgba(239, 68, 68, 0.7); }
+.ob-terminal-dot--yellow { background: rgba(234, 179, 8, 0.7); }
+.ob-terminal-dot--green { background: rgba(34, 197, 94, 0.7); }
+
+.ob-terminal-title {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Terminal body */
+.ob-terminal-body {
+  padding: 20px 20px 24px;
+  max-height: 380px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.ob-terminal-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual terminal lines */
+.ob-term-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.ob-term-line--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ob-term-prefix {
+  color: var(--purple-400);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.ob-term-text {
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.ob-term-text.ob-term-success {
+  color: rgba(34, 197, 94, 0.9);
+}
+
+.ob-term-text.ob-term-accent {
+  color: var(--purple-300);
+}
+
+/* Spinner animation */
+.ob-term-status {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+}
+
+.ob-term-spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid rgba(124, 58, 237, 0.2);
+  border-top-color: var(--purple-400);
+  border-radius: 50%;
+  animation: obTermSpin 0.6s linear infinite;
+}
+
+.ob-term-check {
+  color: rgba(34, 197, 94, 0.9);
+  font-size: 0.72rem;
+  animation: obTermCheckPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Final line emphasis */
+.ob-term-final .ob-term-text {
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+/* Seal badge for completion */
+.ob-term-seal-badge {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(124, 58, 237, 0.06);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ob-term-seal-badge--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ob-seal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.12);
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  color: var(--purple-400);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.ob-seal-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: var(--weight-bold);
+  color: var(--purple-300);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+}
+
+.ob-seal-sub {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* Compact terminal variant (section transitions) */
+.ob-terminal--compact .ob-terminal-body {
+  max-height: 260px;
+  padding: 16px 20px 20px;
+}
+
+/* Seal variant (completion) */
+.ob-terminal--seal {
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+.ob-terminal--seal .ob-terminal-header {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+
+/* ═══════════════════════════════════════════════
    INTRO SCREEN
    ═══════════════════════════════════════════════ */
 
@@ -574,6 +780,18 @@
   .ob-section-title {
     font-size: 1.15rem;
   }
+
+  .ob-terminal-body {
+    padding: 14px 14px 18px;
+  }
+
+  .ob-term-line {
+    font-size: 0.7rem;
+  }
+
+  .ob-terminal-title {
+    font-size: 0.58rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -598,5 +816,10 @@
   .ob-intro-btn {
     padding: 12px 28px;
     font-size: 0.84rem;
+  }
+
+  .ob-term-line {
+    font-size: 0.65rem;
+    gap: 5px;
   }
 }

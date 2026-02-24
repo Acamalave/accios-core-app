@@ -137,11 +137,9 @@ export class Onboarding {
     if (this.existingData) {
       this.answers = this.existingData.answers || {};
       if (this.existingData.completedAt) {
-        // Already completed — show complete screen directly
         this.isCompleted = true;
         this.currentStep = 13;
       } else if (this.existingData.currentStep > 0) {
-        // Resume from saved step
         this.currentStep = this.existingData.currentStep;
       }
     }
@@ -168,7 +166,6 @@ export class Onboarding {
       </section>
     `;
 
-    // Exit button
     this.container.querySelector('#ob-exit').addEventListener('click', () => this._exitLater());
   }
 
@@ -189,6 +186,251 @@ export class Onboarding {
       counter.textContent = 'Completado';
     }
   }
+
+  // ─── CINEMATIC SEQUENCES ─────────────────────────
+
+  /**
+   * Boot Sequence — plays when user first opens the expediente.
+   * Terminal-style line-by-line with spinners → checkmarks.
+   */
+  async _playBootSequence() {
+    const name = this.currentUser?.name || 'Talento';
+    const stage = this.container.querySelector('#ob-stage');
+    if (!stage) return;
+
+    stage.innerHTML = '';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'ob-terminal';
+    overlay.innerHTML = `
+      <div class="ob-terminal-header">
+        <span class="ob-terminal-dot ob-terminal-dot--red"></span>
+        <span class="ob-terminal-dot ob-terminal-dot--yellow"></span>
+        <span class="ob-terminal-dot ob-terminal-dot--green"></span>
+        <span class="ob-terminal-title">ACCIOS CORE — Terminal Segura</span>
+      </div>
+      <div class="ob-terminal-body" id="ob-term-body"></div>
+    `;
+    stage.appendChild(overlay);
+
+    const body = overlay.querySelector('#ob-term-body');
+
+    const lines = [
+      { text: 'Inicializando sistema de expedientes...', delay: 700 },
+      { text: 'Conectando con base de datos segura...', delay: 600 },
+      { text: `Verificando credenciales de acceso...`, delay: 800 },
+      { text: `Comprobando identidad: ${name}`, delay: 900, accent: true },
+      { text: 'Acceso concedido — nivel: talento autorizado', delay: 500, success: true },
+      { text: 'Desencriptando expediente reservado...', delay: 700 },
+      { text: 'Preparando entorno confidencial...', delay: 600 },
+    ];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const el = document.createElement('div');
+      el.className = 'ob-term-line';
+      el.innerHTML = `
+        <span class="ob-term-prefix">&gt;</span>
+        <span class="ob-term-text ${line.success ? 'ob-term-success' : ''} ${line.accent ? 'ob-term-accent' : ''}">${line.text}</span>
+        <span class="ob-term-status ob-term-spinner"></span>
+      `;
+      body.appendChild(el);
+      el.offsetHeight; // trigger reflow
+      el.classList.add('ob-term-line--visible');
+
+      // Scroll to bottom
+      body.scrollTop = body.scrollHeight;
+
+      await this._wait(line.delay);
+
+      // Replace spinner with check
+      const status = el.querySelector('.ob-term-status');
+      status.classList.remove('ob-term-spinner');
+      status.classList.add('ob-term-check');
+      status.textContent = '✓';
+
+      await this._wait(150);
+    }
+
+    // Final line — access granted pulse
+    await this._wait(300);
+    const finalLine = document.createElement('div');
+    finalLine.className = 'ob-term-line ob-term-final';
+    finalLine.innerHTML = `
+      <span class="ob-term-prefix">&gt;</span>
+      <span class="ob-term-text ob-term-success">EXPEDIENTE LISTO — Iniciando protocolo...</span>
+    `;
+    body.appendChild(finalLine);
+    finalLine.offsetHeight;
+    finalLine.classList.add('ob-term-line--visible');
+    body.scrollTop = body.scrollHeight;
+
+    await this._wait(1000);
+
+    // Fade out terminal
+    overlay.classList.add('ob-terminal--exit');
+    await this._wait(500);
+  }
+
+  /**
+   * Section Transition — plays when moving from one section to the next.
+   * Brief file-system animation with response registration.
+   */
+  async _playSectionTransition(fromSectionIndex, toSectionIndex) {
+    const stage = this.container.querySelector('#ob-stage');
+    if (!stage) return;
+
+    stage.innerHTML = '';
+
+    const fromSection = fromSectionIndex >= 0 ? SECTIONS[fromSectionIndex] : null;
+    const toSection = SECTIONS[toSectionIndex];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'ob-terminal ob-terminal--compact';
+    overlay.innerHTML = `
+      <div class="ob-terminal-header">
+        <span class="ob-terminal-dot ob-terminal-dot--red"></span>
+        <span class="ob-terminal-dot ob-terminal-dot--yellow"></span>
+        <span class="ob-terminal-dot ob-terminal-dot--green"></span>
+        <span class="ob-terminal-title">Gestor de Expedientes</span>
+      </div>
+      <div class="ob-terminal-body" id="ob-term-body"></div>
+    `;
+    stage.appendChild(overlay);
+    overlay.offsetHeight;
+    overlay.classList.add('ob-terminal--visible');
+
+    const body = overlay.querySelector('#ob-term-body');
+
+    const lines = [];
+
+    if (fromSection) {
+      // Count answers in the section we're leaving
+      const sectionQs = QUESTIONS.filter(q => q.section === fromSectionIndex);
+      const answered = sectionQs.filter(q => this.answers[q.id]?.trim()).length;
+      lines.push({ text: `Cerrando archivo: ${fromSection.title}`, delay: 500 });
+      lines.push({ text: `Respuestas registradas: ${answered}/${sectionQs.length}`, delay: 400, accent: true });
+      lines.push({ text: 'Datos cifrados y almacenados...', delay: 500 });
+    }
+
+    lines.push({ text: `Abriendo archivo clasificado: Seccion ${toSection.number}`, delay: 600, accent: true });
+    lines.push({ text: `${toSection.title}`, delay: 400, success: true });
+
+    for (const line of lines) {
+      const el = document.createElement('div');
+      el.className = 'ob-term-line';
+      el.innerHTML = `
+        <span class="ob-term-prefix">&gt;</span>
+        <span class="ob-term-text ${line.success ? 'ob-term-success' : ''} ${line.accent ? 'ob-term-accent' : ''}">${line.text}</span>
+        <span class="ob-term-status ob-term-spinner"></span>
+      `;
+      body.appendChild(el);
+      el.offsetHeight;
+      el.classList.add('ob-term-line--visible');
+      body.scrollTop = body.scrollHeight;
+
+      await this._wait(line.delay);
+
+      const status = el.querySelector('.ob-term-status');
+      status.classList.remove('ob-term-spinner');
+      status.classList.add('ob-term-check');
+      status.textContent = '✓';
+
+      await this._wait(120);
+    }
+
+    await this._wait(600);
+    overlay.classList.add('ob-terminal--exit');
+    await this._wait(500);
+  }
+
+  /**
+   * Completion Sequence — plays after the last answer before showing the complete screen.
+   * Full processing, encryption, and sealing animation.
+   */
+  async _playCompletionSequence() {
+    const stage = this.container.querySelector('#ob-stage');
+    if (!stage) return;
+
+    stage.innerHTML = '';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'ob-terminal ob-terminal--seal';
+    overlay.innerHTML = `
+      <div class="ob-terminal-header">
+        <span class="ob-terminal-dot ob-terminal-dot--red"></span>
+        <span class="ob-terminal-dot ob-terminal-dot--yellow"></span>
+        <span class="ob-terminal-dot ob-terminal-dot--green"></span>
+        <span class="ob-terminal-title">Protocolo de Cierre — Expediente Reservado</span>
+      </div>
+      <div class="ob-terminal-body" id="ob-term-body"></div>
+    `;
+    stage.appendChild(overlay);
+    overlay.offsetHeight;
+    overlay.classList.add('ob-terminal--visible');
+
+    const body = overlay.querySelector('#ob-term-body');
+
+    // Count total answered
+    const totalAnswered = QUESTIONS.filter(q => this.answers[q.id]?.trim()).length;
+
+    const lines = [
+      { text: 'Cerrando ultima seccion de registro...', delay: 600 },
+      { text: `Respuestas totales capturadas: ${totalAnswered}/12`, delay: 500, accent: true },
+      { text: 'Compilando expediente completo...', delay: 800 },
+      { text: 'Verificando integridad de datos...', delay: 700 },
+      { text: 'Aplicando cifrado AES-256 a respuestas sensibles...', delay: 900 },
+      { text: 'Restringiendo acceso: solo produccion autorizada...', delay: 700 },
+      { text: 'Generando sello de confidencialidad...', delay: 600 },
+      { text: 'Almacenando en boveda segura...', delay: 800 },
+    ];
+
+    for (const line of lines) {
+      const el = document.createElement('div');
+      el.className = 'ob-term-line';
+      el.innerHTML = `
+        <span class="ob-term-prefix">&gt;</span>
+        <span class="ob-term-text ${line.accent ? 'ob-term-accent' : ''}">${line.text}</span>
+        <span class="ob-term-status ob-term-spinner"></span>
+      `;
+      body.appendChild(el);
+      el.offsetHeight;
+      el.classList.add('ob-term-line--visible');
+      body.scrollTop = body.scrollHeight;
+
+      await this._wait(line.delay);
+
+      const status = el.querySelector('.ob-term-status');
+      status.classList.remove('ob-term-spinner');
+      status.classList.add('ob-term-check');
+      status.textContent = '✓';
+
+      await this._wait(120);
+    }
+
+    // Final sealed message
+    await this._wait(400);
+    const sealEl = document.createElement('div');
+    sealEl.className = 'ob-term-seal-badge';
+    sealEl.innerHTML = `
+      <div class="ob-seal-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div class="ob-seal-text">EXPEDIENTE SELLADO Y ASEGURADO</div>
+      <div class="ob-seal-sub">Acceso restringido — Solo produccion MDN</div>
+    `;
+    body.appendChild(sealEl);
+    sealEl.offsetHeight;
+    sealEl.classList.add('ob-term-seal-badge--visible');
+    body.scrollTop = body.scrollHeight;
+
+    await this._wait(1800);
+
+    overlay.classList.add('ob-terminal--exit');
+    await this._wait(500);
+  }
+
+  // ─── STEP MANAGEMENT ────────────────────────────
 
   async _showStep(step, animate = true) {
     if (this._transitioning) return;
@@ -219,20 +461,30 @@ export class Onboarding {
     } else if (step >= 1 && step <= 12) {
       const qIndex = step - 1;
       const q = QUESTIONS[qIndex];
-      // Check if we need a section intro
       const isFirstOfSection = qIndex === 0 || QUESTIONS[qIndex].section !== QUESTIONS[qIndex - 1]?.section;
+
       if (isFirstOfSection && animate) {
-        // Show section intro briefly, then the question
-        card.innerHTML = this._buildSectionIntro(q.section);
-        if (animate) card.classList.add(enterClass);
-        stage.appendChild(card);
+        // Determine previous section for transition
+        const prevSectionIndex = qIndex > 0 ? QUESTIONS[qIndex - 1].section : -1;
+
+        // Play section file-system transition
+        this._transitioning = false;
+        await this._playSectionTransition(prevSectionIndex, q.section);
+        this._transitioning = true;
+
+        // Now show section intro card briefly
+        stage.innerHTML = '';
+        const sCard = document.createElement('div');
+        sCard.className = 'onboarding-card ob-slide-in-right';
+        sCard.innerHTML = this._buildSectionIntro(q.section);
+        stage.appendChild(sCard);
         this._transitioning = false;
 
-        await this._wait(2200);
-        if (this.currentStep !== step) return; // User navigated away
+        await this._wait(2000);
+        if (this.currentStep !== step) return;
 
         this._transitioning = true;
-        card.classList.add('ob-slide-out-left');
+        sCard.classList.add('ob-slide-out-left');
         await this._wait(350);
 
         stage.innerHTML = '';
@@ -311,9 +563,6 @@ export class Onboarding {
     const q = QUESTIONS[qIndex];
     const num = String(qIndex + 1).padStart(2, '0');
     const answer = this.answers[q.id] || '';
-    const name = this.currentUser?.name || 'Talento';
-
-    // Personalize prompt with name
     let prompt = q.prompt;
 
     return `
@@ -345,7 +594,6 @@ export class Onboarding {
   }
 
   _buildComplete() {
-    // Build summary of answers
     let summaryHTML = '<div class="ob-summary">';
     for (const s of SECTIONS) {
       const sectionQs = QUESTIONS.filter(q => q.section === SECTIONS.indexOf(s));
@@ -392,11 +640,26 @@ export class Onboarding {
   // ─── ATTACH LISTENERS ──────────────────────────────
 
   _attachIntroListeners() {
-    this.container.querySelector('#ob-start-btn')?.addEventListener('click', () => {
+    this.container.querySelector('#ob-start-btn')?.addEventListener('click', async () => {
       this.direction = 'next';
-      const startStep = this.existingData?.currentStep > 0 && !this.isCompleted
-        ? this.existingData.currentStep
-        : 1;
+      const isResume = this.existingData?.currentStep > 0 && !this.isCompleted;
+      const startStep = isResume ? this.existingData.currentStep : 1;
+
+      if (!isResume) {
+        // First time opening — play boot sequence
+        this._transitioning = true;
+
+        // Hide the intro card first
+        const stage = this.container.querySelector('#ob-stage');
+        if (stage?.firstElementChild) {
+          stage.firstElementChild.classList.add('ob-slide-out-left');
+          await this._wait(350);
+        }
+
+        await this._playBootSequence();
+        this._transitioning = false;
+      }
+
       this._showStep(startStep);
       this._saveProgress();
     });
@@ -406,19 +669,16 @@ export class Onboarding {
     const textarea = this.container.querySelector('#ob-answer');
     const q = QUESTIONS[qIndex];
 
-    // Auto-save on typing (debounced)
     if (textarea) {
       textarea.addEventListener('input', () => {
         this.answers[q.id] = textarea.value;
         clearTimeout(this._saveTimeout);
         this._saveTimeout = setTimeout(() => this._saveProgress(), 1500);
       });
-      // Focus textarea after animation
       setTimeout(() => textarea.focus(), 600);
     }
 
     this.container.querySelector('#ob-prev')?.addEventListener('click', () => {
-      // Save current answer
       if (textarea) this.answers[q.id] = textarea.value;
       this.direction = 'prev';
       const prevStep = this.currentStep - 1;
@@ -430,7 +690,6 @@ export class Onboarding {
     });
 
     this.container.querySelector('#ob-next')?.addEventListener('click', () => {
-      // Save current answer
       if (textarea) this.answers[q.id] = textarea.value;
       this.direction = 'next';
       const nextStep = this.currentStep + 1;
@@ -438,7 +697,6 @@ export class Onboarding {
         this._showStep(nextStep);
         this._saveProgress();
       } else {
-        // Complete!
         this._complete();
       }
     });
@@ -477,6 +735,18 @@ export class Onboarding {
 
   async _complete() {
     this.isCompleted = true;
+
+    // Play completion cinematic FIRST
+    this._transitioning = true;
+    const stage = this.container.querySelector('#ob-stage');
+    if (stage?.firstElementChild) {
+      stage.firstElementChild.classList.add('ob-slide-out-left');
+      await this._wait(350);
+    }
+    await this._playCompletionSequence();
+    this._transitioning = false;
+
+    // Save to Firestore
     try {
       await userAuth.saveOnboardingResponse(
         this.currentUser.phone,
@@ -500,7 +770,6 @@ export class Onboarding {
   }
 
   _exitLater() {
-    // Save current textarea if on a question
     const textarea = this.container.querySelector('#ob-answer');
     if (textarea && this.currentStep >= 1 && this.currentStep <= 12) {
       const q = QUESTIONS[this.currentStep - 1];
