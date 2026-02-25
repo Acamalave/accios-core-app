@@ -63,6 +63,8 @@ export class Home {
             <span>Salir</span>
           </button>
         </div>
+
+        <footer class="home-footer">Desarrollado por Acacio Malave</footer>
       </section>
     `;
 
@@ -434,7 +436,7 @@ export class Home {
         <div class="cosmos-bubble-pulse"></div>
         <div class="cosmos-bubble-info">
           <span class="cosmos-bubble-name">${businessName}</span>
-          <span class="cosmos-bubble-msg">Construyendo este ecosistema</span>
+          <span class="cosmos-bubble-msg">Construyendo este ecosistema — Proximamente</span>
         </div>
       </div>
       <div class="cosmos-bubble-bar">
