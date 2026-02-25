@@ -671,7 +671,7 @@
   }
 
   .orbital-system {
-    top: 52%;
+    top: 47%;
     width: clamp(300px, 76vmin, 420px);
     height: clamp(300px, 76vmin, 420px);
   }
@@ -743,7 +743,7 @@
   }
 
   .orbital-system {
-    top: 50%;
+    top: 45%;
     width: clamp(270px, 85vw, 340px);
     height: clamp(270px, 85vw, 340px);
   }
