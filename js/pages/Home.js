@@ -24,7 +24,6 @@ export class Home {
           <h1 class="home-title home-title--cinematic">
             <span class="gradient-text">ACCIOS</span> CORE
           </h1>
-          <p class="home-subtitle slide-up">Tu ecosistema digital</p>
           <div style="text-align: center; padding: var(--space-6); color: var(--text-muted);">
             Cargando tu ecosistema...
           </div>
@@ -50,8 +49,6 @@ export class Home {
           <h1 class="home-title home-title--cinematic">
             <span class="gradient-text">ACCIOS</span> CORE
           </h1>
-          <p class="home-subtitle slide-up">Tu ecosistema digital</p>
-
           ${this.businesses.length > 0 ? this._buildOrbitalSystem() : this._buildEmptyState()}
         </div>
 
@@ -398,7 +395,7 @@ export class Home {
         // Show coming-soon popup for specific businesses
         if (comingSoonIds.includes(bizId)) {
           const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
-          this._showComingSoonPopup(bizName);
+          this._showComingSoonBubble(bizName);
         }
       });
     });
@@ -421,52 +418,49 @@ export class Home {
     }
   }
 
-  // ─── Futuristic "Coming Soon" popup ───
-  _showComingSoonPopup(businessName) {
-    // Remove any existing popup
-    const existing = document.querySelector('.coming-soon-overlay');
-    if (existing) existing.remove();
+  // ─── Bubble notification for "Coming Soon" worlds ───
+  _showComingSoonBubble(businessName) {
+    // Remove any existing bubble
+    const existing = document.querySelector('.cosmos-bubble');
+    if (existing) {
+      existing.remove();
+      clearTimeout(this._bubbleTimeout);
+    }
 
-    const overlay = document.createElement('div');
-    overlay.className = 'coming-soon-overlay';
-    overlay.innerHTML = `
-      <div class="coming-soon-popup">
-        <div class="coming-soon-scanline"></div>
-        <div class="coming-soon-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-          </svg>
+    const bubble = document.createElement('div');
+    bubble.className = 'cosmos-bubble';
+    bubble.innerHTML = `
+      <div class="cosmos-bubble-row">
+        <div class="cosmos-bubble-pulse"></div>
+        <div class="cosmos-bubble-info">
+          <span class="cosmos-bubble-name">${businessName}</span>
+          <span class="cosmos-bubble-msg">Construyendo este ecosistema</span>
         </div>
-        <div class="coming-soon-badge">En desarrollo</div>
-        <h3 class="coming-soon-title">${businessName}</h3>
-        <p class="coming-soon-text">
-          Estamos construyendo este ecosistema digital.<br>
-          Muy pronto estara disponible.
-        </p>
-        <div class="coming-soon-bar">
-          <div class="coming-soon-bar-fill"></div>
-        </div>
-        <button class="coming-soon-close">Entendido</button>
+      </div>
+      <div class="cosmos-bubble-bar">
+        <div class="cosmos-bubble-bar-fill"></div>
       </div>
     `;
 
-    document.body.appendChild(overlay);
+    document.body.appendChild(bubble);
 
-    // Animate in
     requestAnimationFrame(() => {
-      overlay.classList.add('coming-soon-overlay--visible');
+      bubble.classList.add('cosmos-bubble--visible');
     });
 
-    // Close handlers
-    const close = () => {
-      overlay.classList.remove('coming-soon-overlay--visible');
-      overlay.classList.add('coming-soon-overlay--closing');
-      setTimeout(() => overlay.remove(), 300);
+    const dismiss = () => {
+      bubble.classList.remove('cosmos-bubble--visible');
+      bubble.classList.add('cosmos-bubble--closing');
+      setTimeout(() => bubble.remove(), 400);
     };
 
-    overlay.querySelector('.coming-soon-close').addEventListener('click', close);
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) close();
+    // Auto-dismiss after 3.5s
+    this._bubbleTimeout = setTimeout(dismiss, 3500);
+
+    // Tap to dismiss
+    bubble.addEventListener('click', () => {
+      clearTimeout(this._bubbleTimeout);
+      dismiss();
     });
   }
 

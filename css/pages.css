@@ -3,10 +3,6 @@
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6);
   padding-top: max(var(--space-6), env(safe-area-inset-top));
   padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
   background: radial-gradient(
@@ -34,10 +30,12 @@
 
 .home-content {
   text-align: center;
-  max-width: 1000px;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   z-index: 1;
+  padding-top: var(--space-4);
 }
 
 .home-badge {
@@ -51,18 +49,22 @@
   color: var(--purple-400);
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-3);
   animation: fadeIn 0.6s ease 0.2s backwards;
   font-family: var(--font-mono);
+  position: relative;
+  z-index: 10;
 }
 
 .home-title {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: var(--weight-bold);
   line-height: 1.1;
-  margin-bottom: var(--space-3);
+  margin-bottom: 0;
   animation: fadeIn 0.6s ease 0.3s backwards;
   letter-spacing: 0.08em;
+  position: relative;
+  z-index: 10;
 }
 
 .home-title--cinematic .gradient-text {
@@ -80,26 +82,18 @@
           drop-shadow(0 0 50px rgba(124, 58, 237, 0.25));
 }
 
-.home-subtitle {
-  font-size: var(--text-lg);
-  color: var(--text-muted);
-  margin-bottom: var(--space-4);
-  animation: fadeIn 0.6s ease 0.4s backwards;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: var(--weight-light);
-}
-
 
 /* ═══════════════════════════════════════════════
-   SOLAR SYSTEM — Single Orbit Ring, Premium 3D
+   SOLAR SYSTEM — Centered at exact screen middle
    ═══════════════════════════════════════════════ */
 
 .orbital-system {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: clamp(340px, 70vmin, 540px);
   height: clamp(340px, 70vmin, 540px);
-  margin: var(--space-3) auto 0;
 }
 
 /* --- Single visible orbital ring (the path planets follow) --- */
@@ -311,7 +305,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  /* border-color and box-shadow driven by JS depth */
 }
 
 /* 3D sphere lighting — dynamic sun illumination via CSS vars */
@@ -385,7 +378,6 @@
   text-transform: uppercase;
   text-shadow: 0 0 10px rgba(167, 139, 250, 0.25);
   white-space: nowrap;
-  /* opacity driven by JS depth */
   transition: text-shadow 0.4s ease;
 }
 
@@ -533,6 +525,108 @@
 
 
 /* ═══════════════════════════════════════════════
+   COSMOS BUBBLE — Compact floating notification
+   ═══════════════════════════════════════════════ */
+
+.cosmos-bubble {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  z-index: 9999;
+  background: rgba(12, 8, 28, 0.88);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 16px;
+  padding: 14px 20px 12px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 24px rgba(124, 58, 237, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  min-width: 260px;
+  max-width: 340px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.cosmos-bubble--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cosmos-bubble--closing {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.cosmos-bubble-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cosmos-bubble-pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--purple-400);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.6);
+  animation: cosmosPulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes cosmosPulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.cosmos-bubble-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cosmos-bubble-name {
+  font-size: 0.82rem;
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+}
+
+.cosmos-bubble-msg {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.cosmos-bubble-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(124, 58, 237, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cosmos-bubble-bar-fill {
+  width: 30%;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--purple-500), var(--purple-400), var(--purple-300));
+  animation: cosmosBarSlide 1.8s ease-in-out infinite;
+}
+
+@keyframes cosmosBarSlide {
+  0%   { transform: translateX(-100%); width: 30%; }
+  50%  { width: 50%; }
+  100% { transform: translateX(400%); width: 30%; }
+}
+
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE — Solar System
    ═══════════════════════════════════════════════ */
 
@@ -595,11 +689,22 @@
 
 @media (max-width: 480px) {
   .home-page {
-    padding: var(--space-4);
+    padding-top: max(var(--space-4), env(safe-area-inset-top));
   }
 
-  .home-subtitle {
+  .home-content {
+    padding-top: var(--space-2);
+  }
+
+  .home-badge {
+    font-size: 0.6rem;
+    padding: 2px var(--space-2);
     margin-bottom: var(--space-2);
+  }
+
+  .home-title {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    letter-spacing: 0.04em;
   }
 
   .orbital-system {
@@ -651,204 +756,25 @@
     top: -8px;
   }
 
-  .home-badge {
-    font-size: 0.6rem;
-    padding: 2px var(--space-2);
-  }
-
   .point-light {
     width: 40px;
     height: 40px;
   }
-}
 
-
-/* ═══════════════════════════════════════════════
-   COMING SOON POPUP — Futuristic Warning
-   ═══════════════════════════════════════════════ */
-
-.coming-soon-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(2, 1, 8, 0);
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
-  transition: background 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease;
-  padding: var(--space-4);
-}
-
-.coming-soon-overlay--visible {
-  background: rgba(2, 1, 8, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.coming-soon-overlay--visible .coming-soon-popup {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.coming-soon-overlay--closing .coming-soon-popup {
-  opacity: 0;
-  transform: scale(0.92) translateY(10px);
-}
-
-.coming-soon-popup {
-  position: relative;
-  width: 100%;
-  max-width: 360px;
-  background:
-    linear-gradient(
-      175deg,
-      rgba(124, 58, 237, 0.08) 0%,
-      rgba(8, 4, 20, 0.95) 30%,
-      rgba(6, 3, 15, 0.98) 100%
-    );
-  border: 1px solid rgba(124, 58, 237, 0.2);
-  border-radius: 20px;
-  padding: 36px 28px 28px;
-  text-align: center;
-  overflow: hidden;
-  opacity: 0;
-  transform: scale(0.88) translateY(20px);
-  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow:
-    0 0 30px rgba(124, 58, 237, 0.1),
-    0 0 80px rgba(124, 58, 237, 0.05),
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(167, 139, 250, 0.1);
-}
-
-/* Scanning line animation */
-.coming-soon-scanline {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.5), transparent);
-  animation: scanDown 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes scanDown {
-  0%, 100% { top: 0; opacity: 0; }
-  5% { opacity: 0.8; }
-  45% { top: 100%; opacity: 0.2; }
-  46%, 100% { opacity: 0; }
-}
-
-/* Icon */
-.coming-soon-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: rgba(124, 58, 237, 0.1);
-  border: 1px solid rgba(124, 58, 237, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  color: var(--purple-400);
-  animation: pulseGlow 2.5s ease-in-out infinite;
-}
-
-/* Badge */
-.coming-soon-badge {
-  display: inline-block;
-  padding: 3px 14px;
-  border-radius: 100px;
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.25);
-  font-size: 0.65rem;
-  font-weight: var(--weight-semibold);
-  color: var(--purple-300);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-family: var(--font-mono);
-  margin-bottom: 14px;
-}
-
-/* Title */
-.coming-soon-title {
-  font-size: 1.3rem;
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  letter-spacing: 0.04em;
-}
-
-/* Text */
-.coming-soon-text {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  line-height: 1.7;
-  margin-bottom: 20px;
-}
-
-/* Progress bar */
-.coming-soon-bar {
-  width: 100%;
-  height: 3px;
-  background: rgba(124, 58, 237, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 22px;
-}
-
-.coming-soon-bar-fill {
-  width: 35%;
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--purple-500), var(--purple-400));
-  animation: barPulse 2s ease-in-out infinite;
-}
-
-@keyframes barPulse {
-  0%, 100% { opacity: 0.6; width: 35%; }
-  50% { opacity: 1; width: 42%; }
-}
-
-/* Close button */
-.coming-soon-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 32px;
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.3);
-  border-radius: 12px;
-  color: var(--purple-300);
-  font-size: 0.82rem;
-  font-weight: var(--weight-medium);
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  letter-spacing: 0.04em;
-}
-
-.coming-soon-close:hover {
-  background: rgba(124, 58, 237, 0.2);
-  border-color: var(--purple-400);
-  color: var(--purple-200);
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.15);
-}
-
-@media (max-width: 480px) {
-  .coming-soon-popup {
-    padding: 28px 20px 22px;
-    border-radius: 16px;
+  /* Bubble compact for small screens */
+  .cosmos-bubble {
+    min-width: 220px;
+    max-width: 300px;
+    bottom: 24px;
+    padding: 12px 16px 10px;
+    border-radius: 12px;
   }
 
-  .coming-soon-title {
-    font-size: 1.1rem;
+  .cosmos-bubble-name {
+    font-size: 0.76rem;
   }
 
-  .coming-soon-text {
-    font-size: 0.78rem;
+  .cosmos-bubble-msg {
+    font-size: 0.65rem;
   }
 }
