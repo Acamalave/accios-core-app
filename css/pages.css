@@ -658,20 +658,21 @@
   }
 
   .home-content {
-    padding-top: var(--space-2);
+    padding-top: 5vh;
   }
 
   .home-badge {
-    margin-bottom: var(--space-2);
+    margin-bottom: 2px;
   }
 
   .home-title {
     font-size: var(--text-3xl);
     letter-spacing: 0.04em;
+    margin-bottom: 0;
   }
 
   .orbital-system {
-    top: 47%;
+    top: 44%;
     width: clamp(300px, 76vmin, 420px);
     height: clamp(300px, 76vmin, 420px);
   }
@@ -724,28 +725,29 @@
 
 @media (max-width: 480px) {
   .home-page {
-    padding-top: max(var(--space-3), env(safe-area-inset-top));
+    padding-top: max(var(--space-2), env(safe-area-inset-top));
   }
 
   .home-content {
-    padding-top: var(--space-1);
+    padding-top: 8vh;
   }
 
   .home-badge {
     font-size: 0.6rem;
     padding: 2px var(--space-2);
-    margin-bottom: var(--space-1);
+    margin-bottom: 0;
   }
 
   .home-title {
     font-size: clamp(1.8rem, 8vw, 2.5rem);
     letter-spacing: 0.04em;
+    margin-bottom: 0;
   }
 
   .orbital-system {
-    top: 45%;
-    width: clamp(270px, 85vw, 340px);
-    height: clamp(270px, 85vw, 340px);
+    top: 40%;
+    width: clamp(280px, 88vw, 350px);
+    height: clamp(280px, 88vw, 350px);
   }
 
   .home-footer {
