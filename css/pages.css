@@ -150,7 +150,7 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
-  animation: sunCoreShimmer 5s ease-in-out infinite;
+  animation: sunCoreShimmer 4s ease-in-out infinite;
   box-shadow:
     inset 0 -6px 16px rgba(0, 0, 0, 0.35),
     inset 0 4px 10px rgba(220, 200, 255, 0.08),
@@ -159,6 +159,45 @@
     0 0 60px rgba(124, 58, 237, 0.2),
     0 0 100px rgba(124, 58, 237, 0.12),
     0 0 160px rgba(124, 58, 237, 0.05);
+}
+
+/* Internal energy sweep — rotating highlight inside the core */
+.orbital-center::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(167, 139, 250, 0.15) 45%,
+    rgba(190, 165, 255, 0.25) 50%,
+    rgba(167, 139, 250, 0.15) 55%,
+    transparent 70%,
+    transparent 100%
+  );
+  animation: sunInternalSweep 6s linear infinite;
+  z-index: 1;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Internal energy pulse — breathing orb inside */
+.orbital-center::before {
+  content: '';
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(190, 165, 255, 0.2) 0%,
+    rgba(145, 100, 245, 0.1) 40%,
+    transparent 70%
+  );
+  animation: sunInternalPulse 3s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .orbital-center-text {
@@ -198,7 +237,7 @@
     rgba(124, 58, 237, 0.015) 50%,
     transparent 70%
   );
-  animation: sunPulse 7s ease-in-out infinite reverse;
+  animation: sunPulse 5s ease-in-out infinite reverse;
 }
 
 .orbital-center-glow {
@@ -216,7 +255,7 @@
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
   will-change: opacity, transform;
-  animation: sunBreath 5s ease-in-out infinite;
+  animation: sunBreath 3.5s ease-in-out infinite;
 }
 
 .orbital-center-ring {
