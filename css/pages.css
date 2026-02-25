@@ -654,11 +654,11 @@
 
 @media (max-width: 768px) {
   .home-page {
-    padding-top: max(var(--space-4), env(safe-area-inset-top));
+    padding-top: 0;
   }
 
   .home-content {
-    padding-top: 5vh;
+    padding-top: 16vh;
   }
 
   .home-badge {
@@ -672,7 +672,7 @@
   }
 
   .orbital-system {
-    top: 44%;
+    top: 50%;
     width: clamp(300px, 76vmin, 420px);
     height: clamp(300px, 76vmin, 420px);
   }
@@ -725,11 +725,11 @@
 
 @media (max-width: 480px) {
   .home-page {
-    padding-top: max(var(--space-2), env(safe-area-inset-top));
+    padding-top: 0;
   }
 
   .home-content {
-    padding-top: 8vh;
+    padding-top: 18vh;
   }
 
   .home-badge {
@@ -745,7 +745,7 @@
   }
 
   .orbital-system {
-    top: 40%;
+    top: 50%;
     width: clamp(280px, 88vw, 350px);
     height: clamp(280px, 88vw, 350px);
   }
