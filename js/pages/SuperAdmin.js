@@ -10,6 +10,7 @@ export class SuperAdmin {
     this.onboardingResponses = [];
     this.episodes = [];
     this.comments = [];
+    this.appointments = [];
   }
 
   async render() {
@@ -46,6 +47,7 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'onboarding' ? 'active' : ''}" data-tab="onboarding">Expedientes</button>
           <button class="superadmin-tab ${this.tab === 'episodes' ? 'active' : ''}" data-tab="episodes">Capitulos</button>
           <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
+          <button class="superadmin-tab ${this.tab === 'appointments' ? 'active' : ''}" data-tab="appointments">Citas<span id="sa-appts-badge" class="sa-notif-badge" style="display:none;"></span></button>
         </div>
 
         <div id="sa-content">
@@ -70,12 +72,13 @@ export class SuperAdmin {
   }
 
   async _loadData() {
-    [this.users, this.businesses, this.onboardingResponses, this.episodes, this.comments] = await Promise.all([
+    [this.users, this.businesses, this.onboardingResponses, this.episodes, this.comments, this.appointments] = await Promise.all([
       userAuth.getAllUsers(),
       userAuth.getAllBusinesses(),
       userAuth.getAllOnboardingResponses(),
       userAuth.getAllEpisodes(),
       userAuth.getAllComments(),
+      userAuth.getAllAppointments(),
     ]);
   }
 
@@ -90,6 +93,7 @@ export class SuperAdmin {
     const completedOnboarding = this.onboardingResponses.filter(r => r.completedAt).length;
     const totalEpisodes = this.episodes.length;
     const unreadComments = this.comments.filter(c => !c.read).length;
+    const pendingAppts = this.appointments.filter(a => a.status === 'pendiente').length;
 
     statsEl.innerHTML = `
       <div class="glass-card sa-stat">
@@ -116,10 +120,15 @@ export class SuperAdmin {
         <div class="sa-stat-value" style="${unreadComments > 0 ? 'color: #ef4444;' : ''}">${unreadComments}</div>
         <div class="sa-stat-label">Sin Leer</div>
       </div>
+      <div class="glass-card sa-stat">
+        <div class="sa-stat-value" style="${pendingAppts > 0 ? 'color: #f59e0b;' : ''}">${pendingAppts}</div>
+        <div class="sa-stat-label">Citas Pend.</div>
+      </div>
     `;
 
-    // Update comments badge
+    // Update badges
     this._updateCommentBadge();
+    this._updateApptBadge();
   }
 
   _renderTab() {
@@ -134,6 +143,8 @@ export class SuperAdmin {
       this._renderEpisodes(content);
     } else if (this.tab === 'comments') {
       this._renderComments(content);
+    } else if (this.tab === 'appointments') {
+      this._renderAppointments(content);
     } else {
       this._renderLinking(content);
     }
@@ -797,6 +808,181 @@ export class SuperAdmin {
     } else {
       badge.style.display = 'none';
     }
+  }
+
+  _updateApptBadge() {
+    const badge = this.container.querySelector('#sa-appts-badge');
+    if (!badge) return;
+    const pending = this.appointments.filter(a => a.status === 'pendiente').length;
+    if (pending > 0) {
+      badge.textContent = pending;
+      badge.style.display = 'inline-flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // ─── APPOINTMENTS TAB ───────────────────────────────
+
+  _renderAppointments(content) {
+    const pendingCount = this.appointments.filter(a => a.status === 'pendiente').length;
+
+    const sorted = [...this.appointments].sort((a, b) => {
+      // Pending first, then by date descending
+      if (a.status !== b.status) {
+        if (a.status === 'pendiente') return -1;
+        if (b.status === 'pendiente') return 1;
+      }
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+
+    const statusBadge = (status) => {
+      const map = {
+        'pendiente': { cls: 'client', label: 'Pendiente' },
+        'confirmada': { cls: 'superadmin', label: 'Confirmada' },
+        'completada': { cls: 'admin', label: 'Completada' },
+        'cancelada': { cls: '', label: 'Cancelada' },
+      };
+      const s = map[status] || map['pendiente'];
+      return `<span class="sa-badge sa-badge--${s.cls}" ${!s.cls ? 'style="background: rgba(239,68,68,0.12); color: #ef4444;"' : ''}>${s.label}</span>`;
+    };
+
+    const rows = sorted.map(appt => {
+      const date = appt.date || '-';
+      const time = appt.time || '-';
+      const createdDate = appt.createdAt ? new Date(appt.createdAt).toLocaleDateString('es-PA', { day: 'numeric', month: 'short' }) : '-';
+
+      return `
+        <tr style="${appt.status === 'pendiente' ? 'background: rgba(245,158,11,0.04);' : ''}">
+          <td>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              ${appt.status === 'pendiente' ? '<span style="width:8px; height:8px; border-radius:50%; background: #f59e0b; flex-shrink:0;"></span>' : ''}
+              <strong>${appt.name || 'Sin nombre'}</strong>
+            </div>
+          </td>
+          <td style="font-size: 0.85rem; color: var(--text-muted);">${appt.business || '-'}</td>
+          <td style="font-size: 0.85rem; color: var(--text-muted);">${date} ${time}</td>
+          <td>${statusBadge(appt.status)}</td>
+          <td style="font-size: 0.8rem; color: var(--text-dim);">${createdDate}</td>
+          <td>
+            <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+              <button class="sa-btn" data-view-appt="${appt.id}">Ver</button>
+              ${appt.status === 'pendiente' ? `<button class="sa-btn sa-btn--primary" data-confirm-appt="${appt.id}" style="font-size: 0.72rem; padding: 4px 10px;">Confirmar</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    content.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
+        <span style="color: var(--text-secondary); font-size: 0.9rem;">${pendingCount} cita${pendingCount !== 1 ? 's' : ''} pendiente${pendingCount !== 1 ? 's' : ''} · ${this.appointments.length} total</span>
+      </div>
+      <div class="glass-card" style="overflow-x: auto; padding: 0;">
+        <table class="superadmin-table">
+          <thead>
+            <tr><th>Nombre</th><th>Negocio</th><th>Fecha / Hora</th><th>Estado</th><th>Creada</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>${rows || '<tr><td colspan="6" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay citas agendadas</td></tr>'}</tbody>
+        </table>
+      </div>
+    `;
+
+    // View detail
+    content.querySelectorAll('[data-view-appt]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const appt = this.appointments.find(a => a.id === btn.dataset.viewAppt);
+        if (appt) this._showAppointmentDetailModal(appt);
+      });
+    });
+
+    // Quick confirm
+    content.querySelectorAll('[data-confirm-appt]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await userAuth.updateAppointment(btn.dataset.confirmAppt, { status: 'confirmada' });
+          Toast.success('Cita confirmada');
+          await this._loadData();
+          this._renderStats();
+          this._renderTab();
+        } catch (e) {
+          Toast.error('Error: ' + e.message);
+        }
+      });
+    });
+  }
+
+  _showAppointmentDetailModal(appt) {
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+
+    const formatDate = (d) => d ? new Date(d).toLocaleString('es-PA', { dateStyle: 'long', timeStyle: 'short' }) : '-';
+
+    const fields = [
+      { label: 'Nombre completo', value: appt.name || '-' },
+      { label: 'Telefono / WhatsApp', value: appt.phone || '-' },
+      { label: 'Nombre del negocio', value: appt.business || '-' },
+      { label: 'Fecha preferida', value: appt.date || '-' },
+      { label: 'Hora preferida', value: appt.time || '-' },
+      { label: 'Mensaje', value: appt.message || 'Sin mensaje' },
+      { label: 'Estado', value: appt.status || 'pendiente' },
+      { label: 'Usuario registrado', value: appt.userId || '-' },
+      { label: 'Fecha de solicitud', value: formatDate(appt.createdAt) },
+    ];
+
+    const fieldsHTML = fields.map(f => `
+      <div style="margin-bottom: var(--space-4);">
+        <div style="font-size: 0.72rem; font-weight: 600; color: var(--purple-400); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;">${f.label}</div>
+        <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; ${f.label === 'Mensaje' ? 'font-style: italic;' : ''}">${f.value}</div>
+      </div>
+    `).join('');
+
+    const statusOptions = ['pendiente', 'confirmada', 'completada', 'cancelada'].map(s =>
+      `<option value="${s}" ${appt.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`
+    ).join('');
+
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 520px; max-height: 85vh; overflow-y: auto;">
+          <h3 class="sa-modal-title">Cita Agendada</h3>
+          <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: var(--space-5);">
+            ID: ${appt.id}
+          </div>
+
+          ${fieldsHTML}
+
+          <div style="margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid rgba(124,58,237,0.1);">
+            <div class="sa-form-group">
+              <label class="sa-form-label">Cambiar estado</label>
+              <select class="sa-form-select" id="sa-appt-status">${statusOptions}</select>
+            </div>
+          </div>
+
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cerrar</button>
+            <button class="sa-btn sa-btn--primary" id="sa-modal-save">Guardar Estado</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    root.querySelector('#sa-modal-save').addEventListener('click', async () => {
+      const newStatus = root.querySelector('#sa-appt-status').value;
+      try {
+        await userAuth.updateAppointment(appt.id, { status: newStatus });
+        Toast.success('Estado actualizado');
+        closeModal();
+        await this._loadData();
+        this._renderStats();
+        this._renderTab();
+      } catch (e) {
+        Toast.error('Error: ' + e.message);
+      }
+    });
   }
 
   unmount() {}

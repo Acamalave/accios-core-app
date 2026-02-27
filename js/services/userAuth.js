@@ -513,6 +513,17 @@ class UserAuth {
       return [];
     }
   }
+
+  async updateAppointment(id, updates) {
+    try {
+      const docRef = doc(db, 'appointments', id);
+      await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Update appointment failed:', e);
+      throw new Error('Error al actualizar cita');
+    }
+  }
 }
 
 export default new UserAuth();
