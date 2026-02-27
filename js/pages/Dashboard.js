@@ -231,6 +231,27 @@ export class Dashboard {
             </div>
           </div>
           <div class="ep-section-body">
+
+            <!-- Dress Code Hero Image -->
+            <div class="ep-dresscode-hero">
+              <div class="ep-dresscode-img-wrap">
+                <img src="assets/images/ep001-dresscode.png"
+                     alt="Dress Code — Referencia visual"
+                     class="ep-dresscode-img"
+                     loading="lazy" />
+                <div class="ep-dresscode-img-overlay"></div>
+              </div>
+              <div class="ep-dresscode-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2 12 5.59 8 2 3.62 3.46 2 8l3.59 4L2 16l1.62 4.54L8 22l4-3.59L16 22l4.38-1.46L22 16l-3.59-4L22 8l-1.62-4.54z"/></svg>
+                Dress Code Reference
+              </div>
+              <div class="ep-dresscode-caption">
+                <span class="ep-dresscode-caption-label">Outfit Guide</span>
+                <span class="ep-dresscode-caption-style">${d.arte.chicasStyle}</span>
+              </div>
+            </div>
+
+            <!-- Text cards -->
             <div class="ep-grid-2">
               <div class="ep-card-visual">
                 <div class="ep-card-visual-icon">
