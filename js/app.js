@@ -92,7 +92,7 @@ class App {
         break;
 
       case 'home':
-        pageInstance = new Home(this.content, this.currentUser, this.particles);
+        pageInstance = new Home(this.content, this.currentUser);
         break;
 
       case 'superadmin':
@@ -113,7 +113,7 @@ class App {
 
       default:
         // Default to home
-        pageInstance = new Home(this.content, this.currentUser, this.particles);
+        pageInstance = new Home(this.content, this.currentUser);
         break;
     }
 
