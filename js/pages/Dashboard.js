@@ -1,4 +1,5 @@
 import userAuth from '../services/userAuth.js';
+import { Toast } from '../components/Toast.js';
 
 // ── Question labels for expediente display ──────────────────
 const EXPEDIENTE_SECTIONS = [
@@ -35,12 +36,15 @@ const EXPEDIENTE_SECTIONS = [
 ];
 
 export class Dashboard {
-  constructor(container, currentUser, businessId) {
+  constructor(container, currentUser, businessId, episodeId) {
     this.container = container;
     this.currentUser = currentUser || userAuth.getCurrentUser();
     this.businessId = businessId || 'mdn-podcast';
+    this.episodeId = episodeId || 'ep-001';
     this.activeTab = 'episode';
     this.expedienteData = null;
+    this.episodeData = null;
+    this.comments = [];
   }
 
   async render() {
@@ -54,18 +58,24 @@ export class Dashboard {
     `;
 
     try {
-      this.expedienteData = await userAuth.getOnboardingResponse(
-        this.currentUser.phone,
-        this.businessId
-      );
+      const [expediente, comments, episodes] = await Promise.all([
+        userAuth.getOnboardingResponse(this.currentUser.phone, this.businessId),
+        userAuth.getCommentsByEpisode(this.episodeId),
+        userAuth.getEpisodesByBusiness(this.businessId),
+      ]);
+      this.expedienteData = expediente;
+      this.comments = comments;
+      this.episodeData = episodes.find(ep => ep.id === this.episodeId) || null;
     } catch (e) {
-      console.error('Failed to load expediente:', e);
+      console.error('Failed to load dashboard data:', e);
     }
 
     this._renderShell();
   }
 
   _renderShell() {
+    const epNum = this.episodeData?.num || '001';
+
     this.container.innerHTML = `
       <div class="dash-page">
         <header class="dash-header">
@@ -81,7 +91,7 @@ export class Dashboard {
           <nav class="dash-tabs" id="dash-tabs">
             <button class="dash-tab ${this.activeTab === 'episode' ? 'active' : ''}" data-tab="episode">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-              <span>EP. 001</span>
+              <span>EP. ${epNum}</span>
             </button>
             <button class="dash-tab ${this.activeTab === 'expediente' ? 'active' : ''}" data-tab="expediente">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -126,33 +136,73 @@ export class Dashboard {
   }
 
   // ═══════════════════════════════════════════════════
-  //  EPISODE CONTENT — Master Plan EP.001
+  //  EPISODE CONTENT — Dynamic Hero + Body + Comments
   // ═══════════════════════════════════════════════════
 
   _buildEpisodeContent() {
+    const ep = this.episodeData;
+    const heroNum = ep?.num || '001';
+    const heroTitle = ep?.title || 'Capitulo';
+    const heroDuration = ep?.duration || '-';
+    const heroStatus = ep?.status || 'pre-produccion';
+    const heroQuote = ep?.quote || '';
+
     return `
       <div class="ep-content">
 
-        <!-- ── HERO ── -->
+        <!-- ── HERO (dynamic) ── -->
         <div class="ep-hero">
           <div class="ep-hero-top">
             <span class="ep-hero-podcast">PODCAST: MANUAL DE NADIE</span>
           </div>
-          <div class="ep-hero-number">001</div>
-          <h1 class="ep-hero-title">El Lujo de<br>Renunciar</h1>
+          <div class="ep-hero-number">${heroNum}</div>
+          <h1 class="ep-hero-title">${heroTitle}</h1>
           <div class="ep-hero-badges">
             <span class="ep-badge ep-badge--time">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              15 — 20 min
+              ${heroDuration}
             </span>
-            <span class="ep-badge ep-badge--status">Pre-Produccion</span>
+            <span class="ep-badge ep-badge--status">${heroStatus}</span>
           </div>
-          <blockquote class="ep-hero-quote">
-            &ldquo;Bajar el ritmo ya no es de mediocres; renunciar es el nuevo estatus de la elite.&rdquo;
-          </blockquote>
+          ${heroQuote ? `<blockquote class="ep-hero-quote">&ldquo;${heroQuote}&rdquo;</blockquote>` : ''}
         </div>
 
-        <!-- ── I. CONCEPTO CENTRAL ── -->
+        ${this._buildEpisodeBody()}
+
+        ${this._buildCommentsSection()}
+
+      </div>
+    `;
+  }
+
+  _buildEpisodeBody() {
+    const rich = this.episodeData?.richContent;
+    if (rich) {
+      try {
+        const data = typeof rich === 'string' ? JSON.parse(rich) : rich;
+        return this._buildRichContent(data);
+      } catch (e) {
+        console.error('Failed to parse richContent:', e);
+      }
+    }
+
+    return `
+      <div style="text-align: center; padding: var(--space-8); color: var(--text-muted);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: var(--space-3); opacity: 0.4;">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <p>Contenido del capitulo en desarrollo.</p>
+      </div>
+    `;
+  }
+
+  _buildRichContent(d) {
+    const epNum = this.episodeData?.num || '001';
+    let html = '';
+
+    // I. Concepto Central
+    if (d.concepto) {
+      html += `
         <section class="ep-section">
           <div class="ep-section-head">
             <span class="ep-section-num">I</span>
@@ -163,17 +213,15 @@ export class Dashboard {
           </div>
           <div class="ep-section-body">
             <div class="ep-block">
-              <div class="ep-block-label">El "Fact" a Debatir</div>
-              <p class="ep-block-text">Bajar el ritmo ya no es de mediocres — renunciar se convirtio en el nuevo estatus de la elite. El exito dejo de medirse en horas trabajadas y empezo a medirse en horas libres.</p>
-            </div>
-            <div class="ep-block">
-              <div class="ep-block-label">El Choque</div>
-              <p class="ep-block-text">Desmontar la hipocresia de la cultura "Girlboss" y del exceso de trabajo como medalla de honor. Mientras la clase media colecciona horas extras, la elite emocional colecciona horas libres. El maximo lujo hoy es tener el poder de decir <strong>"ya no quiero"</strong>.</p>
+              <p class="ep-block-text">${d.concepto}</p>
             </div>
           </div>
-        </section>
+        </section>`;
+    }
 
-        <!-- ── II. DIRECCIÓN DE ARTE ── -->
+    // II. Direccion de Arte
+    if (d.arte) {
+      html += `
         <section class="ep-section">
           <div class="ep-section-head">
             <span class="ep-section-num">II</span>
@@ -189,64 +237,30 @@ export class Dashboard {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.38 3.46L16 2 12 5.59 8 2 3.62 3.46 2 8l3.59 4L2 16l1.62 4.54L8 22l4-3.59L16 22l4.38-1.46L22 16l-3.59-4L22 8l-1.62-4.54z"/></svg>
                 </div>
                 <div class="ep-card-visual-tag">Dress Code</div>
-                <div class="ep-card-visual-accent">Quiet Luxury Desalinado</div>
-                <p class="ep-card-visual-text">Blazer oversized de excelente corte sobre camiseta basica blanca, o sueter de cachemira costoso pero mal puesto.</p>
-                <div class="ep-card-visual-note">
-                  <strong>Mensaje:</strong> "Me importa un carajo, pero con estilo." Tienen el poder, pero decidieron dejar de esforzarse por encajar.
-                </div>
+                <div class="ep-card-visual-accent">${d.arte.chicasStyle}</div>
+                <p class="ep-card-visual-text">${d.arte.chicasDesc}</p>
+                ${d.arte.chicasMsg ? `<div class="ep-card-visual-note"><strong>Mensaje:</strong> ${d.arte.chicasMsg}</div>` : ''}
               </div>
               <div class="ep-card-visual">
                 <div class="ep-card-visual-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                 </div>
                 <div class="ep-card-visual-tag">El Set</div>
-                <div class="ep-card-visual-accent">Minimalista Editorial</div>
-                <p class="ep-card-visual-text">Iluminacion intima pero nitida, estilo editorial de revista. Elementos de "caos controlado" en escena.</p>
-                <div class="ep-card-visual-note">
-                  Taza de cafe real, no utileria perfecta. Lo imperfecto es intencional.
-                </div>
+                <div class="ep-card-visual-accent">${d.arte.setStyle}</div>
+                <p class="ep-card-visual-text">${d.arte.setDesc}</p>
+                ${d.arte.setNote ? `<div class="ep-card-visual-note">${d.arte.setNote}</div>` : ''}
               </div>
             </div>
           </div>
-        </section>
+        </section>`;
+    }
 
-        <!-- ── III. IDENTIDAD SONORA ── -->
+    // III. Escaleta
+    if (d.escaleta && d.escaleta.length) {
+      html += `
         <section class="ep-section">
           <div class="ep-section-head">
             <span class="ep-section-num">III</span>
-            <div>
-              <h2 class="ep-section-title">Identidad Sonora</h2>
-              <p class="ep-section-sub">El ADN auditivo del podcast</p>
-            </div>
-          </div>
-          <div class="ep-section-body">
-            <div class="ep-block">
-              <div class="ep-block-label">Vibe del Jingle</div>
-              <div class="ep-tags">
-                <span class="ep-tag">Chic Tech-House</span>
-                <span class="ep-tag">125 BPM</span>
-                <span class="ep-tag">Pasarela Rapida</span>
-                <span class="ep-tag">Actitud</span>
-              </div>
-              <p class="ep-block-text">Moderno, dinamico y con actitud. Estilo pasarela rapida — puro punch visual y sonoro.</p>
-            </div>
-            <div class="ep-block">
-              <div class="ep-block-label">El Intro</div>
-              <p class="ep-block-text">Inicia con un flash de camara. Entra un beat de pasarela rapido y pesado. Voz ritmica (estilo Rihanna):</p>
-              <div class="ep-lyrics">
-                <div class="ep-lyrics-line">"Cero filtros, cero culpa,</div>
-                <div class="ep-lyrics-line">Aqui la verdad no se oculta.</div>
-                <div class="ep-lyrics-line">Ni tuya, ni mia...</div>
-                <div class="ep-lyrics-line ep-lyrics-line--bold">Manual de Nadie"</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ── IV. ESCALETA DE GRABACIÓN ── -->
-        <section class="ep-section">
-          <div class="ep-section-head">
-            <span class="ep-section-num">IV</span>
             <div>
               <h2 class="ep-section-title">Escaleta de Grabacion</h2>
               <p class="ep-section-sub">El flow del episodio — minuto a minuto</p>
@@ -254,88 +268,33 @@ export class Dashboard {
           </div>
           <div class="ep-section-body">
             <div class="ep-timeline">
+              ${d.escaleta.map((seg, i) => `
               <div class="ep-tl-item">
                 <div class="ep-tl-time">
-                  <span class="ep-tl-start">00:00</span>
-                  <span class="ep-tl-end">01:30</span>
+                  <span class="ep-tl-start">${seg.start}</span>
+                  <span class="ep-tl-end">${seg.end}</span>
                 </div>
                 <div class="ep-tl-track">
-                  <div class="ep-tl-node"></div>
-                  <div class="ep-tl-line"></div>
+                  <div class="ep-tl-node${seg.accent ? ' ep-tl-node--accent' : ''}"></div>
+                  ${i < d.escaleta.length - 1 ? '<div class="ep-tl-line"></div>' : ''}
                 </div>
                 <div class="ep-tl-body">
-                  <div class="ep-tl-title">Cold Open</div>
-                  <div class="ep-tl-subtitle">El Gancho en Frio</div>
-                  <p class="ep-tl-desc">Cero saludos. La camara enciende y una de ellas suelta el Fact directamente: "Nos vendieron que renunciar es de fracasados, pero hoy decir 'ya no quiero' es el mayor lujo que te puedes pagar".</p>
+                  <div class="ep-tl-title">${seg.title}</div>
+                  ${seg.subtitle ? `<div class="ep-tl-subtitle">${seg.subtitle}</div>` : ''}
+                  <p class="ep-tl-desc">${seg.desc}</p>
                 </div>
-              </div>
-              <div class="ep-tl-item">
-                <div class="ep-tl-time">
-                  <span class="ep-tl-start">01:30</span>
-                  <span class="ep-tl-end">02:00</span>
-                </div>
-                <div class="ep-tl-track">
-                  <div class="ep-tl-node"></div>
-                  <div class="ep-tl-line"></div>
-                </div>
-                <div class="ep-tl-body">
-                  <div class="ep-tl-title">Intro</div>
-                  <div class="ep-tl-subtitle">Jingle Chic Techno</div>
-                  <p class="ep-tl-desc">Suena el jingle de 15 segundos. Energia pura, beat de pasarela. La marca sonora del podcast.</p>
-                </div>
-              </div>
-              <div class="ep-tl-item">
-                <div class="ep-tl-time">
-                  <span class="ep-tl-start">02:00</span>
-                  <span class="ep-tl-end">08:00</span>
-                </div>
-                <div class="ep-tl-track">
-                  <div class="ep-tl-node ep-tl-node--accent"></div>
-                  <div class="ep-tl-line"></div>
-                </div>
-                <div class="ep-tl-body">
-                  <div class="ep-tl-title">El Debate Frontal</div>
-                  <div class="ep-tl-subtitle">Choque de Posturas</div>
-                  <p class="ep-tl-desc">Chocan posturas. La "Estructurada" habla de lo que cuesta llegar a la cima; la "Rebelde" habla de la delicia de soltarlo todo. Fuego cruzado con argumentos reales.</p>
-                </div>
-              </div>
-              <div class="ep-tl-item">
-                <div class="ep-tl-time">
-                  <span class="ep-tl-start">08:00</span>
-                  <span class="ep-tl-end">15:00</span>
-                </div>
-                <div class="ep-tl-track">
-                  <div class="ep-tl-node ep-tl-node--accent"></div>
-                  <div class="ep-tl-line"></div>
-                </div>
-                <div class="ep-tl-body">
-                  <div class="ep-tl-title">La Letra Chica</div>
-                  <div class="ep-tl-subtitle">Confesion Obligatoria</div>
-                  <p class="ep-tl-desc">Obligatorio. Deben confesar en camara una oportunidad increible — un cliente, un proyecto de dinero, una relacion de estatus — a la que le dijeron "No" puramente porque les daba pereza o les quitaba la paz.</p>
-                </div>
-              </div>
-              <div class="ep-tl-item">
-                <div class="ep-tl-time">
-                  <span class="ep-tl-start">15:00</span>
-                  <span class="ep-tl-end">18:00</span>
-                </div>
-                <div class="ep-tl-track">
-                  <div class="ep-tl-node"></div>
-                </div>
-                <div class="ep-tl-body">
-                  <div class="ep-tl-title">Cierre y Sentencia</div>
-                  <div class="ep-tl-subtitle">Sin Despedidas Largas</div>
-                  <p class="ep-tl-desc">Conclusion rapida. Lanzan la pregunta al publico y cortan. Sin adornos, sin despedidas cursis. La sentencia queda flotando en el aire.</p>
-                </div>
-              </div>
+              </div>`).join('')}
             </div>
           </div>
-        </section>
+        </section>`;
+    }
 
-        <!-- ── V. LA TARJETA NEGRA ── -->
+    // IV. Tarjeta Negra
+    if (d.tarjeta) {
+      html += `
         <section class="ep-section">
           <div class="ep-section-head">
-            <span class="ep-section-num">V</span>
+            <span class="ep-section-num">IV</span>
             <div>
               <h2 class="ep-section-title">Herramientas para las Conductoras</h2>
               <p class="ep-section-sub">Lo unico en la mesa — sin guion</p>
@@ -345,7 +304,7 @@ export class Dashboard {
             <div class="ep-tarjeta">
               <div class="ep-tarjeta-top">
                 <span class="ep-tarjeta-label">TARJETA NEGRA MATE</span>
-                <span class="ep-tarjeta-ep">EP. 001</span>
+                <span class="ep-tarjeta-ep">EP. ${epNum}</span>
               </div>
               <div class="ep-tarjeta-divider"></div>
               <div class="ep-tarjeta-rules">
@@ -353,29 +312,51 @@ export class Dashboard {
                   <span class="ep-tarjeta-num">01</span>
                   <div>
                     <div class="ep-tarjeta-rule-label">El Fact a Defender</div>
-                    <div class="ep-tarjeta-rule-text">"El exito no es una agenda llena, es una agenda en blanco."</div>
+                    <div class="ep-tarjeta-rule-text">"${d.tarjeta.fact}"</div>
                   </div>
                 </div>
                 <div class="ep-tarjeta-rule">
                   <span class="ep-tarjeta-num">02</span>
                   <div>
                     <div class="ep-tarjeta-rule-label">La Palabra Prohibida</div>
-                    <div class="ep-tarjeta-rule-text">Tienen prohibido decir "Fracaso" o "Rendirse". Esto las obliga a buscar terminos mas inteligentes y crudos.</div>
+                    <div class="ep-tarjeta-rule-text">${d.tarjeta.prohibida}</div>
                   </div>
                 </div>
                 <div class="ep-tarjeta-rule">
                   <span class="ep-tarjeta-num">03</span>
                   <div>
                     <div class="ep-tarjeta-rule-label">La Pregunta de Cierre</div>
-                    <div class="ep-tarjeta-rule-text">Mirar a camara y preguntar: "A que renunciaste hoy para comprar tu paz?"</div>
+                    <div class="ep-tarjeta-rule-text">"${d.tarjeta.cierre}"</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </section>`;
+    }
 
-        <!-- ── VI. ESTRATEGIA ── -->
+    // V. Props
+    if (d.props) {
+      html += `
+        <section class="ep-section">
+          <div class="ep-section-head">
+            <span class="ep-section-num">V</span>
+            <div>
+              <h2 class="ep-section-title">Props e Insumos en Set</h2>
+              <p class="ep-section-sub">Elementos fisicos de produccion</p>
+            </div>
+          </div>
+          <div class="ep-section-body">
+            <div class="ep-block">
+              <p class="ep-block-text">${d.props}</p>
+            </div>
+          </div>
+        </section>`;
+    }
+
+    // VI. Estrategia
+    if (d.estrategia) {
+      html += `
         <section class="ep-section">
           <div class="ep-section-head">
             <span class="ep-section-num">VI</span>
@@ -385,46 +366,136 @@ export class Dashboard {
             </div>
           </div>
           <div class="ep-section-body">
+            ${d.estrategia.youtubeTitle ? `
             <div class="ep-block">
               <div class="ep-block-label">Titulo en YouTube</div>
-              <div class="ep-yt-title">Por que RENUNCIAR es el nuevo estatus (y el esfuerzo constante es para mediocres).</div>
-            </div>
-
+              <div class="ep-yt-title">${d.estrategia.youtubeTitle}</div>
+            </div>` : ''}
+            ${d.estrategia.reels && d.estrategia.reels.length ? `
             <div class="ep-block">
               <div class="ep-block-label">Cortes Planificados — Reels / TikTok</div>
               <div class="ep-reels">
+                ${d.estrategia.reels.map((r, i) => `
                 <div class="ep-reel">
                   <div class="ep-reel-head">
-                    <span class="ep-reel-num">01</span>
-                    <span class="ep-reel-name">El Choque Frontal</span>
+                    <span class="ep-reel-num">${String(i + 1).padStart(2, '0')}</span>
+                    <span class="ep-reel-name">${r.name}</span>
                   </div>
-                  <p class="ep-reel-clip">Destruyendo el concepto de trabajar sin dormir.</p>
-                  <div class="ep-reel-caption">Romantizar el cansancio es de la decada pasada. Tu paz es tu activo mas caro.</div>
-                  <span class="ep-reel-tag">#ManualDeNadie</span>
-                </div>
-                <div class="ep-reel">
-                  <div class="ep-reel-head">
-                    <span class="ep-reel-num">02</span>
-                    <span class="ep-reel-name">El Limite</span>
-                  </div>
-                  <p class="ep-reel-clip">Cuando explican que decir "No" no requiere explicaciones.</p>
-                  <div class="ep-reel-caption">No le debes un 'si' a nadie si te cuesta tu tranquilidad.</div>
-                </div>
-                <div class="ep-reel">
-                  <div class="ep-reel-head">
-                    <span class="ep-reel-num">03</span>
-                    <span class="ep-reel-name">La Confesion</span>
-                  </div>
-                  <p class="ep-reel-clip">La anecdota personal donde rechazaron dinero y estatus.</p>
-                  <div class="ep-reel-caption">Esa vez que dije que NO a todo y se sintio increible.</div>
-                </div>
+                  <p class="ep-reel-clip">${r.clip}</p>
+                  <div class="ep-reel-caption">${r.caption}</div>
+                  ${i === 0 ? '<span class="ep-reel-tag">#ManualDeNadie</span>' : ''}
+                </div>`).join('')}
               </div>
+            </div>` : ''}
+          </div>
+        </section>`;
+    }
+
+    // VII. Protocolo de Rescate
+    if (d.protocolo) {
+      html += `
+        <section class="ep-section">
+          <div class="ep-section-head">
+            <span class="ep-section-num">VII</span>
+            <div>
+              <h2 class="ep-section-title">Protocolo de Rescate</h2>
+              <p class="ep-section-sub">El salvavidas del productor</p>
             </div>
           </div>
-        </section>
+          <div class="ep-section-body">
+            <div class="ep-block">
+              <p class="ep-block-text">${d.protocolo}</p>
+            </div>
+          </div>
+        </section>`;
+    }
 
-      </div>
+    // VIII. Control de Danos
+    if (d.control) {
+      html += `
+        <section class="ep-section">
+          <div class="ep-section-head">
+            <span class="ep-section-num">VIII</span>
+            <div>
+              <h2 class="ep-section-title">Control de Danos</h2>
+              <p class="ep-section-sub">Limites de produccion</p>
+            </div>
+          </div>
+          <div class="ep-section-body">
+            <div class="ep-block">
+              <div class="ep-block-label" style="color: #ef4444;">Restricciones</div>
+              <p class="ep-block-text">${d.control}</p>
+            </div>
+          </div>
+        </section>`;
+    }
+
+    return html;
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  COMMENTS SECTION
+  // ═══════════════════════════════════════════════════
+
+  _buildCommentsSection() {
+    const user = this.currentUser;
+
+    const commentsList = this.comments.map(c => {
+      const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-PA', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+      }) : '';
+      const isOwn = c.userId === user?.phone;
+
+      return `
+        <div class="comment-item ${isOwn ? 'comment-item--own' : ''}">
+          <div class="comment-header">
+            <div class="comment-avatar">${(c.userName || '?')[0].toUpperCase()}</div>
+            <div class="comment-meta">
+              <span class="comment-author">${c.userName || 'Anonimo'}</span>
+              <span class="comment-date">${date}</span>
+            </div>
+          </div>
+          <div class="comment-text">${this._escapeHtml(c.text)}</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <section class="ep-section ep-comments-section">
+        <div class="ep-section-head">
+          <span class="ep-section-num">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </span>
+          <div>
+            <h2 class="ep-section-title">Comentarios</h2>
+            <p class="ep-section-sub">${this.comments.length} comentario${this.comments.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+        <div class="ep-section-body">
+          <div class="comments-list" id="comments-list">
+            ${commentsList || '<p class="comments-empty">Se el primero en comentar.</p>'}
+          </div>
+
+          <div class="comment-form" id="comment-form">
+            <div class="comment-form-avatar">${(user?.name || '?')[0].toUpperCase()}</div>
+            <div class="comment-form-input-wrap">
+              <textarea class="comment-input" id="comment-input" placeholder="Escribe un comentario..." rows="2"></textarea>
+              <button class="comment-submit" id="comment-submit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     `;
+  }
+
+  _escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   // ═══════════════════════════════════════════════════
@@ -528,7 +599,7 @@ export class Dashboard {
 
   _attachListeners() {
     this.container.querySelector('#dash-back')?.addEventListener('click', () => {
-      window.location.hash = '#home';
+      window.location.hash = `#podcast/${this.businessId}`;
     });
 
     this.container.querySelectorAll('.dash-tab').forEach(tab => {
@@ -548,6 +619,69 @@ export class Dashboard {
     this.container.querySelector('#exp-edit-btn')?.addEventListener('click', () => {
       window.location.hash = '#onboarding/mdn-podcast';
     });
+
+    // Comment submission
+    const submitBtn = this.container.querySelector('#comment-submit');
+    const commentInput = this.container.querySelector('#comment-input');
+
+    if (submitBtn && commentInput) {
+      const handleSubmit = async () => {
+        const text = commentInput.value.trim();
+        if (!text) return;
+
+        submitBtn.disabled = true;
+        try {
+          await userAuth.addComment({
+            episodeId: this.episodeId,
+            businessId: this.businessId,
+            userId: this.currentUser.phone,
+            userName: this.currentUser.name,
+            text,
+          });
+          Toast.success('Comentario enviado');
+          commentInput.value = '';
+
+          // Reload comments
+          this.comments = await userAuth.getCommentsByEpisode(this.episodeId);
+          const listEl = this.container.querySelector('#comments-list');
+          if (listEl) {
+            listEl.innerHTML = this.comments.map(c => {
+              const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-PA', {
+                day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+              }) : '';
+              const isOwn = c.userId === this.currentUser?.phone;
+              return `
+                <div class="comment-item ${isOwn ? 'comment-item--own' : ''}">
+                  <div class="comment-header">
+                    <div class="comment-avatar">${(c.userName || '?')[0].toUpperCase()}</div>
+                    <div class="comment-meta">
+                      <span class="comment-author">${c.userName || 'Anonimo'}</span>
+                      <span class="comment-date">${date}</span>
+                    </div>
+                  </div>
+                  <div class="comment-text">${this._escapeHtml(c.text)}</div>
+                </div>
+              `;
+            }).join('') || '<p class="comments-empty">Se el primero en comentar.</p>';
+          }
+          // Update count
+          const subEl = this.container.querySelector('.ep-comments-section .ep-section-sub');
+          if (subEl) subEl.textContent = `${this.comments.length} comentario${this.comments.length !== 1 ? 's' : ''}`;
+        } catch (e) {
+          Toast.error('Error: ' + e.message);
+        } finally {
+          submitBtn.disabled = false;
+        }
+      };
+
+      submitBtn.addEventListener('click', handleSubmit);
+      commentInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSubmit();
+        }
+      });
+    }
   }
 
   unmount() {}

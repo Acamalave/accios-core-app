@@ -1,4 +1,441 @@
 /* ═══════════════════════════════════════════════
+   PODCAST WORLD — Black Curtain Stage
+   ═══════════════════════════════════════════════ */
+
+.pw-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  overflow: hidden;
+  background: #050507;
+}
+
+/* ── Curtain Folds ── */
+.pw-curtain {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.pw-curtain-fold {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    #0a0a0c 0%,
+    #080809 30%,
+    #0c0c0f 60%,
+    #070708 100%
+  );
+}
+
+/* Each fold gets a unique subtle gradient to simulate fabric draping */
+.pw-curtain-fold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.022) 0%,
+    rgba(255, 255, 255, 0.008) 30%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.15) 70%,
+    rgba(255, 255, 255, 0.015) 100%
+  );
+}
+
+.pw-curtain-fold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    transparent 15%,
+    transparent 80%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+}
+
+/* Alternate folds for depth illusion */
+.pw-curtain-fold:nth-child(odd) {
+  background: linear-gradient(
+    180deg,
+    #08080b 0%,
+    #0b0b0e 40%,
+    #090910 70%,
+    #060608 100%
+  );
+}
+
+.pw-curtain-fold:nth-child(odd)::before {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(255, 255, 255, 0.018) 35%,
+    rgba(255, 255, 255, 0.01) 50%,
+    transparent 70%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
+}
+
+/* Subtle shimmer on some folds */
+.pw-curtain-fold:nth-child(3n)::before {
+  background: linear-gradient(
+    90deg,
+    rgba(124, 58, 237, 0.015) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+}
+
+/* Vignette overlay */
+.pw-curtain-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 60%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+/* Stage floor */
+.pw-stage-floor {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(5, 5, 7, 0.6) 40%,
+    rgba(5, 5, 7, 0.95) 100%
+  );
+}
+
+/* Spotlight from top */
+.pw-spotlight {
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 70%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 50% 70% at 50% 0%,
+    rgba(124, 58, 237, 0.04) 0%,
+    rgba(124, 58, 237, 0.015) 40%,
+    transparent 70%
+  );
+}
+
+/* ── Content Layer ── */
+.pw-content {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: max(var(--space-8), env(safe-area-inset-bottom));
+}
+
+/* ── Header ── */
+.pw-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+}
+
+.pw-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.pw-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pw-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pw-brand-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(124, 58, 237, 0.6);
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.pw-brand-name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.01em;
+}
+
+/* ── Stage Label ── */
+.pw-stage-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  margin-top: auto;
+}
+
+.pw-stage-label span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+}
+
+.pw-stage-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+}
+
+/* ── Episode Cards Grid ── */
+.pw-episodes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  padding: 0 var(--space-5);
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  padding-bottom: var(--space-6);
+}
+
+@media (min-width: 560px) {
+  .pw-episodes {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 720px;
+  }
+}
+
+/* ── Episode Card (File Folder Style) ── */
+.pw-ep-card {
+  position: relative;
+  background: rgba(12, 12, 16, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pw-ep-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), transparent 60%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.pw-ep-card:hover {
+  border-color: rgba(124, 58, 237, 0.2);
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 24px rgba(124, 58, 237, 0.08);
+}
+
+.pw-ep-card:hover::before {
+  opacity: 1;
+}
+
+.pw-ep-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* Folder tab */
+.pw-ep-tab {
+  position: absolute;
+  top: -22px;
+  left: -1px;
+  background: rgba(12, 12, 16, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  padding: 4px 14px;
+  z-index: 1;
+}
+
+.pw-ep-card:hover .pw-ep-tab {
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+.pw-ep-tab-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--purple-400);
+}
+
+/* Card body */
+.pw-ep-card-body {
+  padding: var(--space-5);
+  padding-top: var(--space-4);
+}
+
+.pw-ep-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.pw-ep-status {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.pw-ep-status--pre-produccion {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+
+.pw-ep-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.pw-ep-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.pw-ep-quote {
+  font-size: 0.78rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: var(--space-4);
+}
+
+.pw-ep-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--purple-400);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.pw-ep-card:hover .pw-ep-cta {
+  opacity: 1;
+}
+
+/* ── Coming Soon Card ── */
+.pw-ep-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  min-height: 180px;
+}
+
+.pw-ep-soon-icon {
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.pw-ep-soon-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.12);
+  text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .pw-header {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .pw-episodes {
+    padding: 0 var(--space-4);
+  }
+
+  .pw-stage-label {
+    padding: var(--space-5) var(--space-5) var(--space-3);
+  }
+
+  .pw-ep-card-body {
+    padding: var(--space-4);
+  }
+
+  .pw-ep-title {
+    font-size: 1.15rem;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════
    DASHBOARD — MDN Podcast Production Hub
    ═══════════════════════════════════════════════ */
 
@@ -963,6 +1400,171 @@
 
 
 /* ═══════════════════════════════════════════════
+   COMMENTS SECTION
+   ═══════════════════════════════════════════════ */
+
+.ep-comments-section {
+  margin-top: var(--space-6);
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.comments-empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: var(--space-5) 0;
+}
+
+.comment-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.comment-item--own {
+  border-color: rgba(124, 58, 237, 0.2);
+  background: rgba(124, 58, 237, 0.05);
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-800));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.comment-author {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.comment-date {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.comment-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  opacity: 0.85;
+  padding-left: calc(28px + var(--space-3));
+}
+
+.comment-form {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.comment-form-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-800));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.comment-form-input-wrap {
+  flex: 1;
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+}
+
+.comment-input {
+  flex: 1;
+  padding: var(--space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 40px;
+  max-height: 120px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.comment-input:focus {
+  border-color: var(--purple-500);
+}
+
+.comment-input::placeholder {
+  color: var(--text-dim);
+}
+
+.comment-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.comment-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+}
+
+.comment-submit:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════ */
 
@@ -1013,5 +1615,9 @@
 
   .dash-brand-name {
     font-size: 0.82rem;
+  }
+
+  .comment-text {
+    padding-left: 0;
   }
 }

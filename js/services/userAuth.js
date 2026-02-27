@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from './firebase.js';
+import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy, addDoc, writeBatch } from './firebase.js';
 
 const SESSION_KEY = 'accios-user-session';
 
@@ -335,6 +335,153 @@ class UserAuth {
     } catch (e) {
       console.error('Get all onboarding responses failed:', e);
       return [];
+    }
+  }
+
+  // ─── Episode CRUD (SuperAdmin) ─────────────────────
+
+  async createEpisode({ id, num, title, status, duration, quote, color, businessId, richContent }) {
+    try {
+      const docRef = doc(db, 'episodes', id);
+      await setDoc(docRef, {
+        num,
+        title,
+        status: status || 'pre-produccion',
+        duration: duration || '',
+        quote: quote || '',
+        color: color || '#7C3AED',
+        businessId: businessId || 'mdn-podcast',
+        richContent: richContent || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      return true;
+    } catch (e) {
+      console.error('Create episode failed:', e);
+      throw new Error('Error al crear capitulo');
+    }
+  }
+
+  async updateEpisode(id, updates) {
+    try {
+      const docRef = doc(db, 'episodes', id);
+      await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Update episode failed:', e);
+      throw new Error('Error al actualizar capitulo');
+    }
+  }
+
+  async deleteEpisode(id) {
+    try {
+      const docRef = doc(db, 'episodes', id);
+      await deleteDoc(docRef);
+      return true;
+    } catch (e) {
+      console.error('Delete episode failed:', e);
+      throw new Error('Error al eliminar capitulo');
+    }
+  }
+
+  async getAllEpisodes() {
+    try {
+      const snap = await getDocs(collection(db, 'episodes'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get all episodes failed:', e);
+      return [];
+    }
+  }
+
+  async getEpisodesByBusiness(businessId) {
+    try {
+      const q = query(collection(db, 'episodes'), where('businessId', '==', businessId));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get episodes by business failed:', e);
+      return [];
+    }
+  }
+
+  // ─── Episode Comments ──────────────────────────────
+
+  async addComment({ episodeId, businessId, userId, userName, text }) {
+    try {
+      const colRef = collection(db, 'episode_comments');
+      await addDoc(colRef, {
+        episodeId,
+        businessId,
+        userId,
+        userName,
+        text,
+        createdAt: new Date().toISOString(),
+        read: false,
+      });
+      return true;
+    } catch (e) {
+      console.error('Add comment failed:', e);
+      throw new Error('Error al enviar comentario');
+    }
+  }
+
+  async getCommentsByEpisode(episodeId) {
+    try {
+      const q = query(
+        collection(db, 'episode_comments'),
+        where('episodeId', '==', episodeId),
+        orderBy('createdAt', 'asc')
+      );
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      // Fallback: if composite index not ready, fetch without orderBy
+      console.warn('Ordered query failed, using fallback:', e);
+      try {
+        const q2 = query(collection(db, 'episode_comments'), where('episodeId', '==', episodeId));
+        const snap = await getDocs(q2);
+        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        return docs.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+      } catch (e2) {
+        console.error('Get comments fallback failed:', e2);
+        return [];
+      }
+    }
+  }
+
+  async getAllComments() {
+    try {
+      const snap = await getDocs(collection(db, 'episode_comments'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get all comments failed:', e);
+      return [];
+    }
+  }
+
+  async markCommentRead(commentId) {
+    try {
+      const docRef = doc(db, 'episode_comments', commentId);
+      await updateDoc(docRef, { read: true });
+      return true;
+    } catch (e) {
+      console.error('Mark comment read failed:', e);
+      return false;
+    }
+  }
+
+  async markAllCommentsRead() {
+    try {
+      const q = query(collection(db, 'episode_comments'), where('read', '==', false));
+      const snap = await getDocs(q);
+      const batch = writeBatch(db);
+      snap.docs.forEach(d => batch.update(d.ref, { read: true }));
+      await batch.commit();
+      return true;
+    } catch (e) {
+      console.error('Mark all read failed:', e);
+      return false;
     }
   }
 }
