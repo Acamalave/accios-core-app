@@ -14,7 +14,9 @@ import {
   query,
   where,
   orderBy,
-  addDoc
+  addDoc,
+  Timestamp,
+  limit
 } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -44,5 +46,7 @@ export {
   query,
   where,
   orderBy,
-  addDoc
+  addDoc,
+  Timestamp,
+  limit
 };
