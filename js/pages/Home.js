@@ -814,16 +814,16 @@ export class Home {
 
         if (onComplete && !navigated) { navigated = true; onComplete(); }
 
-        // Hold → then open with anticipation kick
+        // Hold → then open smoothly
         setTimeout(() => {
           phase = 'opening';
           target = -115;
-          K = 80;   // softer — more dramatic reveal
-          D = 13;
-          vel = 12; // anticipation: tiny inward push first
+          K = 85;   // balanced stiffness for clean exit
+          D = 14;
+          vel = 0;  // no anticipation — clean pull-away
           lastT = 0;
           requestAnimationFrame(tick);
-        }, 400);
+        }, 350);
         return;
       }
 

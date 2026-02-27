@@ -455,7 +455,7 @@
   scroll-snap-align: center;
   scroll-snap-stop: always;
   background: rgba(12, 12, 16, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
   cursor: pointer;
   text-align: left;
@@ -463,6 +463,9 @@
   transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   overflow: visible;
   -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    0 2px 16px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(124, 58, 237, 0.04);
 }
 
 .pw-ep-card::before {
@@ -470,9 +473,9 @@
   position: absolute;
   inset: -1px;
   border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), transparent 60%);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(124, 58, 237, 0.04) 50%, transparent 80%);
   z-index: -1;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.35s ease;
 }
 
@@ -485,7 +488,7 @@
 }
 
 .pw-ep-card:hover::before {
-  opacity: 1;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(124, 58, 237, 0.08) 50%, transparent 80%);
 }
 
 .pw-ep-card:active {
@@ -498,7 +501,7 @@
   top: -22px;
   left: -1px;
   background: rgba(12, 12, 16, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-bottom: none;
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   padding: 4px 14px;
