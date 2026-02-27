@@ -12,11 +12,6 @@ export class ParticleCanvas {
     this.mouseRadius = 120 * this.dpr;  // radius of mouse influence
     this.mouseForce = 0.8;              // repulsion strength
 
-    // Scroll-based parallax offsets
-    this.scrollOffsetY = 0;
-    this.gyroOffsetX = 0;
-    this.gyroOffsetY = 0;
-
     this.resize();
     this.createParticles();
     this.animate();
@@ -123,14 +118,8 @@ export class ParticleCanvas {
       const driftX = Math.sin(this.time * p.driftSpeed + p.driftPhase) * p.driftAmp;
       const driftY = Math.cos(this.time * p.driftSpeed * 0.7 + p.driftPhase) * p.driftAmp;
 
-      // Parallax from scroll + gyroscope
-      const parallaxFactor = 0.2 + p.depth * 0.8;
-      const scrollPar = this.scrollOffsetY * parallaxFactor * 0.02;
-      const gyroPX = this.gyroOffsetX * parallaxFactor * 0.5;
-      const gyroPY = this.gyroOffsetY * parallaxFactor * 0.5;
-
-      p.x += p.vx + driftX + p.pushVx + gyroPX;
-      p.y += p.vy + driftY + p.pushVy + scrollPar + gyroPY;
+      p.x += p.vx + driftX + p.pushVx;
+      p.y += p.vy + driftY + p.pushVy;
 
       // Wrap around
       if (p.x < -10) p.x = this.canvas.width + 10;
@@ -169,11 +158,6 @@ export class ParticleCanvas {
       ctx.fill();
     }
 
-    // Decay parallax offsets
-    this.scrollOffsetY *= 0.9;
-    this.gyroOffsetX *= 0.95;
-    this.gyroOffsetY *= 0.95;
-
     // Draw connections (only between particles at similar depths)
     const maxDist = 100 * this.dpr;
     for (let i = 0; i < this.particles.length; i++) {
@@ -203,17 +187,6 @@ export class ParticleCanvas {
         }
       }
     }
-  }
-
-  // ─── Public: scroll-based parallax offset ───
-  setScrollOffset(deltaY) {
-    this.scrollOffsetY += deltaY;
-  }
-
-  // ─── Public: gyroscope-based parallax offset ───
-  setGyroOffset(x, y) {
-    this.gyroOffsetX = x;
-    this.gyroOffsetY = y;
   }
 
   destroy() {
