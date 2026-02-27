@@ -1128,16 +1128,12 @@
 .ep-dresscode-img-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 14;
-  max-height: 520px;
   overflow: hidden;
 }
 
 .ep-dresscode-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 15%;
+  height: auto;
   display: block;
 }
 
@@ -1208,8 +1204,12 @@
 
 @media (min-width: 560px) {
   .ep-dresscode-img-wrap {
-    aspect-ratio: 16 / 12;
-    max-height: 400px;
+    max-height: 500px;
+  }
+
+  .ep-dresscode-img {
+    object-fit: contain;
+    max-height: 500px;
   }
 }
 
