@@ -232,28 +232,150 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
 }
 
-/* ── Episode Cards Grid ── */
+/* ── Slider Wrapper ── */
+.pw-slider-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Epic gradient fades on left/right edges */
+.pw-slider-wrap::before,
+.pw-slider-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.pw-slider-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg,
+    #050507 0%,
+    rgba(5, 5, 7, 0.92) 25%,
+    rgba(5, 5, 7, 0.6) 50%,
+    rgba(124, 58, 237, 0.03) 75%,
+    transparent 100%
+  );
+}
+
+.pw-slider-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg,
+    #050507 0%,
+    rgba(5, 5, 7, 0.92) 25%,
+    rgba(5, 5, 7, 0.6) 50%,
+    rgba(124, 58, 237, 0.03) 75%,
+    transparent 100%
+  );
+}
+
+/* ── Episode Cards Slider ── */
 .pw-episodes {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
-  padding: 0 var(--space-5);
-  max-width: 640px;
-  margin: 0 auto;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: var(--space-5);
+  padding: var(--space-4) calc(50% - 180px);
   width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding-bottom: var(--space-6);
 }
 
-@media (min-width: 560px) {
-  .pw-episodes {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 720px;
-  }
+.pw-episodes::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Navigation Arrows ── */
+.pw-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.pw-nav-arrow:hover {
+  background: rgba(124, 58, 237, 0.25);
+  border-color: rgba(124, 58, 237, 0.4);
+  color: #fff;
+  box-shadow:
+    0 0 20px rgba(124, 58, 237, 0.2),
+    0 0 40px rgba(124, 58, 237, 0.08);
+}
+
+.pw-nav-arrow:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.pw-nav-arrow--left {
+  left: var(--space-5);
+}
+
+.pw-nav-arrow--right {
+  right: var(--space-5);
+}
+
+/* ── Dot Indicators ── */
+.pw-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-3) 0 var(--space-2);
+  position: relative;
+  z-index: 10;
+}
+
+.pw-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: 0;
+}
+
+.pw-dot--active {
+  background: var(--purple-400);
+  border-color: var(--purple-400);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.2);
+  transform: scale(1.3);
+}
+
+.pw-dot:hover:not(.pw-dot--active) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* ── Episode Card (File Folder Style) ── */
 .pw-ep-card {
   position: relative;
+  flex: 0 0 360px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
   background: rgba(12, 12, 16, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
@@ -390,6 +512,9 @@
 /* ── Coming Soon Card ── */
 .pw-ep-soon {
   display: flex;
+  flex: 0 0 360px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -412,13 +537,39 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 560px) {
+  .pw-episodes {
+    padding: var(--space-4) calc(50% - 140px);
+    gap: var(--space-4);
+  }
+
+  .pw-ep-card,
+  .pw-ep-soon {
+    flex: 0 0 280px;
+  }
+
+  .pw-nav-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pw-nav-arrow--left {
+    left: var(--space-2);
+  }
+
+  .pw-nav-arrow--right {
+    right: var(--space-2);
+  }
+
+  .pw-slider-wrap::before,
+  .pw-slider-wrap::after {
+    width: 80px;
+  }
+}
+
 @media (max-width: 480px) {
   .pw-header {
     padding: var(--space-3) var(--space-4);
-  }
-
-  .pw-episodes {
-    padding: 0 var(--space-4);
   }
 
   .pw-stage-label {
@@ -431,6 +582,16 @@
 
   .pw-ep-title {
     font-size: 1.15rem;
+  }
+
+  .pw-slider-wrap::before,
+  .pw-slider-wrap::after {
+    width: 50px;
+  }
+
+  .pw-nav-arrow {
+    width: 32px;
+    height: 32px;
   }
 }
 

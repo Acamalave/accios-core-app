@@ -6,6 +6,10 @@ export class PodcastWorld {
     this.currentUser = currentUser || userAuth.getCurrentUser();
     this.businessId = businessId || 'mdn-podcast';
     this.episodes = [];
+    this._currentSlide = 0;
+    this._totalSlides = 0;
+    this._scrollTimer = null;
+    this._keyHandler = null;
   }
 
   async render() {
@@ -30,6 +34,12 @@ export class PodcastWorld {
     // Load episodes from Firestore
     this.episodes = await userAuth.getEpisodesByBusiness(this.businessId);
     this.episodes.sort((a, b) => (a.num || '').localeCompare(b.num || ''));
+    this._totalSlides = this.episodes.length + 1; // +1 for "coming soon"
+
+    // Build dot indicators
+    const dots = Array.from({ length: this._totalSlides }, (_, i) =>
+      `<button class="pw-dot${i === 0 ? ' pw-dot--active' : ''}" data-dot="${i}"></button>`
+    ).join('');
 
     // Render full page
     this.container.innerHTML = `
@@ -64,9 +74,27 @@ export class PodcastWorld {
             <div class="pw-stage-line"></div>
           </div>
 
-          <div class="pw-episodes" id="pw-episodes">
-            ${this.episodes.map(ep => this._buildEpisodeCard(ep)).join('')}
-            ${this._buildComingSoonCard()}
+          <div class="pw-slider-wrap">
+            <!-- Left arrow -->
+            <button class="pw-nav-arrow pw-nav-arrow--left" id="pw-arrow-left">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+
+            <!-- Slider track -->
+            <div class="pw-episodes" id="pw-episodes">
+              ${this.episodes.map(ep => this._buildEpisodeCard(ep)).join('')}
+              ${this._buildComingSoonCard()}
+            </div>
+
+            <!-- Right arrow -->
+            <button class="pw-nav-arrow pw-nav-arrow--right" id="pw-arrow-right">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+
+          <!-- Dot indicators -->
+          <div class="pw-dots" id="pw-dots">
+            ${dots}
           </div>
         </div>
 
@@ -76,18 +104,19 @@ export class PodcastWorld {
     `;
 
     this._attachListeners();
+    this._initSlider();
 
-    // Entrance animation
+    // Entrance animation — cards slide in from the right
     requestAnimationFrame(() => {
       const cards = this.container.querySelectorAll('.pw-ep-card, .pw-ep-soon');
       cards.forEach((card, i) => {
         card.style.opacity = '0';
-        card.style.transform = 'translateY(30px) scale(0.95)';
+        card.style.transform = 'translateX(60px) scale(0.92)';
         setTimeout(() => {
-          card.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+          card.style.transition = 'opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
           card.style.opacity = '1';
-          card.style.transform = 'translateY(0) scale(1)';
-        }, 300 + i * 150);
+          card.style.transform = 'translateX(0) scale(1)';
+        }, 200 + i * 120);
       });
     });
   }
@@ -128,18 +157,117 @@ export class PodcastWorld {
     `;
   }
 
+  _initSlider() {
+    const track = this.container.querySelector('#pw-episodes');
+    if (!track) return;
+
+    // Listen to scroll events to update active dot
+    track.addEventListener('scroll', () => {
+      clearTimeout(this._scrollTimer);
+      this._scrollTimer = setTimeout(() => this._updateActiveDot(), 80);
+    }, { passive: true });
+
+    // Keyboard navigation
+    this._keyHandler = (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        this._scrollToCard(this._currentSlide - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        this._scrollToCard(this._currentSlide + 1);
+      }
+    };
+    document.addEventListener('keydown', this._keyHandler);
+  }
+
+  _scrollToCard(index) {
+    const clamped = Math.max(0, Math.min(index, this._totalSlides - 1));
+    const track = this.container.querySelector('#pw-episodes');
+    if (!track) return;
+
+    const cards = track.querySelectorAll('.pw-ep-card, .pw-ep-soon');
+    if (!cards[clamped]) return;
+
+    const card = cards[clamped];
+    const trackRect = track.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Calculate scroll position to center the card
+    const scrollLeft = track.scrollLeft + (cardRect.left - trackRect.left) - (trackRect.width / 2) + (cardRect.width / 2);
+    track.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+
+    this._currentSlide = clamped;
+    this._setActiveDot(clamped);
+  }
+
+  _updateActiveDot() {
+    const track = this.container.querySelector('#pw-episodes');
+    if (!track) return;
+
+    const cards = track.querySelectorAll('.pw-ep-card, .pw-ep-soon');
+    const trackCenter = track.getBoundingClientRect().left + track.getBoundingClientRect().width / 2;
+
+    let closestIndex = 0;
+    let closestDist = Infinity;
+
+    cards.forEach((card, i) => {
+      const cardCenter = card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2;
+      const dist = Math.abs(cardCenter - trackCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIndex = i;
+      }
+    });
+
+    this._currentSlide = closestIndex;
+    this._setActiveDot(closestIndex);
+  }
+
+  _setActiveDot(index) {
+    const dots = this.container.querySelectorAll('.pw-dot');
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('pw-dot--active', i === index);
+    });
+  }
+
   _attachListeners() {
+    // Back button
     this.container.querySelector('#pw-back')?.addEventListener('click', () => {
       window.location.hash = '#home';
     });
 
+    // Episode card clicks
     this.container.querySelectorAll('.pw-ep-card').forEach(card => {
       card.addEventListener('click', () => {
         const epId = card.dataset.episode;
         window.location.hash = `#dashboard/${this.businessId}/${epId}`;
       });
     });
+
+    // Arrow navigation
+    this.container.querySelector('#pw-arrow-left')?.addEventListener('click', () => {
+      this._scrollToCard(this._currentSlide - 1);
+    });
+
+    this.container.querySelector('#pw-arrow-right')?.addEventListener('click', () => {
+      this._scrollToCard(this._currentSlide + 1);
+    });
+
+    // Dot navigation
+    this.container.querySelectorAll('.pw-dot').forEach(dot => {
+      dot.addEventListener('click', () => {
+        const index = parseInt(dot.dataset.dot, 10);
+        this._scrollToCard(index);
+      });
+    });
   }
 
-  unmount() {}
+  unmount() {
+    // Clean up keyboard listener
+    if (this._keyHandler) {
+      document.removeEventListener('keydown', this._keyHandler);
+      this._keyHandler = null;
+    }
+    clearTimeout(this._scrollTimer);
+  }
 }

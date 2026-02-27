@@ -85,7 +85,7 @@ export class Home {
           <div class="orbit-world-img">
             ${biz.logo
               ? `<img src="${biz.logo}" alt="${biz.nombre}" draggable="false" />`
-              : `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              : `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                    <rect x="2" y="3" width="20" height="14" rx="2"/>
                    <line x1="8" y1="21" x2="16" y2="21"/>
                    <line x1="12" y1="17" x2="12" y2="21"/>
@@ -175,7 +175,7 @@ export class Home {
       const r = getRect();
       const cx = r.width / 2;
       const cy = r.height / 2;
-      const orbitRadius = Math.min(cx, cy) * 0.68;
+      const orbitRadius = Math.min(cx, cy) * 0.78;
 
       let totalGlow = 0;
 
@@ -205,7 +205,7 @@ export class Home {
         const zNorm = (z + orbitRadius) / (2 * orbitRadius);
 
         // ─── Larger planets, fully sharp, no blur ───
-        const scale = 0.65 + zNorm * 0.55;          // 0.65 → 1.2
+        const scale = 0.55 + zNorm * 0.8;           // 0.55 → 1.35
         const opacity = 0.45 + zNorm * 0.55;         // 0.45 → 1.0
         const zIndex = Math.round(zNorm * 100);
         const borderAlpha = 0.12 + zNorm * 0.33;
