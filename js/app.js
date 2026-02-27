@@ -8,6 +8,7 @@ import { Home } from './pages/Home.js';
 import { SuperAdmin } from './pages/SuperAdmin.js';
 import { Onboarding } from './pages/Onboarding.js';
 import { Dashboard } from './pages/Dashboard.js';
+import { PodcastWorld } from './pages/PodcastWorld.js';
 
 class App {
   constructor() {
@@ -102,8 +103,12 @@ class App {
         pageInstance = new Onboarding(this.content, this.currentUser, route.sub);
         break;
 
+      case 'podcast':
+        pageInstance = new PodcastWorld(this.content, this.currentUser, route.sub);
+        break;
+
       case 'dashboard':
-        pageInstance = new Dashboard(this.content, this.currentUser, route.sub);
+        pageInstance = new Dashboard(this.content, this.currentUser, route.sub, route.extra);
         break;
 
       default:

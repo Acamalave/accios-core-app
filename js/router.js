@@ -18,6 +18,7 @@ class Router {
     return {
       page: parts[0],
       sub: parts[1] || null,
+      extra: parts[2] || null,
       full: raw,
     };
   }

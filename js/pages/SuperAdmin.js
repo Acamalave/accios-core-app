@@ -8,6 +8,8 @@ export class SuperAdmin {
     this.users = [];
     this.businesses = [];
     this.onboardingResponses = [];
+    this.episodes = [];
+    this.comments = [];
   }
 
   async render() {
@@ -42,6 +44,8 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'businesses' ? 'active' : ''}" data-tab="businesses">Negocios</button>
           <button class="superadmin-tab ${this.tab === 'linking' ? 'active' : ''}" data-tab="linking">Vincular</button>
           <button class="superadmin-tab ${this.tab === 'onboarding' ? 'active' : ''}" data-tab="onboarding">Expedientes</button>
+          <button class="superadmin-tab ${this.tab === 'episodes' ? 'active' : ''}" data-tab="episodes">Capitulos</button>
+          <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
         </div>
 
         <div id="sa-content">
@@ -66,10 +70,12 @@ export class SuperAdmin {
   }
 
   async _loadData() {
-    [this.users, this.businesses, this.onboardingResponses] = await Promise.all([
+    [this.users, this.businesses, this.onboardingResponses, this.episodes, this.comments] = await Promise.all([
       userAuth.getAllUsers(),
       userAuth.getAllBusinesses(),
       userAuth.getAllOnboardingResponses(),
+      userAuth.getAllEpisodes(),
+      userAuth.getAllComments(),
     ]);
   }
 
@@ -82,6 +88,8 @@ export class SuperAdmin {
     const totalLinks = this.users.reduce((sum, u) => sum + (u.businesses || []).length, 0);
     const totalOnboarding = this.onboardingResponses.length;
     const completedOnboarding = this.onboardingResponses.filter(r => r.completedAt).length;
+    const totalEpisodes = this.episodes.length;
+    const unreadComments = this.comments.filter(c => !c.read).length;
 
     statsEl.innerHTML = `
       <div class="glass-card sa-stat">
@@ -100,7 +108,18 @@ export class SuperAdmin {
         <div class="sa-stat-value">${completedOnboarding}/${totalOnboarding}</div>
         <div class="sa-stat-label">Expedientes</div>
       </div>
+      <div class="glass-card sa-stat">
+        <div class="sa-stat-value">${totalEpisodes}</div>
+        <div class="sa-stat-label">Capitulos</div>
+      </div>
+      <div class="glass-card sa-stat">
+        <div class="sa-stat-value" style="${unreadComments > 0 ? 'color: #ef4444;' : ''}">${unreadComments}</div>
+        <div class="sa-stat-label">Sin Leer</div>
+      </div>
     `;
+
+    // Update comments badge
+    this._updateCommentBadge();
   }
 
   _renderTab() {
@@ -111,6 +130,10 @@ export class SuperAdmin {
       this._renderBusinesses(content);
     } else if (this.tab === 'onboarding') {
       this._renderOnboarding(content);
+    } else if (this.tab === 'episodes') {
+      this._renderEpisodes(content);
+    } else if (this.tab === 'comments') {
+      this._renderComments(content);
     } else {
       this._renderLinking(content);
     }
@@ -536,6 +559,244 @@ export class SuperAdmin {
         Toast.error('Error: ' + e.message);
       }
     });
+  }
+
+  // ─── EPISODES TAB ──────────────────────────────────
+
+  _renderEpisodes(content) {
+    const rows = this.episodes
+      .sort((a, b) => (a.num || '').localeCompare(b.num || ''))
+      .map(ep => `
+        <tr>
+          <td><span class="sa-badge" style="background: rgba(124,58,237,0.15); color: var(--purple-400);">EP. ${ep.num}</span></td>
+          <td><strong>${ep.title}</strong></td>
+          <td><span class="sa-badge sa-badge--${ep.status === 'publicado' ? 'superadmin' : 'client'}">${ep.status}</span></td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">${ep.duration || '-'}</td>
+          <td>
+            <div style="display: flex; gap: var(--space-2);">
+              <button class="sa-btn" data-edit-ep="${ep.id}">Editar</button>
+              <button class="sa-btn sa-btn--danger" data-delete-ep="${ep.id}">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+    content.innerHTML = `
+      <div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-4);">
+        <button class="sa-btn sa-btn--primary" id="sa-add-ep">+ Nuevo Capitulo</button>
+      </div>
+      <div class="glass-card" style="overflow-x: auto; padding: 0;">
+        <table class="superadmin-table">
+          <thead>
+            <tr><th>Num</th><th>Titulo</th><th>Estado</th><th>Duracion</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>${rows || '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay capitulos</td></tr>'}</tbody>
+        </table>
+      </div>
+    `;
+
+    content.querySelector('#sa-add-ep')?.addEventListener('click', () => this._showEpisodeModal());
+
+    content.querySelectorAll('[data-edit-ep]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ep = this.episodes.find(e => e.id === btn.dataset.editEp);
+        if (ep) this._showEpisodeModal(ep);
+      });
+    });
+
+    content.querySelectorAll('[data-delete-ep]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Eliminar este capitulo?')) return;
+        try {
+          await userAuth.deleteEpisode(btn.dataset.deleteEp);
+          Toast.success('Capitulo eliminado');
+          await this._loadData();
+          this._renderStats();
+          this._renderTab();
+        } catch (e) {
+          Toast.error('Error: ' + e.message);
+        }
+      });
+    });
+  }
+
+  _showEpisodeModal(existing = null) {
+    const bizOptions = this.businesses.map(b =>
+      `<option value="${b.id}" ${existing?.businessId === b.id ? 'selected' : ''}>${b.nombre}</option>`
+    ).join('');
+
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 560px; max-height: 85vh; overflow-y: auto;">
+          <h3 class="sa-modal-title">${existing ? 'Editar' : 'Nuevo'} Capitulo</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+            <div class="sa-form-group">
+              <label class="sa-form-label">ID (unico)</label>
+              <input class="sa-form-input" id="sa-ep-id" value="${existing?.id || ''}" ${existing ? 'readonly style="opacity:0.6"' : ''} placeholder="ep-002">
+            </div>
+            <div class="sa-form-group">
+              <label class="sa-form-label">Numero</label>
+              <input class="sa-form-input" id="sa-ep-num" value="${existing?.num || ''}" placeholder="002">
+            </div>
+          </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Titulo</label>
+            <input class="sa-form-input" id="sa-ep-title" value="${existing?.title || ''}" placeholder="Nombre del capitulo">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+            <div class="sa-form-group">
+              <label class="sa-form-label">Estado</label>
+              <select class="sa-form-select" id="sa-ep-status">
+                <option value="pre-produccion" ${existing?.status === 'pre-produccion' ? 'selected' : ''}>Pre-Produccion</option>
+                <option value="grabacion" ${existing?.status === 'grabacion' ? 'selected' : ''}>Grabacion</option>
+                <option value="editando" ${existing?.status === 'editando' ? 'selected' : ''}>Editando</option>
+                <option value="publicado" ${existing?.status === 'publicado' ? 'selected' : ''}>Publicado</option>
+              </select>
+            </div>
+            <div class="sa-form-group">
+              <label class="sa-form-label">Duracion</label>
+              <input class="sa-form-input" id="sa-ep-duration" value="${existing?.duration || ''}" placeholder="15 — 20 min">
+            </div>
+          </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Frase / Quote</label>
+            <textarea class="sa-form-input" id="sa-ep-quote" rows="2" style="resize: vertical; min-height: 48px;">${existing?.quote || ''}</textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+            <div class="sa-form-group">
+              <label class="sa-form-label">Color</label>
+              <input class="sa-form-input" id="sa-ep-color" value="${existing?.color || '#7C3AED'}" placeholder="#7C3AED">
+            </div>
+            <div class="sa-form-group">
+              <label class="sa-form-label">Negocio</label>
+              <select class="sa-form-select" id="sa-ep-biz">
+                ${bizOptions || '<option value="mdn-podcast">mdn-podcast</option>'}
+              </select>
+            </div>
+          </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Contenido detallado (opcional)</label>
+            <textarea class="sa-form-input" id="sa-ep-rich" rows="6" style="resize: vertical; min-height: 100px;" placeholder="Contenido HTML o texto del capitulo...">${existing?.richContent || ''}</textarea>
+          </div>
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
+            <button class="sa-btn sa-btn--primary" id="sa-modal-save">Guardar</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    root.querySelector('#sa-modal-save').addEventListener('click', async () => {
+      const id = root.querySelector('#sa-ep-id').value.trim().toLowerCase().replace(/\s+/g, '-');
+      const num = root.querySelector('#sa-ep-num').value.trim();
+      const title = root.querySelector('#sa-ep-title').value.trim();
+      const status = root.querySelector('#sa-ep-status').value;
+      const duration = root.querySelector('#sa-ep-duration').value.trim();
+      const quote = root.querySelector('#sa-ep-quote').value.trim();
+      const color = root.querySelector('#sa-ep-color').value.trim();
+      const businessId = root.querySelector('#sa-ep-biz').value;
+      const richContent = root.querySelector('#sa-ep-rich').value.trim();
+
+      if (!id || !num || !title) { Toast.error('ID, Numero y Titulo son requeridos'); return; }
+
+      try {
+        if (existing) {
+          await userAuth.updateEpisode(existing.id, { num, title, status, duration, quote, color, businessId, richContent });
+        } else {
+          await userAuth.createEpisode({ id, num, title, status, duration, quote, color, businessId, richContent });
+        }
+        Toast.success(existing ? 'Capitulo actualizado' : 'Capitulo creado');
+        closeModal();
+        await this._loadData();
+        this._renderStats();
+        this._renderTab();
+      } catch (e) {
+        Toast.error('Error: ' + e.message);
+      }
+    });
+  }
+
+  // ─── COMMENTS TAB ─────────────────────────────────
+
+  _renderComments(content) {
+    const unreadCount = this.comments.filter(c => !c.read).length;
+
+    const sorted = [...this.comments].sort((a, b) => {
+      if (a.read !== b.read) return a.read ? 1 : -1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    const rows = sorted.map(c => {
+      const ep = this.episodes.find(e => e.id === c.episodeId);
+      const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-PA', { day: 'numeric', month: 'short' }) : '-';
+      return `
+        <tr style="${!c.read ? 'background: rgba(124,58,237,0.05);' : ''}">
+          <td>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              ${!c.read ? '<span style="width:8px; height:8px; border-radius:50%; background: var(--purple-400); flex-shrink:0;"></span>' : ''}
+              <strong>${c.userName || c.userId}</strong>
+            </div>
+          </td>
+          <td><span class="sa-badge" style="background: rgba(124,58,237,0.15); color: var(--purple-400);">EP. ${ep?.num || '?'}</span></td>
+          <td style="max-width: 300px; font-size: 0.85rem; color: var(--text-muted);">${c.text}</td>
+          <td style="font-size: 0.8rem; color: var(--text-dim);">${date}</td>
+          <td>
+            ${!c.read ? `<button class="sa-btn" data-mark-read="${c.id}">Leido</button>` : '<span style="color: var(--text-dim); font-size: 0.75rem;">Leido</span>'}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    content.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+        <span style="color: var(--text-secondary); font-size: 0.9rem;">${unreadCount} sin leer</span>
+        ${unreadCount > 0 ? '<button class="sa-btn sa-btn--primary" id="sa-mark-all-read">Marcar todos como leidos</button>' : ''}
+      </div>
+      <div class="glass-card" style="overflow-x: auto; padding: 0;">
+        <table class="superadmin-table">
+          <thead>
+            <tr><th>Usuario</th><th>Capitulo</th><th>Comentario</th><th>Fecha</th><th>Estado</th></tr>
+          </thead>
+          <tbody>${rows || '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay comentarios</td></tr>'}</tbody>
+        </table>
+      </div>
+    `;
+
+    content.querySelectorAll('[data-mark-read]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await userAuth.markCommentRead(btn.dataset.markRead);
+        Toast.success('Marcado como leido');
+        await this._loadData();
+        this._renderStats();
+        this._renderTab();
+      });
+    });
+
+    content.querySelector('#sa-mark-all-read')?.addEventListener('click', async () => {
+      await userAuth.markAllCommentsRead();
+      Toast.success('Todos marcados como leidos');
+      await this._loadData();
+      this._renderStats();
+      this._renderTab();
+    });
+  }
+
+  _updateCommentBadge() {
+    const badge = this.container.querySelector('#sa-comments-badge');
+    if (!badge) return;
+    const unread = this.comments.filter(c => !c.read).length;
+    if (unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = 'inline-flex';
+    } else {
+      badge.style.display = 'none';
+    }
   }
 
   unmount() {}
