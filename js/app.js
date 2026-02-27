@@ -1,4 +1,5 @@
 import { ParticleCanvas } from './components/ParticleCanvas.js';
+import { Toast } from './components/Toast.js';
 import router from './router.js';
 import userAuth from './services/userAuth.js';
 
@@ -9,6 +10,8 @@ import { SuperAdmin } from './pages/SuperAdmin.js';
 import { Onboarding } from './pages/Onboarding.js';
 import { Dashboard } from './pages/Dashboard.js';
 import { PodcastWorld } from './pages/PodcastWorld.js';
+import { Finance } from './pages/Finance.js';
+import { ClientPortal } from './pages/ClientPortal.js';
 
 class App {
   constructor() {
@@ -65,6 +68,12 @@ class App {
     await this.wait(600);
     loadingScreen?.remove();
 
+    // Global toast event listener (used by Finance, ClientPortal, etc.)
+    document.addEventListener('toast', (e) => {
+      const { message, type } = e.detail || {};
+      if (message) Toast.show(message, type || 'info');
+    });
+
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {
       try {
@@ -109,6 +118,14 @@ class App {
 
       case 'dashboard':
         pageInstance = new Dashboard(this.content, this.currentUser, route.sub, route.extra);
+        break;
+
+      case 'finance':
+        pageInstance = new Finance(this.content, this.currentUser, route.sub);
+        break;
+
+      case 'portal':
+        pageInstance = new ClientPortal(this.content, this.currentUser, route.sub);
         break;
 
       default:

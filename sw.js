@@ -1,5 +1,5 @@
 // Service Worker for ACCIOS CORE — Offline-first PWA
-const CACHE_NAME = 'accios-core-v18';
+const CACHE_NAME = 'accios-core-v19';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   '/css/pages.css',
   '/css/admin.css',
   '/css/onboarding.css',
+  '/css/finance.css',
   '/manifest.json',
 ];
 

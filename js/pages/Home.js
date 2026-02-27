@@ -53,6 +53,9 @@ export class Home {
             <button class="home-admin" id="home-superadmin-btn" title="Super Admin" style="position: fixed; top: var(--space-5); right: var(--space-5);">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </button>
+            <button class="home-admin" id="home-finance-btn" title="Finanzas" style="position: fixed; top: var(--space-5); right: calc(var(--space-5) + 52px);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </button>
           ` : ''}
           <button class="home-action-btn" id="home-logout" title="Cerrar sesion">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -366,6 +369,10 @@ export class Home {
   _attachListeners() {
     this.container.querySelector('#home-superadmin-btn')?.addEventListener('click', () => {
       window.location.hash = '#superadmin';
+    });
+
+    this.container.querySelector('#home-finance-btn')?.addEventListener('click', () => {
+      window.location.hash = '#finance';
     });
 
     this.container.querySelector('#home-logout')?.addEventListener('click', () => {
