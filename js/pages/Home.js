@@ -60,6 +60,7 @@ export class Home {
           </button>
         </div>
 
+        <div class="home-ecosystem-label">Digital Ecosystem</div>
         <footer class="home-footer">Desarrollado por Acacio Malave</footer>
       </section>
     `;
@@ -127,7 +128,6 @@ export class Home {
             <span class="orbital-center-brand-bottom">CORE</span>
           </div>
         </div>
-        <span class="orbital-center-label">Digital Ecosystem</span>
 
         ${worlds}
         ${addPlanet}
