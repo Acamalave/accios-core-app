@@ -416,9 +416,11 @@ export class Home {
           return;
         }
 
-        // MDN Podcast → podcast world
+        // MDN Podcast → curtain close → podcast world
         if (bizId === 'mdn-podcast') {
-          window.location.hash = '#podcast/mdn-podcast';
+          this._triggerCurtainTransition(() => {
+            window.location.hash = '#podcast/mdn-podcast';
+          });
           return;
         }
 
@@ -677,6 +679,33 @@ export class Home {
     });
   }
 
+  // ─── Curtain Close Transition ───
+  _triggerCurtainTransition(onComplete) {
+    // Remove any existing curtain
+    document.querySelector('.curtain-overlay')?.remove();
+
+    const curtain = document.createElement('div');
+    curtain.className = 'curtain-overlay';
+    curtain.innerHTML = `
+      <div class="curtain-panel curtain-panel--left"></div>
+      <div class="curtain-panel curtain-panel--right"></div>
+      <div class="curtain-seam"></div>
+    `;
+    document.body.appendChild(curtain);
+
+    // Trigger the closing animation
+    requestAnimationFrame(() => {
+      curtain.classList.add('curtain-overlay--closing');
+    });
+
+    // After curtains fully close, navigate
+    setTimeout(() => {
+      if (onComplete) onComplete();
+      // Clean up after navigation renders
+      setTimeout(() => curtain.remove(), 500);
+    }, 950);
+  }
+
   unmount() {
     if (this._animId) {
       cancelAnimationFrame(this._animId);
@@ -685,5 +714,7 @@ export class Home {
     if (this._rippleInterval) {
       clearInterval(this._rippleInterval);
     }
+    // Clean up any lingering curtain
+    document.querySelector('.curtain-overlay')?.remove();
   }
 }
