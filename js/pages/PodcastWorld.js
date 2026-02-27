@@ -100,7 +100,7 @@ export class PodcastWorld {
 
         <!-- Neon "Season 2" sign in the background depth -->
         <div class="pw-neon-sign" aria-hidden="true">
-          <span class="pw-neon-text" data-text="Season 2">Season 2</span>
+          <span class="pw-neon-text" data-text="second season">second season</span>
         </div>
 
         <!-- Spotlight effect -->
@@ -111,17 +111,17 @@ export class PodcastWorld {
     this._attachListeners();
     this._initSlider();
 
-    // Entrance animation — cards slide in from the right
+    // Entrance animation — cards fade in after curtain reveals the stage
     requestAnimationFrame(() => {
       const cards = this.container.querySelectorAll('.pw-ep-card, .pw-ep-soon');
       cards.forEach((card, i) => {
         card.style.opacity = '0';
-        card.style.transform = 'translateX(60px) scale(0.92)';
+        card.style.transform = 'translateY(16px)';
         setTimeout(() => {
-          card.style.transition = 'opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+          card.style.transition = 'opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
           card.style.opacity = '1';
-          card.style.transform = 'translateX(0) scale(1)';
-        }, 200 + i * 120);
+          card.style.transform = 'translateY(0)';
+        }, 600 + i * 100);
       });
     });
   }
