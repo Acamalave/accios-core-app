@@ -1,7 +1,7 @@
 import userAuth from '../services/userAuth.js';
 
 export class Home {
-  constructor(container, currentUser) {
+  constructor(container, currentUser, particleCanvas) {
     this.container = container;
     this.currentUser = currentUser || userAuth.getCurrentUser();
     this.businesses = [];
@@ -9,8 +9,26 @@ export class Home {
     this._orbitals = [];
     this._centerGlow = null;
     this._pointLights = null;
-    this._paused = false;        // orbit paused when a planet is clicked
-    this._activeWorld = null;    // which world is currently emitting waves
+    this._paused = false;
+    this._activeWorld = null;
+
+    // ── Scroll-jacking & Snap state ──
+    this._scrollVel = 0;
+    this._targetTheta = null;
+    this._snappedIndex = -1;
+    this._snapSpring = { K: 120, D: 18 };
+    this._globalTheta = 0;
+    this._lastScrollTime = 0;
+    this._hudEl = null;
+    this._selectionRingEl = null;
+
+    // ── Energy beams ──
+    this._energyCanvas = null;
+    this._energyCtx = null;
+    this._time = 0;
+
+    // ── Parallax ──
+    this._particleCanvas = particleCanvas || null;
   }
 
   async render() {
@@ -74,7 +92,6 @@ export class Home {
   }
 
   _buildOrbitalSystem() {
-    const totalWorlds = this.businesses.length + 1; // +1 for "add" planet
     const worlds = this.businesses.map((biz, index) => {
       return `
         <div class="orbit-world" data-business-id="${biz.id}" data-orbit-index="${index}">
@@ -95,7 +112,6 @@ export class Home {
       `;
     }).join('');
 
-    // "Add my business" planet — always last in orbit
     const addPlanet = `
       <div class="orbit-world orbit-world--add" data-business-id="__add__" data-orbit-index="${this.businesses.length}">
         <div class="orbit-world-glow"></div>
@@ -112,6 +128,8 @@ export class Home {
 
     return `
       <div class="orbital-system" id="orbital-system-3d">
+        <canvas class="orbital-energy-canvas" id="orbital-energy-canvas"></canvas>
+
         <div class="orbital-ring"></div>
         <div class="orbital-ring orbital-ring--inner"></div>
 
@@ -138,25 +156,27 @@ export class Home {
   // ─── Solar System Engine ──────────────────────────────
 
   _initOrbitals() {
-    const count = this.businesses.length + 1; // +1 for "add" planet
-    const TILT = 1.25;
-    const SPEED = 0.0012;
+    const count = this.businesses.length + 1;
+    const TILT = 1.05;  // ~60 degrees — visible ellipse with clear depth
 
-    // Create orbital entries for businesses + the add planet
     this._orbitals = [];
     for (let i = 0; i < count; i++) {
       const thetaOffset = (Math.PI * 2 / count) * i;
       this._orbitals.push({
         index: i,
-        theta: thetaOffset,
-        speed: SPEED,
+        thetaOffset,
         tilt: TILT,
         el: null,
         glowEl: null,
         nameEl: null,
         ripplesEl: null,
+        _screenX: 0,
+        _screenY: 0,
+        _zNorm: 0,
       });
     }
+
+    this._globalTheta = 0;
 
     const system = this.container.querySelector('#orbital-system-3d');
     if (!system) return;
@@ -179,6 +199,20 @@ export class Home {
         `<div class="point-light" data-light="${i}"></div>`
       ).join('');
     }
+
+    // ── Energy beam canvas setup ──
+    this._energyCanvas = this.container.querySelector('#orbital-energy-canvas');
+    if (this._energyCanvas) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = system.getBoundingClientRect();
+      this._energyCanvas.width = rect.width * dpr;
+      this._energyCanvas.height = rect.height * dpr;
+      this._energyCanvas.style.width = rect.width + 'px';
+      this._energyCanvas.style.height = rect.height + 'px';
+      this._energyCtx = this._energyCanvas.getContext('2d');
+      this._energyCtx.scale(dpr, dpr);
+      this._energyDpr = dpr;
+    }
   }
 
   _startAnimation() {
@@ -188,26 +222,70 @@ export class Home {
     const getRect = () => systemEl.getBoundingClientRect();
     const focalLength = 600;
 
-    const animate = () => {
+    this._lastScrollTime = performance.now() - 3000; // allow auto-rotate from start
+
+    const animate = (now) => {
       this._animId = requestAnimationFrame(animate);
+      this._time++;
 
       const r = getRect();
       const cx = r.width / 2;
       const cy = r.height / 2;
       const orbitRadius = Math.min(cx, cy) * 0.75;
 
+      // ═══ SCROLL-JACKING PHYSICS ═══
+      if (!this._paused) {
+        const dt = 1 / 60;
+        const idleTime = now - this._lastScrollTime;
+
+        // Apply scroll velocity to global rotation
+        this._globalTheta += this._scrollVel;
+
+        // Friction decay
+        this._scrollVel *= 0.92;
+
+        // Auto-rotation when idle (>2s no scroll input)
+        if (idleTime > 2000 && this._targetTheta === null) {
+          const rampFactor = Math.min((idleTime - 2000) / 2000, 1);
+          this._scrollVel += 0.0012 * rampFactor * dt * 60;
+        }
+
+        // Snap detection: velocity low enough + no snap active + idle for a bit
+        if (Math.abs(this._scrollVel) < 0.004 && this._targetTheta === null && idleTime > 300 && idleTime < 2000) {
+          this._engageSnap();
+        }
+
+        // Spring-drive toward snap target
+        if (this._targetTheta !== null) {
+          let diff = this._targetTheta - this._globalTheta;
+          // Shortest angular path
+          while (diff > Math.PI) diff -= Math.PI * 2;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+
+          const springForce = this._snapSpring.K * diff;
+          const dampForce = this._snapSpring.D * this._scrollVel;
+          this._scrollVel += (springForce - dampForce) * dt;
+
+          // Settled?
+          if (Math.abs(diff) < 0.005 && Math.abs(this._scrollVel) < 0.001) {
+            this._globalTheta = this._targetTheta;
+            this._scrollVel = 0;
+            this._onSnapComplete();
+            this._targetTheta = null;
+          }
+        }
+      }
+
+      // ═══ PLANET RENDERING ═══
       let totalGlow = 0;
 
       for (const orb of this._orbitals) {
         if (!orb.el) continue;
 
-        // Only advance orbit if NOT paused
-        if (!this._paused) {
-          orb.theta += orb.speed;
-        }
+        const theta = this._globalTheta + orb.thetaOffset;
 
-        const cosT = Math.cos(orb.theta);
-        const sinT = Math.sin(orb.theta);
+        const cosT = Math.cos(theta);
+        const sinT = Math.sin(theta);
 
         const x = orbitRadius * cosT;
         const zOrbit = orbitRadius * sinT;
@@ -223,40 +301,43 @@ export class Home {
 
         const zNorm = (z + orbitRadius) / (2 * orbitRadius);
 
-        // ─── Larger planets, fully sharp, no blur ───
-        const scale = 0.55 + zNorm * 0.8;           // 0.55 → 1.35
-        const opacity = 0.45 + zNorm * 0.55;         // 0.45 → 1.0
+        // Store for energy beams + HUD positioning
+        orb._screenX = screenX;
+        orb._screenY = screenY;
+        orb._zNorm = zNorm;
+
+        // ─── Enhanced 3D depth: dramatic scale + DOF blur ───
+        const scale = 0.42 + zNorm * 1.0;          // 0.42 → 1.42
+        const opacity = 0.32 + zNorm * 0.68;        // 0.32 → 1.0
         const zIndex = Math.round(zNorm * 100);
         const borderAlpha = 0.12 + zNorm * 0.33;
         const shadowSpread = zNorm * 24;
         const nameOpacity = 0.2 + zNorm * 0.8;
 
-        // Apply — NO blur, fully crisp always
+        // Depth of field blur — far planets blur, front planets crisp
+        const blurAmount = Math.max(0, (1 - zNorm) * 2.5);
+
         orb.el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
         orb.el.style.left = `${screenX.toFixed(1)}px`;
         orb.el.style.top = `${screenY.toFixed(1)}px`;
         orb.el.style.opacity = opacity.toFixed(3);
-        orb.el.style.filter = 'none';
+        orb.el.style.filter = blurAmount > 0.1 ? `blur(${blurAmount.toFixed(1)}px)` : 'none';
         orb.el.style.zIndex = zIndex;
 
         // Dynamic sphere shadow + sun illumination
         const imgEl = orb.el.querySelector('.orbit-world-img');
         if (imgEl) {
-          // ─── Sun illumination direction ───
-          // Calculate angle from planet to center (where the sun is)
           const relX = screenX - cx;
           const relY = screenY - cy;
           const relDist = Math.sqrt(relX * relX + relY * relY) || 1;
-          const toCenterX = -relX / relDist;  // normalized direction toward sun
+          const toCenterX = -relX / relDist;
           const toCenterY = -relY / relDist;
 
-          // Map light position onto sphere surface for ::before gradient
-          const sunX = 50 + toCenterX * 25;   // 25% → 75%
+          const sunX = 50 + toCenterX * 25;
           const sunY = 50 + toCenterY * 25;
           imgEl.style.setProperty('--sun-x', `${sunX.toFixed(1)}%`);
           imgEl.style.setProperty('--sun-y', `${sunY.toFixed(1)}%`);
 
-          // Sun-facing edge glow (purple light on the side facing center)
           const edgeGlowX = (toCenterX * (3 + zNorm * 5)).toFixed(1);
           const edgeGlowY = (toCenterY * (3 + zNorm * 5)).toFixed(1);
           const sunGlowAlpha = (0.08 + zNorm * 0.22).toFixed(3);
@@ -297,11 +378,32 @@ export class Home {
         }
       }
 
+      // Center glow response
       if (this._centerGlow) {
         const centerIntensity = Math.min(totalGlow, 1);
         const glowScale = 1 + centerIntensity * 0.2;
         this._centerGlow.style.opacity = (0.5 + centerIntensity * 0.35).toFixed(3);
         this._centerGlow.style.transform = `scale(${glowScale.toFixed(3)})`;
+      }
+
+      // ═══ ENERGY BEAMS (Canvas) ═══
+      this._drawEnergyBeams(cx, cy);
+
+      // ═══ HUD POSITION UPDATE ═══
+      if (this._hudEl && this._snappedIndex >= 0 && this._snappedIndex < this._orbitals.length) {
+        const snapped = this._orbitals[this._snappedIndex];
+        if (snapped) {
+          const isMobile = window.innerWidth < 560;
+          if (isMobile) {
+            this._hudEl.style.left = `${snapped._screenX}px`;
+            this._hudEl.style.top = `${snapped._screenY + 65}px`;
+            this._hudEl.style.transform = 'translate(-50%, 0)';
+          } else {
+            this._hudEl.style.left = `${snapped._screenX + 65}px`;
+            this._hudEl.style.top = `${snapped._screenY - 30}px`;
+            this._hudEl.style.transform = 'none';
+          }
+        }
       }
     };
 
@@ -322,22 +424,185 @@ export class Home {
     this._animId = requestAnimationFrame(animate);
   }
 
+  // ─── Energy Beams: pulsing data lines from planets to core ───
+  _drawEnergyBeams(cx, cy) {
+    if (!this._energyCtx || !this._energyCanvas) return;
+
+    const ctx = this._energyCtx;
+    const w = this._energyCanvas.width / (this._energyDpr || 1);
+    const h = this._energyCanvas.height / (this._energyDpr || 1);
+    ctx.clearRect(0, 0, w, h);
+
+    for (const orb of this._orbitals) {
+      if (!orb.el || !orb._screenX) continue;
+
+      const sx = orb._screenX;
+      const sy = orb._screenY;
+      const zn = orb._zNorm;
+      const baseAlpha = 0.04 + zn * 0.08;
+
+      // Base beam line
+      const gradient = ctx.createLinearGradient(sx, sy, cx, cy);
+      gradient.addColorStop(0, `rgba(167, 139, 250, ${baseAlpha})`);
+      gradient.addColorStop(0.5, `rgba(124, 58, 237, ${baseAlpha * 0.6})`);
+      gradient.addColorStop(1, `rgba(167, 139, 250, ${baseAlpha * 0.3})`);
+
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(cx, cy);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 0.8 + zn * 0.5;
+      ctx.stroke();
+
+      // Traveling data pulse
+      const pulsePos = ((this._time * 0.003 + orb.thetaOffset) % 1);
+      const px = sx + (cx - sx) * pulsePos;
+      const py = sy + (cy - sy) * pulsePos;
+
+      const pulseRadius = 5 + zn * 5;
+      const pulseGrad = ctx.createRadialGradient(px, py, 0, px, py, pulseRadius);
+      pulseGrad.addColorStop(0, `rgba(167, 139, 250, ${0.25 + zn * 0.3})`);
+      pulseGrad.addColorStop(1, 'rgba(167, 139, 250, 0)');
+      ctx.beginPath();
+      ctx.arc(px, py, pulseRadius, 0, Math.PI * 2);
+      ctx.fillStyle = pulseGrad;
+      ctx.fill();
+
+      // Second pulse (staggered) for richer feel
+      const pulsePos2 = ((this._time * 0.003 + orb.thetaOffset + 0.5) % 1);
+      const px2 = sx + (cx - sx) * pulsePos2;
+      const py2 = sy + (cy - sy) * pulsePos2;
+      const r2 = 3 + zn * 3;
+      const pg2 = ctx.createRadialGradient(px2, py2, 0, px2, py2, r2);
+      pg2.addColorStop(0, `rgba(167, 139, 250, ${0.15 + zn * 0.15})`);
+      pg2.addColorStop(1, 'rgba(167, 139, 250, 0)');
+      ctx.beginPath();
+      ctx.arc(px2, py2, r2, 0, Math.PI * 2);
+      ctx.fillStyle = pg2;
+      ctx.fill();
+    }
+  }
+
+  // ─── Snap engagement: find nearest planet to sweet spot ───
+  _engageSnap() {
+    const count = this._orbitals.length;
+    if (count === 0) return;
+
+    // Sweet spot = PI/2 (bottom of ellipse, closest to camera)
+    const sweetSpotTheta = Math.PI / 2;
+
+    let bestIndex = 0;
+    let bestDist = Infinity;
+
+    for (let i = 0; i < count; i++) {
+      let planetTheta = (this._globalTheta + this._orbitals[i].thetaOffset) % (Math.PI * 2);
+      if (planetTheta < 0) planetTheta += Math.PI * 2;
+
+      let dist = Math.abs(planetTheta - sweetSpotTheta);
+      if (dist > Math.PI) dist = Math.PI * 2 - dist;
+
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestIndex = i;
+      }
+    }
+
+    // Only snap if reasonably close
+    if (bestDist > Math.PI / 3) return;
+
+    // Compute target globalTheta that places planet[bestIndex] at sweetSpotTheta
+    const offset = this._orbitals[bestIndex].thetaOffset;
+    let target = sweetSpotTheta - offset;
+
+    // Wrap to nearest position from current
+    while (target - this._globalTheta > Math.PI) target -= Math.PI * 2;
+    while (this._globalTheta - target > Math.PI) target += Math.PI * 2;
+
+    this._targetTheta = target;
+    this._snappedIndex = bestIndex;
+  }
+
+  // ─── Snap complete: flash selection ring + show HUD ───
+  _onSnapComplete() {
+    const orb = this._orbitals[this._snappedIndex];
+    if (!orb || !orb.el) return;
+
+    // Flash selection ring
+    this._showSelectionRing(orb.el);
+
+    // Show HUD with business metrics
+    const bizId = orb.el.dataset.businessId;
+    if (bizId === '__add__') return;
+
+    const biz = this.businesses.find(b => b.id === bizId);
+    if (biz) {
+      this._showHUD(orb, biz);
+    }
+  }
+
+  _showSelectionRing(worldEl) {
+    this._selectionRingEl?.remove();
+
+    const ring = document.createElement('div');
+    ring.className = 'orbit-selection-ring';
+    worldEl.appendChild(ring);
+    this._selectionRingEl = ring;
+
+    ring.addEventListener('animationend', () => ring.remove(), { once: true });
+  }
+
+  _showHUD(orb, business) {
+    this._hideHUD();
+
+    const hud = document.createElement('div');
+    hud.className = 'orbit-hud';
+    hud.innerHTML = `
+      <div class="orbit-hud-header">
+        <span class="orbit-hud-name">${business.nombre}</span>
+        <span class="orbit-hud-status orbit-hud-status--active">
+          <span class="orbit-hud-status-dot"></span> Activo
+        </span>
+      </div>
+      <div class="orbit-hud-metrics">
+        <div class="orbit-hud-metric">
+          <span class="orbit-hud-metric-label">Ecosistema</span>
+          <span class="orbit-hud-metric-value">Operativo</span>
+        </div>
+        <div class="orbit-hud-metric">
+          <span class="orbit-hud-metric-label">Conexion</span>
+          <span class="orbit-hud-metric-value">Estable</span>
+        </div>
+      </div>
+    `;
+
+    this.container.querySelector('#orbital-system-3d')?.appendChild(hud);
+    this._hudEl = hud;
+
+    requestAnimationFrame(() => hud.classList.add('orbit-hud--visible'));
+  }
+
+  _hideHUD() {
+    if (this._hudEl) {
+      this._hudEl.classList.remove('orbit-hud--visible');
+      const h = this._hudEl;
+      setTimeout(() => h?.remove(), 300);
+      this._hudEl = null;
+    }
+  }
+
   // ─── Ripple wave spawner ───
   _spawnRipples(worldEl) {
     const ripplesContainer = worldEl.querySelector('.orbit-world-ripples');
     if (!ripplesContainer) return;
 
-    // Clear previous ripples
     ripplesContainer.innerHTML = '';
 
-    // Spawn 3 staggered ripple waves
     for (let i = 0; i < 3; i++) {
       const ripple = document.createElement('div');
       ripple.className = 'ripple-wave';
       ripple.style.animationDelay = `${i * 0.4}s`;
       ripplesContainer.appendChild(ripple);
 
-      // Clean up after animation
       ripple.addEventListener('animationend', () => {
         ripple.remove();
       }, { once: true });
@@ -374,69 +639,153 @@ export class Home {
       window.location.reload();
     });
 
-    // IDs that show the "coming soon" popup
     const comingSoonIds = ['xazai', 'gregoria'];
 
-    // Business world clicks — pause orbit + emit frequency waves
+    // ═══ SCROLL-JACKING EVENT LISTENERS ═══
+
+    // Mouse wheel → rotate orbit
+    this._wheelHandler = (e) => {
+      // Only hijack scroll on home page
+      if (!this.container.querySelector('#orbital-system-3d')) return;
+
+      e.preventDefault();
+      const px = e.deltaMode === 1 ? e.deltaY * 20 : e.deltaY;
+      this._scrollVel += px * 0.0008;
+      this._targetTheta = null;
+      this._snappedIndex = -1;
+      this._hideHUD();
+      this._lastScrollTime = performance.now();
+
+      // Push parallax starfield
+      if (this._particleCanvas?.setScrollOffset) {
+        this._particleCanvas.setScrollOffset(px * 0.5);
+      }
+    };
+    window.addEventListener('wheel', this._wheelHandler, { passive: false });
+
+    // Touch swipe → rotate orbit
+    this._touchStartHandler = (e) => {
+      this._touchStartY = e.touches[0].clientY;
+      this._touchLastY = this._touchStartY;
+    };
+
+    this._touchMoveHandler = (e) => {
+      if (!this.container.querySelector('#orbital-system-3d')) return;
+
+      e.preventDefault();
+      const y = e.touches[0].clientY;
+      const dy = y - this._touchLastY;
+      this._scrollVel += dy * -0.003; // inverted: swipe up = rotate forward
+      this._touchLastY = y;
+      this._lastScrollTime = performance.now();
+      this._targetTheta = null;
+      this._snappedIndex = -1;
+      this._hideHUD();
+
+      if (this._particleCanvas?.setScrollOffset) {
+        this._particleCanvas.setScrollOffset(dy * -0.8);
+      }
+    };
+
+    this._touchEndHandler = () => {
+      // Momentum carries via _scrollVel, snap engages naturally
+    };
+
+    window.addEventListener('touchstart', this._touchStartHandler, { passive: true });
+    window.addEventListener('touchmove', this._touchMoveHandler, { passive: false });
+    window.addEventListener('touchend', this._touchEndHandler, { passive: true });
+
+    // Gyroscope for mobile parallax
+    if (window.DeviceOrientationEvent) {
+      this._gyroHandler = (e) => {
+        if (this._particleCanvas?.setGyroOffset && e.gamma !== null && e.beta !== null) {
+          this._particleCanvas.setGyroOffset(
+            e.gamma * 0.02,
+            (e.beta - 45) * 0.015
+          );
+        }
+      };
+      window.addEventListener('deviceorientation', this._gyroHandler);
+    }
+
+    // ═══ PLANET CLICK HANDLERS ═══
+
     this.container.querySelectorAll('.orbit-world').forEach(world => {
       world.addEventListener('click', () => {
-        if (this._activeWorld === world) {
-          this._paused = false;
-          this._activeWorld = null;
-          world.classList.remove('orbit-world--active');
-          return;
-        }
-
-        if (this._activeWorld) {
-          this._activeWorld.classList.remove('orbit-world--active');
-        }
-
-        this._paused = true;
-        this._activeWorld = world;
-        world.classList.add('orbit-world--active');
-
-        this._spawnRipples(world);
-
-        this._rippleInterval && clearInterval(this._rippleInterval);
-        this._rippleInterval = setInterval(() => {
-          if (this._activeWorld === world) {
-            this._spawnRipples(world);
-          } else {
-            clearInterval(this._rippleInterval);
-          }
-        }, 1600);
-
         const bizId = world.dataset.businessId;
 
-        // "Add my business" planet → supernova + appointment scheduler
-        if (bizId === '__add__') {
-          this._triggerSupernova(world, () => {
-            this._showAppointmentModal();
-          });
-          return;
+        // If this planet is already snapped and focused → navigate
+        if (this._snappedIndex >= 0) {
+          const snappedOrb = this._orbitals[this._snappedIndex];
+          if (snappedOrb?.el === world) {
+            // Planet is in focus — navigate to it
+
+            // "Add my business" planet → supernova + appointment scheduler
+            if (bizId === '__add__') {
+              this._paused = true;
+              this._activeWorld = world;
+              world.classList.add('orbit-world--active');
+              this._spawnRipples(world);
+              this._triggerSupernova(world, () => {
+                this._showAppointmentModal();
+              });
+              return;
+            }
+
+            // Coming soon → show bubble
+            if (comingSoonIds.includes(bizId)) {
+              const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
+              this._showComingSoonBubble(bizName);
+              return;
+            }
+
+            // MDN Podcast → zoom then curtain
+            if (bizId === 'mdn-podcast') {
+              this._hideHUD();
+              this._triggerZoomTransition(world, () => {
+                window.location.hash = '#podcast/mdn-podcast';
+              });
+              return;
+            }
+
+            // Other navigable planets → zoom transition
+            this._hideHUD();
+            this._triggerZoomTransition(world, () => {
+              window.location.hash = `#dashboard/${bizId}`;
+            });
+            return;
+          }
         }
 
-        // MDN Podcast → curtain close → podcast world
-        if (bizId === 'mdn-podcast') {
-          this._triggerCurtainTransition(() => {
-            window.location.hash = '#podcast/mdn-podcast';
-          });
-          return;
-        }
+        // Otherwise: rotate to bring this planet to front focus
+        const orbIndex = this._orbitals.findIndex(o => o.el === world);
+        if (orbIndex >= 0) {
+          const sweetSpotTheta = Math.PI / 2;
+          const offset = this._orbitals[orbIndex].thetaOffset;
+          let target = sweetSpotTheta - offset;
 
-        // Show coming-soon popup for specific businesses
-        if (comingSoonIds.includes(bizId)) {
-          const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
-          this._showComingSoonBubble(bizName);
+          while (target - this._globalTheta > Math.PI) target -= Math.PI * 2;
+          while (this._globalTheta - target > Math.PI) target += Math.PI * 2;
+
+          this._targetTheta = target;
+          this._snappedIndex = orbIndex;
+          this._scrollVel = 0;
+          this._lastScrollTime = performance.now();
+          this._hideHUD();
         }
       });
     });
 
-    // Click on empty space → resume orbit
+    // Click on empty space → break snap, resume auto-rotation
     const systemEl = this.container.querySelector('#orbital-system-3d');
     if (systemEl) {
       systemEl.addEventListener('click', (e) => {
         if (e.target === systemEl || e.target.classList.contains('orbital-ring') || e.target.classList.contains('orbital-center')) {
+          this._targetTheta = null;
+          this._snappedIndex = -1;
+          this._hideHUD();
+          this._lastScrollTime = performance.now() - 3000; // allow auto-rotate
+
           if (this._paused) {
             this._paused = false;
             if (this._activeWorld) {
@@ -450,9 +799,72 @@ export class Home {
     }
   }
 
+  // ─── Zoom-In Transition (planet entry) ───
+  _triggerZoomTransition(worldEl, onComplete) {
+    const rect = worldEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'zoom-overlay';
+    overlay.innerHTML = `
+      <div class="zoom-circle" style="left:${centerX}px;top:${centerY}px"></div>
+      <div class="zoom-flash" style="left:${centerX}px;top:${centerY}px"></div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Spring-driven zoom
+    let scale = 1;
+    let vel = 0;
+    const target = 40;
+    const K = 60;
+    const D = 12;
+    let lastT = 0;
+    let navigated = false;
+
+    const circle = overlay.querySelector('.zoom-circle');
+
+    const tick = (now) => {
+      if (!lastT) { lastT = now; requestAnimationFrame(tick); return; }
+      const dt = Math.min((now - lastT) / 1000, 0.025);
+      lastT = now;
+
+      const x = scale - target;
+      vel += (-K * x - D * vel) * dt;
+      scale += vel * dt;
+
+      const diameter = rect.width * scale;
+      circle.style.width = `${diameter}px`;
+      circle.style.height = `${diameter}px`;
+
+      const progress = Math.min(scale / target, 1);
+      circle.style.opacity = Math.min(1, progress * 1.5);
+      overlay.style.background = `rgba(10, 10, 15, ${progress * 0.9})`;
+
+      // Border radius transitions from circle to rectangle
+      circle.style.borderRadius = `${Math.max(0, 50 - progress * 50)}%`;
+
+      if (progress > 0.65 && !navigated) {
+        navigated = true;
+        onComplete();
+      }
+
+      if (progress > 0.95 && Math.abs(vel) < 0.5) {
+        setTimeout(() => overlay.remove(), 400);
+        return;
+      }
+
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(() => {
+      overlay.classList.add('zoom-overlay--active');
+      requestAnimationFrame(tick);
+    });
+  }
+
   // ─── Bubble notification for "Coming Soon" worlds ───
   _showComingSoonBubble(businessName) {
-    // Remove any existing bubble
     const existing = document.querySelector('.cosmos-bubble');
     if (existing) {
       existing.remove();
@@ -486,10 +898,8 @@ export class Home {
       setTimeout(() => bubble.remove(), 400);
     };
 
-    // Auto-dismiss after 3.5s
     this._bubbleTimeout = setTimeout(dismiss, 3500);
 
-    // Tap to dismiss
     bubble.addEventListener('click', () => {
       clearTimeout(this._bubbleTimeout);
       dismiss();
@@ -502,7 +912,6 @@ export class Home {
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
 
-    // Create supernova overlay
     const nova = document.createElement('div');
     nova.className = 'supernova-overlay';
     nova.innerHTML = `
@@ -514,7 +923,6 @@ export class Home {
     `;
     document.body.appendChild(nova);
 
-    // Spawn particle burst
     const particleContainer = nova.querySelector('.supernova-particles');
     for (let i = 0; i < 20; i++) {
       const p = document.createElement('div');
@@ -529,10 +937,8 @@ export class Home {
       particleContainer.appendChild(p);
     }
 
-    // Trigger animation
     requestAnimationFrame(() => nova.classList.add('supernova-overlay--active'));
 
-    // After animation completes, fade out and call callback
     setTimeout(() => {
       nova.classList.add('supernova-overlay--fade');
       setTimeout(() => {
@@ -544,7 +950,6 @@ export class Home {
 
   // ─── Appointment Scheduling Modal ───
   _showAppointmentModal() {
-    // Remove any existing modal
     document.querySelector('.appt-modal-overlay')?.remove();
 
     const overlay = document.createElement('div');
@@ -615,21 +1020,17 @@ export class Home {
 
     document.body.appendChild(overlay);
 
-    // Set min date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const dateInput = overlay.querySelector('#appt-date');
     if (dateInput) dateInput.min = tomorrow.toISOString().split('T')[0];
 
-    // Entrance animation
     requestAnimationFrame(() => overlay.classList.add('appt-modal-overlay--visible'));
 
-    // Close handler
     const close = () => {
       overlay.classList.remove('appt-modal-overlay--visible');
       overlay.classList.add('appt-modal-overlay--closing');
       setTimeout(() => overlay.remove(), 350);
-      // Resume orbit
       this._paused = false;
       if (this._activeWorld) {
         this._activeWorld.classList.remove('orbit-world--active');
@@ -640,7 +1041,6 @@ export class Home {
     overlay.querySelector('#appt-close').addEventListener('click', close);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
 
-    // Form submit → save to Firestore
     overlay.querySelector('#appt-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = overlay.querySelector('#appt-submit');
@@ -659,7 +1059,6 @@ export class Home {
           status: 'pendiente',
         });
 
-        // Success state
         const form = overlay.querySelector('.appt-form');
         form.innerHTML = `
           <div class="appt-success">
@@ -705,7 +1104,6 @@ export class Home {
     `;
     document.body.appendChild(ov);
 
-    // Element refs
     const q = s => ov.querySelector(s);
     const panelL    = q('.curtain-panel--left');
     const panelR    = q('.curtain-panel--right');
@@ -719,66 +1117,49 @@ export class Home {
     const edgeSL    = panelL.querySelector('.curtain-edge-shadow');
     const edgeSR    = panelR.querySelector('.curtain-edge-shadow');
 
-    // ── Spring state ──
-    let pos = -115;    // panel position in %
+    let pos = -115;
     let vel = 0;
-    let target = 0;   // 0 = closed center
+    let target = 0;
     let phase = 'closing';
     let navigated = false;
 
-    // Tuning — heavy velvet: low stiffness, moderate damping
-    let K = 110;  // stiffness
-    let D = 16;   // damping
+    let K = 110;
+    let D = 16;
 
     let lastT = 0;
 
-    // ── Render: all visuals derived from pos & vel ──
     const render = () => {
       const closedness = Math.max(0, Math.min(1, 1 - Math.abs(pos) / 115));
 
-      // Fabric skew — bottom lags behind top (weight)
       const skew = Math.max(-2.8, Math.min(2.8, vel * 0.005));
-
-      // Fabric compression at high speed
       const sx = Math.max(0.96, 1 - Math.abs(vel) * 0.00016);
-
-      // Motion shadow
       const mBlur = Math.min(28, Math.abs(vel) * 0.055);
       const mDir = vel > 0 ? 1 : -1;
 
-      // Panels
       panelL.style.transform =
         `translate3d(${pos}%,0,0) skewX(${skew}deg) scaleX(${sx})`;
       panelR.style.transform =
         `translate3d(${-pos}%,0,0) skewX(${-skew}deg) scaleX(${sx})`;
 
-      // Dynamic box-shadow (motion blur illusion)
       const sStr = `${mBlur * mDir}px 0 ${mBlur * 1.4}px rgba(0,0,0,${(0.25 + closedness * 0.35).toFixed(2)})`;
       panelL.style.boxShadow = sStr;
       panelR.style.boxShadow = sStr.replace(mBlur * mDir, -mBlur * mDir);
 
-      // Dimmer
       dimmer.style.opacity = (closedness * 0.7).toFixed(3);
-
-      // Valance
       valance.style.opacity = Math.min(1, closedness * 2.2).toFixed(3);
 
-      // Gold trim — visible only when nearly closed
       const tOp = Math.max(0, (closedness - 0.75) / 0.25).toFixed(3);
       trimL.style.opacity = tOp;
       trimR.style.opacity = tOp;
 
-      // Edge shadows
       const eOp = (closedness * 0.75).toFixed(3);
       edgeSL.style.opacity = eOp;
       edgeSR.style.opacity = eOp;
 
-      // Seam glow
       const smOp = Math.max(0, (closedness - 0.88) / 0.12).toFixed(3);
       seam.style.opacity = smOp;
       seamHalo.style.opacity = (smOp * 0.65).toFixed(3);
 
-      // Light leak (opening only)
       if (phase === 'opening') {
         const openness = 1 - closedness;
         const peak = 0.3;
@@ -790,21 +1171,18 @@ export class Home {
       }
     };
 
-    // ── Physics tick at 60fps ──
     const tick = (now) => {
       if (!lastT) { lastT = now; requestAnimationFrame(tick); return; }
 
       const dt = Math.min((now - lastT) / 1000, 0.022);
       lastT = now;
 
-      // Damped harmonic oscillator: F = -K·x - D·v
       const x = pos - target;
       vel += (-K * x - D * vel) * dt;
       pos += vel * dt;
 
       render();
 
-      // Settled?
       const settled = Math.abs(x) < 0.06 && Math.abs(vel) < 0.3;
 
       if (settled && phase === 'closing') {
@@ -814,13 +1192,12 @@ export class Home {
 
         if (onComplete && !navigated) { navigated = true; onComplete(); }
 
-        // Hold → then open with anticipation kick
         setTimeout(() => {
           phase = 'opening';
           target = -115;
-          K = 80;   // softer — more dramatic reveal
+          K = 80;
           D = 13;
-          vel = 12; // anticipation: tiny inward push first
+          vel = 12;
           lastT = 0;
           requestAnimationFrame(tick);
         }, 400);
@@ -848,7 +1225,22 @@ export class Home {
     if (this._rippleInterval) {
       clearInterval(this._rippleInterval);
     }
-    // Note: Do NOT remove curtain-overlay here — it must persist
-    // through navigation so the opening animation plays on the new page.
+
+    // Clean up scroll-jacking listeners
+    if (this._wheelHandler) {
+      window.removeEventListener('wheel', this._wheelHandler);
+    }
+    if (this._touchStartHandler) {
+      window.removeEventListener('touchstart', this._touchStartHandler);
+      window.removeEventListener('touchmove', this._touchMoveHandler);
+      window.removeEventListener('touchend', this._touchEndHandler);
+    }
+    if (this._gyroHandler) {
+      window.removeEventListener('deviceorientation', this._gyroHandler);
+    }
+
+    this._hideHUD();
+    this._selectionRingEl?.remove();
+    // Note: Do NOT remove curtain-overlay or zoom-overlay here
   }
 }
