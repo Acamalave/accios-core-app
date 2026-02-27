@@ -679,7 +679,7 @@ export class Home {
     });
   }
 
-  // ─── Curtain Close → Navigate → Open Transition ───
+  // ─── Curtain Close → Navigate → Open Transition (Cinematic) ───
   _triggerCurtainTransition(onComplete) {
     // Remove any existing curtain
     document.querySelector('.curtain-overlay')?.remove();
@@ -688,15 +688,24 @@ export class Home {
     curtain.className = 'curtain-overlay';
     curtain.innerHTML = `
       <div class="curtain-valance"></div>
-      <div class="curtain-panel curtain-panel--left"></div>
-      <div class="curtain-panel curtain-panel--right"></div>
+      <div class="curtain-panel curtain-panel--left">
+        <div class="curtain-fabric-shadow curtain-fabric-shadow--left"></div>
+      </div>
+      <div class="curtain-panel curtain-panel--right">
+        <div class="curtain-fabric-shadow curtain-fabric-shadow--right"></div>
+      </div>
       <div class="curtain-seam"></div>
+      <div class="curtain-seam-halo"></div>
+      <div class="curtain-light-leak"></div>
     `;
     document.body.appendChild(curtain);
 
-    // Phase 1: Close curtains (1s animation)
+    // Phase 1: Close curtains (1.4s animation)
+    // Double-rAF ensures the browser has painted the initial state
     requestAnimationFrame(() => {
-      curtain.classList.add('curtain-overlay--closing');
+      requestAnimationFrame(() => {
+        curtain.classList.add('curtain-overlay--closing');
+      });
     });
 
     // Phase 2: After close completes → navigate behind the curtain
@@ -704,30 +713,30 @@ export class Home {
       curtain.classList.remove('curtain-overlay--closing');
       curtain.classList.add('curtain-overlay--closed');
 
-      // Set panels to closed position explicitly
+      // Lock panels at closed position
       const left = curtain.querySelector('.curtain-panel--left');
       const right = curtain.querySelector('.curtain-panel--right');
-      if (left) left.style.transform = 'translateX(0%) skewX(0deg)';
-      if (right) right.style.transform = 'translateX(0%) skewX(0deg)';
+      if (left) left.style.transform = 'translate3d(0%, 0, 0) rotateY(0deg) scaleX(1)';
+      if (right) right.style.transform = 'translate3d(0%, 0, 0) rotateY(0deg) scaleX(1)';
 
-      // Navigate while curtain is closed
+      // Navigate while curtain is fully closed
       if (onComplete) onComplete();
 
-      // Phase 3: Open curtains after new page renders (small delay)
+      // Phase 3: Open curtains — reveal the new page
       setTimeout(() => {
-        // Clear inline styles so CSS animation takes over
+        // Clear inline transforms so CSS open animation takes over
         if (left) left.style.transform = '';
         if (right) right.style.transform = '';
 
         curtain.classList.remove('curtain-overlay--closed');
         curtain.classList.add('curtain-overlay--opening');
 
-        // Remove curtain after open animation finishes
+        // Remove after open animation finishes (1.6s + buffer)
         setTimeout(() => {
           curtain.remove();
-        }, 1200);
-      }, 350);
-    }, 1050);
+        }, 1800);
+      }, 400);
+    }, 1500);
   }
 
   unmount() {
