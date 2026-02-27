@@ -387,10 +387,10 @@ export class Home {
           }
         }, 1600);
 
-        // MDN Podcast → onboarding experience
+        // MDN Podcast → dashboard
         const bizId = world.dataset.businessId;
         if (bizId === 'mdn-podcast') {
-          window.location.hash = '#onboarding/mdn-podcast';
+          window.location.hash = '#dashboard/mdn-podcast';
           return;
         }
 
