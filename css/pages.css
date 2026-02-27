@@ -92,8 +92,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(340px, 70vmin, 540px);
-  height: clamp(340px, 70vmin, 540px);
+  width: clamp(420px, 82vmin, 700px);
+  height: clamp(420px, 82vmin, 700px);
 }
 
 /* --- Single visible orbital ring (the path planets follow) --- */
@@ -127,8 +127,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 82px;
-  height: 82px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background:
     radial-gradient(
@@ -201,7 +201,7 @@
 }
 
 .orbital-center-text {
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   font-weight: var(--weight-bold);
   letter-spacing: 0.18em;
   background: linear-gradient(135deg, var(--purple-200), var(--purple-400));
@@ -215,7 +215,7 @@
 /* Sun corona — inner ring */
 .orbital-center-corona {
   position: absolute;
-  inset: -35px;
+  inset: -45px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
@@ -230,7 +230,7 @@
 
 /* Sun corona — outer halo */
 .orbital-center-corona--outer {
-  inset: -90px;
+  inset: -110px;
   background: radial-gradient(
     circle,
     rgba(124, 58, 237, 0.05) 0%,
@@ -242,7 +242,7 @@
 
 .orbital-center-glow {
   position: absolute;
-  inset: -80px;
+  inset: -100px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
@@ -283,8 +283,8 @@
 
 .point-light {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
@@ -316,11 +316,11 @@
 
 .orbit-world-glow {
   position: absolute;
-  top: -12px;
+  top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  width: 104px;
-  height: 104px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
@@ -334,8 +334,8 @@
 
 /* --- World Image (3D planet sphere) --- */
 .orbit-world-img {
-  width: 78px;
-  height: 78px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid rgba(124, 58, 237, 0.2);
@@ -410,7 +410,7 @@
 
 /* --- World Name (label under planet) --- */
 .orbit-world-name {
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
   letter-spacing: 0.1em;
@@ -433,8 +433,8 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 78px;
-  height: 78px;
+  width: 96px;
+  height: 96px;
   pointer-events: none;
   z-index: 0;
 }
@@ -712,53 +712,53 @@
 
   .orbital-system {
     top: 50%;
-    width: clamp(300px, 76vmin, 420px);
-    height: clamp(300px, 76vmin, 420px);
+    width: clamp(360px, 82vmin, 520px);
+    height: clamp(360px, 82vmin, 520px);
   }
 
   .orbital-center {
-    width: 66px;
-    height: 66px;
+    width: 80px;
+    height: 80px;
   }
 
   .orbital-center-text {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
   }
 
   .orbital-center-glow {
-    inset: -50px;
+    inset: -65px;
   }
 
   .orbital-center-corona {
-    inset: -25px;
+    inset: -32px;
   }
 
   .orbital-center-corona--outer {
-    inset: -60px;
+    inset: -75px;
   }
 
   .orbit-world-img {
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
   }
 
   .orbit-world-ripples {
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
   }
 
   .orbit-world-name {
-    font-size: 0.55rem;
+    font-size: 0.58rem;
   }
 
   .orbit-world-glow {
-    width: 86px;
-    height: 86px;
+    width: 106px;
+    height: 106px;
   }
 
   .point-light {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
   }
 }
 
@@ -785,8 +785,8 @@
 
   .orbital-system {
     top: 50%;
-    width: clamp(280px, 88vw, 350px);
-    height: clamp(280px, 88vw, 350px);
+    width: clamp(310px, 92vw, 400px);
+    height: clamp(310px, 92vw, 400px);
   }
 
   .home-footer {
@@ -796,52 +796,52 @@
   }
 
   .orbital-center {
-    width: 56px;
-    height: 56px;
+    width: 66px;
+    height: 66px;
   }
 
   .orbital-center-text {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     letter-spacing: 0.12em;
   }
 
   .orbital-center-glow {
-    inset: -35px;
-  }
-
-  .orbital-center-corona {
-    inset: -18px;
-  }
-
-  .orbital-center-corona--outer {
     inset: -45px;
   }
 
+  .orbital-center-corona {
+    inset: -24px;
+  }
+
+  .orbital-center-corona--outer {
+    inset: -55px;
+  }
+
   .orbit-world-img {
-    width: 54px;
-    height: 54px;
+    width: 68px;
+    height: 68px;
     border-width: 1.5px;
   }
 
   .orbit-world-ripples {
-    width: 54px;
-    height: 54px;
+    width: 68px;
+    height: 68px;
   }
 
   .orbit-world-name {
-    font-size: 0.48rem;
+    font-size: 0.52rem;
     letter-spacing: 0.05em;
   }
 
   .orbit-world-glow {
-    width: 70px;
-    height: 70px;
-    top: -8px;
+    width: 88px;
+    height: 88px;
+    top: -10px;
   }
 
   .point-light {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
   }
 
   /* Bubble compact for small screens */
