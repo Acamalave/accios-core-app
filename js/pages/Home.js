@@ -408,9 +408,11 @@ export class Home {
 
         const bizId = world.dataset.businessId;
 
-        // "Add my business" planet
+        // "Add my business" planet → supernova + appointment scheduler
         if (bizId === '__add__') {
-          this._showComingSoonBubble('Agregar Mi Negocio');
+          this._triggerSupernova(world, () => {
+            this._showAppointmentModal();
+          });
           return;
         }
 
@@ -489,6 +491,189 @@ export class Home {
     bubble.addEventListener('click', () => {
       clearTimeout(this._bubbleTimeout);
       dismiss();
+    });
+  }
+
+  // ─── Supernova explosion animation ───
+  _triggerSupernova(worldEl, onComplete) {
+    const rect = worldEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    // Create supernova overlay
+    const nova = document.createElement('div');
+    nova.className = 'supernova-overlay';
+    nova.innerHTML = `
+      <div class="supernova-flash" style="left:${cx}px;top:${cy}px"></div>
+      <div class="supernova-ring supernova-ring--1" style="left:${cx}px;top:${cy}px"></div>
+      <div class="supernova-ring supernova-ring--2" style="left:${cx}px;top:${cy}px"></div>
+      <div class="supernova-ring supernova-ring--3" style="left:${cx}px;top:${cy}px"></div>
+      <div class="supernova-particles" style="left:${cx}px;top:${cy}px"></div>
+    `;
+    document.body.appendChild(nova);
+
+    // Spawn particle burst
+    const particleContainer = nova.querySelector('.supernova-particles');
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'supernova-particle';
+      const angle = (Math.PI * 2 / 20) * i + (Math.random() - 0.5) * 0.4;
+      const dist = 80 + Math.random() * 160;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+      p.style.setProperty('--dx', `${dx}px`);
+      p.style.setProperty('--dy', `${dy}px`);
+      p.style.animationDelay = `${Math.random() * 0.15}s`;
+      particleContainer.appendChild(p);
+    }
+
+    // Trigger animation
+    requestAnimationFrame(() => nova.classList.add('supernova-overlay--active'));
+
+    // After animation completes, fade out and call callback
+    setTimeout(() => {
+      nova.classList.add('supernova-overlay--fade');
+      setTimeout(() => {
+        nova.remove();
+        if (onComplete) onComplete();
+      }, 400);
+    }, 1200);
+  }
+
+  // ─── Appointment Scheduling Modal ───
+  _showAppointmentModal() {
+    // Remove any existing modal
+    document.querySelector('.appt-modal-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'appt-modal-overlay';
+    overlay.innerHTML = `
+      <div class="appt-modal">
+        <button class="appt-modal-close" id="appt-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        <div class="appt-modal-header">
+          <div class="appt-modal-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <h2 class="appt-modal-title">Agenda tu Cita</h2>
+          <p class="appt-modal-subtitle">Transforma tu negocio en un ecosistema digital</p>
+        </div>
+
+        <form class="appt-form" id="appt-form">
+          <div class="appt-field">
+            <label class="appt-label">Nombre completo</label>
+            <input type="text" class="appt-input" id="appt-name" placeholder="Tu nombre" required />
+          </div>
+          <div class="appt-field">
+            <label class="appt-label">Telefono / WhatsApp</label>
+            <input type="tel" class="appt-input" id="appt-phone" placeholder="+58 412 000 0000" required />
+          </div>
+          <div class="appt-field">
+            <label class="appt-label">Nombre del negocio</label>
+            <input type="text" class="appt-input" id="appt-biz" placeholder="Mi empresa" required />
+          </div>
+          <div class="appt-row">
+            <div class="appt-field appt-field--half">
+              <label class="appt-label">Fecha preferida</label>
+              <input type="date" class="appt-input" id="appt-date" required />
+            </div>
+            <div class="appt-field appt-field--half">
+              <label class="appt-label">Hora preferida</label>
+              <select class="appt-input" id="appt-time" required>
+                <option value="">Seleccionar</option>
+                <option value="09:00">09:00 AM</option>
+                <option value="10:00">10:00 AM</option>
+                <option value="11:00">11:00 AM</option>
+                <option value="12:00">12:00 PM</option>
+                <option value="14:00">02:00 PM</option>
+                <option value="15:00">03:00 PM</option>
+                <option value="16:00">04:00 PM</option>
+                <option value="17:00">05:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="appt-field">
+            <label class="appt-label">Mensaje (opcional)</label>
+            <textarea class="appt-input appt-textarea" id="appt-msg" placeholder="Cuentanos sobre tu negocio..." rows="3"></textarea>
+          </div>
+          <button type="submit" class="appt-submit" id="appt-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+            <span>Agendar Cita</span>
+          </button>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Set min date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateInput = overlay.querySelector('#appt-date');
+    if (dateInput) dateInput.min = tomorrow.toISOString().split('T')[0];
+
+    // Entrance animation
+    requestAnimationFrame(() => overlay.classList.add('appt-modal-overlay--visible'));
+
+    // Close handler
+    const close = () => {
+      overlay.classList.remove('appt-modal-overlay--visible');
+      overlay.classList.add('appt-modal-overlay--closing');
+      setTimeout(() => overlay.remove(), 350);
+      // Resume orbit
+      this._paused = false;
+      if (this._activeWorld) {
+        this._activeWorld.classList.remove('orbit-world--active');
+        this._activeWorld = null;
+      }
+    };
+
+    overlay.querySelector('#appt-close').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+    // Form submit → save to Firestore
+    overlay.querySelector('#appt-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = overlay.querySelector('#appt-submit');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Enviando...</span>';
+
+      try {
+        await userAuth.createAppointment({
+          name: overlay.querySelector('#appt-name').value.trim(),
+          phone: overlay.querySelector('#appt-phone').value.trim(),
+          business: overlay.querySelector('#appt-biz').value.trim(),
+          date: overlay.querySelector('#appt-date').value,
+          time: overlay.querySelector('#appt-time').value,
+          message: overlay.querySelector('#appt-msg').value.trim(),
+          userId: this.currentUser?.phone || 'anonymous',
+          status: 'pendiente',
+        });
+
+        // Success state
+        const form = overlay.querySelector('.appt-form');
+        form.innerHTML = `
+          <div class="appt-success">
+            <div class="appt-success-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3 class="appt-success-title">Cita Agendada</h3>
+            <p class="appt-success-text">Nos pondremos en contacto contigo pronto para confirmar tu cita.</p>
+          </div>
+        `;
+        setTimeout(close, 3000);
+      } catch (err) {
+        console.error('Failed to save appointment:', err);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Error — Reintentar</span>';
+      }
     });
   }
 

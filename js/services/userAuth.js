@@ -484,6 +484,35 @@ class UserAuth {
       return false;
     }
   }
+
+  // ═══════════════════════════════════════
+  //  APPOINTMENTS
+  // ═══════════════════════════════════════
+
+  async createAppointment(data) {
+    try {
+      const colRef = collection(db, 'appointments');
+      const docRef = await addDoc(colRef, {
+        ...data,
+        createdAt: new Date().toISOString(),
+      });
+      return docRef.id;
+    } catch (e) {
+      console.error('Create appointment failed:', e);
+      throw new Error('Error al agendar cita');
+    }
+  }
+
+  async getAllAppointments() {
+    try {
+      const q = query(collection(db, 'appointments'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get appointments failed:', e);
+      return [];
+    }
+  }
 }
 
 export default new UserAuth();

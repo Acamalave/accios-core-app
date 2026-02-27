@@ -474,16 +474,9 @@
   filter: saturate(1.1) brightness(0.95) contrast(1.05);
 }
 
-/* --- World Name (label under planet) --- */
+/* --- World Name (hidden for clean minimal look) --- */
 .orbit-world-name {
-  font-size: 0.68rem;
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(167, 139, 250, 0.25);
-  white-space: nowrap;
-  transition: text-shadow 0.4s ease;
+  display: none;
 }
 
 .orbit-world:hover .orbit-world-name {
@@ -939,5 +932,341 @@
 
   .cosmos-bubble-msg {
     font-size: 0.65rem;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════
+   SUPERNOVA ANIMATION
+   ═══════════════════════════════════════════════ */
+
+.supernova-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.supernova-overlay--active {
+  opacity: 1;
+}
+
+.supernova-overlay--fade {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.supernova-flash {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(190, 165, 255, 0.7) 30%,
+    rgba(124, 58, 237, 0.4) 60%,
+    transparent 80%
+  );
+  animation: supernovaFlash 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes supernovaFlash {
+  0% { width: 0; height: 0; opacity: 1; }
+  40% { width: 350px; height: 350px; opacity: 0.9; }
+  100% { width: 600px; height: 600px; opacity: 0; }
+}
+
+.supernova-ring {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(167, 139, 250, 0.6);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.4), inset 0 0 20px rgba(124, 58, 237, 0.2);
+  animation: supernovaRing 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.supernova-ring--2 {
+  border-color: rgba(124, 58, 237, 0.4);
+  animation-delay: 0.12s;
+}
+
+.supernova-ring--3 {
+  border-color: rgba(124, 58, 237, 0.25);
+  border-width: 1px;
+  animation-delay: 0.25s;
+}
+
+@keyframes supernovaRing {
+  0% { width: 0; height: 0; opacity: 1; }
+  60% { opacity: 0.7; }
+  100% { width: 500px; height: 500px; opacity: 0; }
+}
+
+.supernova-particles {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+}
+
+.supernova-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--purple-400);
+  box-shadow: 0 0 6px rgba(167, 139, 250, 0.8);
+  animation: supernovaParticle 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes supernovaParticle {
+  0% { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+}
+
+
+/* ═══════════════════════════════════════════════
+   APPOINTMENT MODAL
+   ═══════════════════════════════════════════════ */
+
+.appt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  padding: var(--space-4);
+}
+
+.appt-modal-overlay--visible {
+  opacity: 1;
+}
+
+.appt-modal-overlay--closing {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.appt-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(12, 8, 28, 0.95);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 20px;
+  padding: var(--space-6);
+  box-shadow:
+    0 0 40px rgba(124, 58, 237, 0.12),
+    0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: translateY(20px) scale(0.96);
+  animation: apptModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+}
+
+@keyframes apptModalIn {
+  to { transform: translateY(0) scale(1); }
+}
+
+.appt-modal-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.appt-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.appt-modal-header {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.appt-modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-3);
+  color: var(--purple-400);
+}
+
+.appt-modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+  letter-spacing: 0.02em;
+}
+
+.appt-modal-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.appt-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.appt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.appt-row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.appt-field--half {
+  flex: 1;
+}
+
+.appt-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.appt-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.appt-input:focus {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+}
+
+.appt-input::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.appt-textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.appt-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  margin-top: var(--space-2);
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-500));
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.02em;
+}
+
+.appt-submit:hover {
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-400));
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
+}
+
+.appt-submit:active {
+  transform: translateY(0);
+}
+
+.appt-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success state */
+.appt-success {
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+
+.appt-success-icon {
+  color: #22c55e;
+  margin-bottom: var(--space-3);
+  animation: apptSuccessPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes apptSuccessPop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.appt-success-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.appt-success-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .appt-modal {
+    padding: var(--space-5);
+    border-radius: 16px;
+  }
+
+  .appt-modal-title {
+    font-size: 1.2rem;
+  }
+
+  .appt-row {
+    flex-direction: column;
   }
 }
