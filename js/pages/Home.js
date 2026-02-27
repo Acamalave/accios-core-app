@@ -738,7 +738,7 @@ export class Home {
     if (this._rippleInterval) {
       clearInterval(this._rippleInterval);
     }
-    // Clean up any lingering curtain
-    document.querySelector('.curtain-overlay')?.remove();
+    // Note: Do NOT remove curtain-overlay here — it must persist
+    // through navigation so the opening animation plays on the new page.
   }
 }
