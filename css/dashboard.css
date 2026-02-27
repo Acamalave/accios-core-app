@@ -141,6 +141,84 @@
   );
 }
 
+/* ── Neon "Season 2" Sign ── */
+.pw-neon-sign {
+  position: fixed;
+  top: 28%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.55;
+  filter: blur(0.4px);
+}
+
+.pw-neon-text {
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #d4a0ff;
+  text-shadow:
+    /* Inner glow */
+    0 0 4px rgba(167, 139, 250, 0.9),
+    0 0 8px rgba(167, 139, 250, 0.7),
+    /* Outer glow */
+    0 0 20px rgba(124, 58, 237, 0.5),
+    0 0 40px rgba(124, 58, 237, 0.35),
+    0 0 80px rgba(124, 58, 237, 0.2),
+    /* Far glow — ambient light on wall */
+    0 0 120px rgba(124, 58, 237, 0.12),
+    0 0 200px rgba(124, 58, 237, 0.06);
+  animation: neonPulse 4s ease-in-out infinite;
+  position: relative;
+}
+
+/* Realistic flicker — subtle brightness variation */
+@keyframes neonPulse {
+  0%   { opacity: 1;    filter: brightness(1); }
+  5%   { opacity: 0.92; filter: brightness(0.95); }
+  6%   { opacity: 1;    filter: brightness(1.02); }
+  15%  { opacity: 0.97; filter: brightness(0.98); }
+  20%  { opacity: 1;    filter: brightness(1); }
+  50%  { opacity: 1;    filter: brightness(1.04); }
+  52%  { opacity: 0.88; filter: brightness(0.92); }
+  53%  { opacity: 1;    filter: brightness(1.05); }
+  70%  { opacity: 0.95; filter: brightness(0.97); }
+  72%  { opacity: 1;    filter: brightness(1.02); }
+  85%  { opacity: 0.98; filter: brightness(1); }
+  100% { opacity: 1;    filter: brightness(1); }
+}
+
+/* Wall glow — soft light spill behind the sign */
+.pw-neon-sign::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse 50% 40% at 50% 50%,
+    rgba(124, 58, 237, 0.06) 0%,
+    rgba(124, 58, 237, 0.025) 40%,
+    transparent 70%
+  );
+  z-index: -1;
+  animation: neonPulse 4s ease-in-out infinite;
+}
+
+@media (max-width: 560px) {
+  .pw-neon-sign {
+    top: 22%;
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0.4;
+  }
+}
+
 /* ── Content Layer ── */
 .pw-content {
   position: relative;
@@ -1032,6 +1110,104 @@
 
 .ep-card-visual-note strong {
   color: var(--text-secondary);
+}
+
+/* ── Dress Code Hero Image ── */
+.ep-dresscode-hero {
+  position: relative;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #080610;
+  border: 1px solid rgba(124, 58, 237, 0.12);
+}
+
+.ep-dresscode-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 14;
+  max-height: 520px;
+  overflow: hidden;
+}
+
+.ep-dresscode-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  display: block;
+}
+
+/* Subtle gradient overlay at bottom for text readability */
+.ep-dresscode-img-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg,
+      rgba(8, 6, 16, 0.95) 0%,
+      rgba(8, 6, 16, 0.4) 18%,
+      transparent 40%,
+      transparent 75%,
+      rgba(8, 6, 16, 0.2) 100%
+    );
+  pointer-events: none;
+}
+
+/* Badge floating top-right */
+.ep-dresscode-badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--purple-400);
+}
+
+/* Caption bar at bottom of image */
+.ep-dresscode-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  z-index: 2;
+}
+
+.ep-dresscode-caption-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.ep-dresscode-caption-style {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 560px) {
+  .ep-dresscode-img-wrap {
+    aspect-ratio: 16 / 12;
+    max-height: 400px;
+  }
 }
 
 /* ── Tags ── */

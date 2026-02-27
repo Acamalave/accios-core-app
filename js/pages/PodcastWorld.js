@@ -98,6 +98,11 @@ export class PodcastWorld {
           </div>
         </div>
 
+        <!-- Neon "Season 2" sign in the background depth -->
+        <div class="pw-neon-sign" aria-hidden="true">
+          <span class="pw-neon-text" data-text="Season 2">Season 2</span>
+        </div>
+
         <!-- Spotlight effect -->
         <div class="pw-spotlight"></div>
       </div>
