@@ -20,13 +20,13 @@ import {
 } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD2AEivu-d8kiqpaXtcpAKfkxoItdlgj-U",
-  authDomain: "business-woman-e3fc4.firebaseapp.com",
-  projectId: "business-woman-e3fc4",
-  storageBucket: "business-woman-e3fc4.firebasestorage.app",
-  messagingSenderId: "1076636008936",
-  appId: "1:1076636008936:web:1dec6f502b8425b5b1245d",
-  measurementId: "G-73WF828EQV"
+  apiKey: "AIzaSyBn6C812V1sK_lykCOBCtj9JiDzVOS273E",
+  authDomain: "accios-core.firebaseapp.com",
+  projectId: "accios-core",
+  storageBucket: "accios-core.firebasestorage.app",
+  messagingSenderId: "164885309575",
+  appId: "1:164885309575:web:eb3786008cbc5a7335b022",
+  measurementId: "G-K77G92NGZP"
 };
 
 const app = initializeApp(firebaseConfig);
