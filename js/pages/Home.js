@@ -679,7 +679,7 @@ export class Home {
     });
   }
 
-  // ─── Curtain Close Transition ───
+  // ─── Curtain Close → Navigate → Open Transition ───
   _triggerCurtainTransition(onComplete) {
     // Remove any existing curtain
     document.querySelector('.curtain-overlay')?.remove();
@@ -687,23 +687,47 @@ export class Home {
     const curtain = document.createElement('div');
     curtain.className = 'curtain-overlay';
     curtain.innerHTML = `
+      <div class="curtain-valance"></div>
       <div class="curtain-panel curtain-panel--left"></div>
       <div class="curtain-panel curtain-panel--right"></div>
       <div class="curtain-seam"></div>
     `;
     document.body.appendChild(curtain);
 
-    // Trigger the closing animation
+    // Phase 1: Close curtains (1s animation)
     requestAnimationFrame(() => {
       curtain.classList.add('curtain-overlay--closing');
     });
 
-    // After curtains fully close, navigate
+    // Phase 2: After close completes → navigate behind the curtain
     setTimeout(() => {
+      curtain.classList.remove('curtain-overlay--closing');
+      curtain.classList.add('curtain-overlay--closed');
+
+      // Set panels to closed position explicitly
+      const left = curtain.querySelector('.curtain-panel--left');
+      const right = curtain.querySelector('.curtain-panel--right');
+      if (left) left.style.transform = 'translateX(0%) skewX(0deg)';
+      if (right) right.style.transform = 'translateX(0%) skewX(0deg)';
+
+      // Navigate while curtain is closed
       if (onComplete) onComplete();
-      // Clean up after navigation renders
-      setTimeout(() => curtain.remove(), 500);
-    }, 950);
+
+      // Phase 3: Open curtains after new page renders (small delay)
+      setTimeout(() => {
+        // Clear inline styles so CSS animation takes over
+        if (left) left.style.transform = '';
+        if (right) right.style.transform = '';
+
+        curtain.classList.remove('curtain-overlay--closed');
+        curtain.classList.add('curtain-overlay--opening');
+
+        // Remove curtain after open animation finishes
+        setTimeout(() => {
+          curtain.remove();
+        }, 1200);
+      }, 350);
+    }, 1050);
   }
 
   unmount() {
