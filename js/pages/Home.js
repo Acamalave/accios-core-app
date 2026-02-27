@@ -679,64 +679,165 @@ export class Home {
     });
   }
 
-  // ─── Curtain Close → Navigate → Open Transition (Cinematic) ───
+  // ═══════════════════════════════════════════════════════
+  // CURTAIN — Spring-Physics Engine (requestAnimationFrame)
+  // No CSS keyframes. Every visual derived from physics state.
+  // ═══════════════════════════════════════════════════════
   _triggerCurtainTransition(onComplete) {
-    // Remove any existing curtain
     document.querySelector('.curtain-overlay')?.remove();
 
-    const curtain = document.createElement('div');
-    curtain.className = 'curtain-overlay';
-    curtain.innerHTML = `
+    const ov = document.createElement('div');
+    ov.className = 'curtain-overlay';
+    ov.innerHTML = `
+      <div class="curtain-dimmer"></div>
       <div class="curtain-valance"></div>
       <div class="curtain-panel curtain-panel--left">
-        <div class="curtain-fabric-shadow curtain-fabric-shadow--left"></div>
+        <div class="curtain-trim"></div>
+        <div class="curtain-edge-shadow"></div>
       </div>
       <div class="curtain-panel curtain-panel--right">
-        <div class="curtain-fabric-shadow curtain-fabric-shadow--right"></div>
+        <div class="curtain-trim"></div>
+        <div class="curtain-edge-shadow"></div>
       </div>
       <div class="curtain-seam"></div>
       <div class="curtain-seam-halo"></div>
       <div class="curtain-light-leak"></div>
     `;
-    document.body.appendChild(curtain);
+    document.body.appendChild(ov);
 
-    // Phase 1: Close curtains (1.4s animation)
-    // Double-rAF ensures the browser has painted the initial state
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        curtain.classList.add('curtain-overlay--closing');
-      });
-    });
+    // Element refs
+    const q = s => ov.querySelector(s);
+    const panelL    = q('.curtain-panel--left');
+    const panelR    = q('.curtain-panel--right');
+    const dimmer    = q('.curtain-dimmer');
+    const valance   = q('.curtain-valance');
+    const seam      = q('.curtain-seam');
+    const seamHalo  = q('.curtain-seam-halo');
+    const lightLeak = q('.curtain-light-leak');
+    const trimL     = panelL.querySelector('.curtain-trim');
+    const trimR     = panelR.querySelector('.curtain-trim');
+    const edgeSL    = panelL.querySelector('.curtain-edge-shadow');
+    const edgeSR    = panelR.querySelector('.curtain-edge-shadow');
 
-    // Phase 2: After close completes → navigate behind the curtain
-    setTimeout(() => {
-      curtain.classList.remove('curtain-overlay--closing');
-      curtain.classList.add('curtain-overlay--closed');
+    // ── Spring state ──
+    let pos = -115;    // panel position in %
+    let vel = 0;
+    let target = 0;   // 0 = closed center
+    let phase = 'closing';
+    let navigated = false;
 
-      // Lock panels at closed position
-      const left = curtain.querySelector('.curtain-panel--left');
-      const right = curtain.querySelector('.curtain-panel--right');
-      if (left) left.style.transform = 'translate3d(0%, 0, 0) rotateY(0deg) scaleX(1)';
-      if (right) right.style.transform = 'translate3d(0%, 0, 0) rotateY(0deg) scaleX(1)';
+    // Tuning — heavy velvet: low stiffness, moderate damping
+    let K = 110;  // stiffness
+    let D = 16;   // damping
 
-      // Navigate while curtain is fully closed
-      if (onComplete) onComplete();
+    let lastT = 0;
 
-      // Phase 3: Open curtains — reveal the new page
-      setTimeout(() => {
-        // Clear inline transforms so CSS open animation takes over
-        if (left) left.style.transform = '';
-        if (right) right.style.transform = '';
+    // ── Render: all visuals derived from pos & vel ──
+    const render = () => {
+      const closedness = Math.max(0, Math.min(1, 1 - Math.abs(pos) / 115));
 
-        curtain.classList.remove('curtain-overlay--closed');
-        curtain.classList.add('curtain-overlay--opening');
+      // Fabric skew — bottom lags behind top (weight)
+      const skew = Math.max(-2.8, Math.min(2.8, vel * 0.005));
 
-        // Remove after open animation finishes (1.6s + buffer)
+      // Fabric compression at high speed
+      const sx = Math.max(0.96, 1 - Math.abs(vel) * 0.00016);
+
+      // Motion shadow
+      const mBlur = Math.min(28, Math.abs(vel) * 0.055);
+      const mDir = vel > 0 ? 1 : -1;
+
+      // Panels
+      panelL.style.transform =
+        `translate3d(${pos}%,0,0) skewX(${skew}deg) scaleX(${sx})`;
+      panelR.style.transform =
+        `translate3d(${-pos}%,0,0) skewX(${-skew}deg) scaleX(${sx})`;
+
+      // Dynamic box-shadow (motion blur illusion)
+      const sStr = `${mBlur * mDir}px 0 ${mBlur * 1.4}px rgba(0,0,0,${(0.25 + closedness * 0.35).toFixed(2)})`;
+      panelL.style.boxShadow = sStr;
+      panelR.style.boxShadow = sStr.replace(mBlur * mDir, -mBlur * mDir);
+
+      // Dimmer
+      dimmer.style.opacity = (closedness * 0.7).toFixed(3);
+
+      // Valance
+      valance.style.opacity = Math.min(1, closedness * 2.2).toFixed(3);
+
+      // Gold trim — visible only when nearly closed
+      const tOp = Math.max(0, (closedness - 0.75) / 0.25).toFixed(3);
+      trimL.style.opacity = tOp;
+      trimR.style.opacity = tOp;
+
+      // Edge shadows
+      const eOp = (closedness * 0.75).toFixed(3);
+      edgeSL.style.opacity = eOp;
+      edgeSR.style.opacity = eOp;
+
+      // Seam glow
+      const smOp = Math.max(0, (closedness - 0.88) / 0.12).toFixed(3);
+      seam.style.opacity = smOp;
+      seamHalo.style.opacity = (smOp * 0.65).toFixed(3);
+
+      // Light leak (opening only)
+      if (phase === 'opening') {
+        const openness = 1 - closedness;
+        const peak = 0.3;
+        const lkOp = openness < peak
+          ? (openness / peak) * 0.55
+          : Math.max(0, (1 - (openness - peak) / (1 - peak)) * 0.55);
+        lightLeak.style.width = (openness * 110) + 'vw';
+        lightLeak.style.opacity = lkOp.toFixed(3);
+      }
+    };
+
+    // ── Physics tick at 60fps ──
+    const tick = (now) => {
+      if (!lastT) { lastT = now; requestAnimationFrame(tick); return; }
+
+      const dt = Math.min((now - lastT) / 1000, 0.022);
+      lastT = now;
+
+      // Damped harmonic oscillator: F = -K·x - D·v
+      const x = pos - target;
+      vel += (-K * x - D * vel) * dt;
+      pos += vel * dt;
+
+      render();
+
+      // Settled?
+      const settled = Math.abs(x) < 0.06 && Math.abs(vel) < 0.3;
+
+      if (settled && phase === 'closing') {
+        pos = 0; vel = 0;
+        render();
+        phase = 'hold';
+
+        if (onComplete && !navigated) { navigated = true; onComplete(); }
+
+        // Hold → then open with anticipation kick
         setTimeout(() => {
-          curtain.remove();
-        }, 1800);
-      }, 400);
-    }, 1500);
+          phase = 'opening';
+          target = -115;
+          K = 80;   // softer — more dramatic reveal
+          D = 13;
+          vel = 12; // anticipation: tiny inward push first
+          lastT = 0;
+          requestAnimationFrame(tick);
+        }, 400);
+        return;
+      }
+
+      if (settled && phase === 'opening') {
+        ov.style.transition = 'opacity 0.22s ease-out';
+        ov.style.opacity = '0';
+        setTimeout(() => ov.remove(), 250);
+        return;
+      }
+
+      if (phase !== 'hold') requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
   }
 
   unmount() {
