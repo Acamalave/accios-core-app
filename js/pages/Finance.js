@@ -1228,9 +1228,8 @@ export class Finance {
     });
 
     const overlay = document.createElement('div');
-    overlay.className = 'fin-modal-overlay';
+    overlay.className = 'fin-nfc-modal';
     overlay.innerHTML = `
-      <div class="fin-nfc-modal">
         <div class="fin-nfc-card">
           <button class="fin-modal__close" id="fin-nfc-close">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1245,10 +1244,10 @@ export class Finance {
           <div class="fin-nfc-status" id="fin-nfc-status">Esperando pago NFC...</div>
           <div class="fin-nfc-pulse"></div>
         </div>
-      </div>
     `;
 
     this.container.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('fin-nfc-modal--visible'));
 
     // Generate payment link for QR
     this._generateNfcQr(total, client, descriptions.join(', '));
@@ -1423,6 +1422,7 @@ export class Finance {
     `;
 
     this.container.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('fin-modal-overlay--visible'));
 
     // Close handlers
     overlay.querySelector('#fin-modal-close-btn').addEventListener('click', () => this._closeModal());
@@ -1462,11 +1462,20 @@ export class Finance {
 
   _closeModal() {
     const modal = this.container.querySelector('#fin-active-modal');
-    if (modal) modal.remove();
+    if (modal) {
+      modal.classList.remove('fin-modal-overlay--visible');
+      modal.classList.add('fin-modal-overlay--closing');
+      setTimeout(() => modal.remove(), 350);
+      return;
+    }
 
     // Also remove any NFC modals
     const nfcModal = this.container.querySelector('.fin-modal-overlay');
-    if (nfcModal) nfcModal.remove();
+    if (nfcModal) {
+      nfcModal.classList.remove('fin-modal-overlay--visible');
+      nfcModal.classList.add('fin-modal-overlay--closing');
+      setTimeout(() => nfcModal.remove(), 350);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════
