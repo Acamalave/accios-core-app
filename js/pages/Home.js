@@ -45,10 +45,6 @@ export class Home {
     this.container.innerHTML = `
       <section class="home-page">
         <div class="home-content">
-          <div class="home-badge slide-up">Digital Ecosystem</div>
-          <h1 class="home-title home-title--cinematic">
-            <span class="gradient-text">ACCIOS</span> CORE
-          </h1>
           ${this.businesses.length > 0 ? this._buildOrbitalSystem() : this._buildEmptyState()}
         </div>
 
@@ -77,6 +73,7 @@ export class Home {
   }
 
   _buildOrbitalSystem() {
+    const totalWorlds = this.businesses.length + 1; // +1 for "add" planet
     const worlds = this.businesses.map((biz, index) => {
       return `
         <div class="orbit-world" data-business-id="${biz.id}" data-orbit-index="${index}">
@@ -97,6 +94,21 @@ export class Home {
       `;
     }).join('');
 
+    // "Add my business" planet — always last in orbit
+    const addPlanet = `
+      <div class="orbit-world orbit-world--add" data-business-id="__add__" data-orbit-index="${this.businesses.length}">
+        <div class="orbit-world-glow"></div>
+        <div class="orbit-world-ripples"></div>
+        <div class="orbit-world-img orbit-world-img--add">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <span class="orbit-world-name">Mi Negocio</span>
+      </div>
+    `;
+
     return `
       <div class="orbital-system" id="orbital-system-3d">
         <div class="orbital-ring"></div>
@@ -110,10 +122,15 @@ export class Home {
           <div class="orbital-center-glow" id="orbital-center-glow"></div>
           <div class="orbital-center-ring"></div>
           <div class="orbital-center-ring orbital-center-ring--reverse"></div>
-          <span class="orbital-center-text">AC</span>
+          <div class="orbital-center-brand">
+            <span class="orbital-center-brand-top">ACCIOS</span>
+            <span class="orbital-center-brand-bottom">CORE</span>
+          </div>
         </div>
+        <span class="orbital-center-label">Digital Ecosystem</span>
 
         ${worlds}
+        ${addPlanet}
       </div>
     `;
   }
@@ -121,13 +138,15 @@ export class Home {
   // ─── Solar System Engine ──────────────────────────────
 
   _initOrbitals() {
-    const count = this.businesses.length;
+    const count = this.businesses.length + 1; // +1 for "add" planet
     const TILT = 1.25;
     const SPEED = 0.0012;
 
-    this._orbitals = this.businesses.map((biz, i) => {
+    // Create orbital entries for businesses + the add planet
+    this._orbitals = [];
+    for (let i = 0; i < count; i++) {
       const thetaOffset = (Math.PI * 2 / count) * i;
-      return {
+      this._orbitals.push({
         index: i,
         theta: thetaOffset,
         speed: SPEED,
@@ -136,8 +155,8 @@ export class Home {
         glowEl: null,
         nameEl: null,
         ripplesEl: null,
-      };
-    });
+      });
+    }
 
     const system = this.container.querySelector('#orbital-system-3d');
     if (!system) return;
@@ -175,7 +194,7 @@ export class Home {
       const r = getRect();
       const cx = r.width / 2;
       const cy = r.height / 2;
-      const orbitRadius = Math.min(cx, cy) * 0.78;
+      const orbitRadius = Math.min(cx, cy) * 0.75;
 
       let totalGlow = 0;
 
@@ -387,8 +406,15 @@ export class Home {
           }
         }, 1600);
 
-        // MDN Podcast → podcast world
         const bizId = world.dataset.businessId;
+
+        // "Add my business" planet
+        if (bizId === '__add__') {
+          this._showComingSoonBubble('Agregar Mi Negocio');
+          return;
+        }
+
+        // MDN Podcast → podcast world
         if (bizId === 'mdn-podcast') {
           window.location.hash = '#podcast/mdn-podcast';
           return;
