@@ -62,12 +62,11 @@ const SHIELD_SVG = `
 
 // ─── Pricing config ─────────────────────────────────────────────
 const MONTHLY_BASE = 124.00;
-const PRICING_OPTIONS = [
-  { id: 'onboarding', name: 'Onboarding y Puesta en Marcha', desc: 'Setup total — Configuracion completa del sistema, capacitacion de todo tu equipo y migracion de datos. Sin sorpresas, sin costos ocultos.', price: 290.00 },
-  { id: 'tablet',     name: 'Tablet Android de Alto Rendimiento', desc: 'Dispositivo optimizado para punto de venta — rapido, resistente y listo para operar desde el dia uno.', price: 250.00 },
-  { id: 'printer',    name: 'Impresora Termica Cocina/Caja (x2)', desc: 'Dos impresoras de grado industrial para tickets de cocina y recibos de caja. Impresion silenciosa e instantanea.', price: 220.00 },
-  { id: 'base',       name: 'Base de Seguridad para Tablet', desc: 'Soporte anti-robo profesional que mantiene tu tablet segura y accesible para tu equipo.', price: 75.00 },
-  { id: 'drawer',     name: 'Gaveta de Dinero Metalica', desc: 'Gaveta reforzada con apertura automatica — se conecta directo al sistema para un flujo de caja impecable.', price: 65.00 },
+const SETUP_COST = 760.00;
+const ADDONS = [
+  { id: 'facturacion', name: 'Facturacion Electronica Fiscal', desc: 'Integracion oficial para emitir facturas electronicas avaladas por la DGI directamente desde tu punto de venta, de forma automatica al cerrar cada cuenta.', price: 60.00, type: 'once', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>` },
+  { id: 'pos', name: 'Ecosistema de Pagos Integrado (POS)', desc: 'Convierte tu tableta en una terminal de cobro. Tarifa de 3.5% + $0.50 (+ ITBMS sobre los $0.50), mejorable por volumen. Acceso inmediato a tus fondos mediante tarjeta corporativa dedicada ($37 + ITBMS) o transferencias a tu banco por $1.00 en 48 horas.', price: 386.00, type: 'once', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>` },
+  { id: 'ia', name: 'Asistente Operativo con IA', desc: 'Chatea con tu restaurante. Hazle preguntas al sistema sobre tu operacion, recibe alertas inteligentes de inventario y sugerencias para reducir costos e impulsar ventas basadas en tus propios datos historicos.', price: 49.00, type: 'monthly', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M4 21v-2a4 4 0 0 1 3-3.87"/><circle cx="12" cy="17" r="1"/></svg>` },
 ];
 
 // ─── Role data ──────────────────────────────────────────────────
@@ -186,6 +185,7 @@ export class LaVainaPresentation {
     this._observers = [];
     document.querySelector('.lv-modal-overlay')?.remove();
     document.querySelector('.lv-confirm-overlay')?.remove();
+    document.querySelector('#lv-mobile-receipt')?.remove();
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -289,69 +289,131 @@ export class LaVainaPresentation {
           <div data-lv-reveal>
             <div class="lv-section-tag">Propuesta Economica</div>
             <h2 class="lv-section-title">Inversion Clara, Sin Sorpresas</h2>
-            <p class="lv-section-subtitle">
-              Precios justos por equipos de calidad profesional. Nada de instalaciones abusivas ni letra pequena — solo lo que necesitas para arrancar con todo.
-            </p>
+            <p class="lv-section-subtitle">Tu primer mes de licencia es por nuestra cuenta. Sin compromisos, sin letra pequena.</p>
           </div>
 
-          <div class="lv-pricing-card" data-lv-reveal>
-            <!-- Monthly base -->
-            <div class="lv-pricing-header">
-              <div class="lv-pricing-label">Inversion Mensual</div>
-              <div class="lv-pricing-monthly">
-                <span class="lv-pricing-amount">$${MONTHLY_BASE.toFixed(2)}</span>
-                <span class="lv-pricing-period">/mes</span>
-              </div>
-              <div class="lv-pricing-base-label">Licencia App + Plan de Exito y Evolucion</div>
-            </div>
+          <div class="lv-pricing-layout" data-lv-reveal>
+            <!-- ── LEFT COLUMN: Modules ── -->
+            <div class="lv-pricing-modules">
 
-            <!-- What's included -->
-            <div class="lv-pricing-includes">
-              <div class="lv-pricing-includes-title">Incluido en tu licencia</div>
-              <div class="lv-pricing-includes-list">
-                ${[
-                  'App completa multi-rol (cliente, mesero, cocina, caja, admin)',
-                  'Actualizaciones y nuevas funcionalidades continuas',
-                  'Soporte tecnico prioritario',
-                  'Inteligencia Artificial integrada',
-                  'Hosting, seguridad y backups en la nube',
-                  'Facturacion electronica ilimitada',
-                ].map(item => `
-                  <div class="lv-pricing-includes-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>${item}</span>
+              <!-- A1: Licencia App -->
+              <div class="lv-base-module">
+                <div class="lv-base-module-header">
+                  <div class="lv-base-module-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
                   </div>
+                  <div class="lv-base-module-title-wrap">
+                    <div class="lv-base-module-name">Licencia App, Plan de Exito y Soluciones</div>
+                    <div class="lv-base-module-price">
+                      <span class="lv-base-module-amount">$${MONTHLY_BASE.toFixed(2)}</span><span class="lv-base-module-period"> / mes</span>
+                    </div>
+                  </div>
+                  <span class="lv-free-badge">Mes 1 GRATIS</span>
+                </div>
+                <p class="lv-base-module-desc">El motor de tu restaurante. Acceso ilimitado a todas las vistas, soporte continuo, actualizaciones en la nube y copias de seguridad.</p>
+              </div>
+
+              <!-- A2: Setup Total -->
+              <div class="lv-base-module">
+                <div class="lv-base-module-header">
+                  <div class="lv-base-module-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
+                  <div class="lv-base-module-title-wrap">
+                    <div class="lv-base-module-name">Setup Total (Puesta en Marcha)</div>
+                    <div class="lv-base-module-price">
+                      <span class="lv-base-module-amount">$${SETUP_COST.toFixed(2)}</span><span class="lv-base-module-period"> unico</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="lv-base-module-desc">Inversion unica de implementacion. Sin sorpresas, sin costos ocultos. Incluye:</p>
+                <div class="lv-base-module-bullets">
+                  ${['Configuracion de arquitectura y roles del sistema', 'Migracion y digitalizacion completa de tu menu', 'Auditoria e integracion de hardware', 'Capacitacion de todo tu equipo'].map(b => `
+                    <div class="lv-base-module-bullet">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span>${b}</span>
+                    </div>
+                  `).join('')}
+                </div>
+                <div class="lv-base-module-tag">Incluido</div>
+              </div>
+
+              <!-- B: Hardware Trust Badge -->
+              <div class="lv-trust-badge">
+                <div class="lv-trust-badge-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                </div>
+                <div class="lv-trust-badge-content">
+                  <div class="lv-trust-badge-title">Transparencia Total en Hardware</div>
+                  <p class="lv-trust-badge-text">Nuestro negocio es el software, no revender aparatos. Operamos con cero comisiones ocultas sobre el hardware. Necesitaras tablets para operar, pero las impresoras son opcionales (nuestro sistema KDS elimina el papel). Te asesoramos y gestionamos la compra pasandote los links directos para que compres al costo real del mercado, sin intermediarios.</p>
+                </div>
+              </div>
+
+              <!-- C: Additional Services -->
+              <div class="lv-addons-section">
+                <div class="lv-addons-title">Servicios Adicionales</div>
+                <div class="lv-addons-subtitle">Potencia tu sistema con estos modulos opcionales.</div>
+
+                ${ADDONS.map(addon => `
+                  <label class="lv-addon-item" data-addon="${addon.id}">
+                    <div class="lv-toggle">
+                      <input type="checkbox" class="lv-addon-toggle" data-price="${addon.price}" data-type="${addon.type}" data-addon-id="${addon.id}">
+                      <span class="lv-toggle-track"></span>
+                    </div>
+                    <div class="lv-addon-info">
+                      <div class="lv-addon-name">${addon.name}</div>
+                      <div class="lv-addon-desc">${addon.desc}</div>
+                    </div>
+                    <div class="lv-addon-price-wrap">
+                      <span class="lv-addon-price">+$${addon.price.toFixed(2)}</span>
+                      <span class="lv-addon-price-type">${addon.type === 'once' ? 'unico' : '/ mes'}</span>
+                    </div>
+                  </label>
                 `).join('')}
               </div>
             </div>
 
-            <!-- Configurable options -->
-            <div class="lv-pricing-options">
-              <div class="lv-pricing-options-title">Equipamiento Inicial (opcional)</div>
-              ${PRICING_OPTIONS.map(opt => `
-                <label class="lv-pricing-option" data-option="${opt.id}">
-                  <div class="lv-toggle">
-                    <input type="checkbox" data-price="${opt.price}" data-opt-id="${opt.id}">
-                    <span class="lv-toggle-track"></span>
-                  </div>
-                  <div class="lv-pricing-option-info">
-                    <div class="lv-pricing-option-name">${opt.name}</div>
-                    <div class="lv-pricing-option-desc">${opt.desc}</div>
-                  </div>
-                  <div class="lv-pricing-option-price">$${opt.price.toFixed(2)}</div>
-                </label>
-              `).join('')}
-            </div>
+            <!-- ── RIGHT COLUMN: Floating Receipt ── -->
+            <div class="lv-pricing-receipt">
+              <div class="lv-receipt-card">
+                <div class="lv-receipt-header">Tu Inversion</div>
 
-            <!-- Total footer -->
-            <div class="lv-pricing-footer">
-              <div class="lv-pricing-total">
-                <span class="lv-pricing-total-label">Inversion Inicial</span>
-                <span class="lv-pricing-total-amount" id="lv-total">$0.00</span>
+                <div class="lv-receipt-lines" id="lv-receipt-lines">
+                  <div class="lv-receipt-line">
+                    <span>Setup Total</span>
+                    <span class="lv-receipt-line-price">$${SETUP_COST.toFixed(2)}</span>
+                  </div>
+                  <div class="lv-receipt-line lv-receipt-line--free">
+                    <span>Licencia Mes 1</span>
+                    <span class="lv-receipt-line-price"><s class="lv-receipt-strikethrough">$${MONTHLY_BASE.toFixed(2)}</s> $0.00</span>
+                  </div>
+                </div>
+
+                <div class="lv-receipt-divider"></div>
+
+                <div class="lv-receipt-total">
+                  <span class="lv-receipt-total-label">Total a Pagar Hoy</span>
+                  <span class="lv-receipt-total-amount" id="lv-total-hoy">$${SETUP_COST.toFixed(2)}</span>
+                </div>
+
+                <div class="lv-receipt-divider"></div>
+
+                <div class="lv-receipt-monthly">
+                  <div class="lv-receipt-monthly-row">
+                    <span class="lv-receipt-monthly-label">Mensualidad</span>
+                    <span class="lv-receipt-monthly-amount" id="lv-mensualidad">$${MONTHLY_BASE.toFixed(2)}</span>
+                  </div>
+                  <div class="lv-receipt-monthly-note">A partir del Mes 2</div>
+                </div>
+
+                <button class="lv-receipt-cta" id="lv-receipt-cta">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span>Continuar al Pago</span>
+                </button>
               </div>
-              <div class="lv-pricing-total-note">Se actualiza en tiempo real al seleccionar opciones</div>
             </div>
           </div>
+
         </section>
 
         <!-- ═══ SECTION 4: PAYMENT ═══ -->
@@ -557,18 +619,51 @@ export class LaVainaPresentation {
   // ═══════════════════════════════════════════════════════════════
 
   _recalcTotal() {
-    let total = 0;
-    const checks = this.container.querySelectorAll('.lv-pricing-option input[type="checkbox"]');
-    checks.forEach(cb => {
-      if (cb.checked) total += parseFloat(cb.dataset.price);
+    let totalHoy = SETUP_COST;
+    let mensualidad = MONTHLY_BASE;
+    const addonLines = [];
+
+    this.container.querySelectorAll('.lv-addon-toggle:checked').forEach(cb => {
+      const price = parseFloat(cb.dataset.price);
+      const type = cb.dataset.type;
+      const id = cb.dataset.addonId;
+      const addon = ADDONS.find(a => a.id === id);
+      if (type === 'once') {
+        totalHoy += price;
+        addonLines.push({ name: addon?.name || id, price, type });
+      }
+      if (type === 'monthly') {
+        mensualidad += price;
+        addonLines.push({ name: addon?.name || id, price, type });
+      }
     });
 
-    const el = this.container.querySelector('#lv-total');
-    if (el) {
-      el.textContent = `$${total.toFixed(2)}`;
-      el.classList.add('updating');
-      setTimeout(() => el.classList.remove('updating'), 300);
+    // Update desktop receipt
+    const linesEl = this.container.querySelector('#lv-receipt-lines');
+    if (linesEl) {
+      let html = `
+        <div class="lv-receipt-line"><span>Setup Total</span><span class="lv-receipt-line-price">$${SETUP_COST.toFixed(2)}</span></div>
+        <div class="lv-receipt-line lv-receipt-line--free"><span>Licencia Mes 1</span><span class="lv-receipt-line-price"><s class="lv-receipt-strikethrough">$${MONTHLY_BASE.toFixed(2)}</s> $0.00</span></div>
+      `;
+      addonLines.forEach(a => {
+        html += `<div class="lv-receipt-line lv-receipt-line--addon"><span>${a.name}</span><span class="lv-receipt-line-price">+$${a.price.toFixed(2)}${a.type === 'monthly' ? '/mes' : ''}</span></div>`;
+      });
+      linesEl.innerHTML = html;
     }
+
+    // Update totals
+    const animateEl = (sel, val) => {
+      const el = this.container.querySelector(sel);
+      if (el) { el.textContent = `$${val.toFixed(2)}`; el.classList.add('updating'); setTimeout(() => el.classList.remove('updating'), 300); }
+    };
+    animateEl('#lv-total-hoy', totalHoy);
+    animateEl('#lv-mensualidad', mensualidad);
+
+    // Update mobile receipt (appended to body, not in container)
+    const mHoy = document.querySelector('#lv-mobile-total-hoy');
+    const mMens = document.querySelector('#lv-mobile-mensualidad');
+    if (mHoy) mHoy.textContent = `$${totalHoy.toFixed(2)}`;
+    if (mMens) mMens.textContent = `$${mensualidad.toFixed(2)}`;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -576,10 +671,11 @@ export class LaVainaPresentation {
   // ═══════════════════════════════════════════════════════════════
 
   _handlePagarTarjeta() {
-    let total = MONTHLY_BASE;
-    const checks = this.container.querySelectorAll('.lv-pricing-option input:checked');
-    checks.forEach(cb => { total += parseFloat(cb.dataset.price); });
-    this._showCardPaymentModal(total);
+    let totalHoy = SETUP_COST;
+    this.container.querySelectorAll('.lv-addon-toggle:checked').forEach(cb => {
+      if (cb.dataset.type === 'once') totalHoy += parseFloat(cb.dataset.price);
+    });
+    this._showCardPaymentModal(totalHoy);
   }
 
   // ── Card Payment Modal ──────────────────────────────────────
@@ -1062,9 +1158,39 @@ export class LaVainaPresentation {
       });
     });
 
-    // Pricing toggles
-    this.container.querySelectorAll('.lv-pricing-option input').forEach(cb => {
+    // Pricing addon toggles
+    this.container.querySelectorAll('.lv-addon-toggle').forEach(cb => {
       cb.addEventListener('change', () => this._recalcTotal());
+    });
+
+    // Receipt CTA → scroll to payment
+    this.container.querySelector('#lv-receipt-cta')?.addEventListener('click', () => {
+      this.container.querySelector('#lv-sec-payment')?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Mobile sticky receipt bar (appended to body to escape overflow:hidden)
+    document.querySelector('#lv-mobile-receipt')?.remove();
+    const mobileReceipt = document.createElement('div');
+    mobileReceipt.className = 'lv-mobile-receipt';
+    mobileReceipt.id = 'lv-mobile-receipt';
+    mobileReceipt.innerHTML = `
+      <div class="lv-mobile-receipt-summary">
+        <div class="lv-mobile-receipt-col">
+          <span class="lv-mobile-receipt-label">Hoy</span>
+          <span class="lv-mobile-receipt-value" id="lv-mobile-total-hoy">$${SETUP_COST.toFixed(2)}</span>
+        </div>
+        <div class="lv-mobile-receipt-col">
+          <span class="lv-mobile-receipt-label">Mensual</span>
+          <span class="lv-mobile-receipt-value" id="lv-mobile-mensualidad">$${MONTHLY_BASE.toFixed(2)}</span>
+        </div>
+        <button class="lv-mobile-receipt-btn" id="lv-mobile-receipt-btn">Pagar</button>
+      </div>
+    `;
+    document.body.appendChild(mobileReceipt);
+    this._mobileReceipt = mobileReceipt;
+
+    document.querySelector('#lv-mobile-receipt-btn')?.addEventListener('click', () => {
+      this.container.querySelector('#lv-sec-payment')?.scrollIntoView({ behavior: 'smooth' });
     });
 
     // Payment buttons
