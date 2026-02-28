@@ -1,32 +1,57 @@
 /**
  * NFC Service — Capacitor native NFC reader
  *
- * On native Android: reads NFC tags / contactless cards via @capgo/capacitor-nfc
- * On web: NFC is unavailable, isAvailable() returns false → fallback to QR code
+ * Uses @capgo/capacitor-nfc plugin via Capacitor's native bridge.
+ * Correct method names: startScanning / stopScanning
+ * Correct event name: 'nfcEvent'
+ *
+ * On web: NFC is unavailable, isAvailable() returns false → fallback to QR.
  */
+
+import { isNative } from './apiConfig.js';
+
+const PLUGIN_NAME = 'CapacitorNfc';
 
 class NfcService {
   constructor() {
-    this._plugin = null;
     this._reading = false;
     this._listeners = [];
   }
 
   /**
-   * Whether NFC hardware is available (only on native Capacitor)
+   * Whether NFC hardware is available (only on native Capacitor with plugin)
    */
   isAvailable() {
-    return !!(window.Capacitor && window.Capacitor.isNativePlatform());
+    if (!isNative) return false;
+    try {
+      return window.Capacitor.isPluginAvailable(PLUGIN_NAME);
+    } catch (_) {
+      return false;
+    }
   }
 
   /**
-   * Lazy-load the NFC plugin through Capacitor bridge
+   * Call a native plugin method via Capacitor bridge
    */
-  _getPlugin() {
-    if (!this._plugin && window.Capacitor?.registerPlugin) {
-      this._plugin = window.Capacitor.registerPlugin('CapacitorNfc');
-    }
-    return this._plugin;
+  _call(method, data = {}) {
+    return new Promise((resolve, reject) => {
+      try {
+        window.Capacitor.nativeCallback(
+          PLUGIN_NAME,
+          method,
+          data,
+          (result) => {
+            if (result && result.error) {
+              reject(new Error(result.error.message || result.error));
+            } else {
+              resolve(result);
+            }
+          }
+        );
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 
   /**
@@ -41,35 +66,43 @@ class NfcService {
       return false;
     }
 
-    const plugin = this._getPlugin();
-    if (!plugin) {
-      onError?.('Plugin NFC no cargado');
-      return false;
-    }
-
     try {
-      // Check / request NFC permissions
-      let perms = await plugin.checkPermissions();
-      if (!perms.nfc || perms.nfc !== 'granted') {
-        perms = await plugin.requestPermissions();
-        if (!perms.nfc || perms.nfc !== 'granted') {
-          onError?.('Permiso NFC denegado');
-          return false;
+      // Listen for ALL NFC event types from @capgo/capacitor-nfc
+      const events = ['nfcEvent', 'tagDiscovered', 'ndefDiscovered', 'ndefMimeDiscovered', 'ndefFormatableDiscovered'];
+
+      for (const eventName of events) {
+        try {
+          const listener = window.Capacitor.addListener(
+            PLUGIN_NAME,
+            eventName,
+            (event) => {
+              console.log('[NFC] Event received:', eventName, JSON.stringify(event));
+              onTagRead?.(this._parseTagData(event));
+            }
+          );
+          if (listener && typeof listener.then === 'function') {
+            // If addListener returns a promise, await it
+            const resolved = await listener;
+            this._listeners.push(resolved);
+          } else {
+            this._listeners.push(listener);
+          }
+        } catch (e) {
+          console.warn('[NFC] Could not add listener for', eventName, e);
         }
       }
 
-      // Start scan session
-      await plugin.startScanSession();
-
-      // Listen for tag reads
-      const listener = await plugin.addListener('nfcTagScanned', (event) => {
-        onTagRead?.(this._parseTagData(event));
+      // Start scanning with @capgo/capacitor-nfc correct method name
+      await this._call('startScanning', {
+        invalidateAfterFirstRead: false,
+        alertMessage: 'Acerca la tarjeta al dispositivo'
       });
-      this._listeners.push(listener);
 
+      console.log('[NFC] Scanning started successfully');
       this._reading = true;
       return true;
     } catch (err) {
+      console.error('[NFC] Error starting scan:', err);
       onError?.(err.message || 'Error iniciando NFC');
       return false;
     }
@@ -79,28 +112,41 @@ class NfcService {
    * Stop NFC scan session and clean up
    */
   async stopReading() {
-    const plugin = this._getPlugin();
-    if (plugin && this._reading) {
+    if (this._reading) {
       try {
-        await plugin.stopScanSession();
+        await this._call('stopScanning');
+        console.log('[NFC] Scanning stopped');
       } catch (_) {
         // ignore stop errors
       }
     }
 
-    this._listeners.forEach(l => l.remove?.());
+    this._listeners.forEach(l => {
+      try {
+        if (l && typeof l.remove === 'function') l.remove();
+      } catch (_) {}
+    });
     this._listeners = [];
     this._reading = false;
   }
 
   /**
-   * Parse raw NFC event into a normalized structure
+   * Parse raw NFC event into a normalized structure.
+   * @capgo/capacitor-nfc sends: { type: 'tag'|'ndef'|..., tag: { id, techTypes, ndefMessage, ... } }
    */
   _parseTagData(event) {
+    const tag = event.tag || event;
+    const id = tag.id
+      ? (Array.isArray(tag.id) ? tag.id.map(b => b.toString(16).padStart(2, '0')).join(':') : tag.id)
+      : null;
+
     return {
-      id: event.id || event.serialNumber || null,
-      type: event.type || event.techTypes?.[0] || 'unknown',
-      records: event.records || event.messages || [],
+      id: id,
+      type: event.type || tag.type || tag.techTypes?.[0] || 'unknown',
+      techTypes: tag.techTypes || [],
+      ndefMessage: tag.ndefMessage || [],
+      maxSize: tag.maxSize || null,
+      isWritable: tag.isWritable || false,
       raw: event,
     };
   }
