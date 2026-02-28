@@ -17,8 +17,23 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ success: false, message: 'Credenciales no configuradas' });
     }
 
-    if (!cardNumber || !expMonth || !expYear || !cvv) {
+    if (!cardNumber || !expMonth || !expYear) {
       return res.status(400).json({ success: false, message: 'Datos de tarjeta incompletos' });
+    }
+
+    // Build card info - CVV is optional for NFC/card-present transactions
+    const cardInfo = {
+      cardNumber: String(cardNumber).replace(/\s/g, ''),
+      expMonth: String(expMonth),
+      expYear: String(expYear),
+      firstName: firstName || 'Cliente',
+      lastName: lastName || 'ACCIOS',
+      cardType: (cardType || 'VISA').toUpperCase()
+    };
+
+    // Only include CVV if provided (omit for NFC tap-to-pay)
+    if (cvv && cvv !== '000') {
+      cardInfo.cvv = String(cvv);
     }
 
     const body = {
@@ -30,15 +45,7 @@ module.exports = async function handler(req, res) {
       concept: description || 'Cobro ACCIOS',
       description: description || 'Cobro ACCIOS',
       lang: 'ES',
-      cardInformation: {
-        cardNumber: String(cardNumber).replace(/\s/g, ''),
-        expMonth: String(expMonth),
-        expYear: String(expYear),
-        cvv: String(cvv),
-        firstName: firstName || 'Cliente',
-        lastName: lastName || 'ACCIOS',
-        cardType: (cardType || 'VISA').toUpperCase()
-      }
+      cardInformation: cardInfo
     };
 
     console.log('PagueloFacil AUTH_CAPTURE:', JSON.stringify({

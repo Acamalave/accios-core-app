@@ -5,6 +5,7 @@
   "main": "sw.js",
   "scripts": {
     "build": "rsync -av --delete --exclude='node_modules' --exclude='android' --exclude='.git' --exclude='.claude' --exclude='www' --exclude='api' --exclude='package.json' --exclude='package-lock.json' --exclude='capacitor.config.json' . www/",
+    "vercel-build": "echo 'Static site — no build needed'",
     "sync": "npm run build && npx cap sync android"
   },
   "keywords": [],
