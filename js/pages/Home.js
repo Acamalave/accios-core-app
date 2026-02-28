@@ -42,8 +42,11 @@ export class Home {
       this.businesses = [];
     }
 
+    const firstName = (user?.name || '').split(' ')[0] || '';
+
     this.container.innerHTML = `
       <section class="home-page">
+        ${firstName ? `<div class="home-greeting">Hola, ${firstName}</div>` : ''}
         <div class="home-content">
           ${this.businesses.length > 0 ? this._buildOrbitalSystem() : this._buildEmptyState()}
         </div>
