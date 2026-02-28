@@ -1175,9 +1175,9 @@ export class Finance {
         }),
       });
 
-      if (!response.ok) throw new Error('Error generando link');
+      if (!response.ok) throw new Error(`Error generando link: ${response.status}`);
       const data = await response.json();
-      const paymentUrl = data.url || data.link || `https://paguelofacil.com/pay?amount=${total}`;
+      const paymentUrl = data.paymentUrl || data.url || data.link || `https://paguelofacil.com/pay?amount=${total}`;
 
       this._showModal('Link de Pago Generado', `
         <div style="text-align:center;padding:var(--space-4);">
@@ -1351,9 +1351,10 @@ export class Finance {
         }),
       });
 
-      if (!response.ok) throw new Error('Error generando link NFC');
+      if (!response.ok) throw new Error(`Error generando link NFC: ${response.status}`);
       const data = await response.json();
-      const paymentUrl = data.url || data.link || `https://paguelofacil.com/nfc?amount=${total}`;
+      console.log('[ACCIOS] PagueloFacil response:', JSON.stringify(data));
+      const paymentUrl = data.paymentUrl || data.url || data.link || `https://paguelofacil.com/nfc?amount=${total}`;
 
       qrContainer.innerHTML = `
         <div style="width:160px;height:160px;background:white;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;padding:8px;">
