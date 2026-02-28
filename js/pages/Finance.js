@@ -1240,33 +1240,26 @@ export class Finance {
           </button>
           <div class="fin-nfc-amount">${financeService.formatCurrency(total)}</div>
           <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-4);">${client?.name || ''} — ${descriptions.join(', ')}</div>
-          ${useNativeNfc ? `
-            <div id="fin-nfc-native" style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
-              <div class="fin-nfc-pulse"></div>
-              <div class="fin-nfc-status" id="fin-nfc-status">Acerca la tarjeta al dispositivo...</div>
-              <div id="fin-nfc-result" style="display:none;text-align:center;"></div>
-            </div>
-          ` : `
-            <div class="fin-nfc-qr" id="fin-nfc-qr">
-              <div style="width:160px;height:160px;background:rgba(255,255,255,0.05);border:2px dashed var(--border-subtle);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:var(--text-dim);">
-                Generando...
-              </div>
-            </div>
-            <div class="fin-nfc-status" id="fin-nfc-status">Generando link de pago...</div>
-            <div class="fin-nfc-pulse"></div>
-          `}
+          <div id="fin-nfc-native" style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
+            ${useNativeNfc ? `<div class="fin-nfc-pulse"></div>` : ''}
+            <div class="fin-nfc-status" id="fin-nfc-status">${useNativeNfc ? 'Acerca la tarjeta al dispositivo...' : 'Ingresa los datos de la tarjeta'}</div>
+            <div id="fin-nfc-result" style="${useNativeNfc ? 'display:none;' : ''}text-align:center;width:100%;"></div>
+          </div>
         </div>
     `;
 
     this.container.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('fin-nfc-modal--visible'));
 
+    const statusEl = this.container.querySelector('#fin-nfc-status');
+    const resultEl = this.container.querySelector('#fin-nfc-result');
+
     if (useNativeNfc) {
-      // Native NFC: start reading contactless cards
+      // Native NFC: start reading contactless cards, then show card form
       this._startNativeNfc(total, client, descriptions.join(', '));
     } else {
-      // Web fallback: generate QR code / payment link
-      this._generateNfcQr(total, client, descriptions.join(', '));
+      // Web/no-NFC: show card form directly for direct charge
+      this._showCardForm(total, client, descriptions.join(', '), resultEl, statusEl);
     }
 
     const closeAndCleanup = () => {
@@ -1293,22 +1286,10 @@ export class Finance {
         if (statusEl) statusEl.textContent = 'Tarjeta detectada!';
         if (resultEl) {
           resultEl.style.display = 'block';
-          resultEl.innerHTML = `
-            <div style="color:var(--green-400);font-size:1.1rem;font-weight:600;margin-bottom:var(--space-2);">
-              ✓ Tarjeta leida
-            </div>
-            <div style="font-size:0.78rem;color:var(--text-secondary);">
-              ID: ${tagData.id || 'N/A'}<br>
-              Tipo: ${tagData.type}
-            </div>
-            <div style="margin-top:var(--space-3);font-size:0.8rem;color:var(--text-dim);">
-              Procesando cobro de ${financeService.formatCurrency(total)}...
-            </div>
-          `;
         }
 
-        // Generate payment link with card data to process via PagueloFacil
-        this._generateNfcQr(total, client, description);
+        // Show card form for direct charge
+        this._showCardForm(total, client, description, resultEl, statusEl);
       },
       // onError
       (errorMsg) => {
@@ -1316,20 +1297,229 @@ export class Finance {
           statusEl.textContent = `Error NFC: ${errorMsg}`;
           statusEl.style.color = 'var(--red-400)';
         }
-        // Fall back to QR code
+        // Fall back to card form
         setTimeout(() => {
           if (statusEl) {
-            statusEl.textContent = 'Usando link de pago como alternativa...';
+            statusEl.textContent = 'Ingresa los datos de la tarjeta';
             statusEl.style.color = '';
           }
-          this._generateNfcQr(total, client, description);
-        }, 2000);
+          if (resultEl) resultEl.style.display = 'block';
+          this._showCardForm(total, client, description, resultEl, statusEl);
+        }, 1500);
       }
     );
 
     if (!started && statusEl) {
-      statusEl.textContent = 'NFC no disponible, generando link...';
-      this._generateNfcQr(total, client, description);
+      statusEl.textContent = 'Ingresa los datos de la tarjeta';
+      if (resultEl) resultEl.style.display = 'block';
+      this._showCardForm(total, client, description, resultEl, statusEl);
+    }
+  }
+
+  _detectCardType(number) {
+    const n = (number || '').replace(/\s/g, '');
+    if (/^4/.test(n)) return 'VISA';
+    if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'MASTERCARD';
+    if (/^3[47]/.test(n)) return 'AMEX';
+    if (/^6/.test(n)) return 'DISCOVER';
+    return 'VISA';
+  }
+
+  _showCardForm(total, client, description, resultEl, statusEl) {
+    if (!resultEl) return;
+
+    const inputStyle = 'width:100%;padding:12px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(124,58,237,0.3);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;transition:border 0.2s;box-sizing:border-box;';
+
+    resultEl.innerHTML = `
+      <div style="text-align:left;max-width:320px;margin:0 auto;">
+        <div style="margin-bottom:12px;">
+          <input type="text" id="nfc-card-number" placeholder="Numero de tarjeta"
+            maxlength="19" inputmode="numeric" autocomplete="cc-number"
+            style="${inputStyle}" />
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input type="text" id="nfc-card-exp" placeholder="MM/AA"
+            maxlength="5" inputmode="numeric" autocomplete="cc-exp"
+            style="${inputStyle}flex:1;" />
+          <input type="text" id="nfc-card-cvv" placeholder="CVV"
+            maxlength="4" inputmode="numeric" autocomplete="cc-csc"
+            style="${inputStyle}flex:1;" />
+        </div>
+        <div style="margin-bottom:16px;">
+          <input type="text" id="nfc-card-name" placeholder="Nombre en la tarjeta"
+            autocomplete="cc-name"
+            style="${inputStyle}" />
+        </div>
+        <button class="glass-btn glass-btn--primary" id="nfc-charge-btn"
+          style="width:100%;padding:14px;font-size:1rem;font-weight:700;border-radius:12px;">
+          Cobrar ${financeService.formatCurrency(total)}
+        </button>
+      </div>
+    `;
+
+    // Format card number with spaces
+    const cardInput = resultEl.querySelector('#nfc-card-number');
+    cardInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+      v = v.replace(/(.{4})/g, '$1 ').trim();
+      e.target.value = v;
+    });
+
+    // Format expiry MM/YY
+    const expInput = resultEl.querySelector('#nfc-card-exp');
+    expInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+      if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
+      e.target.value = v;
+    });
+
+    // Charge button
+    resultEl.querySelector('#nfc-charge-btn').addEventListener('click', () => {
+      this._executeDirectCharge(total, client, description, resultEl, statusEl);
+    });
+
+    // Focus first input
+    setTimeout(() => cardInput.focus(), 100);
+  }
+
+  async _executeDirectCharge(total, client, description, resultEl, statusEl) {
+    const cardNumber = (resultEl.querySelector('#nfc-card-number')?.value || '').replace(/\s/g, '');
+    const expRaw = resultEl.querySelector('#nfc-card-exp')?.value || '';
+    const cvv = resultEl.querySelector('#nfc-card-cvv')?.value || '';
+    const name = resultEl.querySelector('#nfc-card-name')?.value || '';
+
+    // Validate
+    if (cardNumber.length < 13) {
+      if (statusEl) { statusEl.textContent = 'Numero de tarjeta invalido'; statusEl.style.color = 'var(--red-400)'; }
+      return;
+    }
+    if (!expRaw.includes('/') || expRaw.length < 4) {
+      if (statusEl) { statusEl.textContent = 'Fecha de expiracion invalida'; statusEl.style.color = 'var(--red-400)'; }
+      return;
+    }
+    if (cvv.length < 3) {
+      if (statusEl) { statusEl.textContent = 'CVV invalido'; statusEl.style.color = 'var(--red-400)'; }
+      return;
+    }
+
+    const [expMonth, expYear] = expRaw.split('/');
+    const cardType = this._detectCardType(cardNumber);
+
+    // Show processing state
+    if (statusEl) { statusEl.textContent = 'Procesando cobro...'; statusEl.style.color = ''; }
+    resultEl.innerHTML = `
+      <div style="text-align:center;padding:20px 0;">
+        <div class="fin-nfc-pulse"></div>
+        <div style="font-size:1rem;color:var(--text-secondary);margin-top:16px;">
+          Procesando cobro de ${financeService.formatCurrency(total)}...
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-dim);margin-top:8px;">
+          ${cardType} ****${cardNumber.slice(-4)}
+        </div>
+      </div>
+    `;
+
+    try {
+      console.log('[ACCIOS] Direct charge:', { amount: total, cardType, last4: cardNumber.slice(-4) });
+
+      const response = await fetch(apiUrl('/api/paguelofacil-charge'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: total,
+          description: description || 'Cobro ACCIOS',
+          email: client?.email || '',
+          phone: client?.phone || '',
+          cardNumber,
+          expMonth,
+          expYear,
+          cvv,
+          firstName: name.split(' ')[0] || 'Cliente',
+          lastName: name.split(' ').slice(1).join(' ') || '',
+          cardType,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('[ACCIOS] Charge response:', JSON.stringify(data));
+
+      if (data.success) {
+        // SUCCESS
+        if (statusEl) statusEl.textContent = '';
+        resultEl.innerHTML = `
+          <div style="text-align:center;padding:16px 0;">
+            <div style="width:64px;height:64px;border-radius:50%;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div style="font-size:1.3rem;font-weight:700;color:var(--green-400);margin-bottom:8px;">
+              Transaccion Exitosa
+            </div>
+            <div style="font-size:2rem;font-weight:800;color:#fff;margin-bottom:8px;">
+              ${financeService.formatCurrency(total)}
+            </div>
+            <div style="font-size:0.85rem;color:var(--text-secondary);">
+              ${data.cardType || cardType} ${data.displayNum || '****' + cardNumber.slice(-4)}
+            </div>
+            ${data.codOper ? `<div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px;">Ref: ${data.codOper}</div>` : ''}
+            ${client?.name ? `<div style="font-size:0.85rem;color:var(--text-secondary);margin-top:8px;">${client.name}</div>` : ''}
+          </div>
+        `;
+      } else {
+        // DENIED
+        if (statusEl) statusEl.textContent = '';
+        resultEl.innerHTML = `
+          <div style="text-align:center;padding:16px 0;">
+            <div style="width:64px;height:64px;border-radius:50%;background:rgba(248,113,113,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </div>
+            <div style="font-size:1.3rem;font-weight:700;color:var(--red-400);margin-bottom:8px;">
+              Transaccion Denegada
+            </div>
+            <div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:12px;">
+              ${data.message || 'La transaccion no fue aprobada'}
+            </div>
+            <button class="glass-btn" id="nfc-retry-btn" style="padding:10px 24px;">
+              Reintentar
+            </button>
+          </div>
+        `;
+        resultEl.querySelector('#nfc-retry-btn')?.addEventListener('click', () => {
+          this._showCardForm(total, client, description, resultEl, statusEl);
+          if (statusEl) { statusEl.textContent = 'Ingresa los datos de la tarjeta'; statusEl.style.color = ''; }
+        });
+      }
+    } catch (e) {
+      console.error('[ACCIOS] Charge error:', e);
+      if (statusEl) statusEl.textContent = '';
+      resultEl.innerHTML = `
+        <div style="text-align:center;padding:16px 0;">
+          <div style="width:64px;height:64px;border-radius:50%;background:rgba(248,113,113,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--red-400);margin-bottom:8px;">
+            Error de conexion
+          </div>
+          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">
+            ${e.message || 'No se pudo conectar al procesador'}
+          </div>
+          <button class="glass-btn" id="nfc-retry-btn" style="padding:10px 24px;">
+            Reintentar
+          </button>
+        </div>
+      `;
+      resultEl.querySelector('#nfc-retry-btn')?.addEventListener('click', () => {
+        this._showCardForm(total, client, description, resultEl, statusEl);
+        if (statusEl) { statusEl.textContent = 'Ingresa los datos de la tarjeta'; statusEl.style.color = ''; }
+      });
     }
   }
 
