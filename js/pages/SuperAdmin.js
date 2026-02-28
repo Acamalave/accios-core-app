@@ -1,6 +1,5 @@
 import userAuth from '../services/userAuth.js';
 import { Toast } from '../components/Toast.js';
-import { storage, storageRef, uploadBytes, getDownloadURL } from '../services/firebase.js';
 
 export class SuperAdmin {
   constructor(container) {
@@ -607,13 +606,9 @@ export class SuperAdmin {
       saveBtn.textContent = 'Guardando...';
 
       try {
-        // Upload new logo if a file was selected
+        // Optimize and convert to data URL if a file was selected
         if (pendingLogoFile) {
-          const optimized = await this._optimizeImage(pendingLogoFile, 512, 0.8);
-          const path = `business-logos/${id}_${Date.now()}.webp`;
-          const ref = storageRef(storage, path);
-          await uploadBytes(ref, optimized, { contentType: 'image/webp' });
-          logo = await getDownloadURL(ref);
+          logo = await this._optimizeImage(pendingLogoFile, 256, 0.7);
         }
 
         if (existing) {
@@ -637,7 +632,7 @@ export class SuperAdmin {
 
   // ─── IMAGE OPTIMIZATION ──────────────────────────────────
 
-  _optimizeImage(file, maxSize = 512, quality = 0.8) {
+  _optimizeImage(file, maxSize = 256, quality = 0.7) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
@@ -656,11 +651,8 @@ export class SuperAdmin {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        canvas.toBlob(
-          (blob) => blob ? resolve(blob) : reject(new Error('Error al optimizar imagen')),
-          'image/webp',
-          quality
-        );
+        // Return as data URL (stored directly in Firestore)
+        resolve(canvas.toDataURL('image/webp', quality));
       };
       img.onerror = () => reject(new Error('No se pudo leer la imagen'));
       img.src = URL.createObjectURL(file);
