@@ -18,6 +18,12 @@ import {
   Timestamp,
   limit
 } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL
+} from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBn6C812V1sK_lykCOBCtj9JiDzVOS273E",
@@ -31,9 +37,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 export {
   db,
+  storage,
+  storageRef,
+  uploadBytes,
+  getDownloadURL,
   collection,
   doc,
   getDoc,

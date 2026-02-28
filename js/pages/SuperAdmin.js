@@ -1,5 +1,6 @@
 import userAuth from '../services/userAuth.js';
 import { Toast } from '../components/Toast.js';
+import { storage, storageRef, uploadBytes, getDownloadURL } from '../services/firebase.js';
 
 export class SuperAdmin {
   constructor(container) {
@@ -527,8 +528,19 @@ export class SuperAdmin {
             <input class="sa-form-input" id="sa-biz-nombre" value="${existing?.nombre || ''}" placeholder="Restaurante Luna">
           </div>
           <div class="sa-form-group">
-            <label class="sa-form-label">Logo URL (opcional)</label>
-            <input class="sa-form-input" id="sa-biz-logo" value="${existing?.logo || ''}" placeholder="https://...">
+            <label class="sa-form-label">Logo (opcional)</label>
+            <div class="sa-logo-upload" id="sa-logo-upload">
+              <input type="file" id="sa-biz-logo-file" accept="image/*" style="display:none;">
+              <div class="sa-logo-preview" id="sa-logo-preview" style="${existing?.logo ? '' : 'display:none;'}">
+                <img id="sa-logo-img" src="${existing?.logo || ''}" alt="">
+                <button type="button" class="sa-logo-remove" id="sa-logo-remove" title="Quitar logo">&times;</button>
+              </div>
+              <button type="button" class="sa-btn sa-btn--outline" id="sa-logo-btn" style="${existing?.logo ? 'display:none;' : ''}">
+                Seleccionar imagen
+              </button>
+              <span class="sa-logo-hint" id="sa-logo-hint">JPG, PNG o WebP. Se optimiza automaticamente.</span>
+            </div>
+            <input type="hidden" id="sa-biz-logo" value="${existing?.logo || ''}">
           </div>
           <div class="sa-form-group">
             <label class="sa-form-label">Contenido de valor</label>
@@ -547,15 +559,63 @@ export class SuperAdmin {
     root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
     root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
 
+    // ── Logo file upload handling ──
+    let pendingLogoFile = null;
+    const fileInput = root.querySelector('#sa-biz-logo-file');
+    const logoBtn = root.querySelector('#sa-logo-btn');
+    const logoPreview = root.querySelector('#sa-logo-preview');
+    const logoImg = root.querySelector('#sa-logo-img');
+    const logoRemove = root.querySelector('#sa-logo-remove');
+    const logoHidden = root.querySelector('#sa-biz-logo');
+
+    logoBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { Toast.error('Solo se permiten imagenes'); return; }
+      if (file.size > 10 * 1024 * 1024) { Toast.error('Imagen muy grande (max 10MB)'); return; }
+      pendingLogoFile = file;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        logoImg.src = ev.target.result;
+        logoPreview.style.display = '';
+        logoBtn.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    logoRemove.addEventListener('click', () => {
+      pendingLogoFile = null;
+      logoHidden.value = '';
+      logoImg.src = '';
+      logoPreview.style.display = 'none';
+      logoBtn.style.display = '';
+      fileInput.value = '';
+    });
+
     root.querySelector('#sa-modal-save').addEventListener('click', async () => {
       const id = root.querySelector('#sa-biz-id').value.trim().toLowerCase().replace(/\s+/g, '-');
       const nombre = root.querySelector('#sa-biz-nombre').value.trim();
-      const logo = root.querySelector('#sa-biz-logo').value.trim();
+      let logo = logoHidden.value.trim();
       const contenido_valor = root.querySelector('#sa-biz-contenido').value.trim();
 
       if (!id || !nombre) { Toast.error('ID y Nombre son requeridos'); return; }
 
+      const saveBtn = root.querySelector('#sa-modal-save');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Guardando...';
+
       try {
+        // Upload new logo if a file was selected
+        if (pendingLogoFile) {
+          const optimized = await this._optimizeImage(pendingLogoFile, 512, 0.8);
+          const path = `business-logos/${id}_${Date.now()}.webp`;
+          const ref = storageRef(storage, path);
+          await uploadBytes(ref, optimized, { contentType: 'image/webp' });
+          logo = await getDownloadURL(ref);
+        }
+
         if (existing) {
           await userAuth.updateBusiness(existing.id, { nombre, logo, contenido_valor });
         } else {
@@ -568,7 +628,42 @@ export class SuperAdmin {
         this._renderTab();
       } catch (e) {
         Toast.error('Error: ' + e.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar';
       }
+    });
+  }
+
+  // ─── IMAGE OPTIMIZATION ──────────────────────────────────
+
+  _optimizeImage(file, maxSize = 512, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+
+        // Scale down if larger than maxSize
+        if (width > maxSize || height > maxSize) {
+          const ratio = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error('Error al optimizar imagen')),
+          'image/webp',
+          quality
+        );
+      };
+      img.onerror = () => reject(new Error('No se pudo leer la imagen'));
+      img.src = URL.createObjectURL(file);
     });
   }
 
