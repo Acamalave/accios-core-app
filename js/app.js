@@ -74,8 +74,9 @@ class App {
       if (message) Toast.show(message, type || 'info');
     });
 
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
+    // Register service worker for PWA (skip on native Capacitor — SW is unnecessary there)
+    const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
+    if ('serviceWorker' in navigator && !isNative) {
       try {
         await navigator.serviceWorker.register('sw.js');
       } catch (e) {

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ACCIOS CORE</string>
+    <string name="title_activity_main">ACCIOS CORE</string>
+    <string name="package_name">com.accios.core</string>
+    <string name="custom_url_scheme">com.accios.core</string>
+</resources>
