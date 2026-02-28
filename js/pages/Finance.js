@@ -3,6 +3,7 @@ import userAuth from '../services/userAuth.js';
 import { ChatPanel } from '../components/ChatPanel.js';
 import { apiUrl } from '../services/apiConfig.js';
 import nfcService from '../services/nfcService.js';
+import emvReader from '../services/emvReader.js';
 
 const STATUS_LABELS = {
   por_cobrar: 'Por Cobrar',
@@ -1229,7 +1230,8 @@ export class Finance {
       if (txn) descriptions.push(txn.description || 'Transaccion');
     });
 
-    const useNativeNfc = nfcService.isAvailable();
+    const useEmvReader = emvReader.isAvailable();
+    const useNativeNfc = useEmvReader || nfcService.isAvailable();
 
     const overlay = document.createElement('div');
     overlay.className = 'fin-nfc-modal';
@@ -1254,15 +1256,19 @@ export class Finance {
     const statusEl = this.container.querySelector('#fin-nfc-status');
     const resultEl = this.container.querySelector('#fin-nfc-result');
 
-    if (useNativeNfc) {
-      // Native NFC: start reading contactless cards, then show card form
+    if (useEmvReader) {
+      // EMV Reader: read card data via APDU and auto-charge
+      this._startEmvPayment(total, client, descriptions.join(', '), resultEl, statusEl);
+    } else if (useNativeNfc) {
+      // Basic NFC: detect card then show form
       this._startNativeNfc(total, client, descriptions.join(', '));
     } else {
-      // Web/no-NFC: show card form directly for direct charge
+      // Web/no-NFC: show card form directly
       this._showCardForm(total, client, descriptions.join(', '), resultEl, statusEl);
     }
 
     const closeAndCleanup = () => {
+      emvReader.stopReading();
       nfcService.stopReading();
       overlay.remove();
     };
@@ -1272,6 +1278,123 @@ export class Finance {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeAndCleanup();
     });
+  }
+
+  async _startEmvPayment(total, client, description, resultEl, statusEl) {
+    try {
+      // Step 1: Read card via EMV/APDU
+      const cardData = await emvReader.readCard(30000);
+
+      if (!cardData || !cardData.pan) {
+        // Fallback to card form if EMV read fails
+        if (statusEl) { statusEl.textContent = 'No se pudo leer la tarjeta'; statusEl.style.color = 'var(--red-400)'; }
+        setTimeout(() => {
+          if (statusEl) { statusEl.textContent = 'Ingresa los datos manualmente'; statusEl.style.color = ''; }
+          if (resultEl) resultEl.style.display = 'block';
+          this._showCardForm(total, client, description, resultEl, statusEl);
+        }, 1500);
+        return;
+      }
+
+      // Step 2: Show card detected + processing
+      if (statusEl) statusEl.textContent = 'Tarjeta leida — Procesando cobro...';
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = `
+          <div style="text-align:center;padding:12px 0;">
+            <div style="color:var(--green-400);font-size:1.1rem;font-weight:600;margin-bottom:8px;">
+              ✓ ${cardData.cardType} ****${cardData.last4}
+            </div>
+            <div class="fin-nfc-pulse"></div>
+            <div style="font-size:0.9rem;color:var(--text-secondary);margin-top:12px;">
+              Cobrando ${financeService.formatCurrency(total)}...
+            </div>
+          </div>
+        `;
+      }
+
+      // Step 3: Direct charge via PagueloFacil AUTH_CAPTURE
+      console.log('[EMV] Charging:', { cardType: cardData.cardType, last4: cardData.last4, amount: total });
+
+      const response = await fetch(apiUrl('/api/paguelofacil-charge'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: total,
+          description: description || 'Cobro NFC',
+          email: client?.email || 'cobro@accios.app',
+          phone: client?.phone || '68204698',
+          cardNumber: cardData.pan,
+          expMonth: cardData.expMonth,
+          expYear: cardData.expYear,
+          cvv: '000',
+          firstName: cardData.name ? cardData.name.split(' ')[0] : 'Cliente',
+          lastName: cardData.name ? cardData.name.split(' ').slice(1).join(' ') : '',
+          cardType: cardData.cardType,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('[EMV] Charge response:', JSON.stringify(data));
+
+      // Step 4: Show result
+      if (data.success) {
+        if (statusEl) statusEl.textContent = '';
+        resultEl.innerHTML = `
+          <div style="text-align:center;padding:16px 0;">
+            <div style="width:72px;height:72px;border-radius:50%;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div style="font-size:1.4rem;font-weight:700;color:var(--green-400);margin-bottom:8px;">
+              Cobro Exitoso
+            </div>
+            <div style="font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:8px;">
+              ${financeService.formatCurrency(total)}
+            </div>
+            <div style="font-size:0.9rem;color:var(--text-secondary);">
+              ${data.cardType || cardData.cardType} ${data.displayNum || '****' + cardData.last4}
+            </div>
+            ${data.codOper ? `<div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px;">Ref: ${data.codOper}</div>` : ''}
+            ${client?.name ? `<div style="font-size:0.9rem;color:var(--text-secondary);margin-top:8px;">${client.name}</div>` : ''}
+          </div>
+        `;
+      } else {
+        if (statusEl) statusEl.textContent = '';
+        resultEl.innerHTML = `
+          <div style="text-align:center;padding:16px 0;">
+            <div style="width:72px;height:72px;border-radius:50%;background:rgba(248,113,113,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </div>
+            <div style="font-size:1.4rem;font-weight:700;color:var(--red-400);margin-bottom:8px;">
+              Cobro Denegado
+            </div>
+            <div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:12px;">
+              ${data.message || 'La transaccion no fue aprobada'}
+            </div>
+            <button class="glass-btn" id="nfc-retry-btn" style="padding:10px 24px;">Reintentar</button>
+          </div>
+        `;
+        resultEl.querySelector('#nfc-retry-btn')?.addEventListener('click', () => {
+          resultEl.style.display = 'none';
+          if (statusEl) { statusEl.textContent = 'Acerca la tarjeta al dispositivo...'; statusEl.style.color = ''; }
+          this._startEmvPayment(total, client, description, resultEl, statusEl);
+        });
+      }
+    } catch (e) {
+      console.error('[EMV] Payment error:', e);
+      if (statusEl) { statusEl.textContent = 'Error: ' + (e.message || 'No se pudo leer la tarjeta'); statusEl.style.color = 'var(--red-400)'; }
+      // Fallback to card form
+      setTimeout(() => {
+        if (statusEl) { statusEl.textContent = 'Ingresa los datos manualmente'; statusEl.style.color = ''; }
+        if (resultEl) resultEl.style.display = 'block';
+        this._showCardForm(total, client, description, resultEl, statusEl);
+      }, 2000);
+    }
   }
 
   async _startNativeNfc(total, client, description) {

@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
       amount: Number(amount),
       taxAmount: 0.00,
       email: email || 'cobro@accios.app',
-      phone: phone || '',
+      phone: phone || '68204698',
       concept: description || 'Cobro ACCIOS',
       description: description || 'Cobro ACCIOS',
       lang: 'ES',
