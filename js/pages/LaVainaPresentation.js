@@ -575,39 +575,213 @@ export class LaVainaPresentation {
   //  PAYMENT HANDLERS
   // ═══════════════════════════════════════════════════════════════
 
-  async _handlePagarTarjeta() {
-    const btn = this.container.querySelector('#lv-pay-tarjeta');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span>Generando link de pago...</span>';
+  _handlePagarTarjeta() {
+    let total = MONTHLY_BASE;
+    const checks = this.container.querySelectorAll('.lv-pricing-option input:checked');
+    checks.forEach(cb => { total += parseFloat(cb.dataset.price); });
+    this._showCardPaymentModal(total);
+  }
+
+  // ── Card Payment Modal ──────────────────────────────────────
+  _showCardPaymentModal(amount) {
+    document.querySelector('.lv-modal-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'lv-modal-overlay';
+    overlay.innerHTML = `
+      <div class="lv-modal lv-card-modal">
+        <div class="lv-card-modal-header">
+          <div class="lv-card-modal-amount-label">Total a pagar</div>
+          <div class="lv-card-modal-amount">$${amount.toFixed(2)}</div>
+        </div>
+
+        <div class="lv-card-brand" id="lv-card-brand">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--purple-400)" stroke-width="1.5">
+            <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </div>
+
+        <div class="lv-card-error" id="lv-card-error" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          <span id="lv-card-error-text"></span>
+        </div>
+
+        <form class="lv-card-form" id="lv-card-form" autocomplete="on">
+          <div class="lv-card-field">
+            <label class="lv-card-label" for="lv-cc-name">Nombre del titular</label>
+            <input class="lv-card-input" type="text" id="lv-cc-name"
+                   name="cc-name" autocomplete="cc-name"
+                   placeholder="Como aparece en la tarjeta" required>
+          </div>
+          <div class="lv-card-field">
+            <label class="lv-card-label" for="lv-cc-number">Numero de tarjeta</label>
+            <input class="lv-card-input lv-card-input--number" type="text" id="lv-cc-number"
+                   name="cc-number" autocomplete="cc-number" inputmode="numeric"
+                   placeholder="0000 0000 0000 0000" maxlength="19" required>
+          </div>
+          <div class="lv-card-row">
+            <div class="lv-card-field lv-card-field--half">
+              <label class="lv-card-label" for="lv-cc-exp">Vencimiento</label>
+              <input class="lv-card-input" type="text" id="lv-cc-exp"
+                     name="cc-exp" autocomplete="cc-exp" inputmode="numeric"
+                     placeholder="MM/YY" maxlength="5" required>
+            </div>
+            <div class="lv-card-field lv-card-field--half">
+              <label class="lv-card-label" for="lv-cc-csc">CVV</label>
+              <input class="lv-card-input" type="text" id="lv-cc-csc"
+                     name="cc-csc" autocomplete="cc-csc" inputmode="numeric"
+                     placeholder="123" maxlength="4" required>
+            </div>
+          </div>
+          <button class="lv-card-submit" type="submit" id="lv-card-submit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span id="lv-card-submit-text">Pagar $${amount.toFixed(2)}</span>
+          </button>
+        </form>
+        <button class="lv-card-cancel" id="lv-card-cancel">Cancelar</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('lv-modal-overlay--visible'));
+    this._attachCardModalListeners(overlay, amount);
+  }
+
+  _attachCardModalListeners(overlay, amount) {
+    const form = overlay.querySelector('#lv-card-form');
+    const numberInput = overlay.querySelector('#lv-cc-number');
+    const expInput = overlay.querySelector('#lv-cc-exp');
+    const cvvInput = overlay.querySelector('#lv-cc-csc');
+    const cancelBtn = overlay.querySelector('#lv-card-cancel');
+
+    numberInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      const brand = this._detectCardBrand(val);
+      if (brand === 'AMEX') {
+        val = val.substring(0, 15);
+        val = val.replace(/(\d{4})(\d{0,6})(\d{0,5})/, (m, g1, g2, g3) => {
+          let r = g1; if (g2) r += ' ' + g2; if (g3) r += ' ' + g3; return r;
+        });
+      } else {
+        val = val.substring(0, 16);
+        val = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+      }
+      e.target.value = val;
+      this._updateCardBrandIcon(overlay, brand);
+      cvvInput.maxLength = brand === 'AMEX' ? 4 : 3;
+    });
+
+    expInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length >= 2) val = val.substring(0, 2) + '/' + val.substring(2, 4);
+      e.target.value = val;
+    });
+
+    cvvInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) this._closeModal(overlay);
+    });
+    cancelBtn.addEventListener('click', () => this._closeModal(overlay));
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this._processCardPayment(overlay, amount);
+    });
+  }
+
+  _detectCardBrand(number) {
+    const n = number.replace(/\s/g, '');
+    if (/^4/.test(n)) return 'VISA';
+    if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'MASTERCARD';
+    if (/^3[47]/.test(n)) return 'AMEX';
+    return '';
+  }
+
+  _updateCardBrandIcon(overlay, brand) {
+    const el = overlay.querySelector('#lv-card-brand');
+    const colors = { VISA: '#1A1F71', MASTERCARD: '#EB001B', AMEX: '#006FCF' };
+    const labels = { VISA: 'Visa', MASTERCARD: 'Mastercard', AMEX: 'American Express' };
+    el.innerHTML = brand
+      ? `<span class="lv-card-brand-text" style="color:${colors[brand]}">${labels[brand]}</span>`
+      : `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--purple-400)" stroke-width="1.5">
+           <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+         </svg>`;
+  }
+
+  async _processCardPayment(overlay, amount) {
+    const submitBtn = overlay.querySelector('#lv-card-submit');
+    const submitText = overlay.querySelector('#lv-card-submit-text');
+    const errorEl = overlay.querySelector('#lv-card-error');
+
+    const cardNumber = overlay.querySelector('#lv-cc-number').value.replace(/\s/g, '');
+    const expRaw = overlay.querySelector('#lv-cc-exp').value;
+    const cvv = overlay.querySelector('#lv-cc-csc').value;
+    const fullName = overlay.querySelector('#lv-cc-name').value.trim();
+
+    if (cardNumber.length < 13) { this._showCardError(overlay, 'Numero de tarjeta invalido'); return; }
+    if (!/^\d{2}\/\d{2}$/.test(expRaw)) { this._showCardError(overlay, 'Fecha de vencimiento invalida'); return; }
+    if (cvv.length < 3) { this._showCardError(overlay, 'CVV invalido'); return; }
+    if (!fullName) { this._showCardError(overlay, 'Ingresa el nombre del titular'); return; }
+
+    const [expMonth, expYear] = expRaw.split('/');
+    const nameParts = fullName.split(/\s+/);
+    const firstName = nameParts[0] || 'Cliente';
+    const lastName = nameParts.slice(1).join(' ') || 'ACCIOS';
+    const cardType = this._detectCardBrand(cardNumber) || 'VISA';
+
+    errorEl.style.display = 'none';
+    submitBtn.disabled = true;
+    submitText.textContent = 'Procesando...';
+    submitBtn.classList.add('lv-card-submit--loading');
 
     try {
-      let total = MONTHLY_BASE;
-      const checks = this.container.querySelectorAll('.lv-pricing-option input:checked');
-      checks.forEach(cb => { total += parseFloat(cb.dataset.price); });
-
-      const res = await fetch(apiUrl('/api/paguelofacil-link'), {
+      const res = await fetch(apiUrl('/api/paguelofacil-charge'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: total,
+          amount,
           description: 'La Vaina — Sistema de Gestion de Restaurante',
+          email: 'cobro@accios.app',
+          phone: '68204698',
+          cardNumber, expMonth, expYear: '20' + expYear,
+          cvv, firstName, lastName, cardType
         }),
       });
 
-      if (!res.ok) throw new Error('Error generando link');
       const data = await res.json();
-      const url = data.paymentUrl || data.url || data.link;
-      if (url) window.open(url, '_blank');
 
-      btn.disabled = false;
-      btn.innerHTML = origHTML;
+      if (data.success) {
+        this._closeModal(overlay);
+        this._showConfirmation();
+      } else {
+        this._showCardError(overlay, data.message || 'Pago rechazado. Intenta con otra tarjeta.');
+        submitBtn.disabled = false;
+        submitText.textContent = `Reintentar $${amount.toFixed(2)}`;
+        submitBtn.classList.remove('lv-card-submit--loading');
+      }
     } catch (err) {
-      console.error('Payment link error:', err);
-      btn.disabled = false;
-      btn.innerHTML = '<span>Error — Reintentar</span>';
-      setTimeout(() => { btn.innerHTML = origHTML; }, 3000);
+      console.error('Card payment error:', err);
+      this._showCardError(overlay, 'Error de conexion. Intenta de nuevo.');
+      submitBtn.disabled = false;
+      submitText.textContent = `Reintentar $${amount.toFixed(2)}`;
+      submitBtn.classList.remove('lv-card-submit--loading');
     }
+  }
+
+  _showCardError(overlay, message) {
+    const errorEl = overlay.querySelector('#lv-card-error');
+    const errorText = overlay.querySelector('#lv-card-error-text');
+    errorText.textContent = message;
+    errorEl.style.display = 'flex';
+    errorEl.classList.remove('lv-card-error--shake');
+    requestAnimationFrame(() => errorEl.classList.add('lv-card-error--shake'));
   }
 
   _showYappyAchModal() {
