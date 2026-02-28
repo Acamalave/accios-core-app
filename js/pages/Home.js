@@ -431,6 +431,14 @@ export class Home {
           return;
         }
 
+        // La Vaina → shield assembly → presentation page
+        if (bizId === 'lavaina') {
+          this._triggerShieldTransition(() => {
+            window.location.hash = '#lavaina';
+          });
+          return;
+        }
+
         // Show coming-soon popup for specific businesses
         if (comingSoonIds.includes(bizId)) {
           const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
@@ -847,6 +855,79 @@ export class Home {
     requestAnimationFrame(tick);
   }
 
+  // ═══════════════════════════════════════════════════════
+  // SHIELD TRANSITION — Assembly animation for La Vaina
+  // ═══════════════════════════════════════════════════════
+  _triggerShieldTransition(onComplete) {
+    document.getElementById('lv-shield-transition-overlay')?.remove();
+
+    const SHIELD_SVG = `
+    <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="lv-shield-svg" id="lv-home-shield-svg">
+      <g class="lv-shield-fragment" data-frag="0"><path d="M100 10 L40 50 L40 90 L100 70 Z" fill="rgba(124,58,237,0.35)" stroke="rgba(167,139,250,0.4)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="1"><path d="M100 10 L160 50 L160 90 L100 70 Z" fill="rgba(124,58,237,0.35)" stroke="rgba(167,139,250,0.4)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="2"><path d="M40 90 L40 150 L70 170 L100 130 L100 70 Z" fill="rgba(124,58,237,0.3)" stroke="rgba(167,139,250,0.3)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="3"><path d="M160 90 L160 150 L130 170 L100 130 L100 70 Z" fill="rgba(124,58,237,0.3)" stroke="rgba(167,139,250,0.3)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="4"><path d="M40 150 L70 170 L100 200 L70 190 Z" fill="rgba(124,58,237,0.25)" stroke="rgba(167,139,250,0.25)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="5"><path d="M160 150 L130 170 L100 200 L130 190 Z" fill="rgba(124,58,237,0.25)" stroke="rgba(167,139,250,0.25)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="6"><path d="M70 190 L100 200 L100 230 Z" fill="rgba(124,58,237,0.2)" stroke="rgba(167,139,250,0.2)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="7"><path d="M130 190 L100 200 L100 230 Z" fill="rgba(124,58,237,0.2)" stroke="rgba(167,139,250,0.2)" stroke-width="0.5"/></g>
+      <g class="lv-shield-fragment" data-frag="8"><path d="M100 70 L80 100 L100 130 L120 100 Z" fill="rgba(167,139,250,0.2)" stroke="rgba(167,139,250,0.6)" stroke-width="1"/></g>
+    </svg>`;
+
+    const ov = document.createElement('div');
+    ov.id = 'lv-shield-transition-overlay';
+    ov.className = 'lv-shield-overlay';
+    ov.innerHTML = `<div class="lv-shield-container">${SHIELD_SVG}</div>`;
+    document.body.appendChild(ov);
+
+    const svgEl = ov.querySelector('#lv-home-shield-svg');
+    const fragments = svgEl.querySelectorAll('.lv-shield-fragment');
+    const springs = [];
+
+    fragments.forEach((frag, i) => {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 120 + Math.random() * 180;
+      springs.push({
+        el: frag, x: Math.cos(angle) * dist, y: Math.sin(angle) * dist,
+        r: (Math.random() - 0.5) * 400, vx: 0, vy: 0, vr: 0,
+        opacity: 0, delay: i * 55, started: false,
+      });
+    });
+
+    const K = 120, D = 14;
+    let startTime = null;
+
+    const tick = (now) => {
+      if (!startTime) startTime = now;
+      const elapsed = now - startTime;
+      const dt = Math.min(1 / 60, 0.025);
+      let allSettled = true;
+
+      for (const s of springs) {
+        if (elapsed < s.delay) { allSettled = false; continue; }
+        s.started = true;
+        s.vx += (-K * s.x - D * s.vx) * dt;
+        s.vy += (-K * s.y - D * s.vy) * dt;
+        s.vr += (-K * s.r - D * s.vr) * dt;
+        s.x += s.vx * dt; s.y += s.vy * dt; s.r += s.vr * dt;
+        s.opacity = Math.min(1, s.opacity + dt * 5);
+        s.el.style.transform = `translate(${s.x.toFixed(1)}px,${s.y.toFixed(1)}px) rotate(${s.r.toFixed(1)}deg)`;
+        s.el.style.opacity = s.opacity.toFixed(2);
+        if (Math.abs(s.x) > 0.3 || Math.abs(s.y) > 0.3) allSettled = false;
+      }
+
+      if (allSettled) {
+        fragments.forEach(f => { f.style.transform = ''; f.style.opacity = '1'; });
+        svgEl.classList.add('lv-shield--assembled');
+        setTimeout(() => { if (onComplete) onComplete(); }, 400);
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  }
+
   unmount() {
     if (this._animId) {
       cancelAnimationFrame(this._animId);
@@ -855,7 +936,7 @@ export class Home {
     if (this._rippleInterval) {
       clearInterval(this._rippleInterval);
     }
-    // Note: Do NOT remove curtain-overlay here — it must persist
-    // through navigation so the opening animation plays on the new page.
+    // Note: Do NOT remove curtain-overlay or shield-overlay here — they must
+    // persist through navigation so the animation plays on the new page.
   }
 }

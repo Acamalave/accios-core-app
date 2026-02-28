@@ -12,6 +12,7 @@ import { Dashboard } from './pages/Dashboard.js';
 import { PodcastWorld } from './pages/PodcastWorld.js';
 import { Finance } from './pages/Finance.js';
 import { ClientPortal } from './pages/ClientPortal.js';
+import { LaVainaPresentation } from './pages/LaVainaPresentation.js';
 
 class App {
   constructor() {
@@ -127,6 +128,10 @@ class App {
 
       case 'portal':
         pageInstance = new ClientPortal(this.content, this.currentUser, route.sub);
+        break;
+
+      case 'lavaina':
+        pageInstance = new LaVainaPresentation(this.content, this.currentUser);
         break;
 
       default:
