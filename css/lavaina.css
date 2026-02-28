@@ -1218,7 +1218,141 @@
   border-top: 1px solid rgba(124, 58, 237, 0.06);
 }
 
-/* ── RESPONSIVE ──────────────────────────────────────────────── */
+/* ── MOBILE POLISH (≤767px) ──────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Tighter section padding */
+  .lv-section {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  /* Non-hero sections: let content dictate height */
+  .lv-roles,
+  .lv-pricing,
+  .lv-payment {
+    min-height: auto;
+  }
+
+  /* Hero: reduce top gap, use flex-start + padding */
+  .lv-hero {
+    justify-content: flex-start;
+    padding-top: 12vh;
+    padding-bottom: var(--space-6);
+  }
+
+  .lv-hero-logo {
+    max-width: 200px;
+    max-height: 120px;
+  }
+
+  .lv-hero-badge {
+    margin-bottom: var(--space-4);
+  }
+
+  .lv-hero-tagline {
+    margin-bottom: var(--space-4);
+  }
+
+  .lv-hero-wow {
+    margin-bottom: var(--space-5);
+    font-size: var(--text-xs);
+  }
+
+  /* Back button: slightly smaller */
+  .lv-back-btn {
+    width: 36px;
+    height: 36px;
+    top: var(--space-3);
+    left: var(--space-3);
+  }
+
+  /* Role section polish */
+  .lv-role-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .lv-role-title {
+    font-size: var(--text-lg);
+  }
+
+  .lv-role-features {
+    gap: var(--space-2);
+  }
+
+  .lv-role-feature {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .lv-role-feature-name {
+    text-align: left;
+  }
+
+  .lv-role-feature-desc {
+    text-align: left;
+  }
+
+  /* Pricing card: tighter */
+  .lv-pricing-header {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+  }
+
+  .lv-pricing-includes {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .lv-pricing-options {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  /* Pricing option text: left-aligned */
+  .lv-pricing-option-name {
+    text-align: left;
+  }
+
+  .lv-pricing-option-desc {
+    text-align: left;
+  }
+
+  .lv-pricing-footer {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  /* Bottom sections: clear nav bar */
+  .lv-pricing {
+    padding-bottom: calc(var(--space-6) + 70px);
+  }
+
+  .lv-payment {
+    padding-bottom: calc(var(--space-6) + 70px);
+  }
+
+  /* Nav bar safe area */
+  .lv-nav {
+    bottom: max(var(--space-4), env(safe-area-inset-bottom, 12px));
+  }
+
+  /* Floating CTA: smaller on mobile */
+  .lv-float-cta {
+    top: var(--space-3);
+    right: var(--space-3);
+    padding: 6px var(--space-3);
+    font-size: 0.65rem;
+  }
+
+  /* Section titles tighter */
+  .lv-section-subtitle {
+    margin-bottom: var(--space-4);
+  }
+
+  /* Confirm overlay: smaller shield */
+  .lv-confirm-overlay .lv-shield-container {
+    width: 140px;
+    height: 168px;
+  }
+}
+
+/* ── DESKTOP (≥768px) ────────────────────────────────────────── */
 @media (min-width: 768px) {
   .lv-section {
     padding: var(--space-8) var(--space-6);
