@@ -410,6 +410,23 @@
   background-clip: text;
 }
 
+/* When logo replaces text, reset the text-gradient styles on parent */
+.lv-hero-client:has(.lv-hero-logo) {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+}
+
+.lv-hero-logo {
+  max-width: 260px;
+  max-height: 140px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(124, 58, 237, 0.4));
+}
+
 .lv-hero-tagline {
   font-size: clamp(1rem, 3.5vw, 1.4rem);
   font-weight: var(--weight-light);

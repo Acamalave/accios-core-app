@@ -1,4 +1,5 @@
 import { apiUrl } from '../services/apiConfig.js';
+import userAuth from '../services/userAuth.js';
 
 // ─── Shield SVG (stylized hexagonal crest split into 8 fragments) ───
 const SHIELD_SVG = `
@@ -151,6 +152,17 @@ export class LaVainaPresentation {
   async render() {
     this.container.innerHTML = this._buildPage();
     this._sections = Array.from(this.container.querySelectorAll('.lv-section'));
+
+    // Fetch business logo and replace hero title
+    try {
+      const biz = await userAuth.getBusiness('lavaina');
+      if (biz?.logo) {
+        const heroClient = this.container.querySelector('.lv-hero-client');
+        if (heroClient) {
+          heroClient.innerHTML = `<img src="${biz.logo}" alt="${biz.nombre || 'La Vaina'}" class="lv-hero-logo">`;
+        }
+      }
+    } catch (e) { /* fallback to text */ }
 
     // Play shield entry if overlay exists from Home transition
     const existingOverlay = document.getElementById('lv-shield-transition-overlay');
