@@ -1,0 +1,19 @@
+{
+  "name": "nice-curie",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sw.js",
+  "scripts": {
+    "build": "rsync -av --delete --exclude='node_modules' --exclude='android' --exclude='.git' --exclude='.claude' --exclude='www' --exclude='api' --exclude='package.json' --exclude='package-lock.json' --exclude='capacitor.config.json' . www/",
+    "sync": "npm run build && npx cap sync android"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0",
+    "@capgo/capacitor-nfc": "^8.0.15"
+  }
+}

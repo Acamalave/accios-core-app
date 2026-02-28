@@ -1,3 +1,5 @@
+import { apiUrl } from '../services/apiConfig.js';
+
 export class ChatPanel {
   constructor(container, { clients, transactions, onDataSaved }) {
     this.container = container;
@@ -67,7 +69,7 @@ export class ChatPanel {
 
     try {
       // Call Claude API proxy
-      const response = await fetch('/api/claude-chat', {
+      const response = await fetch(apiUrl('/api/claude-chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

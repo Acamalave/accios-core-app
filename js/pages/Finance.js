@@ -1,6 +1,8 @@
 import financeService from '../services/financeService.js';
 import userAuth from '../services/userAuth.js';
 import { ChatPanel } from '../components/ChatPanel.js';
+import { apiUrl } from '../services/apiConfig.js';
+import nfcService from '../services/nfcService.js';
 
 const STATUS_LABELS = {
   por_cobrar: 'Por Cobrar',
@@ -1162,7 +1164,7 @@ export class Finance {
     });
 
     try {
-      const response = await fetch('/api/paguelofacil-link', {
+      const response = await fetch(apiUrl('/api/paguelofacil-link'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1227,6 +1229,8 @@ export class Finance {
       if (txn) descriptions.push(txn.description || 'Transaccion');
     });
 
+    const useNativeNfc = nfcService.isAvailable();
+
     const overlay = document.createElement('div');
     overlay.className = 'fin-nfc-modal';
     overlay.innerHTML = `
@@ -1236,29 +1240,97 @@ export class Finance {
           </button>
           <div class="fin-nfc-amount">${financeService.formatCurrency(total)}</div>
           <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-4);">${client?.name || ''} — ${descriptions.join(', ')}</div>
-          <div class="fin-nfc-qr" id="fin-nfc-qr">
-            <div style="width:160px;height:160px;background:rgba(255,255,255,0.05);border:2px dashed var(--border-subtle);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:var(--text-dim);">
-              Generando...
+          ${useNativeNfc ? `
+            <div id="fin-nfc-native" style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
+              <div class="fin-nfc-pulse"></div>
+              <div class="fin-nfc-status" id="fin-nfc-status">Acerca la tarjeta al dispositivo...</div>
+              <div id="fin-nfc-result" style="display:none;text-align:center;"></div>
             </div>
-          </div>
-          <div class="fin-nfc-status" id="fin-nfc-status">Esperando pago NFC...</div>
-          <div class="fin-nfc-pulse"></div>
+          ` : `
+            <div class="fin-nfc-qr" id="fin-nfc-qr">
+              <div style="width:160px;height:160px;background:rgba(255,255,255,0.05);border:2px dashed var(--border-subtle);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:var(--text-dim);">
+                Generando...
+              </div>
+            </div>
+            <div class="fin-nfc-status" id="fin-nfc-status">Generando link de pago...</div>
+            <div class="fin-nfc-pulse"></div>
+          `}
         </div>
     `;
 
     this.container.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('fin-nfc-modal--visible'));
 
-    // Generate payment link for QR
-    this._generateNfcQr(total, client, descriptions.join(', '));
+    if (useNativeNfc) {
+      // Native NFC: start reading contactless cards
+      this._startNativeNfc(total, client, descriptions.join(', '));
+    } else {
+      // Web fallback: generate QR code / payment link
+      this._generateNfcQr(total, client, descriptions.join(', '));
+    }
 
-    overlay.querySelector('#fin-nfc-close').addEventListener('click', () => {
+    const closeAndCleanup = () => {
+      nfcService.stopReading();
       overlay.remove();
-    });
+    };
+
+    overlay.querySelector('#fin-nfc-close').addEventListener('click', closeAndCleanup);
 
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) overlay.remove();
+      if (e.target === overlay) closeAndCleanup();
     });
+  }
+
+  async _startNativeNfc(total, client, description) {
+    const statusEl = this.container.querySelector('#fin-nfc-status');
+    const resultEl = this.container.querySelector('#fin-nfc-result');
+
+    const started = await nfcService.startReading(
+      // onTagRead
+      (tagData) => {
+        nfcService.stopReading();
+
+        if (statusEl) statusEl.textContent = 'Tarjeta detectada!';
+        if (resultEl) {
+          resultEl.style.display = 'block';
+          resultEl.innerHTML = `
+            <div style="color:var(--green-400);font-size:1.1rem;font-weight:600;margin-bottom:var(--space-2);">
+              ✓ Tarjeta leida
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-secondary);">
+              ID: ${tagData.id || 'N/A'}<br>
+              Tipo: ${tagData.type}
+            </div>
+            <div style="margin-top:var(--space-3);font-size:0.8rem;color:var(--text-dim);">
+              Procesando cobro de ${financeService.formatCurrency(total)}...
+            </div>
+          `;
+        }
+
+        // Generate payment link with card data to process via PagueloFacil
+        this._generateNfcQr(total, client, description);
+      },
+      // onError
+      (errorMsg) => {
+        if (statusEl) {
+          statusEl.textContent = `Error NFC: ${errorMsg}`;
+          statusEl.style.color = 'var(--red-400)';
+        }
+        // Fall back to QR code
+        setTimeout(() => {
+          if (statusEl) {
+            statusEl.textContent = 'Usando link de pago como alternativa...';
+            statusEl.style.color = '';
+          }
+          this._generateNfcQr(total, client, description);
+        }, 2000);
+      }
+    );
+
+    if (!started && statusEl) {
+      statusEl.textContent = 'NFC no disponible, generando link...';
+      this._generateNfcQr(total, client, description);
+    }
   }
 
   async _generateNfcQr(total, client, description) {
@@ -1267,7 +1339,7 @@ export class Finance {
     if (!qrContainer) return;
 
     try {
-      const response = await fetch('/api/paguelofacil-link', {
+      const response = await fetch(apiUrl('/api/paguelofacil-link'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
