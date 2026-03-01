@@ -107,7 +107,7 @@ export class SuperAdmin {
       userAuth.getAllEpisodes(),
       userAuth.getAllComments(),
       userAuth.getAllAppointments(),
-      userAuth.getAllQuotes(),
+      userAuth.getAllQuotes().catch(() => []),
     ]);
     this.chargesData = await userAuth.ensureMonthlyMemberships(this.businesses, this.selectedMonth);
   }

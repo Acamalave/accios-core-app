@@ -56,7 +56,7 @@ export class ClientPortal {
       const [transactions, payments, quotes] = await Promise.all([
         financeService.getTransactionsByClient(this.client.id),
         financeService.getPaymentsByClient(this.client.id),
-        userAuth.getQuotesForClient(phone),
+        userAuth.getQuotesForClient(phone).catch(() => []),
       ]);
 
       this.transactions = transactions;
