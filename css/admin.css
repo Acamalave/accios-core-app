@@ -815,6 +815,76 @@
 .sa-charge-type-badge--servicio { background: rgba(16,185,129,0.15); color: #10b981; }
 .sa-charge-type-badge--sesion { background: rgba(245,158,11,0.15); color: #f59e0b; }
 
+/* === Quote Cards === */
+.sa-quote-card {
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+.sa-quote-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.sa-quote-card-client {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.sa-quote-card-biz {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.sa-quote-card-items {
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+  padding: var(--space-2) 0;
+  margin-bottom: var(--space-3);
+}
+.sa-quote-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-1) 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.sa-quote-item-row span:last-child {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.sa-quote-card-total {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+.sa-quote-card-notes {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+  font-style: italic;
+}
+
+/* Quote Item Input (modal) */
+.sa-quote-item-input {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+.sa-quote-item-input .sa-form-input:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
 /* ═══════════ RESPONSIVE ═══════════ */
 
 @media (max-width: 768px) {

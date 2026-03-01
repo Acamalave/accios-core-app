@@ -13,6 +13,7 @@ export class SuperAdmin {
     this.comments = [];
     this.appointments = [];
     this.chargesData = [];
+    this.quotes = [];
     this.selectedMonth = new Date().toISOString().substring(0, 7);
     this.EVENT_LABELS = {
       page_navigate: { icon: '🧭', label: 'Navego a pagina' },
@@ -69,6 +70,7 @@ export class SuperAdmin {
         <div class="superadmin-tabs">
           <button class="superadmin-tab ${this.tab === 'users' ? 'active' : ''}" data-tab="users">Usuarios</button>
           <button class="superadmin-tab ${this.tab === 'businesses' ? 'active' : ''}" data-tab="businesses">Negocios</button>
+          <button class="superadmin-tab ${this.tab === 'quotes' ? 'active' : ''}" data-tab="quotes">Cotizaciones</button>
           <button class="superadmin-tab ${this.tab === 'onboarding' ? 'active' : ''}" data-tab="onboarding">Expedientes</button>
           <button class="superadmin-tab ${this.tab === 'episodes' ? 'active' : ''}" data-tab="episodes">Capitulos</button>
           <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
@@ -98,13 +100,14 @@ export class SuperAdmin {
   }
 
   async _loadData() {
-    [this.users, this.businesses, this.onboardingResponses, this.episodes, this.comments, this.appointments] = await Promise.all([
+    [this.users, this.businesses, this.onboardingResponses, this.episodes, this.comments, this.appointments, this.quotes] = await Promise.all([
       userAuth.getAllUsers(),
       userAuth.getAllBusinesses(),
       userAuth.getAllOnboardingResponses(),
       userAuth.getAllEpisodes(),
       userAuth.getAllComments(),
       userAuth.getAllAppointments(),
+      userAuth.getAllQuotes(),
     ]);
     this.chargesData = await userAuth.ensureMonthlyMemberships(this.businesses, this.selectedMonth);
   }
@@ -194,6 +197,8 @@ export class SuperAdmin {
       this._renderComments(content);
     } else if (this.tab === 'appointments') {
       this._renderAppointments(content);
+    } else if (this.tab === 'quotes') {
+      this._renderQuotes(content);
     } else if (this.tab === 'behavior') {
       this._renderBehavior(content);
     }
@@ -687,6 +692,270 @@ export class SuperAdmin {
         if (charge) this._showAbonoModal(charge);
       });
     });
+  }
+
+  // ─── QUOTES TAB ──────────────────────────────────────
+
+  _renderQuotes(content) {
+    const QSTATUS = { pendiente: 'Pendiente', aceptada: 'Aceptada', rechazada: 'Rechazada', pagada: 'Pagada (Factura)' };
+    const QSTATUS_CLS = { pendiente: 'client', aceptada: 'admin', rechazada: '', pagada: 'superadmin' };
+
+    const sorted = [...this.quotes].sort((a, b) => {
+      const order = { pendiente: 0, aceptada: 1, pagada: 2, rechazada: 3 };
+      if ((order[a.status] || 0) !== (order[b.status] || 0)) return (order[a.status] || 0) - (order[b.status] || 0);
+      return (b.createdAt || '').localeCompare(a.createdAt || '');
+    });
+
+    const cards = sorted.map(q => {
+      const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('es-PA', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+      const itemCount = (q.items || []).length;
+      const statusCls = QSTATUS_CLS[q.status] || '';
+      return `
+      <div class="sa-quote-card glass-card">
+        <div class="sa-quote-card-header">
+          <div>
+            <div class="sa-quote-card-client">${q.clientName || q.clientPhone}</div>
+            <div class="sa-quote-card-biz">${q.businessName || '-'} · ${date}</div>
+          </div>
+          <span class="sa-badge sa-badge--${statusCls}" ${!statusCls ? 'style="background:rgba(239,68,68,0.12);color:#ef4444;"' : ''}>${QSTATUS[q.status] || q.status}</span>
+        </div>
+        <div class="sa-quote-card-items">
+          ${(q.items || []).map(i => `
+            <div class="sa-quote-item-row">
+              <span>${i.description}</span>
+              <span>$${(i.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="sa-quote-card-total">
+          <span>Subtotal: $${(q.subtotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          ${q.fee > 0 ? `<span style="color:var(--text-muted);font-size:0.8rem;">Fee 3.5%: $${q.fee.toFixed(2)}</span>` : ''}
+          ${q.status === 'pagada' ? `<span style="color:var(--neon-green);font-weight:600;">Total: $${(q.total || 0).toFixed(2)}</span>` : ''}
+        </div>
+        ${q.notes ? `<div class="sa-quote-card-notes">${q.notes}</div>` : ''}
+        <div class="sa-card-actions">
+          ${q.status === 'pendiente' ? `<button class="sa-btn sa-btn--outline" data-edit-quote="${q.id}">Editar</button>` : ''}
+          <button class="sa-btn" data-view-quote="${q.id}">Ver</button>
+          ${q.status === 'pendiente' || q.status === 'rechazada' ? `<button class="sa-btn sa-btn--danger" data-delete-quote="${q.id}">Eliminar</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    // Stats
+    const pending = this.quotes.filter(q => q.status === 'pendiente').length;
+    const accepted = this.quotes.filter(q => q.status === 'aceptada').length;
+    const paid = this.quotes.filter(q => q.status === 'pagada').length;
+
+    content.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4);flex-wrap:wrap;gap:var(--space-3);">
+        <div style="display:flex;gap:var(--space-3);font-size:0.85rem;color:var(--text-secondary);">
+          <span>${pending} pendiente${pending !== 1 ? 's' : ''}</span>
+          <span style="color:#f59e0b;">${accepted} aceptada${accepted !== 1 ? 's' : ''}</span>
+          <span style="color:var(--neon-green);">${paid} factura${paid !== 1 ? 's' : ''}</span>
+        </div>
+        <button class="sa-btn sa-btn--primary" id="sa-add-quote">+ Nueva Cotización</button>
+      </div>
+      <div class="sa-card-list">
+        ${cards || '<div style="text-align:center;color:var(--text-secondary);padding:var(--space-6);">No hay cotizaciones</div>'}
+      </div>
+    `;
+
+    content.querySelector('#sa-add-quote')?.addEventListener('click', () => this._showQuoteModal());
+
+    content.querySelectorAll('[data-view-quote]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = this.quotes.find(x => x.id === btn.dataset.viewQuote);
+        if (q) this._showQuoteDetailModal(q);
+      });
+    });
+
+    content.querySelectorAll('[data-edit-quote]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = this.quotes.find(x => x.id === btn.dataset.editQuote);
+        if (q) this._showQuoteModal(q);
+      });
+    });
+
+    content.querySelectorAll('[data-delete-quote]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Eliminar esta cotización?')) return;
+        try {
+          await userAuth.deleteQuote(btn.dataset.deleteQuote);
+          Toast.success('Cotización eliminada');
+          await this._loadData();
+          this._renderTab();
+        } catch (e) { Toast.error('Error: ' + e.message); }
+      });
+    });
+  }
+
+  // ─── QUOTE CREATION/EDIT MODAL ──────────────────────
+
+  _showQuoteModal(existing = null) {
+    const userOptions = this.users.filter(u => u.role === 'client').map(u =>
+      `<option value="${u.phone || u.id}" ${existing?.clientPhone === (u.phone || u.id) ? 'selected' : ''}>${u.name || u.phone || u.id}</option>`
+    ).join('');
+    const bizOptions = this.businesses.map(b =>
+      `<option value="${b.id}" ${existing?.businessId === b.id ? 'selected' : ''}>${b.nombre}</option>`
+    ).join('');
+
+    const existingItems = existing?.items || [{ description: '', amount: '' }];
+
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width:520px;max-height:85vh;overflow-y:auto;">
+          <h3 class="sa-modal-title">${existing ? 'Editar' : 'Nueva'} Cotización</h3>
+          <div class="sa-acuerdo-grid">
+            <div class="sa-form-group">
+              <label class="sa-form-label">Cliente</label>
+              <select class="sa-form-select" id="sa-q-client">${userOptions}</select>
+            </div>
+            <div class="sa-form-group">
+              <label class="sa-form-label">Negocio</label>
+              <select class="sa-form-select" id="sa-q-biz">${bizOptions}</select>
+            </div>
+          </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Items</label>
+            <div id="sa-q-items">
+              ${existingItems.map((item, i) => `
+                <div class="sa-quote-item-input" data-item="${i}">
+                  <input class="sa-form-input" placeholder="Descripción" value="${item.description || ''}" data-field="desc">
+                  <input class="sa-form-input" type="number" min="0" step="0.01" placeholder="$0.00" value="${item.amount || ''}" data-field="amount" inputmode="decimal" style="max-width:120px;">
+                  <button class="sa-btn sa-btn--danger" style="padding:4px 8px;font-size:0.8rem;" data-remove-item="${i}">×</button>
+                </div>
+              `).join('')}
+            </div>
+            <button class="sa-btn sa-btn--outline" style="width:100%;margin-top:var(--space-2);" id="sa-q-add-item">+ Agregar Item</button>
+          </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Notas (opcional)</label>
+            <textarea class="sa-form-input" id="sa-q-notes" rows="2" style="resize:vertical;min-height:48px;">${existing?.notes || ''}</textarea>
+          </div>
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
+            <button class="sa-btn sa-btn--primary" id="sa-modal-save">${existing ? 'Guardar' : 'Crear Cotización'}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    // Add item
+    let itemCount = existingItems.length;
+    root.querySelector('#sa-q-add-item').addEventListener('click', () => {
+      const container = root.querySelector('#sa-q-items');
+      const div = document.createElement('div');
+      div.className = 'sa-quote-item-input';
+      div.dataset.item = itemCount;
+      div.innerHTML = `
+        <input class="sa-form-input" placeholder="Descripción" data-field="desc">
+        <input class="sa-form-input" type="number" min="0" step="0.01" placeholder="$0.00" data-field="amount" inputmode="decimal" style="max-width:120px;">
+        <button class="sa-btn sa-btn--danger" style="padding:4px 8px;font-size:0.8rem;" data-remove-item="${itemCount}">×</button>
+      `;
+      container.appendChild(div);
+      itemCount++;
+      div.querySelector('[data-remove-item]').addEventListener('click', () => div.remove());
+    });
+
+    // Remove item handlers
+    root.querySelectorAll('[data-remove-item]').forEach(btn => {
+      btn.addEventListener('click', () => btn.closest('.sa-quote-item-input').remove());
+    });
+
+    // Save
+    root.querySelector('#sa-modal-save').addEventListener('click', async () => {
+      const clientPhone = root.querySelector('#sa-q-client').value;
+      const clientUser = this.users.find(u => (u.phone || u.id) === clientPhone);
+      const bizId = root.querySelector('#sa-q-biz').value;
+      const biz = this.businesses.find(b => b.id === bizId);
+      const notes = root.querySelector('#sa-q-notes').value.trim();
+
+      const items = [];
+      root.querySelectorAll('.sa-quote-item-input').forEach(row => {
+        const desc = row.querySelector('[data-field="desc"]').value.trim();
+        const amount = parseFloat(row.querySelector('[data-field="amount"]').value) || 0;
+        if (desc && amount > 0) items.push({ description: desc, amount });
+      });
+
+      if (!items.length) { Toast.error('Agrega al menos un item'); return; }
+
+      try {
+        if (existing) {
+          const subtotal = items.reduce((s, i) => s + i.amount, 0);
+          await userAuth.updateQuote(existing.id, { items, subtotal, total: subtotal, notes, clientPhone, clientName: clientUser?.name || '', businessId: bizId, businessName: biz?.nombre || '' });
+        } else {
+          await userAuth.createQuote({ clientPhone, clientName: clientUser?.name || '', businessId: bizId, businessName: biz?.nombre || '', items, notes });
+        }
+        Toast.success(existing ? 'Cotización actualizada' : 'Cotización creada');
+        closeModal();
+        await this._loadData();
+        this._renderTab();
+      } catch (e) { Toast.error('Error: ' + e.message); }
+    });
+  }
+
+  // ─── QUOTE DETAIL MODAL ─────────────────────────────
+
+  _showQuoteDetailModal(q) {
+    const QSTATUS = { pendiente: 'Pendiente', aceptada: 'Aceptada', rechazada: 'Rechazada', pagada: 'Pagada (Factura)' };
+    const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('es-PA', { dateStyle: 'long' }) : '-';
+    const paidDate = q.paidAt ? new Date(q.paidAt).toLocaleDateString('es-PA', { dateStyle: 'long' }) : null;
+    const acceptDate = q.acceptedAt ? new Date(q.acceptedAt).toLocaleDateString('es-PA', { dateStyle: 'long' }) : null;
+
+    const itemRows = (q.items || []).map(i => `
+      <tr>
+        <td style="font-size:0.85rem;">${i.description}</td>
+        <td style="font-size:0.85rem;text-align:right;white-space:nowrap;">$${(i.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+      </tr>
+    `).join('');
+
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width:520px;max-height:85vh;overflow-y:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-4);">
+            <div>
+              <h3 class="sa-modal-title" style="margin:0;">${q.status === 'pagada' ? 'Factura' : 'Cotización'}</h3>
+              <div style="font-size:0.78rem;color:var(--text-dim);">${date} · ID: ${q.id.substring(0, 8)}</div>
+            </div>
+            <span class="sa-badge sa-badge--${q.status === 'pagada' ? 'superadmin' : q.status === 'aceptada' ? 'admin' : 'client'}">${QSTATUS[q.status]}</span>
+          </div>
+          <div style="display:flex;gap:var(--space-4);margin-bottom:var(--space-4);font-size:0.85rem;">
+            <div><span style="color:var(--text-muted);">Cliente:</span> <strong>${q.clientName || q.clientPhone}</strong></div>
+            <div><span style="color:var(--text-muted);">Negocio:</span> <strong>${q.businessName || '-'}</strong></div>
+          </div>
+          <table class="superadmin-table" style="margin-bottom:var(--space-4);">
+            <thead><tr><th>Descripción</th><th style="text-align:right;">Monto</th></tr></thead>
+            <tbody>
+              ${itemRows}
+              <tr style="border-top:2px solid var(--glass-border);">
+                <td style="font-weight:600;">Subtotal</td>
+                <td style="font-weight:600;text-align:right;">$${(q.subtotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+              </tr>
+              ${q.fee > 0 ? `<tr><td style="color:var(--text-muted);font-size:0.85rem;">Fee 3.5%</td><td style="text-align:right;font-size:0.85rem;">$${q.fee.toFixed(2)}</td></tr>` : ''}
+              ${q.status === 'pagada' ? `<tr style="color:var(--neon-green);"><td style="font-weight:700;">Total Pagado</td><td style="font-weight:700;text-align:right;">$${(q.total || 0).toFixed(2)}</td></tr>` : ''}
+            </tbody>
+          </table>
+          ${q.notes ? `<div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:var(--space-4);"><strong>Notas:</strong> ${q.notes}</div>` : ''}
+          ${acceptDate ? `<div style="font-size:0.8rem;color:var(--text-muted);">Aceptada: ${acceptDate}</div>` : ''}
+          ${paidDate ? `<div style="font-size:0.8rem;color:var(--neon-green);">Pagada: ${paidDate} · Método: ${q.paymentMethod || '-'}</div>` : ''}
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
   }
 
   // ─── ONBOARDING TAB ───────────────────────────────────

@@ -13,6 +13,7 @@ import { PodcastWorld } from './pages/PodcastWorld.js';
 import { Finance } from './pages/Finance.js';
 import { ClientPortal } from './pages/ClientPortal.js';
 import { LaVainaPresentation } from './pages/LaVainaPresentation.js';
+import behaviorService from './services/behaviorService.js';
 
 class App {
   constructor() {
@@ -88,6 +89,9 @@ class App {
 
   async handleRoute(route) {
     const { page } = route;
+
+    // Track every page navigation
+    behaviorService.track(page, 'page_navigate', { route: route.full });
 
     // Auth guard: only login accessible without session
     if (page !== 'login' && !this.currentUser) {

@@ -405,6 +405,133 @@ class UserAuth {
     }
   }
 
+  // ─── Cotizaciones (Quotes / Invoices) ────────────────
+
+  async createQuote({ clientPhone, clientName, businessId, businessName, items, notes }) {
+    try {
+      const subtotal = (items || []).reduce((s, i) => s + (i.amount || 0), 0);
+      const colRef = collection(db, 'quotes');
+      const docRef = await addDoc(colRef, {
+        clientPhone,
+        clientName: clientName || '',
+        businessId: businessId || '',
+        businessName: businessName || '',
+        items: items || [],
+        subtotal,
+        total: subtotal,
+        fee: 0,
+        status: 'pendiente',
+        notes: notes || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        acceptedAt: null,
+        paidAt: null,
+        paymentMethod: null,
+      });
+      return docRef.id;
+    } catch (e) {
+      console.error('Create quote failed:', e);
+      throw new Error('Error al crear cotización');
+    }
+  }
+
+  async getAllQuotes() {
+    try {
+      const snap = await getDocs(collection(db, 'quotes'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.error('Get all quotes failed:', e);
+      return [];
+    }
+  }
+
+  async getQuotesForClient(phone) {
+    try {
+      const formatted = this.formatPhone(phone);
+      const all = await this.getAllQuotes();
+      return all.filter(q => q.clientPhone === formatted || q.clientPhone === phone);
+    } catch (e) {
+      console.error('Get quotes for client failed:', e);
+      return [];
+    }
+  }
+
+  async updateQuote(id, updates) {
+    try {
+      const docRef = doc(db, 'quotes', id);
+      await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Update quote failed:', e);
+      throw new Error('Error al actualizar cotización');
+    }
+  }
+
+  async deleteQuote(id) {
+    try {
+      const docRef = doc(db, 'quotes', id);
+      await deleteDoc(docRef);
+      return true;
+    } catch (e) {
+      console.error('Delete quote failed:', e);
+      throw new Error('Error al eliminar cotización');
+    }
+  }
+
+  async acceptQuote(id) {
+    try {
+      const docRef = doc(db, 'quotes', id);
+      await updateDoc(docRef, {
+        status: 'aceptada',
+        acceptedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      return true;
+    } catch (e) {
+      console.error('Accept quote failed:', e);
+      throw new Error('Error al aceptar cotización');
+    }
+  }
+
+  async rejectQuote(id) {
+    try {
+      const docRef = doc(db, 'quotes', id);
+      await updateDoc(docRef, {
+        status: 'rechazada',
+        updatedAt: new Date().toISOString(),
+      });
+      return true;
+    } catch (e) {
+      console.error('Reject quote failed:', e);
+      throw new Error('Error al rechazar cotización');
+    }
+  }
+
+  async payQuote(id, paymentMethod = 'tarjeta') {
+    try {
+      const docRef = doc(db, 'quotes', id);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) throw new Error('Cotización no encontrada');
+
+      const data = snap.data();
+      const fee = paymentMethod === 'tarjeta' ? data.subtotal * 0.035 : 0;
+      const total = data.subtotal + fee;
+
+      await updateDoc(docRef, {
+        status: 'pagada',
+        fee,
+        total,
+        paymentMethod,
+        paidAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      return { ...data, status: 'pagada', fee, total, paymentMethod };
+    } catch (e) {
+      console.error('Pay quote failed:', e);
+      throw new Error('Error al procesar pago');
+    }
+  }
+
   // ─── User-Business Linking ────────────────────────────
   // The "businesses" array on each user document acts as our
   // User_Business_Rel join table. This is more efficient in

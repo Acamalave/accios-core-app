@@ -2301,6 +2301,89 @@
 
 
 /* ═══════════════════════════════════════════════
+   21b. CLIENT PORTAL – QUOTES
+   ═══════════════════════════════════════════════ */
+
+.fin-portal__quote-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.fin-portal__quote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.fin-portal__quote-btn--accept {
+  background: rgba(57, 255, 20, 0.12);
+  color: #39FF14;
+  border-color: rgba(57, 255, 20, 0.3);
+  flex: 1;
+}
+.fin-portal__quote-btn--accept:hover {
+  background: rgba(57, 255, 20, 0.22);
+}
+
+.fin-portal__quote-btn--reject {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.25);
+  flex: 1;
+}
+.fin-portal__quote-btn--reject:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.fin-portal__quote-btn--pay {
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-400));
+  color: #fff;
+  width: 100%;
+  min-height: 44px;
+  font-size: 0.95rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+}
+.fin-portal__quote-btn--pay:hover {
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.5);
+}
+
+.fin-portal__pay-method {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+.fin-portal__pay-method:hover {
+  border-color: var(--purple-400);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+/* ═══════════════════════════════════════════════
    21. RESPONSIVE
    ═══════════════════════════════════════════════ */
 
