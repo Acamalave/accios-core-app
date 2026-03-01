@@ -164,5 +164,12 @@ class App {
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new App();
-  app.init();
+  app.init().catch(err => {
+    console.error('[ACCIOS] Init error:', err);
+    // Always dismiss loading screen even on error
+    const ls = document.getElementById('loading-screen');
+    if (ls) { ls.classList.add('hide'); setTimeout(() => ls.remove(), 500); }
+    const shell = document.getElementById('app');
+    if (shell) { shell.style.opacity = '1'; }
+  });
 });
