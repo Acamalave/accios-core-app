@@ -357,18 +357,18 @@ export class LaVainaPresentation {
 
                 ${ADDONS.map(addon => `
                   <label class="lv-addon-item" data-addon="${addon.id}">
-                    <div class="lv-toggle">
-                      <input type="checkbox" class="lv-addon-toggle" data-price="${addon.price}" data-type="${addon.type}" data-addon-id="${addon.id}">
-                      <span class="lv-toggle-track"></span>
-                    </div>
-                    <div class="lv-addon-info">
+                    <div class="lv-addon-header">
+                      <div class="lv-toggle">
+                        <input type="checkbox" class="lv-addon-toggle" data-price="${addon.price}" data-type="${addon.type}" data-addon-id="${addon.id}">
+                        <span class="lv-toggle-track"></span>
+                      </div>
                       <div class="lv-addon-name">${addon.name}</div>
-                      <div class="lv-addon-desc">${addon.desc}</div>
+                      <div class="lv-addon-price-wrap">
+                        <span class="lv-addon-price">+$${addon.price.toFixed(2)}</span>
+                        <span class="lv-addon-price-type">${addon.type === 'once' ? 'unico' : '/ mes'}</span>
+                      </div>
                     </div>
-                    <div class="lv-addon-price-wrap">
-                      <span class="lv-addon-price">+$${addon.price.toFixed(2)}</span>
-                      <span class="lv-addon-price-type">${addon.type === 'once' ? 'unico' : '/ mes'}</span>
-                    </div>
+                    <div class="lv-addon-desc">${addon.desc}</div>
                   </label>
                 `).join('')}
               </div>

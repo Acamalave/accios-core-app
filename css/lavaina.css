@@ -632,6 +632,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  min-width: 0;
 }
 
 /* Base module cards */
@@ -782,11 +783,8 @@
 }
 
 .lv-addon-item {
-  display: grid;
-  grid-template-columns: 40px 1fr auto;
-  align-items: start;
-  gap: var(--space-2) var(--space-3);
-  padding: var(--space-3);
+  display: block;
+  padding: var(--space-3) var(--space-4);
   background: rgba(124, 58, 237, 0.04);
   border: 1px solid rgba(124, 58, 237, 0.1);
   border-radius: var(--radius-md);
@@ -794,6 +792,11 @@
   cursor: pointer;
   transition: border-color var(--transition-fast), background var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
+}
+.lv-addon-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 .lv-addon-item:hover {
   border-color: rgba(124, 58, 237, 0.25);
@@ -843,17 +846,21 @@
   background: #fff;
 }
 
-.lv-addon-info { flex: 1; min-width: 0; }
 .lv-addon-name {
+  flex: 1;
+  min-width: 0;
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   color: var(--text-primary);
-  margin-bottom: 2px;
 }
 .lv-addon-desc {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--text-dim);
-  line-height: 1.4;
+  line-height: 1.5;
+  text-align: justify;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(124, 58, 237, 0.06);
 }
 .lv-addon-price-wrap {
   text-align: right;
@@ -1773,12 +1780,6 @@
     text-indent: 0;
   }
   .lv-addon-item { padding: var(--space-3); }
-  .lv-addon-desc {
-    margin-left: calc(-1 * var(--space-3));
-    margin-right: calc(-1 * var(--space-3));
-    padding-left: var(--space-3);
-    padding-right: var(--space-3);
-  }
 
   /* Bottom sections: clear nav bar + mobile receipt */
   .lv-pricing {
