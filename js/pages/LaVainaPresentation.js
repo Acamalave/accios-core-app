@@ -326,6 +326,7 @@ export class LaVainaPresentation {
                       <span class="lv-base-module-amount">$${SETUP_COST.toFixed(2)}</span><span class="lv-base-module-period"> unico</span>
                     </div>
                   </div>
+                  <div class="lv-base-module-tag">Incluido</div>
                 </div>
                 <p class="lv-base-module-desc">Inversion unica de implementacion. Sin sorpresas, sin costos ocultos. Incluye:</p>
                 <div class="lv-base-module-bullets">
@@ -336,7 +337,6 @@ export class LaVainaPresentation {
                     </div>
                   `).join('')}
                 </div>
-                <div class="lv-base-module-tag">Incluido</div>
               </div>
 
               <!-- B: Hardware Trust Badge -->

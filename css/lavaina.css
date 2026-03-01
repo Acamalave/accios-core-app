@@ -702,17 +702,18 @@
 }
 .lv-base-module-bullet svg { flex-shrink: 0; color: var(--success); }
 .lv-base-module-tag {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
+  flex-shrink: 0;
+  align-self: center;
   font-size: 0.6rem;
   font-weight: var(--weight-bold);
-  color: var(--purple-400);
+  color: var(--neon-green);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  background: rgba(124, 58, 237, 0.1);
-  padding: 2px 8px;
+  background: var(--neon-green-bg);
+  border: 1px solid var(--neon-green-border);
+  padding: 3px 10px;
   border-radius: 6px;
+  white-space: nowrap;
 }
 
 /* Free badge */
