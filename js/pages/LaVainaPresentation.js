@@ -1198,6 +1198,11 @@ export class LaVainaPresentation {
       this.container.querySelector('#lv-sec-pricing')?.scrollIntoView({ behavior: 'smooth' });
     });
 
+    // "Descubre mas" → scroll to roles section
+    this.container.querySelector('.lv-hero-scroll')?.addEventListener('click', () => {
+      this._sections[1]?.scrollIntoView({ behavior: 'smooth' });
+    });
+
     // Nav prev/next
     this.container.querySelector('#lv-nav-prev')?.addEventListener('click', () => {
       const prev = Math.max(0, this._currentSection - 1);

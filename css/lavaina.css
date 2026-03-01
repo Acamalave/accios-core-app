@@ -435,6 +435,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   animation: lvBounce 2s ease-in-out infinite;
+  cursor: pointer;
 }
 
 @keyframes lvBounce {
