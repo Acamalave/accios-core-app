@@ -1,5 +1,6 @@
 import { apiUrl } from '../services/apiConfig.js';
 import userAuth from '../services/userAuth.js';
+import behaviorService from '../services/behaviorService.js';
 
 // ─── Shield SVG (stylized hexagonal crest split into 8 fragments) ───
 const SHIELD_SVG = `
@@ -180,6 +181,8 @@ export class LaVainaPresentation {
     this._initScrollAnimations();
     this._initSectionTracker();
     this._attachListeners();
+
+    behaviorService.track('lavaina', 'page_view');
   }
 
   unmount() {
@@ -618,6 +621,7 @@ export class LaVainaPresentation {
             this._currentSection = idx;
             this._updateNavDots(idx);
             this._updateFloatingCTA(idx);
+            behaviorService.track('lavaina', 'view_section', { section: idx });
           }
         }
       });
@@ -819,6 +823,7 @@ export class LaVainaPresentation {
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      behaviorService.track('lavaina', 'submit_card_payment');
       this._processCardPayment(overlay, amount);
     });
   }
@@ -886,7 +891,7 @@ export class LaVainaPresentation {
 
       if (data.success) {
         this._closeModal(overlay);
-        this._showConfirmation();
+        this._showConfirmation('card');
       } else {
         this._showCardError(overlay, data.message || 'Pago rechazado. Intenta con otra tarjeta.');
         submitBtn.disabled = false;
@@ -947,6 +952,7 @@ export class LaVainaPresentation {
     // Method selection
     overlay.querySelectorAll('.lv-modal-option').forEach(opt => {
       opt.addEventListener('click', () => {
+        behaviorService.track('lavaina', 'select_payment_method', { method: opt.dataset.method });
         overlay.querySelectorAll('.lv-modal-option').forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
         this._showTransferDetails(overlay, opt.dataset.method);
@@ -1037,8 +1043,9 @@ export class LaVainaPresentation {
 
     // Confirm button
     overlay.querySelector('#lv-modal-confirm')?.addEventListener('click', () => {
+      const selectedMethod = overlay.querySelector('.lv-modal-option.active')?.dataset?.method || 'transfer';
       this._closeModal(overlay);
-      this._showConfirmation();
+      this._showConfirmation(selectedMethod);
     });
 
     // Copy buttons
@@ -1064,7 +1071,19 @@ export class LaVainaPresentation {
   //  CONFIRMATION (post-payment)
   // ═══════════════════════════════════════════════════════════════
 
-  _showConfirmation() {
+  _showConfirmation(method = 'unknown') {
+    const selectedAddons = [];
+    this.container.querySelectorAll('.lv-addon-toggle:checked').forEach(cb => {
+      const addon = ADDONS.find(a => a.id === cb.dataset.addonId);
+      selectedAddons.push({ id: cb.dataset.addonId, name: addon?.name || cb.dataset.addonId, price: parseFloat(cb.dataset.price), type: cb.dataset.type });
+    });
+    let totalHoy = SETUP_COST;
+    let mensualidad = MONTHLY_BASE;
+    selectedAddons.forEach(a => { if (a.type === 'once') totalHoy += a.price; else mensualidad += a.price; });
+    behaviorService.track('lavaina', 'payment_confirmed', {
+      addons: selectedAddons, setupCost: SETUP_COST, monthlyBase: MONTHLY_BASE,
+      totalHoy, mensualidad, paymentMethod: method
+    });
     document.querySelector('.lv-confirm-overlay')?.remove();
 
     const overlay = document.createElement('div');
@@ -1159,6 +1178,7 @@ export class LaVainaPresentation {
     requestAnimationFrame(() => overlay.classList.add('lv-modal-overlay--visible'));
 
     overlay.querySelector('#lv-features-close')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'close_features_modal');
       this._closeModal(overlay);
     });
 
@@ -1171,7 +1191,9 @@ export class LaVainaPresentation {
       card.addEventListener('click', () => {
         const body = card.querySelector('.lv-feature-cat-body');
         const chevron = card.querySelector('.lv-feature-chevron');
+        const title = card.querySelector('.lv-feature-cat-title')?.textContent?.trim() || '';
         const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+        behaviorService.track('lavaina', 'expand_feature', { feature: title, open: !isOpen });
         if (isOpen) {
           body.style.maxHeight = '0px';
           chevron.style.transform = 'rotate(0deg)';
@@ -1190,26 +1212,31 @@ export class LaVainaPresentation {
   _attachListeners() {
     // Back button
     this.container.querySelector('#lv-back')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_back');
       window.location.hash = '#home';
     });
 
     // Floating CTA → scroll to pricing
     this.container.querySelector('#lv-float-cta')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_float_cta');
       this.container.querySelector('#lv-sec-pricing')?.scrollIntoView({ behavior: 'smooth' });
     });
 
     // "Descubre mas" → scroll to roles section
     this.container.querySelector('.lv-hero-scroll')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_descubre_mas');
       this._sections[1]?.scrollIntoView({ behavior: 'smooth' });
     });
 
     // Nav prev/next
     this.container.querySelector('#lv-nav-prev')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'nav_prev', { from: this._currentSection });
       const prev = Math.max(0, this._currentSection - 1);
       this._sections[prev]?.scrollIntoView({ behavior: 'smooth' });
     });
 
     this.container.querySelector('#lv-nav-next')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'nav_next', { from: this._currentSection });
       const next = Math.min(this._sections.length - 1, this._currentSection + 1);
       this._sections[next]?.scrollIntoView({ behavior: 'smooth' });
     });
@@ -1218,6 +1245,7 @@ export class LaVainaPresentation {
     this.container.querySelectorAll('.lv-nav-dot').forEach(dot => {
       dot.addEventListener('click', () => {
         const idx = parseInt(dot.dataset.sec);
+        behaviorService.track('lavaina', 'nav_dot', { section: idx });
         this._sections[idx]?.scrollIntoView({ behavior: 'smooth' });
       });
     });
@@ -1225,6 +1253,7 @@ export class LaVainaPresentation {
     // Role tabs
     this.container.querySelectorAll('.lv-role-tab').forEach(tab => {
       tab.addEventListener('click', () => {
+        behaviorService.track('lavaina', 'select_role', { role: tab.dataset.role });
         this.container.querySelectorAll('.lv-role-tab').forEach(t => t.classList.remove('active'));
         this.container.querySelectorAll('.lv-role-panel').forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
@@ -1235,11 +1264,15 @@ export class LaVainaPresentation {
 
     // Pricing addon toggles
     this.container.querySelectorAll('.lv-addon-toggle').forEach(cb => {
-      cb.addEventListener('change', () => this._recalcTotal());
+      cb.addEventListener('change', () => {
+        behaviorService.track('lavaina', 'toggle_addon', { addonId: cb.dataset.addonId, checked: cb.checked, price: cb.dataset.price });
+        this._recalcTotal();
+      });
     });
 
     // Receipt CTA → scroll to payment
     this.container.querySelector('#lv-receipt-cta')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_receipt_cta');
       this.container.querySelector('#lv-sec-payment')?.scrollIntoView({ behavior: 'smooth' });
     });
 
@@ -1265,21 +1298,27 @@ export class LaVainaPresentation {
     this._mobileReceipt = mobileReceipt;
 
     document.querySelector('#lv-mobile-receipt-btn')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_mobile_pay');
       this.container.querySelector('#lv-sec-payment')?.scrollIntoView({ behavior: 'smooth' });
     });
 
     // Payment buttons
     this.container.querySelector('#lv-pay-tarjeta')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_pay_tarjeta');
       this._handlePagarTarjeta();
     });
 
     this.container.querySelector('#lv-pay-yappy')?.addEventListener('click', () => {
+      behaviorService.track('lavaina', 'click_pay_yappy');
       this._showYappyAchModal();
     });
 
     // "Ver más funcionalidades" buttons
     this.container.querySelectorAll('[data-action="show-features"]').forEach(btn => {
-      btn.addEventListener('click', () => this._showFeaturesModal());
+      btn.addEventListener('click', () => {
+        behaviorService.track('lavaina', 'open_features_modal');
+        this._showFeaturesModal();
+      });
     });
   }
 
