@@ -1,5 +1,6 @@
 import userAuth from '../services/userAuth.js';
 import { Toast } from '../components/Toast.js';
+import { db, collection, query, where, orderBy, getDocs, limit, onSnapshot } from '../services/firebase.js';
 
 export class SuperAdmin {
   constructor(container) {
@@ -11,6 +12,8 @@ export class SuperAdmin {
     this.episodes = [];
     this.comments = [];
     this.appointments = [];
+    this.billingData = [];
+    this.selectedMonth = new Date().toISOString().substring(0, 7);
   }
 
   async render() {
@@ -48,6 +51,7 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'episodes' ? 'active' : ''}" data-tab="episodes">Capitulos</button>
           <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
           <button class="superadmin-tab ${this.tab === 'appointments' ? 'active' : ''}" data-tab="appointments">Citas<span id="sa-appts-badge" class="sa-notif-badge" style="display:none;"></span></button>
+          <button class="superadmin-tab ${this.tab === 'behavior' ? 'active' : ''}" data-tab="behavior">Comportamiento</button>
         </div>
 
         <div id="sa-content">
@@ -80,6 +84,7 @@ export class SuperAdmin {
       userAuth.getAllComments(),
       userAuth.getAllAppointments(),
     ]);
+    this.billingData = await userAuth.ensureBillingDocs(this.businesses, this.selectedMonth);
   }
 
   _renderStats() {
@@ -88,47 +93,72 @@ export class SuperAdmin {
 
     const totalUsers = this.users.length;
     const totalBiz = this.businesses.length;
-    const totalLinks = this.users.reduce((sum, u) => sum + (u.businesses || []).length, 0);
-    const totalOnboarding = this.onboardingResponses.length;
-    const completedOnboarding = this.onboardingResponses.filter(r => r.completedAt).length;
-    const totalEpisodes = this.episodes.length;
-    const unreadComments = this.comments.filter(c => !c.read).length;
-    const pendingAppts = this.appointments.filter(a => a.status === 'pendiente').length;
+    const { porCobrar, cobrado } = this._calcBillingTotals();
+
+    const [year, monthNum] = this.selectedMonth.split('-');
+    const monthName = new Date(year, parseInt(monthNum) - 1).toLocaleString('es', { month: 'long' });
+    const displayMonth = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
 
     statsEl.innerHTML = `
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value">${totalUsers}</div>
-        <div class="sa-stat-label">Usuarios</div>
+      <div class="sa-month-selector">
+        <button class="sa-month-arrow" id="sa-month-prev">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="sa-month-label">${displayMonth}</span>
+        <button class="sa-month-arrow" id="sa-month-next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value">${totalBiz}</div>
-        <div class="sa-stat-label">Negocios</div>
-      </div>
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value">${totalLinks}</div>
-        <div class="sa-stat-label">Vinculos</div>
-      </div>
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value">${completedOnboarding}/${totalOnboarding}</div>
-        <div class="sa-stat-label">Expedientes</div>
-      </div>
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value">${totalEpisodes}</div>
-        <div class="sa-stat-label">Capitulos</div>
-      </div>
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value" style="${unreadComments > 0 ? 'color: #ef4444;' : ''}">${unreadComments}</div>
-        <div class="sa-stat-label">Sin Leer</div>
-      </div>
-      <div class="glass-card sa-stat">
-        <div class="sa-stat-value" style="${pendingAppts > 0 ? 'color: #f59e0b;' : ''}">${pendingAppts}</div>
-        <div class="sa-stat-label">Citas Pend.</div>
+      <div class="sa-stats-grid">
+        <div class="glass-card sa-stat">
+          <div class="sa-stat-value">${totalUsers}</div>
+          <div class="sa-stat-label">Usuarios</div>
+        </div>
+        <div class="glass-card sa-stat">
+          <div class="sa-stat-value">${totalBiz}</div>
+          <div class="sa-stat-label">Negocios</div>
+        </div>
+        <div class="glass-card sa-stat">
+          <div class="sa-stat-value sa-stat-value--warning">$${porCobrar.toLocaleString('en-US', { minimumFractionDigits: 0 })}</div>
+          <div class="sa-stat-label">Por Cobrar</div>
+        </div>
+        <div class="glass-card sa-stat">
+          <div class="sa-stat-value">$${cobrado.toLocaleString('en-US', { minimumFractionDigits: 0 })}</div>
+          <div class="sa-stat-label">Cobrado</div>
+        </div>
       </div>
     `;
 
-    // Update badges
+    statsEl.querySelector('#sa-month-prev')?.addEventListener('click', () => this._changeMonth(-1));
+    statsEl.querySelector('#sa-month-next')?.addEventListener('click', () => this._changeMonth(1));
+
     this._updateCommentBadge();
     this._updateApptBadge();
+  }
+
+  _calcBillingTotals() {
+    let porCobrar = 0;
+    let cobrado = 0;
+    for (const billing of this.billingData) {
+      const biz = this.businesses.find(b => b.id === billing.businessId);
+      if (!biz) continue;
+      const rec = biz.acuerdo_recurrente || 0;
+      const uni = biz.acuerdo_unico || 0;
+      if (billing.statusRecurrente === 'cobrado') cobrado += rec; else porCobrar += rec;
+      if (billing.statusUnico !== 'na') {
+        if (billing.statusUnico === 'cobrado') cobrado += uni; else porCobrar += uni;
+      }
+    }
+    return { porCobrar, cobrado };
+  }
+
+  async _changeMonth(delta) {
+    const [y, m] = this.selectedMonth.split('-').map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    this.selectedMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    this.billingData = await userAuth.ensureBillingDocs(this.businesses, this.selectedMonth);
+    this._renderStats();
+    if (this.tab === 'businesses') this._renderTab();
   }
 
   _renderTab() {
@@ -145,6 +175,8 @@ export class SuperAdmin {
       this._renderComments(content);
     } else if (this.tab === 'appointments') {
       this._renderAppointments(content);
+    } else if (this.tab === 'behavior') {
+      this._renderBehavior(content);
     } else {
       this._renderLinking(content);
     }
@@ -153,11 +185,21 @@ export class SuperAdmin {
   // ─── USERS TAB ─────────────────────────────────────────
 
   _renderUsers(content) {
+    const pinBadge = (user) => {
+      const hasPin = user.pinHash && user.pinHash !== '';
+      return hasPin
+        ? '<span class="sa-pin-badge sa-pin-badge--active">PIN activo</span>'
+        : '<span class="sa-pin-badge sa-pin-badge--none">Sin PIN</span>';
+    };
+    const lastLogin = (user) => user.lastLogin ? this._timeAgo(user.lastLogin) : 'Nunca';
+
+    // Desktop table rows
     const rows = this.users.map(user => `
       <tr>
         <td><strong>${user.name || '-'}</strong></td>
         <td>${user.phone || user.id}</td>
         <td><span class="sa-badge sa-badge--${user.role || 'client'}">${user.role || 'client'}</span></td>
+        <td class="sa-status-cell">${pinBadge(user)}<span class="sa-access-text">Acceso: ${lastLogin(user)}</span></td>
         <td>
           <div class="sa-biz-tags">
             ${(user.businesses || []).map(b => {
@@ -167,25 +209,59 @@ export class SuperAdmin {
           </div>
         </td>
         <td>
-          <div style="display: flex; gap: var(--space-2);">
+          <div class="sa-table-actions">
             <button class="sa-btn" data-edit-user="${user.phone || user.id}">Editar</button>
+            <button class="sa-btn sa-btn--outline" data-reset-pin="${user.phone || user.id}">Reset PIN</button>
             <button class="sa-btn sa-btn--danger" data-delete-user="${user.phone || user.id}">Eliminar</button>
           </div>
         </td>
       </tr>
     `).join('');
 
+    // Mobile card layout
+    const cards = this.users.map(user => `
+      <div class="sa-user-card glass-card">
+        <div class="sa-user-card-header">
+          <div class="sa-user-card-info">
+            <div class="sa-user-card-name">${user.name || '-'}</div>
+            <div class="sa-user-card-phone">${user.phone || user.id}</div>
+          </div>
+          <span class="sa-badge sa-badge--${user.role || 'client'}">${user.role || 'client'}</span>
+        </div>
+        <div class="sa-user-card-status">
+          ${pinBadge(user)}
+          <span class="sa-user-card-login">Acceso: ${lastLogin(user)}</span>
+        </div>
+        ${(user.businesses || []).length ? `
+          <div class="sa-biz-tags">
+            ${(user.businesses || []).map(b => {
+              const biz = this.businesses.find(x => x.id === b);
+              return `<span class="sa-biz-tag">${biz?.nombre || b}</span>`;
+            }).join('')}
+          </div>
+        ` : ''}
+        <div class="sa-card-actions">
+          <button class="sa-btn" data-edit-user="${user.phone || user.id}">Editar</button>
+          <button class="sa-btn sa-btn--outline" data-reset-pin="${user.phone || user.id}">Reset PIN</button>
+          <button class="sa-btn sa-btn--danger" data-delete-user="${user.phone || user.id}">Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+
     content.innerHTML = `
       <div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-4);">
         <button class="sa-btn sa-btn--primary" id="sa-add-user">+ Nuevo Usuario</button>
       </div>
-      <div class="glass-card" style="overflow-x: auto; padding: 0;">
+      <div class="sa-desktop-only glass-card" style="overflow-x: auto; padding: 0;">
         <table class="superadmin-table">
           <thead>
-            <tr><th>Nombre</th><th>Telefono</th><th>Rol</th><th>Negocios</th><th>Acciones</th></tr>
+            <tr><th>Nombre</th><th>Telefono</th><th>Rol</th><th>Status</th><th>Negocios</th><th>Acciones</th></tr>
           </thead>
-          <tbody>${rows || '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay usuarios</td></tr>'}</tbody>
+          <tbody>${rows || '<tr><td colspan="6" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay usuarios</td></tr>'}</tbody>
         </table>
+      </div>
+      <div class="sa-mobile-only sa-card-list">
+        ${cards || '<div style="text-align:center;color:var(--text-secondary);padding:var(--space-6);">No hay usuarios</div>'}
       </div>
     `;
 
@@ -195,6 +271,21 @@ export class SuperAdmin {
       btn.addEventListener('click', () => {
         const user = this.users.find(u => (u.phone || u.id) === btn.dataset.editUser);
         if (user) this._showUserModal(user);
+      });
+    });
+
+    content.querySelectorAll('[data-reset-pin]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const user = this.users.find(u => (u.phone || u.id) === btn.dataset.resetPin);
+        if (!confirm(`Resetear PIN de ${user?.name || btn.dataset.resetPin}? Debera crear uno nuevo al iniciar sesion.`)) return;
+        try {
+          await userAuth.resetPin(btn.dataset.resetPin);
+          Toast.success('PIN reseteado');
+          await this._loadData();
+          this._renderTab();
+        } catch (e) {
+          Toast.error('Error: ' + e.message);
+        }
       });
     });
 
@@ -217,36 +308,93 @@ export class SuperAdmin {
   // ─── BUSINESSES TAB ────────────────────────────────────
 
   _renderBusinesses(content) {
-    const rows = this.businesses.map(biz => `
+    const linkedUsers = (bizId) => this.users.filter(u => (u.businesses || []).includes(bizId)).length;
+    const getBilling = (bizId) => this.billingData.find(b => b.businessId === bizId);
+    const [year, monthNum] = this.selectedMonth.split('-');
+    const shortMonth = new Date(year, parseInt(monthNum) - 1).toLocaleString('es', { month: 'short' });
+
+    const billingToggle = (bizId, field, status) => {
+      if (status === 'na') return '<span class="sa-billing-na">N/A</span>';
+      const isCobrado = status === 'cobrado';
+      return `<button class="sa-billing-toggle ${isCobrado ? 'sa-billing-toggle--cobrado' : ''}" data-toggle-billing="${bizId}" data-billing-field="${field}">${isCobrado ? '✓' : '$'}</button>`;
+    };
+
+    const acuerdoDisplay = (biz) => {
+      const parts = [];
+      if (biz.acuerdo_recurrente) parts.push(`$${biz.acuerdo_recurrente}/mes`);
+      if (biz.acuerdo_unico) parts.push(`$${biz.acuerdo_unico} unico`);
+      return parts.length ? parts.join(' + ') : '-';
+    };
+
+    // Desktop table rows
+    const rows = this.businesses.map(biz => {
+      const billing = getBilling(biz.id) || {};
+      return `
       <tr>
         <td>
           <div style="display: flex; align-items: center; gap: var(--space-3);">
-            ${biz.logo ? `<img src="${biz.logo}" alt="" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;">` : ''}
+            ${biz.logo ? `<img src="${biz.logo}" alt="" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;">` : '<div style="width:32px;height:32px;border-radius:6px;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1rem;">🏢</div>'}
             <strong>${biz.nombre}</strong>
           </div>
         </td>
-        <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">${biz.id}</td>
-        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); font-size: 0.85rem;">${biz.contenido_valor || '-'}</td>
+        <td><span class="sa-biz-tag">${linkedUsers(biz.id)} usuario${linkedUsers(biz.id) !== 1 ? 's' : ''}</span></td>
+        <td style="font-size: 0.85rem; color: var(--text-muted); white-space: nowrap;">${acuerdoDisplay(biz)}</td>
         <td>
-          <div style="display: flex; gap: var(--space-2);">
+          <div class="sa-billing-cell">
+            ${biz.acuerdo_recurrente ? `<span class="sa-billing-label">Rec:</span>${billingToggle(biz.id, 'statusRecurrente', billing.statusRecurrente || 'por_cobrar')}` : ''}
+            ${biz.acuerdo_unico ? `<span class="sa-billing-label">Uni:</span>${billingToggle(biz.id, 'statusUnico', billing.statusUnico || 'por_cobrar')}` : ''}
+            ${!biz.acuerdo_recurrente && !biz.acuerdo_unico ? '<span style="color:var(--text-muted);font-size:0.8rem;">Sin acuerdo</span>' : ''}
+          </div>
+        </td>
+        <td>
+          <div class="sa-table-actions">
             <button class="sa-btn" data-edit-biz="${biz.id}">Editar</button>
             <button class="sa-btn sa-btn--danger" data-delete-biz="${biz.id}">Eliminar</button>
           </div>
         </td>
-      </tr>
-    `).join('');
+      </tr>`;
+    }).join('');
+
+    // Mobile card layout
+    const cards = this.businesses.map(biz => {
+      const billing = getBilling(biz.id) || {};
+      return `
+      <div class="sa-biz-card glass-card">
+        <div class="sa-biz-card-header">
+          ${biz.logo ? `<img src="${biz.logo}" alt="" class="sa-biz-card-logo">` : '<div class="sa-biz-card-logo sa-biz-card-logo--placeholder">🏢</div>'}
+          <div class="sa-biz-card-info">
+            <div class="sa-biz-card-name">${biz.nombre}</div>
+            <div class="sa-biz-card-id">${biz.id}</div>
+          </div>
+          <span class="sa-biz-tag">${linkedUsers(biz.id)}</span>
+        </div>
+        <div class="sa-biz-card-acuerdo">${acuerdoDisplay(biz)}</div>
+        <div class="sa-biz-card-billing">
+          ${biz.acuerdo_recurrente ? `<div class="sa-biz-card-billing-row"><span>Recurrente</span>${billingToggle(biz.id, 'statusRecurrente', billing.statusRecurrente || 'por_cobrar')}</div>` : ''}
+          ${biz.acuerdo_unico ? `<div class="sa-biz-card-billing-row"><span>Unico</span>${billingToggle(biz.id, 'statusUnico', billing.statusUnico || 'por_cobrar')}</div>` : ''}
+          ${!biz.acuerdo_recurrente && !biz.acuerdo_unico ? '<div style="color:var(--text-muted);font-size:0.8rem;">Sin acuerdo</div>' : ''}
+        </div>
+        <div class="sa-card-actions">
+          <button class="sa-btn" data-edit-biz="${biz.id}">Editar</button>
+          <button class="sa-btn sa-btn--danger" data-delete-biz="${biz.id}">Eliminar</button>
+        </div>
+      </div>`;
+    }).join('');
 
     content.innerHTML = `
       <div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-4);">
         <button class="sa-btn sa-btn--primary" id="sa-add-biz">+ Nuevo Negocio</button>
       </div>
-      <div class="glass-card" style="overflow-x: auto; padding: 0;">
+      <div class="sa-desktop-only glass-card" style="overflow-x: auto; padding: 0;">
         <table class="superadmin-table">
           <thead>
-            <tr><th>Nombre</th><th>ID</th><th>Contenido</th><th>Acciones</th></tr>
+            <tr><th>Nombre</th><th>Usuarios</th><th>Acuerdo</th><th>Cobro ${shortMonth}</th><th>Acciones</th></tr>
           </thead>
-          <tbody>${rows || '<tr><td colspan="4" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay negocios</td></tr>'}</tbody>
+          <tbody>${rows || '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay negocios</td></tr>'}</tbody>
         </table>
+      </div>
+      <div class="sa-mobile-only sa-card-list">
+        ${cards || '<div style="text-align:center;color:var(--text-secondary);padding:var(--space-6);">No hay negocios</div>'}
       </div>
     `;
 
@@ -266,6 +414,23 @@ export class SuperAdmin {
           await userAuth.deleteBusiness(btn.dataset.deleteBiz);
           Toast.success('Negocio eliminado');
           await this._loadData();
+          this._renderStats();
+          this._renderTab();
+        } catch (e) {
+          Toast.error('Error: ' + e.message);
+        }
+      });
+    });
+
+    // Billing toggle handlers
+    content.querySelectorAll('[data-toggle-billing]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const bizId = btn.dataset.toggleBilling;
+        const field = btn.dataset.billingField;
+        btn.disabled = true;
+        try {
+          await userAuth.toggleBillingStatus(bizId, this.selectedMonth, field);
+          this.billingData = await userAuth.getBillingForMonth(this.selectedMonth);
           this._renderStats();
           this._renderTab();
         } catch (e) {
@@ -545,6 +710,16 @@ export class SuperAdmin {
             <label class="sa-form-label">Contenido de valor</label>
             <textarea class="sa-form-input" id="sa-biz-contenido" rows="4" placeholder="Informacion estrategica, reportes, recursos..." style="resize: vertical; min-height: 80px;">${existing?.contenido_valor || ''}</textarea>
           </div>
+          <div class="sa-acuerdo-grid">
+            <div class="sa-form-group">
+              <label class="sa-form-label">Recurrente ($/mes)</label>
+              <input class="sa-form-input" id="sa-biz-recurrente" type="number" min="0" step="0.01" value="${existing?.acuerdo_recurrente || ''}" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="sa-form-group">
+              <label class="sa-form-label">Unico ($)</label>
+              <input class="sa-form-input" id="sa-biz-unico" type="number" min="0" step="0.01" value="${existing?.acuerdo_unico || ''}" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
           <div class="sa-form-actions">
             <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
             <button class="sa-btn sa-btn--primary" id="sa-modal-save">Guardar</button>
@@ -598,6 +773,8 @@ export class SuperAdmin {
       const nombre = root.querySelector('#sa-biz-nombre').value.trim();
       let logo = logoHidden.value.trim();
       const contenido_valor = root.querySelector('#sa-biz-contenido').value.trim();
+      const acuerdo_recurrente = parseFloat(root.querySelector('#sa-biz-recurrente').value) || 0;
+      const acuerdo_unico = parseFloat(root.querySelector('#sa-biz-unico').value) || 0;
 
       if (!id || !nombre) { Toast.error('ID y Nombre son requeridos'); return; }
 
@@ -612,10 +789,21 @@ export class SuperAdmin {
         }
 
         if (existing) {
-          await userAuth.updateBusiness(existing.id, { nombre, logo, contenido_valor });
+          await userAuth.updateBusiness(existing.id, { nombre, logo, contenido_valor, acuerdo_recurrente, acuerdo_unico });
         } else {
-          await userAuth.createBusiness({ id, nombre, logo, contenido_valor });
+          await userAuth.createBusiness({ id, nombre, logo, contenido_valor, acuerdo_recurrente, acuerdo_unico });
         }
+        // Update billing doc if acuerdo_unico was added/removed
+        const bizId = existing ? existing.id : id;
+        const currentBilling = this.billingData.find(b => b.businessId === bizId);
+        if (currentBilling) {
+          if (acuerdo_unico > 0 && currentBilling.statusUnico === 'na') {
+            await userAuth.upsertBilling(bizId, this.selectedMonth, { statusUnico: 'por_cobrar' });
+          } else if (!acuerdo_unico && currentBilling.statusUnico !== 'na') {
+            await userAuth.upsertBilling(bizId, this.selectedMonth, { statusUnico: 'na' });
+          }
+        }
+
         Toast.success(existing ? 'Negocio actualizado' : 'Negocio creado');
         closeModal();
         await this._loadData();
@@ -1072,5 +1260,259 @@ export class SuperAdmin {
     });
   }
 
-  unmount() {}
+  // ─── BEHAVIOR TAB ─────────────────────────────────────
+
+  async _renderBehavior(content) {
+    const EVENT_LABELS = {
+      page_navigate: { icon: '🧭', label: 'Navego a pagina' },
+      page_view: { icon: '👁️', label: 'Vio la pagina' },
+      click_back: { icon: '⬅️', label: 'Salio de la presentacion' },
+      click_float_cta: { icon: '🔼', label: 'Clic en CTA flotante' },
+      click_descubre_mas: { icon: '⬇️', label: 'Hizo scroll "Descubre mas"' },
+      nav_prev: { icon: '◀️', label: 'Navego atras' },
+      nav_next: { icon: '▶️', label: 'Navego adelante' },
+      nav_dot: { icon: '⏺', label: 'Navego a seccion' },
+      select_role: { icon: '👤', label: 'Selecciono rol' },
+      toggle_addon: { icon: '🔀', label: 'Activo/desactivo addon' },
+      click_receipt_cta: { icon: '🧾', label: 'Clic en recibo CTA' },
+      click_mobile_pay: { icon: '📱', label: 'Clic en pagar (mobile)' },
+      click_pay_tarjeta: { icon: '💳', label: 'Clic en Pagar con Tarjeta' },
+      click_pay_yappy: { icon: '📲', label: 'Clic en Yappy/ACH' },
+      select_payment_method: { icon: '🏦', label: 'Selecciono metodo de pago' },
+      submit_card_payment: { icon: '✅', label: 'Envio pago con tarjeta' },
+      payment_confirmed: { icon: '🎉', label: 'Pago confirmado' },
+      open_features_modal: { icon: '📋', label: 'Abrio modal de funcionalidades' },
+      close_features_modal: { icon: '✖️', label: 'Cerro modal de funcionalidades' },
+      expand_feature: { icon: '📖', label: 'Expandio funcionalidad' },
+      view_section: { icon: '📄', label: 'Vio seccion' },
+    };
+
+    content.innerHTML = `
+      <div class="sa-behavior-search">
+        <input type="text" id="sa-behavior-filter" placeholder="Buscar por nombre, telefono o ID...">
+      </div>
+      <div class="sa-behavior-layout">
+        <div class="sa-visitor-list" id="sa-visitor-list">
+          <div class="sa-behavior-loading">Cargando visitantes en tiempo real...</div>
+        </div>
+        <div class="sa-timeline-panel" id="sa-timeline-panel">
+          <div class="sa-timeline-empty">Selecciona un visitante para ver su recorrido</div>
+        </div>
+      </div>
+    `;
+
+    // Real-time listener
+    const visitors = new Map();
+    let visitorList = [];
+    let currentFilter = '';
+    let selectedVisitorId = null;
+
+    const rebuildVisitorList = () => {
+      visitorList = [...visitors.values()].sort((a, b) => b.lastSeen.localeCompare(a.lastSeen));
+    };
+
+    const renderVisitorList = () => {
+      const listEl = content.querySelector('#sa-visitor-list');
+      if (!listEl) return;
+      const filter = currentFilter;
+      const filtered = filter
+        ? visitorList.filter(v =>
+            (v.userName || '').toLowerCase().includes(filter) ||
+            (v.userPhone || '').includes(filter) ||
+            v.visitorId.toLowerCase().includes(filter)
+          )
+        : visitorList;
+
+      if (!filtered.length) {
+        listEl.innerHTML = `<div class="sa-behavior-loading">No se encontraron visitantes</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(v => `
+        <div class="sa-visitor-card${v.visitorId === selectedVisitorId ? ' active' : ''}" data-visitor="${v.visitorId}">
+          <div class="sa-visitor-name">${v.userName || 'Visitante Anonimo'}</div>
+          ${v.userPhone ? `<div class="sa-visitor-phone">${v.userPhone}</div>` : ''}
+          <div class="sa-visitor-meta">
+            <span class="sa-visitor-sessions">${v.sessions.size} sesion${v.sessions.size > 1 ? 'es' : ''}</span>
+            <span>${this._timeAgo(v.lastSeen)}</span>
+          </div>
+        </div>
+      `).join('');
+
+      listEl.querySelectorAll('.sa-visitor-card').forEach(card => {
+        card.addEventListener('click', () => {
+          selectedVisitorId = card.dataset.visitor;
+          listEl.querySelectorAll('.sa-visitor-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          this._renderBehaviorTimeline(content.querySelector('#sa-timeline-panel'), visitors.get(selectedVisitorId), EVENT_LABELS);
+        });
+      });
+    };
+
+    const q = query(collection(db, 'behavior_events'), orderBy('timestamp', 'desc'), limit(1000));
+
+    // Unsubscribe previous listener if any
+    if (this._behaviorUnsub) {
+      this._behaviorUnsub();
+      this._behaviorUnsub = null;
+    }
+
+    this._behaviorUnsub = onSnapshot(q, (snap) => {
+      visitors.clear();
+      snap.docs.forEach(d => {
+        const evt = { id: d.id, ...d.data() };
+        if (!visitors.has(evt.visitorId)) {
+          visitors.set(evt.visitorId, {
+            visitorId: evt.visitorId,
+            events: [],
+            userName: null,
+            userPhone: null,
+            lastSeen: evt.timestamp,
+            sessions: new Set(),
+          });
+        }
+        const v = visitors.get(evt.visitorId);
+        v.events.push(evt);
+        if (evt.userName && !v.userName) v.userName = evt.userName;
+        if (evt.userPhone && !v.userPhone) v.userPhone = evt.userPhone;
+        v.sessions.add(evt.sessionId);
+      });
+
+      rebuildVisitorList();
+      renderVisitorList();
+
+      // Auto-refresh selected visitor timeline
+      if (selectedVisitorId && visitors.has(selectedVisitorId)) {
+        this._renderBehaviorTimeline(content.querySelector('#sa-timeline-panel'), visitors.get(selectedVisitorId), EVENT_LABELS);
+      }
+    }, (err) => {
+      console.error('[behavior] realtime error:', err);
+      const listEl = content.querySelector('#sa-visitor-list');
+      if (listEl) listEl.innerHTML = `<div class="sa-behavior-loading" style="color:#ef4444;">Error al cargar datos</div>`;
+    });
+
+    // Search filter
+    content.querySelector('#sa-behavior-filter')?.addEventListener('input', (e) => {
+      currentFilter = e.target.value.toLowerCase().trim();
+      renderVisitorList();
+    });
+  }
+
+  _renderBehaviorTimeline(panel, visitor, EVENT_LABELS) {
+    // Group events by sessionId
+    const sessions = new Map();
+    visitor.events.forEach(evt => {
+      if (!sessions.has(evt.sessionId)) {
+        sessions.set(evt.sessionId, []);
+      }
+      sessions.get(evt.sessionId).push(evt);
+    });
+
+    // Sort sessions by first event timestamp (newest first)
+    const sortedSessions = [...sessions.entries()].sort((a, b) => {
+      return b[1][0].timestamp.localeCompare(a[1][0].timestamp);
+    });
+
+    // Sort events within each session by timestamp ascending
+    sortedSessions.forEach(([, events]) => {
+      events.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    });
+
+    const PAYMENT_ACTIONS = ['click_pay_tarjeta', 'click_pay_yappy', 'select_payment_method', 'submit_card_payment', 'payment_confirmed'];
+
+    panel.innerHTML = `
+      <div class="sa-timeline-header">${visitor.userName || 'Visitante Anonimo'} ${visitor.userPhone ? `<span style="font-weight:normal;font-size:var(--text-sm);color:var(--purple-400);margin-left:var(--space-2);">${visitor.userPhone}</span>` : ''}</div>
+      ${sortedSessions.map(([sessionId, events], si) => `
+        <div class="sa-session-block">
+          <div class="sa-session-title" data-session="${si}">
+            <span class="chevron">▼</span>
+            Sesion ${sortedSessions.length - si} — ${this._formatDate(events[0].timestamp)} (${events.length} eventos)
+          </div>
+          <div class="sa-session-events" data-session-body="${si}">
+            <div class="sa-timeline">
+              ${events.map(evt => {
+                const info = EVENT_LABELS[evt.action] || { icon: '❓', label: evt.action };
+                const isPayment = PAYMENT_ACTIONS.includes(evt.action);
+                const dataStr = this._formatEventData(evt);
+                return `
+                  <div class="sa-timeline-node${isPayment ? ' payment' : ''}">
+                    <div class="sa-timeline-node-header">
+                      <span class="sa-timeline-icon">${info.icon}</span>
+                      <span class="sa-timeline-label">${info.label}</span>
+                      <span class="sa-timeline-time">${this._formatTime(evt.timestamp)}</span>
+                    </div>
+                    ${dataStr ? `<div class="sa-timeline-data">${dataStr}</div>` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    `;
+
+    // Collapse/expand session blocks
+    panel.querySelectorAll('.sa-session-title').forEach(title => {
+      title.addEventListener('click', () => {
+        const idx = title.dataset.session;
+        const body = panel.querySelector(`[data-session-body="${idx}"]`);
+        title.classList.toggle('collapsed');
+        body.classList.toggle('hidden');
+      });
+    });
+  }
+
+  _formatEventData(evt) {
+    const d = evt.data;
+    if (!d || !Object.keys(d).length) return '';
+
+    // Rich display for payment_confirmed
+    if (evt.action === 'payment_confirmed' && d.paymentMethod) {
+      const methods = { card: 'Tarjeta', yappy: 'Yappy', ach: 'ACH' };
+      const parts = [`<strong>${methods[d.paymentMethod] || d.paymentMethod}</strong>`];
+      parts.push(`Hoy: <strong>$${(d.totalHoy || 0).toFixed(2)}</strong>`);
+      parts.push(`Mensual: <strong>$${(d.mensualidad || 0).toFixed(2)}</strong>`);
+      if (d.addons?.length) parts.push(`Addons: ${d.addons.map(a => a.name).join(', ')}`);
+      else parts.push('Sin addons');
+      return parts.join(' · ');
+    }
+
+    const parts = [];
+    if (d.route) parts.push(`#${d.route}`);
+    if (d.role) parts.push(`Rol: ${d.role}`);
+    if (d.addonId) parts.push(`Addon: ${d.addonId} ${d.checked ? '(activado)' : '(desactivado)'}`);
+    if (d.price) parts.push(`Precio: $${d.price}`);
+    if (d.method) parts.push(`Metodo: ${d.method}`);
+    if (d.feature) parts.push(`${d.feature}`);
+    if (d.section !== undefined) parts.push(`Seccion ${d.section}`);
+    if (d.from !== undefined) parts.push(`Desde seccion ${d.from}`);
+    return parts.join(' · ');
+  }
+
+  _timeAgo(isoStr) {
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'ahora';
+    if (mins < 60) return `hace ${mins}m`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `hace ${hours}h`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `hace ${days}d`;
+    return new Date(isoStr).toLocaleDateString('es-PA');
+  }
+
+  _formatDate(isoStr) {
+    return new Date(isoStr).toLocaleDateString('es-PA', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  _formatTime(isoStr) {
+    return new Date(isoStr).toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  unmount() {
+    if (this._behaviorUnsub) {
+      this._behaviorUnsub();
+      this._behaviorUnsub = null;
+    }
+  }
 }
