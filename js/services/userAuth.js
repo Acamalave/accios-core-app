@@ -177,7 +177,7 @@ class UserAuth {
   }
 
   // ─── Business CRUD (SuperAdmin) ───────────────────────
-  async createBusiness({ id, nombre, logo, contenido_valor, acuerdo_recurrente, acuerdo_unico }) {
+  async createBusiness({ id, nombre, logo, contenido_valor, acuerdo_recurrente, fecha_corte, fecha_vencimiento }) {
     try {
       const docRef = doc(db, 'businesses', id);
       await setDoc(docRef, {
@@ -185,7 +185,8 @@ class UserAuth {
         logo: logo || '',
         contenido_valor: contenido_valor || '',
         acuerdo_recurrente: acuerdo_recurrente || 0,
-        acuerdo_unico: acuerdo_unico || 0,
+        fecha_corte: fecha_corte || 0,
+        fecha_vencimiento: fecha_vencimiento || 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
@@ -240,86 +241,167 @@ class UserAuth {
     }
   }
 
-  // ─── Business Billing ────────────────────────────────
+  // ─── Business Charges ────────────────────────────────
 
-  async getBillingForMonth(month) {
+  async createCharge({ businessId, type, description, amount, date, month }) {
     try {
-      const q = query(collection(db, 'business_billing'), where('month', '==', month));
-      const snap = await getDocs(q);
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const colRef = collection(db, 'business_charges');
+      const docRef = await addDoc(colRef, {
+        businessId,
+        type,
+        description,
+        amount: amount || 0,
+        status: 'por_cobrar',
+        date: date || new Date().toISOString().substring(0, 10),
+        month: month || new Date().toISOString().substring(0, 7),
+        abonos: [],
+        paidAmount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        paidAt: null,
+      });
+      return docRef.id;
     } catch (e) {
-      console.error('Get billing for month failed:', e);
+      console.error('Create charge failed:', e);
+      throw new Error('Error al crear cargo');
+    }
+  }
+
+  async getChargesForBusiness(businessId, month) {
+    try {
+      const all = await this.getAllChargesForMonth(month);
+      return all.filter(c => c.businessId === businessId);
+    } catch (e) {
+      console.error('Get charges for business failed:', e);
       return [];
     }
   }
 
-  async upsertBilling(businessId, month, updates) {
-    const docId = `${businessId}_${month}`;
+  async getAllChargesForMonth(month) {
     try {
-      const docRef = doc(db, 'business_billing', docId);
-      await setDoc(docRef, {
-        businessId,
-        month,
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      }, { merge: true });
-      return true;
+      const q = query(collection(db, 'business_charges'), where('month', '==', month));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (e) {
-      console.error('Upsert billing failed:', e);
-      throw new Error('Error al actualizar cobro');
+      console.error('Get all charges for month failed:', e);
+      return [];
     }
   }
 
-  async ensureBillingDocs(businesses, month) {
+  async updateCharge(id, updates) {
     try {
-      const existing = await this.getBillingForMonth(month);
-      const existingIds = new Set(existing.map(b => b.businessId));
+      const docRef = doc(db, 'business_charges', id);
+      await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+      return true;
+    } catch (e) {
+      console.error('Update charge failed:', e);
+      throw new Error('Error al actualizar cargo');
+    }
+  }
+
+  async deleteCharge(id) {
+    try {
+      const docRef = doc(db, 'business_charges', id);
+      await deleteDoc(docRef);
+      return true;
+    } catch (e) {
+      console.error('Delete charge failed:', e);
+      throw new Error('Error al eliminar cargo');
+    }
+  }
+
+  async addAbono(chargeId, amount) {
+    try {
+      const docRef = doc(db, 'business_charges', chargeId);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) throw new Error('Cargo no encontrado');
+
+      const data = snap.data();
+      const abonos = data.abonos || [];
+      abonos.push({ amount, date: new Date().toISOString() });
+      const paidAmount = abonos.reduce((sum, a) => sum + a.amount, 0);
+      const updates = { abonos, paidAmount, updatedAt: new Date().toISOString() };
+
+      if (paidAmount >= data.amount) {
+        updates.status = 'cobrado';
+        updates.paidAt = new Date().toISOString();
+      }
+
+      await updateDoc(docRef, updates);
+      return { ...data, ...updates };
+    } catch (e) {
+      console.error('Add abono failed:', e);
+      throw new Error('Error al registrar abono');
+    }
+  }
+
+  async toggleChargeStatus(chargeId) {
+    try {
+      const docRef = doc(db, 'business_charges', chargeId);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) throw new Error('Cargo no encontrado');
+
+      const data = snap.data();
+      const newStatus = data.status === 'por_cobrar' ? 'cobrado' : 'por_cobrar';
+      const updates = { status: newStatus, updatedAt: new Date().toISOString() };
+      if (newStatus === 'cobrado') {
+        updates.paidAt = new Date().toISOString();
+        updates.paidAmount = data.amount;
+      } else {
+        updates.paidAt = null;
+        updates.paidAmount = 0;
+        updates.abonos = [];
+      }
+      await updateDoc(docRef, updates);
+      return { ...data, ...updates };
+    } catch (e) {
+      console.error('Toggle charge status failed:', e);
+      throw new Error('Error al cambiar estado de cobro');
+    }
+  }
+
+  async ensureMonthlyMemberships(businesses, month) {
+    try {
+      const existing = await this.getAllChargesForMonth(month);
+      const existingMemberships = existing.filter(c => c.type === 'membresia');
+      const existingBizIds = new Set(existingMemberships.map(c => c.businessId));
+
       const batch = writeBatch(db);
       let needsWrite = false;
 
       for (const biz of businesses) {
-        if (!existingIds.has(biz.id)) {
-          const docId = `${biz.id}_${month}`;
-          const docRef = doc(db, 'business_billing', docId);
-          const hasUnico = (biz.acuerdo_unico || 0) > 0;
-          batch.set(docRef, {
-            businessId: biz.id,
-            month,
-            statusRecurrente: 'por_cobrar',
-            statusUnico: hasUnico ? 'por_cobrar' : 'na',
-            paidAt: null,
-            updatedAt: new Date().toISOString(),
-          });
-          needsWrite = true;
-        }
+        if (!biz.acuerdo_recurrente || biz.acuerdo_recurrente <= 0) continue;
+        if (existingBizIds.has(biz.id)) continue;
+
+        const [year, monthNum] = month.split('-');
+        const monthName = new Date(year, parseInt(monthNum) - 1).toLocaleString('es', { month: 'long' });
+        const displayMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        const corteDay = String(biz.fecha_corte || 1).padStart(2, '0');
+
+        const colRef = collection(db, 'business_charges');
+        const newDocRef = doc(colRef);
+        batch.set(newDocRef, {
+          businessId: biz.id,
+          type: 'membresia',
+          description: `Membresía ${displayMonth} ${year}`,
+          amount: biz.acuerdo_recurrente,
+          status: 'por_cobrar',
+          date: `${month}-${corteDay}`,
+          month,
+          abonos: [],
+          paidAmount: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          paidAt: null,
+        });
+        needsWrite = true;
       }
 
       if (needsWrite) await batch.commit();
-      return await this.getBillingForMonth(month);
+      return await this.getAllChargesForMonth(month);
     } catch (e) {
-      console.error('Ensure billing docs failed:', e);
+      console.error('Ensure monthly memberships failed:', e);
       return [];
-    }
-  }
-
-  async toggleBillingStatus(businessId, month, field) {
-    const docId = `${businessId}_${month}`;
-    try {
-      const docRef = doc(db, 'business_billing', docId);
-      const snap = await getDoc(docRef);
-      if (!snap.exists()) throw new Error('Billing doc not found');
-
-      const current = snap.data()[field];
-      if (current === 'na') return snap.data();
-
-      const newStatus = current === 'por_cobrar' ? 'cobrado' : 'por_cobrar';
-      const updates = { [field]: newStatus, updatedAt: new Date().toISOString() };
-      if (newStatus === 'cobrado') updates.paidAt = new Date().toISOString();
-      await updateDoc(docRef, updates);
-      return { ...snap.data(), ...updates };
-    } catch (e) {
-      console.error('Toggle billing status failed:', e);
-      throw new Error('Error al cambiar estado de cobro');
     }
   }
 

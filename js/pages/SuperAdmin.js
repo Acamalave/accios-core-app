@@ -12,7 +12,7 @@ export class SuperAdmin {
     this.episodes = [];
     this.comments = [];
     this.appointments = [];
-    this.billingData = [];
+    this.chargesData = [];
     this.selectedMonth = new Date().toISOString().substring(0, 7);
     this.EVENT_LABELS = {
       page_navigate: { icon: '🧭', label: 'Navego a pagina' },
@@ -69,7 +69,6 @@ export class SuperAdmin {
         <div class="superadmin-tabs">
           <button class="superadmin-tab ${this.tab === 'users' ? 'active' : ''}" data-tab="users">Usuarios</button>
           <button class="superadmin-tab ${this.tab === 'businesses' ? 'active' : ''}" data-tab="businesses">Negocios</button>
-          <button class="superadmin-tab ${this.tab === 'linking' ? 'active' : ''}" data-tab="linking">Vincular</button>
           <button class="superadmin-tab ${this.tab === 'onboarding' ? 'active' : ''}" data-tab="onboarding">Expedientes</button>
           <button class="superadmin-tab ${this.tab === 'episodes' ? 'active' : ''}" data-tab="episodes">Capitulos</button>
           <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
@@ -107,7 +106,7 @@ export class SuperAdmin {
       userAuth.getAllComments(),
       userAuth.getAllAppointments(),
     ]);
-    this.billingData = await userAuth.ensureBillingDocs(this.businesses, this.selectedMonth);
+    this.chargesData = await userAuth.ensureMonthlyMemberships(this.businesses, this.selectedMonth);
   }
 
   _renderStats() {
@@ -162,14 +161,11 @@ export class SuperAdmin {
   _calcBillingTotals() {
     let porCobrar = 0;
     let cobrado = 0;
-    for (const billing of this.billingData) {
-      const biz = this.businesses.find(b => b.id === billing.businessId);
-      if (!biz) continue;
-      const rec = biz.acuerdo_recurrente || 0;
-      const uni = biz.acuerdo_unico || 0;
-      if (billing.statusRecurrente === 'cobrado') cobrado += rec; else porCobrar += rec;
-      if (billing.statusUnico !== 'na') {
-        if (billing.statusUnico === 'cobrado') cobrado += uni; else porCobrar += uni;
+    for (const charge of this.chargesData) {
+      if (charge.status === 'cobrado') {
+        cobrado += charge.amount || 0;
+      } else {
+        porCobrar += charge.amount || 0;
       }
     }
     return { porCobrar, cobrado };
@@ -179,7 +175,7 @@ export class SuperAdmin {
     const [y, m] = this.selectedMonth.split('-').map(Number);
     const d = new Date(y, m - 1 + delta, 1);
     this.selectedMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    this.billingData = await userAuth.ensureBillingDocs(this.businesses, this.selectedMonth);
+    this.chargesData = await userAuth.ensureMonthlyMemberships(this.businesses, this.selectedMonth);
     this._renderStats();
     if (this.tab === 'businesses') this._renderTab();
   }
@@ -200,8 +196,6 @@ export class SuperAdmin {
       this._renderAppointments(content);
     } else if (this.tab === 'behavior') {
       this._renderBehavior(content);
-    } else {
-      this._renderLinking(content);
     }
   }
 
@@ -216,6 +210,15 @@ export class SuperAdmin {
     };
     const lastLogin = (user) => user.lastLogin ? this._timeAgo(user.lastLogin) : 'Nunca';
 
+    const bizLinked = (user) => {
+      const linked = (user.businesses || []);
+      if (!linked.length) return '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin negocio</span>';
+      return linked.map(b => {
+        const biz = this.businesses.find(x => x.id === b);
+        return `<span class="sa-biz-tag">${biz?.nombre || b} <button class="sa-unlink-btn" data-unlink-user="${user.phone || user.id}" data-unlink-biz="${b}" title="Desvincular">&times;</button></span>`;
+      }).join('');
+    };
+
     // Desktop table rows
     const rows = this.users.map(user => `
       <tr>
@@ -225,10 +228,8 @@ export class SuperAdmin {
         <td class="sa-status-cell">${pinBadge(user)}<span class="sa-access-text">Acceso: ${lastLogin(user)}</span></td>
         <td>
           <div class="sa-biz-tags">
-            ${(user.businesses || []).map(b => {
-              const biz = this.businesses.find(x => x.id === b);
-              return `<span class="sa-biz-tag">${biz?.nombre || b}</span>`;
-            }).join('') || '<span style="color: var(--text-muted); font-size: 0.8rem;">ninguno</span>'}
+            ${bizLinked(user)}
+            <button class="sa-btn sa-btn--outline" style="font-size:0.7rem;padding:2px 8px;" data-link-user="${user.phone || user.id}">+ Vincular</button>
           </div>
         </td>
         <td>
@@ -259,14 +260,13 @@ export class SuperAdmin {
           ${pinBadge(user)}
           <span class="sa-user-card-login">Acceso: ${lastLogin(user)}</span>
         </div>
-        ${(user.businesses || []).length ? `
+        <div class="sa-user-link-section">
+          <div class="sa-user-link-label">Negocio Vinculado</div>
           <div class="sa-biz-tags">
-            ${(user.businesses || []).map(b => {
-              const biz = this.businesses.find(x => x.id === b);
-              return `<span class="sa-biz-tag">${biz?.nombre || b}</span>`;
-            }).join('')}
+            ${bizLinked(user)}
           </div>
-        ` : ''}
+          <button class="sa-btn sa-btn--outline sa-link-btn" data-link-user="${user.phone || user.id}">+ Vincular Negocio</button>
+        </div>
         <div class="sa-user-behavior-section">
           <button class="sa-btn sa-btn--outline sa-behavior-btn" data-behavior-phone="${user.phone || user.id}">Comportamiento ▾</button>
           <div class="sa-behavior-expand" style="display:none;"></div>
@@ -335,6 +335,35 @@ export class SuperAdmin {
       });
     });
 
+    // Business linking
+    content.querySelectorAll('[data-link-user]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const phone = btn.dataset.linkUser;
+        const user = this.users.find(u => (u.phone || u.id) === phone);
+        if (user) this._showLinkModal(user);
+      });
+    });
+
+    // Business unlinking
+    content.querySelectorAll('[data-unlink-user]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const phone = btn.dataset.unlinkUser;
+        const bizId = btn.dataset.unlinkBiz;
+        const biz = this.businesses.find(b => b.id === bizId);
+        if (!confirm(`Desvincular ${biz?.nombre || bizId}?`)) return;
+        try {
+          await userAuth.unlinkBusinessFromUser(phone, bizId);
+          Toast.success('Desvinculado');
+          const user = this.users.find(u => (u.phone || u.id) === phone);
+          if (user) user.businesses = (user.businesses || []).filter(b => b !== bizId);
+          this._renderTab();
+        } catch (e) {
+          Toast.error('Error: ' + e.message);
+        }
+      });
+    });
+
     // Behavior expand toggle
     content.querySelectorAll('[data-behavior-phone]').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -342,14 +371,10 @@ export class SuperAdmin {
         const isInTable = btn.closest('.sa-desktop-only');
 
         if (isInTable) {
-          // Desktop: toggle the hidden row
           const behaviorRow = content.querySelector(`[data-behavior-row="${phone}"]`);
           if (!behaviorRow) return;
           const isVisible = behaviorRow.style.display !== 'none';
-          if (isVisible) {
-            behaviorRow.style.display = 'none';
-            return;
-          }
+          if (isVisible) { behaviorRow.style.display = 'none'; return; }
           behaviorRow.style.display = '';
           const expandEl = behaviorRow.querySelector('.sa-behavior-expand');
           if (expandEl && !expandEl.dataset.loaded) {
@@ -357,15 +382,10 @@ export class SuperAdmin {
             expandEl.dataset.loaded = '1';
           }
         } else {
-          // Mobile: toggle the expand div inside the card
           const expandEl = btn.nextElementSibling;
           if (!expandEl) return;
           const isVisible = expandEl.style.display !== 'none';
-          if (isVisible) {
-            expandEl.style.display = 'none';
-            btn.textContent = 'Comportamiento ▾';
-            return;
-          }
+          if (isVisible) { expandEl.style.display = 'none'; btn.textContent = 'Comportamiento ▾'; return; }
           expandEl.style.display = 'block';
           btn.textContent = 'Comportamiento ▴';
           if (!expandEl.dataset.loaded) {
@@ -374,6 +394,57 @@ export class SuperAdmin {
           }
         }
       });
+    });
+  }
+
+  // ─── LINK BUSINESS MODAL ─────────────────────────────
+
+  _showLinkModal(user) {
+    const phone = user.phone || user.id;
+    const linked = user.businesses || [];
+    const available = this.businesses.filter(b => !linked.includes(b.id));
+
+    if (!available.length) {
+      Toast.error('No hay negocios disponibles para vincular');
+      return;
+    }
+
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 400px;">
+          <h3 class="sa-modal-title">Vincular Negocio</h3>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-4);">${user.name || phone}</p>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Seleccionar negocio</label>
+            <select class="sa-form-select" id="sa-link-biz">
+              ${available.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('')}
+            </select>
+          </div>
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
+            <button class="sa-btn sa-btn--primary" id="sa-modal-save">Vincular</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    root.querySelector('#sa-modal-save').addEventListener('click', async () => {
+      const bizId = root.querySelector('#sa-link-biz').value;
+      try {
+        await userAuth.linkBusinessToUser(phone, bizId);
+        Toast.success('Vinculado');
+        user.businesses = [...(user.businesses || []), bizId];
+        closeModal();
+        this._renderTab();
+      } catch (e) {
+        Toast.error('Error: ' + e.message);
+      }
     });
   }
 
@@ -419,76 +490,106 @@ export class SuperAdmin {
 
   _renderBusinesses(content) {
     const linkedUsers = (bizId) => this.users.filter(u => (u.businesses || []).includes(bizId)).length;
-    const getBilling = (bizId) => this.billingData.find(b => b.businessId === bizId);
+    const getCharges = (bizId) => this.chargesData.filter(c => c.businessId === bizId);
     const [year, monthNum] = this.selectedMonth.split('-');
     const shortMonth = new Date(year, parseInt(monthNum) - 1).toLocaleString('es', { month: 'short' });
 
-    const billingToggle = (bizId, field, status) => {
-      if (status === 'na') return '<span class="sa-billing-na">N/A</span>';
-      const isCobrado = status === 'cobrado';
-      return `<button class="sa-billing-toggle ${isCobrado ? 'sa-billing-toggle--cobrado' : ''}" data-toggle-billing="${bizId}" data-billing-field="${field}">${isCobrado ? '✓' : '$'}</button>`;
+    const TYPE_LABELS = { membresia: 'Membresía', compra: 'Compra', servicio: 'Servicio', sesion: 'Sesión' };
+
+    const statusBadge = (charge) => {
+      const isCobrado = charge.status === 'cobrado';
+      return `<button class="sa-billing-toggle ${isCobrado ? 'sa-billing-toggle--cobrado' : ''}" data-toggle-charge="${charge.id}">${isCobrado ? '✓' : '$'}</button>`;
     };
 
-    const acuerdoDisplay = (biz) => {
-      const parts = [];
-      if (biz.acuerdo_recurrente) parts.push(`$${biz.acuerdo_recurrente}/mes`);
-      if (biz.acuerdo_unico) parts.push(`$${biz.acuerdo_unico} unico`);
-      return parts.length ? parts.join(' + ') : '-';
-    };
-
-    // Desktop table rows
-    const rows = this.businesses.map(biz => {
-      const billing = getBilling(biz.id) || {};
+    const chargeRow = (charge) => {
+      const paid = charge.paidAmount || 0;
+      const remaining = charge.amount - paid;
+      const hasAbonos = (charge.abonos || []).length > 0 && charge.status !== 'cobrado';
       return `
-      <tr>
-        <td>
-          <div style="display: flex; align-items: center; gap: var(--space-3);">
-            ${biz.logo ? `<img src="${biz.logo}" alt="" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;">` : '<div style="width:32px;height:32px;border-radius:6px;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1rem;">🏢</div>'}
-            <strong>${biz.nombre}</strong>
+        <div class="sa-charge-row">
+          <div class="sa-charge-info">
+            <span class="sa-charge-type">${TYPE_LABELS[charge.type] || charge.type}</span>
+            <span class="sa-charge-desc">${charge.description}</span>
           </div>
-        </td>
-        <td><span class="sa-biz-tag">${linkedUsers(biz.id)} usuario${linkedUsers(biz.id) !== 1 ? 's' : ''}</span></td>
-        <td style="font-size: 0.85rem; color: var(--text-muted); white-space: nowrap;">${acuerdoDisplay(biz)}</td>
-        <td>
-          <div class="sa-billing-cell">
-            ${biz.acuerdo_recurrente ? `<span class="sa-billing-label">Rec:</span>${billingToggle(biz.id, 'statusRecurrente', billing.statusRecurrente || 'por_cobrar')}` : ''}
-            ${biz.acuerdo_unico ? `<span class="sa-billing-label">Uni:</span>${billingToggle(biz.id, 'statusUnico', billing.statusUnico || 'por_cobrar')}` : ''}
-            ${!biz.acuerdo_recurrente && !biz.acuerdo_unico ? '<span style="color:var(--text-muted);font-size:0.8rem;">Sin acuerdo</span>' : ''}
+          <div class="sa-charge-amount">$${charge.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+          ${hasAbonos ? `<div class="sa-charge-abono-info">Abonado: $${paid.toFixed(2)} · Resta: $${remaining.toFixed(2)}</div>` : ''}
+          <div class="sa-charge-actions">
+            ${statusBadge(charge)}
+            ${charge.status !== 'cobrado' ? `<button class="sa-btn sa-btn--outline" style="font-size:0.7rem;padding:2px 8px;" data-abono-charge="${charge.id}">Abonar</button>` : ''}
+            ${charge.type !== 'membresia' ? `<button class="sa-btn sa-btn--danger" style="font-size:0.7rem;padding:2px 6px;" data-delete-charge="${charge.id}">×</button>` : ''}
           </div>
-        </td>
-        <td>
-          <div class="sa-table-actions">
-            <button class="sa-btn" data-edit-biz="${biz.id}">Editar</button>
-            <button class="sa-btn sa-btn--danger" data-delete-biz="${biz.id}">Eliminar</button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
+        </div>`;
+    };
 
     // Mobile card layout
     const cards = this.businesses.map(biz => {
-      const billing = getBilling(biz.id) || {};
+      const charges = getCharges(biz.id);
+      const membership = charges.find(c => c.type === 'membresia');
+      const additional = charges.filter(c => c.type !== 'membresia');
+      const totalMonth = charges.reduce((sum, c) => sum + (c.amount || 0), 0);
+
       return `
       <div class="sa-biz-card glass-card">
         <div class="sa-biz-card-header">
           ${biz.logo ? `<img src="${biz.logo}" alt="" class="sa-biz-card-logo">` : '<div class="sa-biz-card-logo sa-biz-card-logo--placeholder">🏢</div>'}
           <div class="sa-biz-card-info">
             <div class="sa-biz-card-name">${biz.nombre}</div>
-            <div class="sa-biz-card-id">${biz.id}</div>
+            <div class="sa-biz-card-id">${biz.id} · ${linkedUsers(biz.id)} usuario${linkedUsers(biz.id) !== 1 ? 's' : ''}</div>
           </div>
-          <span class="sa-biz-tag">${linkedUsers(biz.id)}</span>
         </div>
-        <div class="sa-biz-card-acuerdo">${acuerdoDisplay(biz)}</div>
-        <div class="sa-biz-card-billing">
-          ${biz.acuerdo_recurrente ? `<div class="sa-biz-card-billing-row"><span>Recurrente</span>${billingToggle(biz.id, 'statusRecurrente', billing.statusRecurrente || 'por_cobrar')}</div>` : ''}
-          ${biz.acuerdo_unico ? `<div class="sa-biz-card-billing-row"><span>Unico</span>${billingToggle(biz.id, 'statusUnico', billing.statusUnico || 'por_cobrar')}</div>` : ''}
-          ${!biz.acuerdo_recurrente && !biz.acuerdo_unico ? '<div style="color:var(--text-muted);font-size:0.8rem;">Sin acuerdo</div>' : ''}
+
+        ${biz.acuerdo_recurrente ? `
+          <div class="sa-biz-membership">
+            <div class="sa-biz-membership-label">Membresía: $${biz.acuerdo_recurrente.toLocaleString('en-US')}/mes</div>
+            ${biz.fecha_corte ? `<div class="sa-biz-membership-dates">Corte: día ${biz.fecha_corte}${biz.fecha_vencimiento ? ` · Venc: día ${biz.fecha_vencimiento}` : ''}</div>` : ''}
+          </div>
+        ` : ''}
+
+        <div class="sa-charges-section">
+          <div class="sa-charges-header">
+            <span class="sa-charges-title">Cargos ${shortMonth}</span>
+            <span class="sa-charges-total">Total: $${totalMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
+          ${charges.length ? charges.map(chargeRow).join('') : '<div class="sa-behavior-empty">Sin cargos este mes</div>'}
+          <button class="sa-btn sa-btn--outline sa-add-charge-btn" data-add-charge="${biz.id}">+ Agregar Cargo</button>
         </div>
+
         <div class="sa-card-actions">
           <button class="sa-btn" data-edit-biz="${biz.id}">Editar</button>
           <button class="sa-btn sa-btn--danger" data-delete-biz="${biz.id}">Eliminar</button>
         </div>
       </div>`;
+    }).join('');
+
+    // Desktop table rows
+    const rows = this.businesses.map(biz => {
+      const charges = getCharges(biz.id);
+      const totalMonth = charges.reduce((sum, c) => sum + (c.amount || 0), 0);
+      const porCobrar = charges.filter(c => c.status === 'por_cobrar').reduce((s, c) => s + c.amount, 0);
+
+      return `
+      <tr>
+        <td>
+          <div style="display: flex; align-items: center; gap: var(--space-3);">
+            ${biz.logo ? `<img src="${biz.logo}" alt="" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;">` : '<div style="width:32px;height:32px;border-radius:6px;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1rem;">🏢</div>'}
+            <div>
+              <strong>${biz.nombre}</strong>
+              <div style="font-size:0.75rem;color:var(--text-muted);">${biz.acuerdo_recurrente ? `$${biz.acuerdo_recurrente}/mes` : 'Sin membresía'}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="sa-biz-tag">${linkedUsers(biz.id)}</span></td>
+        <td style="font-size:0.85rem;white-space:nowrap;">$${totalMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        <td style="font-size:0.85rem;white-space:nowrap;" class="${porCobrar > 0 ? 'sa-stat-value--warning' : ''}">$${porCobrar.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        <td>${charges.length} cargo${charges.length !== 1 ? 's' : ''}</td>
+        <td>
+          <div class="sa-table-actions">
+            <button class="sa-btn" data-view-charges="${biz.id}">Cargos</button>
+            <button class="sa-btn" data-edit-biz="${biz.id}">Editar</button>
+            <button class="sa-btn sa-btn--danger" data-delete-biz="${biz.id}">Eliminar</button>
+          </div>
+        </td>
+      </tr>`;
     }).join('');
 
     content.innerHTML = `
@@ -498,9 +599,9 @@ export class SuperAdmin {
       <div class="sa-desktop-only glass-card" style="overflow-x: auto; padding: 0;">
         <table class="superadmin-table">
           <thead>
-            <tr><th>Nombre</th><th>Usuarios</th><th>Acuerdo</th><th>Cobro ${shortMonth}</th><th>Acciones</th></tr>
+            <tr><th>Nombre</th><th>Usuarios</th><th>Total ${shortMonth}</th><th>Pendiente</th><th>Cargos</th><th>Acciones</th></tr>
           </thead>
-          <tbody>${rows || '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay negocios</td></tr>'}</tbody>
+          <tbody>${rows || '<tr><td colspan="6" style="text-align:center; color: var(--text-secondary); padding: var(--space-6);">No hay negocios</td></tr>'}</tbody>
         </table>
       </div>
       <div class="sa-mobile-only sa-card-list">
@@ -532,15 +633,29 @@ export class SuperAdmin {
       });
     });
 
-    // Billing toggle handlers
-    content.querySelectorAll('[data-toggle-billing]').forEach(btn => {
+    // View charges modal (desktop)
+    content.querySelectorAll('[data-view-charges]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const biz = this.businesses.find(b => b.id === btn.dataset.viewCharges);
+        if (biz) this._showChargesModal(biz);
+      });
+    });
+
+    // Add charge
+    content.querySelectorAll('[data-add-charge]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const biz = this.businesses.find(b => b.id === btn.dataset.addCharge);
+        if (biz) this._showAddChargeModal(biz);
+      });
+    });
+
+    // Toggle charge status
+    content.querySelectorAll('[data-toggle-charge]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const bizId = btn.dataset.toggleBilling;
-        const field = btn.dataset.billingField;
         btn.disabled = true;
         try {
-          await userAuth.toggleBillingStatus(bizId, this.selectedMonth, field);
-          this.billingData = await userAuth.getBillingForMonth(this.selectedMonth);
+          await userAuth.toggleChargeStatus(btn.dataset.toggleCharge);
+          this.chargesData = await userAuth.getAllChargesForMonth(this.selectedMonth);
           this._renderStats();
           this._renderTab();
         } catch (e) {
@@ -548,78 +663,28 @@ export class SuperAdmin {
         }
       });
     });
-  }
 
-  // ─── LINKING TAB ───────────────────────────────────────
-
-  _renderLinking(content) {
-    const userOptions = this.users.map(u =>
-      `<option value="${u.phone || u.id}">${u.name || u.phone || u.id}</option>`
-    ).join('');
-
-    const userRows = this.users.map(user => {
-      const bizCheckboxes = this.businesses.map(biz => {
-        const isLinked = (user.businesses || []).includes(biz.id);
-        return `
-          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; padding: 4px 0;">
-            <input type="checkbox" value="${biz.id}" data-user-phone="${user.phone || user.id}" ${isLinked ? 'checked' : ''} class="link-checkbox">
-            ${biz.nombre}
-          </label>
-        `;
-      }).join('');
-
-      return `
-        <div class="glass-card" style="margin-bottom: var(--space-4);">
-          <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
-            <div class="avatar">${(user.name || '?')[0].toUpperCase()}</div>
-            <div>
-              <div style="font-weight: 600;">${user.name || 'Sin nombre'}</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">${user.phone || user.id}</div>
-            </div>
-            <span class="sa-badge sa-badge--${user.role || 'client'}" style="margin-left: auto;">${user.role || 'client'}</span>
-          </div>
-          <div style="padding-left: var(--space-2);">
-            ${this.businesses.length > 0 ? bizCheckboxes : '<span style="color: var(--text-muted); font-size: 0.85rem;">Crea negocios primero</span>'}
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    content.innerHTML = `
-      <p style="color: var(--text-secondary); margin-bottom: var(--space-5); font-size: 0.9rem;">
-        Marca las casillas para vincular negocios a cada usuario. Los cambios se guardan automaticamente.
-      </p>
-      ${userRows || '<div style="text-align: center; padding: var(--space-6); color: var(--text-muted);">No hay usuarios para vincular.</div>'}
-    `;
-
-    // Auto-save on checkbox change
-    content.querySelectorAll('.link-checkbox').forEach(cb => {
-      cb.addEventListener('change', async (e) => {
-        const phone = e.target.dataset.userPhone;
-        const bizId = e.target.value;
-        const shouldLink = e.target.checked;
-
+    // Delete charge
+    content.querySelectorAll('[data-delete-charge]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Eliminar este cargo?')) return;
         try {
-          if (shouldLink) {
-            await userAuth.linkBusinessToUser(phone, bizId);
-          } else {
-            await userAuth.unlinkBusinessFromUser(phone, bizId);
-          }
-          Toast.success(shouldLink ? 'Vinculado' : 'Desvinculado');
-          // Update local data
-          const user = this.users.find(u => (u.phone || u.id) === phone);
-          if (user) {
-            if (shouldLink && !(user.businesses || []).includes(bizId)) {
-              user.businesses = [...(user.businesses || []), bizId];
-            } else if (!shouldLink) {
-              user.businesses = (user.businesses || []).filter(b => b !== bizId);
-            }
-          }
+          await userAuth.deleteCharge(btn.dataset.deleteCharge);
+          this.chargesData = await userAuth.getAllChargesForMonth(this.selectedMonth);
+          Toast.success('Cargo eliminado');
           this._renderStats();
+          this._renderTab();
         } catch (e) {
           Toast.error('Error: ' + e.message);
-          cb.checked = !shouldLink; // Revert
         }
+      });
+    });
+
+    // Abono
+    content.querySelectorAll('[data-abono-charge]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const charge = this.chargesData.find(c => c.id === btn.dataset.abonoCharge);
+        if (charge) this._showAbonoModal(charge);
       });
     });
   }
@@ -820,14 +885,18 @@ export class SuperAdmin {
             <label class="sa-form-label">Contenido de valor</label>
             <textarea class="sa-form-input" id="sa-biz-contenido" rows="4" placeholder="Informacion estrategica, reportes, recursos..." style="resize: vertical; min-height: 80px;">${existing?.contenido_valor || ''}</textarea>
           </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Membresía Mensual ($/mes)</label>
+            <input class="sa-form-input" id="sa-biz-recurrente" type="number" min="0" step="0.01" value="${existing?.acuerdo_recurrente || ''}" placeholder="0.00" inputmode="decimal">
+          </div>
           <div class="sa-acuerdo-grid">
             <div class="sa-form-group">
-              <label class="sa-form-label">Recurrente ($/mes)</label>
-              <input class="sa-form-input" id="sa-biz-recurrente" type="number" min="0" step="0.01" value="${existing?.acuerdo_recurrente || ''}" placeholder="0.00" inputmode="decimal">
+              <label class="sa-form-label">Día de corte</label>
+              <input class="sa-form-input" id="sa-biz-corte" type="number" min="1" max="31" value="${existing?.fecha_corte || ''}" placeholder="15" inputmode="numeric">
             </div>
             <div class="sa-form-group">
-              <label class="sa-form-label">Unico ($)</label>
-              <input class="sa-form-input" id="sa-biz-unico" type="number" min="0" step="0.01" value="${existing?.acuerdo_unico || ''}" placeholder="0.00" inputmode="decimal">
+              <label class="sa-form-label">Día de vencimiento</label>
+              <input class="sa-form-input" id="sa-biz-vencimiento" type="number" min="1" max="31" value="${existing?.fecha_vencimiento || ''}" placeholder="20" inputmode="numeric">
             </div>
           </div>
           <div class="sa-form-actions">
@@ -884,7 +953,8 @@ export class SuperAdmin {
       let logo = logoHidden.value.trim();
       const contenido_valor = root.querySelector('#sa-biz-contenido').value.trim();
       const acuerdo_recurrente = parseFloat(root.querySelector('#sa-biz-recurrente').value) || 0;
-      const acuerdo_unico = parseFloat(root.querySelector('#sa-biz-unico').value) || 0;
+      const fecha_corte = parseInt(root.querySelector('#sa-biz-corte').value) || 0;
+      const fecha_vencimiento = parseInt(root.querySelector('#sa-biz-vencimiento').value) || 0;
 
       if (!id || !nombre) { Toast.error('ID y Nombre son requeridos'); return; }
 
@@ -893,25 +963,15 @@ export class SuperAdmin {
       saveBtn.textContent = 'Guardando...';
 
       try {
-        // Optimize and convert to data URL if a file was selected
         if (pendingLogoFile) {
           logo = await this._optimizeImage(pendingLogoFile, 256, 0.7);
         }
 
+        const bizData = { nombre, logo, contenido_valor, acuerdo_recurrente, fecha_corte, fecha_vencimiento };
         if (existing) {
-          await userAuth.updateBusiness(existing.id, { nombre, logo, contenido_valor, acuerdo_recurrente, acuerdo_unico });
+          await userAuth.updateBusiness(existing.id, bizData);
         } else {
-          await userAuth.createBusiness({ id, nombre, logo, contenido_valor, acuerdo_recurrente, acuerdo_unico });
-        }
-        // Update billing doc if acuerdo_unico was added/removed
-        const bizId = existing ? existing.id : id;
-        const currentBilling = this.billingData.find(b => b.businessId === bizId);
-        if (currentBilling) {
-          if (acuerdo_unico > 0 && currentBilling.statusUnico === 'na') {
-            await userAuth.upsertBilling(bizId, this.selectedMonth, { statusUnico: 'por_cobrar' });
-          } else if (!acuerdo_unico && currentBilling.statusUnico !== 'na') {
-            await userAuth.upsertBilling(bizId, this.selectedMonth, { statusUnico: 'na' });
-          }
+          await userAuth.createBusiness({ id, ...bizData });
         }
 
         Toast.success(existing ? 'Negocio actualizado' : 'Negocio creado');
@@ -924,6 +984,237 @@ export class SuperAdmin {
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = 'Guardar';
+      }
+    });
+  }
+
+  // ─── ADD CHARGE MODAL ────────────────────────────────────
+
+  _showAddChargeModal(biz) {
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 440px;">
+          <h3 class="sa-modal-title">Nuevo Cargo — ${biz.nombre}</h3>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Tipo</label>
+            <select class="sa-form-select" id="sa-charge-type">
+              <option value="compra">Compra</option>
+              <option value="servicio">Servicio</option>
+              <option value="sesion">Sesión</option>
+            </select>
+          </div>
+          <div class="sa-form-group">
+            <label class="sa-form-label">Descripción</label>
+            <input class="sa-form-input" id="sa-charge-desc" placeholder="Ej: Producto XYZ, Asesoría legal...">
+          </div>
+          <div class="sa-acuerdo-grid">
+            <div class="sa-form-group">
+              <label class="sa-form-label">Monto ($)</label>
+              <input class="sa-form-input" id="sa-charge-amount" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="sa-form-group">
+              <label class="sa-form-label">Fecha</label>
+              <input class="sa-form-input" id="sa-charge-date" type="date" value="${new Date().toISOString().substring(0, 10)}">
+            </div>
+          </div>
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
+            <button class="sa-btn sa-btn--primary" id="sa-modal-save">Crear Cargo</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    root.querySelector('#sa-modal-save').addEventListener('click', async () => {
+      const type = root.querySelector('#sa-charge-type').value;
+      const description = root.querySelector('#sa-charge-desc').value.trim();
+      const amount = parseFloat(root.querySelector('#sa-charge-amount').value) || 0;
+      const date = root.querySelector('#sa-charge-date').value;
+
+      if (!description || !amount) { Toast.error('Descripción y monto son requeridos'); return; }
+
+      try {
+        await userAuth.createCharge({
+          businessId: biz.id,
+          type,
+          description,
+          amount,
+          date,
+          month: this.selectedMonth,
+        });
+        Toast.success('Cargo creado');
+        closeModal();
+        this.chargesData = await userAuth.getAllChargesForMonth(this.selectedMonth);
+        this._renderStats();
+        this._renderTab();
+      } catch (e) {
+        Toast.error('Error: ' + e.message);
+      }
+    });
+  }
+
+  // ─── CHARGES DETAIL MODAL (Desktop) ────────────────────
+
+  _showChargesModal(biz) {
+    const charges = this.chargesData.filter(c => c.businessId === biz.id);
+    const TYPE_LABELS = { membresia: 'Membresía', compra: 'Compra', servicio: 'Servicio', sesion: 'Sesión' };
+    const totalMonth = charges.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const porCobrar = charges.filter(c => c.status === 'por_cobrar').reduce((s, c) => s + c.amount, 0);
+
+    const [year, monthNum] = this.selectedMonth.split('-');
+    const monthName = new Date(year, parseInt(monthNum) - 1).toLocaleString('es', { month: 'long' });
+    const displayMonth = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
+
+    const chargeRows = charges.map(c => {
+      const paid = c.paidAmount || 0;
+      const isCobrado = c.status === 'cobrado';
+      return `
+        <tr>
+          <td style="font-size:0.8rem;color:var(--text-muted);">${c.date || '-'}</td>
+          <td><span class="sa-charge-type-badge sa-charge-type-badge--${c.type}">${TYPE_LABELS[c.type] || c.type}</span></td>
+          <td style="font-size:0.85rem;">${c.description}</td>
+          <td style="font-size:0.85rem;white-space:nowrap;">$${c.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+          <td>${paid > 0 && !isCobrado ? `<span style="font-size:0.8rem;color:var(--text-muted);">$${paid.toFixed(2)}</span>` : '-'}</td>
+          <td>
+            <button class="sa-billing-toggle ${isCobrado ? 'sa-billing-toggle--cobrado' : ''}" data-modal-toggle="${c.id}">${isCobrado ? '✓ Cobrado' : 'Por cobrar'}</button>
+          </td>
+          <td>
+            <div class="sa-table-actions">
+              ${!isCobrado ? `<button class="sa-btn sa-btn--outline" style="font-size:0.7rem;" data-modal-abono="${c.id}">Abonar</button>` : ''}
+              ${c.type !== 'membresia' ? `<button class="sa-btn sa-btn--danger" style="font-size:0.7rem;" data-modal-delete="${c.id}">×</button>` : ''}
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 720px; max-height: 85vh; overflow-y: auto;">
+          <h3 class="sa-modal-title">${biz.nombre} — ${displayMonth}</h3>
+          <div style="display:flex;gap:var(--space-4);margin-bottom:var(--space-4);">
+            <div style="font-size:0.85rem;color:var(--text-secondary);">Total: <strong>$${totalMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></div>
+            <div style="font-size:0.85rem;color:#f59e0b;">Pendiente: <strong>$${porCobrar.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="superadmin-table" style="min-width:600px;">
+              <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Abonado</th><th>Estatus</th><th>Acciones</th></tr></thead>
+              <tbody>${chargeRows || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:var(--space-6);">Sin cargos</td></tr>'}</tbody>
+            </table>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:var(--space-5);">
+            <button class="sa-btn sa-btn--primary" id="sa-modal-add-charge">+ Agregar Cargo</button>
+            <button class="sa-btn" id="sa-modal-cancel">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    root.querySelector('#sa-modal-add-charge')?.addEventListener('click', () => {
+      closeModal();
+      this._showAddChargeModal(biz);
+    });
+
+    root.querySelectorAll('[data-modal-toggle]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          await userAuth.toggleChargeStatus(btn.dataset.modalToggle);
+          this.chargesData = await userAuth.getAllChargesForMonth(this.selectedMonth);
+          this._renderStats();
+          closeModal();
+          this._showChargesModal(biz);
+          this._renderTab();
+        } catch (e) { Toast.error('Error: ' + e.message); }
+      });
+    });
+
+    root.querySelectorAll('[data-modal-abono]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const charge = this.chargesData.find(c => c.id === btn.dataset.modalAbono);
+        if (charge) { closeModal(); this._showAbonoModal(charge, biz); }
+      });
+    });
+
+    root.querySelectorAll('[data-modal-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Eliminar este cargo?')) return;
+        try {
+          await userAuth.deleteCharge(btn.dataset.modalDelete);
+          this.chargesData = await userAuth.getAllChargesForMonth(this.selectedMonth);
+          Toast.success('Cargo eliminado');
+          this._renderStats();
+          closeModal();
+          this._showChargesModal(biz);
+          this._renderTab();
+        } catch (e) { Toast.error('Error: ' + e.message); }
+      });
+    });
+  }
+
+  // ─── ABONO MODAL ────────────────────────────────────────
+
+  _showAbonoModal(charge, biz = null) {
+    const remaining = (charge.amount || 0) - (charge.paidAmount || 0);
+    const root = document.getElementById('modal-root');
+    root.classList.add('active');
+    root.innerHTML = `
+      <div class="sa-modal" id="sa-modal">
+        <div class="sa-modal-content" style="max-width: 380px;">
+          <h3 class="sa-modal-title">Registrar Abono</h3>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-3);">${charge.description}</p>
+          <div style="display:flex;gap:var(--space-4);margin-bottom:var(--space-4);font-size:0.85rem;">
+            <div>Total: <strong>$${charge.amount.toFixed(2)}</strong></div>
+            <div>Abonado: <strong>$${(charge.paidAmount || 0).toFixed(2)}</strong></div>
+            <div style="color:#f59e0b;">Resta: <strong>$${remaining.toFixed(2)}</strong></div>
+          </div>
+          ${(charge.abonos || []).length ? `
+            <div style="margin-bottom:var(--space-4);font-size:0.8rem;color:var(--text-muted);">
+              <div style="font-weight:600;margin-bottom:var(--space-2);">Historial de abonos:</div>
+              ${charge.abonos.map(a => `<div>$${a.amount.toFixed(2)} — ${new Date(a.date).toLocaleDateString('es-PA')}</div>`).join('')}
+            </div>
+          ` : ''}
+          <div class="sa-form-group">
+            <label class="sa-form-label">Monto del abono ($)</label>
+            <input class="sa-form-input" id="sa-abono-amount" type="number" min="0.01" step="0.01" max="${remaining}" value="${remaining.toFixed(2)}" inputmode="decimal">
+          </div>
+          <div class="sa-form-actions">
+            <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
+            <button class="sa-btn sa-btn--primary" id="sa-modal-save">Registrar Abono</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { root.innerHTML = ''; root.classList.remove('active'); };
+    root.querySelector('#sa-modal-cancel').addEventListener('click', closeModal);
+    root.querySelector('#sa-modal').addEventListener('click', (e) => { if (e.target.id === 'sa-modal') closeModal(); });
+
+    root.querySelector('#sa-modal-save').addEventListener('click', async () => {
+      const amount = parseFloat(root.querySelector('#sa-abono-amount').value) || 0;
+      if (amount <= 0) { Toast.error('Monto inválido'); return; }
+
+      try {
+        await userAuth.addAbono(charge.id, amount);
+        Toast.success(amount >= remaining ? 'Cargo cobrado' : 'Abono registrado');
+        closeModal();
+        this.chargesData = await userAuth.getAllChargesForMonth(this.selectedMonth);
+        this._renderStats();
+        if (biz) this._showChargesModal(biz);
+        this._renderTab();
+      } catch (e) {
+        Toast.error('Error: ' + e.message);
       }
     });
   }
