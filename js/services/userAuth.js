@@ -412,7 +412,7 @@ class UserAuth {
       const subtotal = (items || []).reduce((s, i) => s + (i.amount || 0), 0);
       const colRef = collection(db, 'quotes');
       const docRef = await addDoc(colRef, {
-        clientPhone,
+        clientPhone: this.formatPhone(clientPhone),
         clientName: clientName || '',
         businessId: businessId || '',
         businessName: businessName || '',
