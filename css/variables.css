@@ -12,6 +12,13 @@
   --purple-900: #4C1D95;
   --purple-950: #2E1065;
 
+  /* === Neon Green Accent === */
+  --neon-green: #39FF14;
+  --neon-green-dim: rgba(57, 255, 20, 0.6);
+  --neon-green-bg: rgba(57, 255, 20, 0.08);
+  --neon-green-border: rgba(57, 255, 20, 0.25);
+  --neon-green-glow: rgba(57, 255, 20, 0.3);
+
   /* === Semantic Colors === */
   --bg-primary:     #0A0A0F;
   --bg-secondary:   #12121A;

@@ -67,6 +67,7 @@ const ADDONS = [
   { id: 'facturacion', name: 'Facturacion Electronica Fiscal', desc: 'Integracion oficial para emitir facturas electronicas avaladas por la DGI directamente desde tu punto de venta, de forma automatica al cerrar cada cuenta.', price: 60.00, type: 'once', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>` },
   { id: 'pos', name: 'Ecosistema de Pagos Integrado (POS)', desc: 'Convierte tu tableta en una terminal de cobro. Tarifa de 3.5% + $0.50 (+ ITBMS sobre los $0.50), mejorable por volumen. Acceso inmediato a tus fondos mediante tarjeta corporativa dedicada ($37 + ITBMS) o transferencias a tu banco por $1.00 en 48 horas.', price: 386.00, type: 'once', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>` },
   { id: 'ia', name: 'Asistente Operativo con IA', desc: 'Chatea con tu restaurante. Hazle preguntas al sistema sobre tu operacion, recibe alertas inteligentes de inventario y sugerencias para reducir costos e impulsar ventas basadas en tus propios datos historicos.', price: 49.00, type: 'monthly', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M4 21v-2a4 4 0 0 1 3-3.87"/><circle cx="12" cy="17" r="1"/></svg>` },
+  { id: 'yappy', name: 'Yappy Comercial', desc: 'Cuenta Yappy empresarial para recibir pagos directamente a tu negocio. Configuracion e integracion incluida.', price: 0.00, type: 'once', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>` },
 ];
 
 // ─── Role data ──────────────────────────────────────────────────
@@ -94,6 +95,7 @@ const ROLES = [
       { name: 'Tomar Ordenes en Tablet/Movil', desc: 'Interfaz intuitiva disenada para velocidad — toca, confirma y listo.', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>` },
       { name: 'Enviar Directo a Cocina/Barra', desc: 'La orden viaja en milisegundos. Sin caminar, sin gritar, sin malentendidos.', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>` },
       { name: 'Estado del Pedido en Tiempo Real', desc: 'Sabe exactamente cuando esta listo cada plato sin ir a preguntar a cocina.', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+      { name: 'Gestion de Propinas', desc: 'Control total de propinas por mesero. Registro automatico, distribucion justa y reporte detallado en cada cierre.', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>` },
     ],
   },
   {
@@ -223,7 +225,7 @@ export class LaVainaPresentation {
           <div data-lv-reveal>
             <div class="lv-hero-badge">
               <span class="lv-hero-badge-dot"></span>
-              PROPUESTA EJECUTIVA 2026
+              PROPUESTA ACCIOS CORE RESTAURANTS
             </div>
           </div>
           <div data-lv-reveal>
@@ -237,7 +239,7 @@ export class LaVainaPresentation {
           </div>
           <div data-lv-reveal>
             <p class="lv-hero-wow">
-              Tomamos cada necesidad basica de gestion, la mejoramos con inteligencia artificial y la fusionamos en un ecosistema unico. Control total. Operaciones automatizadas. La aplicacion del futuro para tu restaurante — hoy.
+              Tomamos cada necesidad basica de gestion y la mejoramos en un ecosistema unico. Control total. La aplicacion del futuro para tu restaurante — hoy.
             </p>
           </div>
           <div class="lv-hero-scroll" data-lv-reveal>
@@ -252,7 +254,7 @@ export class LaVainaPresentation {
             <div class="lv-section-tag">Soluciones por Rol</div>
             <h2 class="lv-section-title">Una App. Cada Rol. Resuelto.</h2>
             <p class="lv-section-subtitle">
-              Cinco experiencias disenadas para cada persona en tu restaurante — del cliente al dueno. Cada vista es una herramienta de precision.
+              5 experiencias diseñadas para cada persona de tu restaurante.
             </p>
           </div>
 
@@ -289,7 +291,7 @@ export class LaVainaPresentation {
           <div data-lv-reveal>
             <div class="lv-section-tag">Propuesta Economica</div>
             <h2 class="lv-section-title">Inversion Clara, Sin Sorpresas</h2>
-            <p class="lv-section-subtitle">Tu primer mes de licencia es por nuestra cuenta. Sin compromisos, sin letra pequena.</p>
+            <p class="lv-section-subtitle">Inversion clara, sin sorpresas. Sin compromisos, sin letra pequena.</p>
           </div>
 
           <div class="lv-pricing-layout" data-lv-reveal>
@@ -303,12 +305,11 @@ export class LaVainaPresentation {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
                   </div>
                   <div class="lv-base-module-title-wrap">
-                    <div class="lv-base-module-name">Licencia App, Plan de Exito y Soluciones</div>
+                    <div class="lv-base-module-name">Licencia Accios CORE 2026</div>
                     <div class="lv-base-module-price">
                       <span class="lv-base-module-amount">$${MONTHLY_BASE.toFixed(2)}</span><span class="lv-base-module-period"> / mes</span>
                     </div>
                   </div>
-                  <span class="lv-free-badge">Mes 1 GRATIS</span>
                 </div>
                 <p class="lv-base-module-desc">El motor de tu restaurante. Acceso ilimitado a todas las vistas, soporte continuo, actualizaciones en la nube y copias de seguridad.</p>
               </div>
@@ -371,6 +372,12 @@ export class LaVainaPresentation {
                   </label>
                 `).join('')}
               </div>
+
+              <!-- Delivery Info -->
+              <div class="lv-delivery-info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Tiempo de entrega: 5 dias habiles desde su pago</span>
+              </div>
             </div>
 
             <!-- ── RIGHT COLUMN: Floating Receipt ── -->
@@ -383,27 +390,35 @@ export class LaVainaPresentation {
                     <span>Setup Total</span>
                     <span class="lv-receipt-line-price">$${SETUP_COST.toFixed(2)}</span>
                   </div>
-                  <div class="lv-receipt-line lv-receipt-line--free">
-                    <span>Licencia Mes 1</span>
-                    <span class="lv-receipt-line-price"><s class="lv-receipt-strikethrough">$${MONTHLY_BASE.toFixed(2)}</s> $0.00</span>
+                </div>
+
+                <div class="lv-receipt-divider"></div>
+
+                <div class="lv-receipt-summary-section">
+                  <div class="lv-receipt-summary-heading" style="color:var(--neon-green);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    PAGAS HOY (Unico)
+                  </div>
+                  <div class="lv-receipt-total">
+                    <span class="lv-receipt-total-label">Setup + Addons unicos</span>
+                    <span class="lv-receipt-total-amount" id="lv-total-hoy">$${SETUP_COST.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <div class="lv-receipt-divider"></div>
 
-                <div class="lv-receipt-total">
-                  <span class="lv-receipt-total-label">Total a Pagar Hoy</span>
-                  <span class="lv-receipt-total-amount" id="lv-total-hoy">$${SETUP_COST.toFixed(2)}</span>
-                </div>
-
-                <div class="lv-receipt-divider"></div>
-
-                <div class="lv-receipt-monthly">
-                  <div class="lv-receipt-monthly-row">
-                    <span class="lv-receipt-monthly-label">Mensualidad</span>
-                    <span class="lv-receipt-monthly-amount" id="lv-mensualidad">$${MONTHLY_BASE.toFixed(2)}</span>
+                <div class="lv-receipt-summary-section">
+                  <div class="lv-receipt-summary-heading">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    MENSUAL (Recurrente)
                   </div>
-                  <div class="lv-receipt-monthly-note">A partir del Mes 2</div>
+                  <div class="lv-receipt-monthly">
+                    <div class="lv-receipt-monthly-row">
+                      <span class="lv-receipt-monthly-label">Licencia + Addons mensuales</span>
+                      <span class="lv-receipt-monthly-amount" id="lv-mensualidad">$${MONTHLY_BASE.toFixed(2)}</span>
+                    </div>
+                    <div class="lv-receipt-monthly-note">Cobro mensual recurrente</div>
+                  </div>
                 </div>
 
                 <button class="lv-receipt-cta" id="lv-receipt-cta">
@@ -420,10 +435,20 @@ export class LaVainaPresentation {
         <section class="lv-section lv-payment" id="lv-sec-payment">
           <div data-lv-reveal>
             <div class="lv-section-tag">Metodo de Pago</div>
-            <h2 class="lv-section-title">Elige Como Pagar</h2>
+            <h2 class="lv-section-title">Tu Restaurante del Futuro Empieza Aqui</h2>
             <p class="lv-section-subtitle">
-              Acepta esta propuesta y da el primer paso hacia la transformacion digital de tu restaurante.
+              Da el primer paso hacia la transformacion digital de tu restaurante.
             </p>
+          </div>
+          <div class="lv-payment-incentive" data-lv-reveal>
+            <div class="lv-payment-incentive-text">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Si pagas hoy, recibiras la oportunidad de crear una mejora o solicitud de desarrollo en base a tu experiencia y conocimiento
+            </div>
+            <div class="lv-payment-delivery">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Tiempo de entrega: 5 dias habiles desde su pago
+            </div>
           </div>
           <div class="lv-payment-buttons" data-lv-reveal>
             <button class="lv-pay-btn lv-pay-btn--tarjeta" id="lv-pay-tarjeta">
@@ -643,7 +668,6 @@ export class LaVainaPresentation {
     if (linesEl) {
       let html = `
         <div class="lv-receipt-line"><span>Setup Total</span><span class="lv-receipt-line-price">$${SETUP_COST.toFixed(2)}</span></div>
-        <div class="lv-receipt-line lv-receipt-line--free"><span>Licencia Mes 1</span><span class="lv-receipt-line-price"><s class="lv-receipt-strikethrough">$${MONTHLY_BASE.toFixed(2)}</s> $0.00</span></div>
       `;
       addonLines.forEach(a => {
         html += `<div class="lv-receipt-line lv-receipt-line--addon"><span>${a.name}</span><span class="lv-receipt-line-price">+$${a.price.toFixed(2)}${a.type === 'monthly' ? '/mes' : ''}</span></div>`;
@@ -664,6 +688,13 @@ export class LaVainaPresentation {
     const mMens = document.querySelector('#lv-mobile-mensualidad');
     if (mHoy) mHoy.textContent = `$${totalHoy.toFixed(2)}`;
     if (mMens) mMens.textContent = `$${mensualidad.toFixed(2)}`;
+
+    // Show/hide mobile receipt bar based on addon selection
+    const mobileReceipt = document.querySelector('#lv-mobile-receipt');
+    if (mobileReceipt) {
+      const hasAddons = this.container.querySelectorAll('.lv-addon-toggle:checked').length > 0;
+      mobileReceipt.classList.toggle('lv-mobile-receipt--visible', hasAddons);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -941,32 +972,25 @@ export class LaVainaPresentation {
         <div class="lv-modal-detail-row">
           <span class="lv-modal-detail-label">Numero</span>
           <div style="display:flex;align-items:center;">
-            <span class="lv-modal-detail-value" id="lv-yappy-num">+507 6820-4698</span>
-            <button class="lv-modal-copy" data-copy="+50768204698" title="Copiar">
+            <span class="lv-modal-detail-value" id="lv-yappy-num">68204698</span>
+            <button class="lv-modal-copy" data-copy="68204698" title="Copiar">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
           </div>
         </div>
         <div class="lv-modal-detail-row">
-          <span class="lv-modal-detail-label">A nombre de</span>
-          <span class="lv-modal-detail-value">Acacio Malave</span>
+          <span class="lv-modal-detail-label">Cliente</span>
+          <span class="lv-modal-detail-value">ACACIO ANTONIO MALAVE BARROS</span>
         </div>
       `;
     } else {
       detailsEl.innerHTML = `
+        <div style="font-size:var(--text-xs);color:var(--neon-green);font-weight:var(--weight-semibold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-2);">Banco General</div>
         <div class="lv-modal-detail-row">
-          <span class="lv-modal-detail-label">Banco</span>
-          <span class="lv-modal-detail-value">Banco General</span>
-        </div>
-        <div class="lv-modal-detail-row">
-          <span class="lv-modal-detail-label">Tipo de cuenta</span>
-          <span class="lv-modal-detail-value">Corriente</span>
-        </div>
-        <div class="lv-modal-detail-row">
-          <span class="lv-modal-detail-label">Numero</span>
+          <span class="lv-modal-detail-label">Cuenta</span>
           <div style="display:flex;align-items:center;">
-            <span class="lv-modal-detail-value" id="lv-ach-num">04-12-01-123456-7</span>
-            <button class="lv-modal-copy" data-copy="04120112345677" title="Copiar">
+            <span class="lv-modal-detail-value">04-71-98-188295-1</span>
+            <button class="lv-modal-copy" data-copy="04719818829511" title="Copiar">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
           </div>
@@ -974,6 +998,31 @@ export class LaVainaPresentation {
         <div class="lv-modal-detail-row">
           <span class="lv-modal-detail-label">Titular</span>
           <span class="lv-modal-detail-value">Acacio Malave</span>
+        </div>
+        <div class="lv-modal-detail-row">
+          <span class="lv-modal-detail-label">Tipo</span>
+          <span class="lv-modal-detail-value">Ahorros</span>
+        </div>
+
+        <div style="height:1px;background:rgba(124,58,237,0.12);margin:var(--space-3) 0;"></div>
+
+        <div style="font-size:var(--text-xs);color:var(--neon-green);font-weight:var(--weight-semibold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-2);">BAC</div>
+        <div class="lv-modal-detail-row">
+          <span class="lv-modal-detail-label">Cuenta</span>
+          <div style="display:flex;align-items:center;">
+            <span class="lv-modal-detail-value">118538024</span>
+            <button class="lv-modal-copy" data-copy="118538024" title="Copiar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="lv-modal-detail-row">
+          <span class="lv-modal-detail-label">Titular</span>
+          <span class="lv-modal-detail-value">ACACIO ANTONIO MALAVE BARROS</span>
+        </div>
+        <div class="lv-modal-detail-row">
+          <span class="lv-modal-detail-label">Tipo</span>
+          <span class="lv-modal-detail-value">Ahorros</span>
         </div>
       `;
     }
@@ -1089,9 +1138,14 @@ export class LaVainaPresentation {
             ['Inteligencia Artificial', '8 funcionalidades — Prediccion de demanda, optimizacion de menu, chatbot...'],
             ['Integraciones', '9 funcionalidades — PagueloFacil, Yappy, delivery apps, contabilidad...'],
           ].map(([cat, desc]) => `
-            <div style="padding:var(--space-3);background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.1);border-radius:var(--radius-md);">
-              <div style="font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text-primary);margin-bottom:2px;">${cat}</div>
-              <div style="font-size:var(--text-xs);color:var(--text-dim);line-height:1.5;">${desc}</div>
+            <div class="lv-feature-cat" style="padding:var(--space-3);background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.1);border-radius:var(--radius-md);cursor:pointer;" data-feature-expand>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text-primary);">${cat}</div>
+                <svg class="lv-feature-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.25s ease;flex-shrink:0;color:var(--purple-400);"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="lv-feature-cat-body" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;">
+                <div style="font-size:var(--text-xs);color:var(--text-dim);line-height:1.5;padding-top:var(--space-2);">${desc}</div>
+              </div>
             </div>
           `).join('')}
         </div>
@@ -1110,6 +1164,22 @@ export class LaVainaPresentation {
 
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) this._closeModal(overlay);
+    });
+
+    // Expand/collapse feature categories
+    overlay.querySelectorAll('[data-feature-expand]').forEach(card => {
+      card.addEventListener('click', () => {
+        const body = card.querySelector('.lv-feature-cat-body');
+        const chevron = card.querySelector('.lv-feature-chevron');
+        const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+        if (isOpen) {
+          body.style.maxHeight = '0px';
+          chevron.style.transform = 'rotate(0deg)';
+        } else {
+          body.style.maxHeight = body.scrollHeight + 'px';
+          chevron.style.transform = 'rotate(180deg)';
+        }
+      });
     });
   }
 
