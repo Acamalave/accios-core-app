@@ -558,6 +558,40 @@
   border-radius: var(--radius-md);
 }
 
+/* === User Behavior Expand === */
+.sa-user-behavior-section {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--glass-border);
+}
+.sa-behavior-btn {
+  width: 100%;
+  font-size: 0.85rem;
+}
+.sa-behavior-expand {
+  margin-top: var(--space-3);
+}
+.sa-behavior-empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: var(--space-3);
+}
+.sa-behavior-event {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  font-size: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.sa-behavior-event:last-child { border-bottom: none; }
+.sa-behavior-event-icon { flex-shrink: 0; font-size: 1rem; }
+.sa-behavior-event-info { flex: 1; color: var(--text-secondary); }
+.sa-behavior-event-data { color: var(--text-muted); font-size: 0.75rem; margin-top: 2px; }
+.sa-behavior-event-time { color: var(--text-muted); font-size: 0.75rem; white-space: nowrap; }
+.sa-behavior-row td { padding: 0 var(--space-4) var(--space-4) !important; background: rgba(139, 92, 246, 0.03); }
+
 /* === Month Selector === */
 .sa-month-selector {
   display: flex;

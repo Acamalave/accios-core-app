@@ -14,6 +14,29 @@ export class SuperAdmin {
     this.appointments = [];
     this.billingData = [];
     this.selectedMonth = new Date().toISOString().substring(0, 7);
+    this.EVENT_LABELS = {
+      page_navigate: { icon: '🧭', label: 'Navego a pagina' },
+      page_view: { icon: '👁️', label: 'Vio la pagina' },
+      click_back: { icon: '⬅️', label: 'Salio de la presentacion' },
+      click_float_cta: { icon: '🔼', label: 'Clic en CTA flotante' },
+      click_descubre_mas: { icon: '⬇️', label: 'Hizo scroll "Descubre mas"' },
+      nav_prev: { icon: '◀️', label: 'Navego atras' },
+      nav_next: { icon: '▶️', label: 'Navego adelante' },
+      nav_dot: { icon: '⏺', label: 'Navego a seccion' },
+      select_role: { icon: '👤', label: 'Selecciono rol' },
+      toggle_addon: { icon: '🔀', label: 'Activo/desactivo addon' },
+      click_receipt_cta: { icon: '🧾', label: 'Clic en recibo CTA' },
+      click_mobile_pay: { icon: '📱', label: 'Clic en pagar (mobile)' },
+      click_pay_tarjeta: { icon: '💳', label: 'Clic en Pagar con Tarjeta' },
+      click_pay_yappy: { icon: '📲', label: 'Clic en Yappy/ACH' },
+      select_payment_method: { icon: '🏦', label: 'Selecciono metodo de pago' },
+      submit_card_payment: { icon: '✅', label: 'Envio pago con tarjeta' },
+      payment_confirmed: { icon: '🎉', label: 'Pago confirmado' },
+      open_features_modal: { icon: '📋', label: 'Abrio modal de funcionalidades' },
+      close_features_modal: { icon: '✖️', label: 'Cerro modal de funcionalidades' },
+      expand_feature: { icon: '📖', label: 'Expandio funcionalidad' },
+      view_section: { icon: '📄', label: 'Vio seccion' },
+    };
   }
 
   async render() {
@@ -211,10 +234,14 @@ export class SuperAdmin {
         <td>
           <div class="sa-table-actions">
             <button class="sa-btn" data-edit-user="${user.phone || user.id}">Editar</button>
+            <button class="sa-btn sa-btn--outline" data-behavior-phone="${user.phone || user.id}">📊</button>
             <button class="sa-btn sa-btn--outline" data-reset-pin="${user.phone || user.id}">Reset PIN</button>
             <button class="sa-btn sa-btn--danger" data-delete-user="${user.phone || user.id}">Eliminar</button>
           </div>
         </td>
+      </tr>
+      <tr class="sa-behavior-row" style="display:none;" data-behavior-row="${user.phone || user.id}">
+        <td colspan="6"><div class="sa-behavior-expand"></div></td>
       </tr>
     `).join('');
 
@@ -240,6 +267,10 @@ export class SuperAdmin {
             }).join('')}
           </div>
         ` : ''}
+        <div class="sa-user-behavior-section">
+          <button class="sa-btn sa-btn--outline sa-behavior-btn" data-behavior-phone="${user.phone || user.id}">Comportamiento ▾</button>
+          <div class="sa-behavior-expand" style="display:none;"></div>
+        </div>
         <div class="sa-card-actions">
           <button class="sa-btn" data-edit-user="${user.phone || user.id}">Editar</button>
           <button class="sa-btn sa-btn--outline" data-reset-pin="${user.phone || user.id}">Reset PIN</button>
@@ -303,6 +334,85 @@ export class SuperAdmin {
         }
       });
     });
+
+    // Behavior expand toggle
+    content.querySelectorAll('[data-behavior-phone]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const phone = btn.dataset.behaviorPhone;
+        const isInTable = btn.closest('.sa-desktop-only');
+
+        if (isInTable) {
+          // Desktop: toggle the hidden row
+          const behaviorRow = content.querySelector(`[data-behavior-row="${phone}"]`);
+          if (!behaviorRow) return;
+          const isVisible = behaviorRow.style.display !== 'none';
+          if (isVisible) {
+            behaviorRow.style.display = 'none';
+            return;
+          }
+          behaviorRow.style.display = '';
+          const expandEl = behaviorRow.querySelector('.sa-behavior-expand');
+          if (expandEl && !expandEl.dataset.loaded) {
+            await this._loadUserBehavior(phone, expandEl);
+            expandEl.dataset.loaded = '1';
+          }
+        } else {
+          // Mobile: toggle the expand div inside the card
+          const expandEl = btn.nextElementSibling;
+          if (!expandEl) return;
+          const isVisible = expandEl.style.display !== 'none';
+          if (isVisible) {
+            expandEl.style.display = 'none';
+            btn.textContent = 'Comportamiento ▾';
+            return;
+          }
+          expandEl.style.display = 'block';
+          btn.textContent = 'Comportamiento ▴';
+          if (!expandEl.dataset.loaded) {
+            await this._loadUserBehavior(phone, expandEl);
+            expandEl.dataset.loaded = '1';
+          }
+        }
+      });
+    });
+  }
+
+  // ─── USER BEHAVIOR LOADER ─────────────────────────────
+
+  async _loadUserBehavior(phone, container) {
+    container.innerHTML = '<div style="padding:var(--space-3);color:var(--text-muted);font-size:0.85rem;">Cargando...</div>';
+    try {
+      const q2 = query(
+        collection(db, 'behavior_events'),
+        orderBy('timestamp', 'desc'),
+        limit(500)
+      );
+      const snap = await getDocs(q2);
+      const events = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(e => e.userPhone === phone)
+        .slice(0, 5);
+
+      if (!events.length) {
+        container.innerHTML = '<div class="sa-behavior-empty">Sin actividad registrada</div>';
+        return;
+      }
+
+      container.innerHTML = events.map(evt => {
+        const info = this.EVENT_LABELS[evt.action] || { icon: '❓', label: evt.action };
+        const dataStr = this._formatEventData(evt);
+        return `<div class="sa-behavior-event">
+          <span class="sa-behavior-event-icon">${info.icon}</span>
+          <div class="sa-behavior-event-info">
+            <div>${info.label}</div>
+            ${dataStr ? `<div class="sa-behavior-event-data">${dataStr}</div>` : ''}
+          </div>
+          <span class="sa-behavior-event-time">${this._timeAgo(evt.timestamp)}</span>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      console.error('Load user behavior failed:', e);
+      container.innerHTML = '<div class="sa-behavior-empty">Error al cargar datos</div>';
+    }
   }
 
   // ─── BUSINESSES TAB ────────────────────────────────────
@@ -1263,29 +1373,7 @@ export class SuperAdmin {
   // ─── BEHAVIOR TAB ─────────────────────────────────────
 
   async _renderBehavior(content) {
-    const EVENT_LABELS = {
-      page_navigate: { icon: '🧭', label: 'Navego a pagina' },
-      page_view: { icon: '👁️', label: 'Vio la pagina' },
-      click_back: { icon: '⬅️', label: 'Salio de la presentacion' },
-      click_float_cta: { icon: '🔼', label: 'Clic en CTA flotante' },
-      click_descubre_mas: { icon: '⬇️', label: 'Hizo scroll "Descubre mas"' },
-      nav_prev: { icon: '◀️', label: 'Navego atras' },
-      nav_next: { icon: '▶️', label: 'Navego adelante' },
-      nav_dot: { icon: '⏺', label: 'Navego a seccion' },
-      select_role: { icon: '👤', label: 'Selecciono rol' },
-      toggle_addon: { icon: '🔀', label: 'Activo/desactivo addon' },
-      click_receipt_cta: { icon: '🧾', label: 'Clic en recibo CTA' },
-      click_mobile_pay: { icon: '📱', label: 'Clic en pagar (mobile)' },
-      click_pay_tarjeta: { icon: '💳', label: 'Clic en Pagar con Tarjeta' },
-      click_pay_yappy: { icon: '📲', label: 'Clic en Yappy/ACH' },
-      select_payment_method: { icon: '🏦', label: 'Selecciono metodo de pago' },
-      submit_card_payment: { icon: '✅', label: 'Envio pago con tarjeta' },
-      payment_confirmed: { icon: '🎉', label: 'Pago confirmado' },
-      open_features_modal: { icon: '📋', label: 'Abrio modal de funcionalidades' },
-      close_features_modal: { icon: '✖️', label: 'Cerro modal de funcionalidades' },
-      expand_feature: { icon: '📖', label: 'Expandio funcionalidad' },
-      view_section: { icon: '📄', label: 'Vio seccion' },
-    };
+    const EVENT_LABELS = this.EVENT_LABELS;
 
     content.innerHTML = `
       <div class="sa-behavior-search">
