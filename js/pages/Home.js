@@ -385,7 +385,7 @@ export class Home {
     });
 
     // IDs that show the "coming soon" popup
-    const comingSoonIds = ['xazai', 'gregoria'];
+    const comingSoonIds = ['gregoria'];
 
     // Business world clicks — pause orbit + emit frequency waves
     this.container.querySelectorAll('.orbit-world').forEach(world => {
@@ -438,6 +438,14 @@ export class Home {
         if (bizId === 'lavaina') {
           this._triggerShieldTransition(() => {
             window.location.hash = '#lavaina';
+          });
+          return;
+        }
+
+        // Xazai → curtain close → proposal page
+        if (bizId === 'xazai') {
+          this._triggerCurtainTransition(() => {
+            window.location.href = 'Propuesta-Xazai-2026.html';
           });
           return;
         }
