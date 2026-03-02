@@ -442,11 +442,9 @@ export class Home {
           return;
         }
 
-        // Xazai → curtain close → proposal page
+        // Xazai → proposal page
         if (bizId === 'xazai') {
-          this._triggerCurtainTransition(() => {
-            window.location.href = 'Propuesta-Xazai-2026.html';
-          });
+          window.location.href = 'Propuesta-Xazai-2026.html';
           return;
         }
 
