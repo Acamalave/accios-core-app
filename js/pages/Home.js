@@ -503,6 +503,13 @@ export class Home {
           return;
         }
 
+        // ML Parts → timeline overlay
+        const bizNameText = world.querySelector('.orbit-world-name')?.textContent || '';
+        if (/ml.?parts/i.test(bizNameText) || bizId === 'ml-parts') {
+          this._showTimeline(bizId, bizNameText);
+          return;
+        }
+
         // Show coming-soon popup for specific businesses
         if (comingSoonIds.includes(bizId)) {
           const bizName = world.querySelector('.orbit-world-name')?.textContent || bizId;
@@ -527,6 +534,65 @@ export class Home {
         }
       });
     }
+  }
+
+  // ─── Timeline overlay for business progress ───
+  _showTimeline(bizId, bizName) {
+    // Remove existing overlay
+    const existing = document.querySelector('.timeline-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'timeline-overlay';
+    overlay.innerHTML = `
+      <div class="timeline-container">
+        <button class="timeline-close">&times;</button>
+        <h2 class="timeline-title">${bizName}</h2>
+        <p class="timeline-subtitle">Project Timeline</p>
+        <div class="timeline-track" id="timeline-track">
+          <div class="timeline-loading">Cargando...</div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Close button
+    overlay.querySelector('.timeline-close').addEventListener('click', () => {
+      overlay.classList.add('timeline-overlay--exit');
+      if (this._timelineUnsub) { this._timelineUnsub(); this._timelineUnsub = null; }
+      setTimeout(() => overlay.remove(), 300);
+    });
+
+    // Close on backdrop click
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.querySelector('.timeline-close').click();
+      }
+    });
+
+    // Animate in
+    requestAnimationFrame(() => overlay.classList.add('timeline-overlay--active'));
+
+    // Real-time listener
+    const track = overlay.querySelector('#timeline-track');
+    this._timelineUnsub = userAuth.onTimelineSnapshot(bizId, (steps) => {
+      if (steps.length === 0) {
+        track.innerHTML = '<div class="timeline-empty">No hay pasos registrados</div>';
+        return;
+      }
+      track.innerHTML = `<div class="timeline-line-bg"></div>` + steps.map((step, i) => {
+        const statusClass = step.status === 'completado' ? 'completed' : step.status === 'en_progreso' ? 'active' : 'pending';
+        return `
+          <div class="timeline-step timeline-step--${statusClass}" style="animation-delay: ${i * 0.1}s">
+            <div class="timeline-node"></div>
+            <div class="timeline-step-content">
+              <span class="timeline-step-label">${step.title}</span>
+              <span class="timeline-step-status">${step.status === 'completado' ? 'Completado' : step.status === 'en_progreso' ? 'En progreso' : 'Pendiente'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    });
   }
 
   // ─── Bubble notification for "Coming Soon" worlds ───

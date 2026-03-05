@@ -76,6 +76,7 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
           <button class="superadmin-tab ${this.tab === 'appointments' ? 'active' : ''}" data-tab="appointments">Citas<span id="sa-appts-badge" class="sa-notif-badge" style="display:none;"></span></button>
           <button class="superadmin-tab ${this.tab === 'behavior' ? 'active' : ''}" data-tab="behavior">Comportamiento</button>
+          <button class="superadmin-tab ${this.tab === 'timeline' ? 'active' : ''}" data-tab="timeline">Timeline</button>
         </div>
 
         <div id="sa-content">
@@ -201,6 +202,8 @@ export class SuperAdmin {
       this._renderQuotes(content);
     } else if (this.tab === 'behavior') {
       this._renderBehavior(content);
+    } else if (this.tab === 'timeline') {
+      this._renderTimelineAdmin(content);
     }
   }
 
@@ -2155,6 +2158,91 @@ export class SuperAdmin {
 
   _formatTime(isoStr) {
     return new Date(isoStr).toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  // ─── TIMELINE TAB ─────────────────────────────────────
+
+  async _renderTimelineAdmin(content) {
+    this._selectedTimelineBiz = this._selectedTimelineBiz || (this.businesses[0]?.id || '');
+
+    const bizOptions = this.businesses.map(b =>
+      `<option value="${b.id}" ${b.id === this._selectedTimelineBiz ? 'selected' : ''}>${b.nombre}</option>`
+    ).join('');
+
+    content.innerHTML = `
+      <div class="sa-timeline-header">
+        <select id="sa-tl-biz-select" class="sa-input">${bizOptions}</select>
+        <button class="sa-btn sa-btn--primary" id="sa-tl-add">+ Agregar paso</button>
+      </div>
+      <div id="sa-tl-list" class="sa-tl-list">
+        <div style="text-align:center;padding:var(--space-6);color:var(--text-muted);">Cargando...</div>
+      </div>
+    `;
+
+    const listEl = content.querySelector('#sa-tl-list');
+    const selectEl = content.querySelector('#sa-tl-biz-select');
+
+    const loadSteps = async () => {
+      const steps = await userAuth.getTimelineSteps(this._selectedTimelineBiz);
+      if (steps.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center;padding:var(--space-6);color:var(--text-muted);">No hay pasos. Agrega el primero.</div>';
+      } else {
+        listEl.innerHTML = steps.map(s => `
+          <div class="sa-tl-item">
+            <span class="sa-tl-order">${s.order}</span>
+            <span class="sa-tl-title">${s.title}</span>
+            <select class="sa-tl-status-select" data-id="${s.id}">
+              <option value="pendiente" ${s.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+              <option value="en_progreso" ${s.status === 'en_progreso' ? 'selected' : ''}>En progreso</option>
+              <option value="completado" ${s.status === 'completado' ? 'selected' : ''}>Completado</option>
+            </select>
+            <button class="sa-btn sa-btn--danger sa-btn--sm" data-delete="${s.id}">✕</button>
+          </div>
+        `).join('');
+
+        // Status change
+        listEl.querySelectorAll('.sa-tl-status-select').forEach(sel => {
+          sel.addEventListener('change', async () => {
+            try {
+              await userAuth.updateTimelineStep(sel.dataset.id, { status: sel.value });
+              Toast.success('Status actualizado');
+            } catch (e) { Toast.error('Error: ' + e.message); }
+          });
+        });
+
+        // Delete
+        listEl.querySelectorAll('[data-delete]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('¿Eliminar este paso?')) return;
+            try {
+              await userAuth.deleteTimelineStep(btn.dataset.delete);
+              Toast.success('Paso eliminado');
+              loadSteps();
+            } catch (e) { Toast.error('Error: ' + e.message); }
+          });
+        });
+      }
+    };
+
+    selectEl.addEventListener('change', () => {
+      this._selectedTimelineBiz = selectEl.value;
+      loadSteps();
+    });
+
+    // Add step
+    content.querySelector('#sa-tl-add').addEventListener('click', async () => {
+      const title = prompt('Título del paso:');
+      if (!title) return;
+      const steps = await userAuth.getTimelineSteps(this._selectedTimelineBiz);
+      const nextOrder = steps.length > 0 ? Math.max(...steps.map(s => s.order)) + 1 : 1;
+      try {
+        await userAuth.addTimelineStep(this._selectedTimelineBiz, title, 'pendiente', nextOrder);
+        Toast.success('Paso agregado');
+        loadSteps();
+      } catch (e) { Toast.error('Error: ' + e.message); }
+    });
+
+    loadSteps();
   }
 
   unmount() {

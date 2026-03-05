@@ -772,6 +772,192 @@
 
 
 /* ═══════════════════════════════════════════════
+   TIMELINE OVERLAY — Futuristic Progress View
+   ═══════════════════════════════════════════════ */
+
+.timeline-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(5, 3, 15, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.timeline-overlay--active { opacity: 1; }
+.timeline-overlay--exit { opacity: 0; }
+
+.timeline-container {
+  position: relative;
+  width: 90%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-5);
+}
+
+.timeline-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: var(--space-2);
+  transition: color 0.2s;
+}
+.timeline-close:hover { color: var(--text-primary); }
+
+.timeline-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+  letter-spacing: 0.03em;
+}
+
+.timeline-subtitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(124, 58, 237, 0.6);
+  margin: 0 0 var(--space-6);
+}
+
+.timeline-track {
+  position: relative;
+  padding-left: 28px;
+}
+
+.timeline-line-bg {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 9px;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(124, 58, 237, 0.4), rgba(124, 58, 237, 0.1));
+}
+
+.timeline-step {
+  position: relative;
+  padding: 0 0 var(--space-5) 0;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: timelineStepIn 0.4s ease forwards;
+}
+
+@keyframes timelineStepIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.timeline-node {
+  position: absolute;
+  left: -28px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(100, 100, 120, 0.4);
+  background: rgba(20, 18, 35, 0.9);
+  transition: all 0.3s;
+}
+
+.timeline-step--completed .timeline-node {
+  border-color: rgba(0, 220, 180, 0.8);
+  background: rgba(0, 220, 180, 0.2);
+  box-shadow: 0 0 8px rgba(0, 220, 180, 0.4), 0 0 20px rgba(0, 220, 180, 0.15);
+}
+
+.timeline-step--active .timeline-node {
+  border-color: rgba(167, 139, 250, 0.9);
+  background: rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.2);
+  animation: timelinePulse 2s ease-in-out infinite;
+}
+
+@keyframes timelinePulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.2); }
+  50% { box-shadow: 0 0 14px rgba(124, 58, 237, 0.7), 0 0 30px rgba(124, 58, 237, 0.3); }
+}
+
+.timeline-step--pending .timeline-node {
+  border-color: rgba(80, 80, 100, 0.4);
+  background: rgba(30, 28, 45, 0.6);
+}
+
+.timeline-step-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(15, 12, 30, 0.6);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  border-radius: 10px;
+}
+
+.timeline-step--completed .timeline-step-content {
+  border-color: rgba(0, 220, 180, 0.15);
+}
+
+.timeline-step--active .timeline-step-content {
+  border-color: rgba(124, 58, 237, 0.25);
+  background: rgba(124, 58, 237, 0.06);
+}
+
+.timeline-step-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.timeline-step--pending .timeline-step-label {
+  color: var(--text-muted);
+}
+
+.timeline-step-status {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.timeline-step--completed .timeline-step-status {
+  color: rgba(0, 220, 180, 0.9);
+  background: rgba(0, 220, 180, 0.1);
+}
+
+.timeline-step--active .timeline-step-status {
+  color: rgba(167, 139, 250, 0.9);
+  background: rgba(124, 58, 237, 0.15);
+}
+
+.timeline-step--pending .timeline-step-status {
+  color: rgba(120, 120, 140, 0.7);
+  background: rgba(50, 50, 65, 0.4);
+}
+
+.timeline-empty, .timeline-loading {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE — Solar System
    ═══════════════════════════════════════════════ */
 

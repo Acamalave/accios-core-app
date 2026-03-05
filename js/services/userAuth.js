@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy, addDoc, writeBatch } from './firebase.js';
+import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy, addDoc, writeBatch, onSnapshot } from './firebase.js';
 
 const SESSION_KEY = 'accios-user-session';
 
@@ -821,6 +821,37 @@ class UserAuth {
       console.error('Update appointment failed:', e);
       throw new Error('Error al actualizar cita');
     }
+  }
+
+  // ─── Timeline Steps ────────────────────────────────────
+  async getTimelineSteps(businessId) {
+    const q = query(collection(db, 'business-timeline'), where('businessId', '==', businessId), orderBy('order', 'asc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
+  onTimelineSnapshot(businessId, callback) {
+    const q = query(collection(db, 'business-timeline'), where('businessId', '==', businessId), orderBy('order', 'asc'));
+    return onSnapshot(q, snap => {
+      callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+  }
+
+  async addTimelineStep(businessId, title, status, order) {
+    return addDoc(collection(db, 'business-timeline'), {
+      businessId, title, status, order,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  async updateTimelineStep(stepId, updates) {
+    const docRef = doc(db, 'business-timeline', stepId);
+    await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  }
+
+  async deleteTimelineStep(stepId) {
+    await deleteDoc(doc(db, 'business-timeline', stepId));
   }
 }
 
