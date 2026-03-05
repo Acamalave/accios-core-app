@@ -85,7 +85,7 @@ export class Dashboard {
             </button>
             <div class="dash-brand">
               <span class="dash-brand-tag">MDN</span>
-              <span class="dash-brand-name">Manual de Nadie</span>
+              <span class="dash-brand-name">Manual sin Garantías</span>
             </div>
           </div>
           <nav class="dash-tabs" id="dash-tabs">
@@ -153,7 +153,7 @@ export class Dashboard {
         <!-- ── HERO (dynamic) ── -->
         <div class="ep-hero">
           <div class="ep-hero-top">
-            <span class="ep-hero-podcast">PODCAST: MANUAL DE NADIE</span>
+            <span class="ep-hero-podcast">PODCAST: MANUAL SIN GARANTÍAS</span>
           </div>
           <div class="ep-hero-number">${heroNum}</div>
           <h1 class="ep-hero-title">${heroTitle}</h1>
@@ -404,7 +404,7 @@ export class Dashboard {
                   </div>
                   <p class="ep-reel-clip">${r.clip}</p>
                   <div class="ep-reel-caption">${r.caption}</div>
-                  ${i === 0 ? '<span class="ep-reel-tag">#ManualDeNadie</span>' : ''}
+                  ${i === 0 ? '<span class="ep-reel-tag">#ManualSinGarantías</span>' : ''}
                 </div>`).join('')}
               </div>
             </div>` : ''}

@@ -64,7 +64,7 @@ export class PodcastWorld {
             </button>
             <div class="pw-brand">
               <span class="pw-brand-tag">PODCAST</span>
-              <span class="pw-brand-name">Manual de Nadie</span>
+              <span class="pw-brand-name">Manual sin Garantías</span>
             </div>
           </header>
 
@@ -100,7 +100,7 @@ export class PodcastWorld {
 
         <!-- Neon "Season 2" sign in the background depth -->
         <div class="pw-neon-sign" aria-hidden="true">
-          <span class="pw-neon-text" data-text="second season">second season</span>
+          <span class="pw-neon-text" data-text="first season">first season</span>
         </div>
 
         <!-- Spotlight effect -->
