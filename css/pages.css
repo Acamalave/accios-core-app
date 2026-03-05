@@ -140,75 +140,16 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background:
-    radial-gradient(
-      ellipse 50% 40% at 38% 30%,
-      rgba(220, 200, 255, 0.35) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(190, 165, 255, 0.45) 0%,
-      rgba(145, 100, 245, 0.3) 20%,
-      rgba(124, 58, 237, 0.25) 40%,
-      rgba(80, 30, 180, 0.15) 60%,
-      rgba(30, 15, 60, 0.85) 80%,
-      rgba(8, 4, 20, 0.95) 100%
-    );
-  border: 1.5px solid rgba(167, 139, 250, 0.45);
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
   animation: sunCoreShimmer 4s ease-in-out infinite;
-  box-shadow:
-    inset 0 -6px 16px rgba(0, 0, 0, 0.35),
-    inset 0 4px 10px rgba(220, 200, 255, 0.08),
-    0 0 15px rgba(167, 139, 250, 0.5),
-    0 0 35px rgba(124, 58, 237, 0.35),
-    0 0 60px rgba(124, 58, 237, 0.2),
-    0 0 100px rgba(124, 58, 237, 0.12),
-    0 0 160px rgba(124, 58, 237, 0.05);
 }
 
-/* Internal energy sweep — rotating highlight inside the core */
-.orbital-center::after {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    transparent 30%,
-    rgba(167, 139, 250, 0.15) 45%,
-    rgba(190, 165, 255, 0.25) 50%,
-    rgba(167, 139, 250, 0.15) 55%,
-    transparent 70%,
-    transparent 100%
-  );
-  animation: sunInternalSweep 6s linear infinite;
-  z-index: 1;
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
-/* Internal energy pulse — breathing orb inside */
-.orbital-center::before {
-  content: '';
-  position: absolute;
-  inset: 15px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(190, 165, 255, 0.2) 0%,
-    rgba(145, 100, 245, 0.1) 40%,
-    transparent 70%
-  );
-  animation: sunInternalPulse 3s ease-in-out infinite;
-  z-index: 1;
-  pointer-events: none;
-}
+/* Internal energy effects disabled — using bubble image instead */
 
 .orbital-center-text {
   font-size: 1.3rem;
@@ -222,7 +163,7 @@
   z-index: 2;
 }
 
-/* Brand text inside center sphere */
+/* Brand text inside center sphere (legacy) */
 .orbital-center-brand {
   display: flex;
   flex-direction: column;
@@ -256,6 +197,48 @@
   letter-spacing: 0.3em;
   color: rgba(255, 255, 255, 0.55);
   line-height: 1;
+}
+
+/* Bubble logo — positioned directly in orbital system */
+.orbital-center-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  z-index: 50;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  filter: brightness(1.3) contrast(1.4);
+}
+
+/* Energy particles container */
+.energy-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.energy-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(220, 200, 255, 0.9) 0%,
+    rgba(167, 139, 250, 0.6) 40%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity, left, top;
+  box-shadow:
+    0 0 4px rgba(167, 139, 250, 0.6),
+    0 0 10px rgba(124, 58, 237, 0.3);
 }
 
 /* "Digital Ecosystem" label — sits between orbital system and footer */

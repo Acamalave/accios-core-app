@@ -123,17 +123,10 @@ export class Home {
 
         <div class="orbital-point-lights" id="orbital-point-lights"></div>
 
-        <div class="orbital-center">
-          <div class="orbital-center-corona"></div>
-          <div class="orbital-center-corona orbital-center-corona--outer"></div>
-          <div class="orbital-center-glow" id="orbital-center-glow"></div>
-          <div class="orbital-center-ring"></div>
-          <div class="orbital-center-ring orbital-center-ring--reverse"></div>
-          <div class="orbital-center-brand">
-            <span class="orbital-center-brand-top">ACCIOS</span>
-            <span class="orbital-center-brand-bottom">CORE</span>
-          </div>
-        </div>
+        <div class="orbital-center-glow" id="orbital-center-glow"></div>
+        <img class="orbital-center-logo" src="assets/images/burbuja-ac.png" alt="ACCIOS CORE">
+
+        <div class="energy-particles" id="energy-particles"></div>
 
         ${worlds}
         ${addPlanet}
@@ -185,6 +178,27 @@ export class Home {
         `<div class="point-light" data-light="${i}"></div>`
       ).join('');
     }
+
+    // Energy particles pool
+    this._energyContainer = this.container.querySelector('#energy-particles');
+    this._energyPool = [];
+    this._energyState = [];
+    const PARTICLE_COUNT = this._orbitals.length * 2;
+    if (this._energyContainer) {
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const el = document.createElement('div');
+        el.className = 'energy-particle';
+        this._energyContainer.appendChild(el);
+        this._energyPool.push(el);
+        this._energyState.push({
+          active: false,
+          targetIdx: i % this._orbitals.length,
+          progress: 0,
+          delay: Math.random() * 4000 + i * 800,
+          startTime: performance.now() + Math.random() * 4000 + i * 800,
+        });
+      }
+    }
   }
 
   _startAnimation() {
@@ -203,6 +217,7 @@ export class Home {
       const orbitRadius = Math.min(cx, cy) * 0.75;
 
       let totalGlow = 0;
+      const planetPositions = [];
 
       for (const orb of this._orbitals) {
         if (!orb.el) continue;
@@ -228,6 +243,7 @@ export class Home {
         const screenY = cy - y * perspective;
 
         const zNorm = (z + orbitRadius) / (2 * orbitRadius);
+        planetPositions.push({ x: screenX, y: screenY, zNorm });
 
         // ─── Larger planets, fully sharp, no blur ───
         const scale = 0.55 + zNorm * 0.8;           // 0.55 → 1.35
@@ -308,6 +324,41 @@ export class Home {
         const glowScale = 1 + centerIntensity * 0.2;
         this._centerGlow.style.opacity = (0.5 + centerIntensity * 0.35).toFixed(3);
         this._centerGlow.style.transform = `scale(${glowScale.toFixed(3)})`;
+      }
+
+      // ─── Energy particles: flow from center to planets ───
+      const now = performance.now();
+      for (let i = 0; i < this._energyState.length; i++) {
+        const st = this._energyState[i];
+        const el = this._energyPool[i];
+        if (!el) continue;
+
+        if (now < st.startTime) { el.style.opacity = '0'; continue; }
+
+        const DURATION = 3500;
+        const elapsed = now - st.startTime;
+        const t = (elapsed % DURATION) / DURATION; // 0→1 loop
+
+        const target = planetPositions[st.targetIdx % planetPositions.length];
+        if (!target) { el.style.opacity = '0'; continue; }
+
+        // Curved path from center to planet with slight arc
+        const arcOffset = Math.sin(t * Math.PI) * 15;
+        const px = cx + (target.x - cx) * t + arcOffset;
+        const py = cy + (target.y - cy) * t - arcOffset;
+
+        // Fade: in during 0-20%, full 20-70%, out 70-100%
+        let opacity;
+        if (t < 0.2) opacity = t / 0.2;
+        else if (t < 0.7) opacity = 1;
+        else opacity = 1 - (t - 0.7) / 0.3;
+        opacity *= 0.6 * target.zNorm; // dimmer for far planets
+
+        const scale = 0.5 + Math.sin(t * Math.PI) * 0.5;
+        el.style.left = `${px.toFixed(1)}px`;
+        el.style.top = `${py.toFixed(1)}px`;
+        el.style.opacity = opacity.toFixed(3);
+        el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(2)})`;
       }
     };
 
