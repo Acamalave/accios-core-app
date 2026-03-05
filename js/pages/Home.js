@@ -206,11 +206,6 @@ export class Home {
     if (!systemEl) return;
 
     const getRect = () => systemEl.getBoundingClientRect();
-    // Minimum angular separation between any two planets
-    const count = this._orbitals.length;
-    const MIN_ANGLE = (2 * Math.PI / count) * 0.75; // 75% of ideal even spacing
-    const ANGLE_FORCE = 0.002;
-
     const animate = () => {
       this._animId = requestAnimationFrame(animate);
 
@@ -219,27 +214,10 @@ export class Home {
       const cy = r.height / 2;
       const orbitRadius = Math.min(cx, cy) * 0.78;
 
-      // ─── Advance orbit + angular anti-collision ───
+      // ─── Advance orbit ───
       if (!this._paused) {
         for (const orb of this._orbitals) {
           orb.theta += orb.speed;
-        }
-        // Angular repulsion: enforce minimum angular spacing
-        for (let i = 0; i < count; i++) {
-          for (let j = i + 1; j < count; j++) {
-            const a = this._orbitals[i];
-            const b = this._orbitals[j];
-            let diff = b.theta - a.theta;
-            // Normalize to [-PI, PI]
-            diff = diff - Math.round(diff / (2 * Math.PI)) * 2 * Math.PI;
-            const absDiff = Math.abs(diff);
-            if (absDiff < MIN_ANGLE) {
-              const push = (MIN_ANGLE - absDiff) * ANGLE_FORCE;
-              const sign = diff >= 0 ? 1 : -1;
-              a.theta -= sign * push;
-              b.theta += sign * push;
-            }
-          }
         }
       }
 
