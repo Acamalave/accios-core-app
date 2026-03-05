@@ -80,7 +80,7 @@ export class Home {
   }
 
   _buildOrbitalSystem() {
-    const totalWorlds = this.businesses.length + 1; // +1 for "add" planet
+    const totalWorlds = this.businesses.length + 2; // +1 Estephano standby, +1 "add" planet
     const worlds = this.businesses.map((biz, index) => {
       return `
         <div class="orbit-world" data-business-id="${biz.id}" data-orbit-index="${index}">
@@ -101,9 +101,22 @@ export class Home {
       `;
     }).join('');
 
+    // Estephano — stand-by planet
+    const estephanoPlanet = `
+      <div class="orbit-world orbit-world--standby" data-business-id="__estephano__" data-orbit-index="${this.businesses.length}">
+        <div class="orbit-world-glow"></div>
+        <div class="orbit-world-ripples"></div>
+        <div class="orbit-world-img orbit-world-img--standby">
+          <span class="standby-letter">E</span>
+        </div>
+        <span class="orbit-world-name">Estephano</span>
+        <span class="orbit-world-standby-badge">Stand by</span>
+      </div>
+    `;
+
     // "Add my business" planet — always last in orbit
     const addPlanet = `
-      <div class="orbit-world orbit-world--add" data-business-id="__add__" data-orbit-index="${this.businesses.length}">
+      <div class="orbit-world orbit-world--add" data-business-id="__add__" data-orbit-index="${this.businesses.length + 1}">
         <div class="orbit-world-glow"></div>
         <div class="orbit-world-ripples"></div>
         <div class="orbit-world-img orbit-world-img--add">
@@ -129,6 +142,7 @@ export class Home {
         <div class="energy-particles" id="energy-particles"></div>
 
         ${worlds}
+        ${estephanoPlanet}
         ${addPlanet}
       </div>
     `;
@@ -137,7 +151,7 @@ export class Home {
   // ─── Solar System Engine ──────────────────────────────
 
   _initOrbitals() {
-    const count = this.businesses.length + 1; // +1 for "add" planet
+    const count = this.businesses.length + 2; // +1 Estephano standby, +1 "add" planet
     const TILT = 1.25;
     const SPEED = 0.0012;
 
