@@ -751,28 +751,14 @@
   }
 
   .orbital-system {
-    top: 50%;
-    width: clamp(340px, 78vmin, 480px);
-    height: clamp(340px, 78vmin, 480px);
+    top: 46%;
+    width: clamp(320px, 72vmin, 440px);
+    height: clamp(320px, 72vmin, 440px);
   }
 
-  .orbital-center {
-    width: 140px;
-    height: 140px;
-  }
-
-  .orbital-center-text {
-    font-size: 0.9rem;
-  }
-
-  .orbital-center-brand-top {
-    font-size: 1.4rem;
-    letter-spacing: 0.06em;
-  }
-
-  .orbital-center-brand-bottom {
-    font-size: 0.82rem;
-    letter-spacing: 0.25em;
+  .orbital-center-logo {
+    width: 130px;
+    height: 130px;
   }
 
   .home-ecosystem-label {
@@ -781,15 +767,7 @@
   }
 
   .orbital-center-glow {
-    inset: -65px;
-  }
-
-  .orbital-center-corona {
-    inset: -32px;
-  }
-
-  .orbital-center-corona--outer {
-    inset: -75px;
+    inset: -55px;
   }
 
   .orbit-world-img {
@@ -839,9 +817,9 @@
   }
 
   .orbital-system {
-    top: 50%;
-    width: clamp(300px, 88vw, 380px);
-    height: clamp(300px, 88vw, 380px);
+    top: 44%;
+    width: clamp(280px, 80vw, 340px);
+    height: clamp(280px, 80vw, 340px);
   }
 
   .home-footer {
@@ -850,24 +828,9 @@
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
-  .orbital-center {
-    width: 120px;
-    height: 120px;
-  }
-
-  .orbital-center-text {
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-  }
-
-  .orbital-center-brand-top {
-    font-size: 1.15rem;
-    letter-spacing: 0.05em;
-  }
-
-  .orbital-center-brand-bottom {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
+  .orbital-center-logo {
+    width: 110px;
+    height: 110px;
   }
 
   .home-ecosystem-label {
@@ -877,15 +840,7 @@
   }
 
   .orbital-center-glow {
-    inset: -40px;
-  }
-
-  .orbital-center-corona {
-    inset: -22px;
-  }
-
-  .orbital-center-corona--outer {
-    inset: -48px;
+    inset: -35px;
   }
 
   .orbit-world-img {
