@@ -968,8 +968,8 @@
 
   .orbital-system {
     top: 46%;
-    width: clamp(320px, 72vmin, 440px);
-    height: clamp(320px, 72vmin, 440px);
+    width: clamp(340px, 78vmin, 480px);
+    height: clamp(340px, 78vmin, 480px);
   }
 
   .orbital-center-logo {
@@ -1033,9 +1033,9 @@
   }
 
   .orbital-system {
-    top: 44%;
-    width: clamp(280px, 80vw, 340px);
-    height: clamp(280px, 80vw, 340px);
+    top: 46%;
+    width: clamp(300px, 92vw, 375px);
+    height: clamp(300px, 92vw, 375px);
   }
 
   .home-footer {
@@ -1045,8 +1045,8 @@
   }
 
   .orbital-center-logo {
-    width: 110px;
-    height: 110px;
+    width: 90px;
+    height: 90px;
   }
 
   .home-ecosystem-label {
@@ -1060,30 +1060,30 @@
   }
 
   .orbit-world-img {
-    width: 68px;
-    height: 68px;
+    width: 56px;
+    height: 56px;
     border-width: 1.5px;
   }
 
   .orbit-world-ripples {
-    width: 68px;
-    height: 68px;
+    width: 56px;
+    height: 56px;
   }
 
   .orbit-world-name {
-    font-size: 0.52rem;
-    letter-spacing: 0.05em;
+    font-size: 0.48rem;
+    letter-spacing: 0.04em;
   }
 
   .orbit-world-glow {
-    width: 88px;
-    height: 88px;
-    top: -10px;
+    width: 72px;
+    height: 72px;
+    top: -8px;
   }
 
   .point-light {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
   }
 
   /* Bubble compact for small screens */
