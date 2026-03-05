@@ -275,25 +275,32 @@
 
 /* Stand-by planet (e.g. Estephano) */
 .orbit-world--standby {
-  opacity: 0.45;
-  filter: grayscale(1);
+  opacity: 0.55 !important;
+  filter: grayscale(1) brightness(0.7);
+}
+
+.orbit-world--standby .orbit-world-img {
+  border-style: dashed;
+  border-color: rgba(100, 100, 120, 0.4) !important;
+  box-shadow: none !important;
 }
 
 .orbit-world-standby-badge {
   position: absolute;
-  bottom: -2px;
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.45rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(180, 180, 200, 0.5);
-  background: rgba(30, 30, 45, 0.8);
-  border: 1px solid rgba(120, 120, 140, 0.25);
-  border-radius: 6px;
-  padding: 1px 6px;
+  color: rgba(220, 220, 235, 0.85);
+  background: rgba(40, 35, 60, 0.92);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 8px;
+  padding: 2px 8px;
   white-space: nowrap;
+  z-index: 10;
 }
 
 /* Sun corona — inner ring */

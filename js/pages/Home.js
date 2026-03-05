@@ -140,8 +140,7 @@ export class Home {
 
   _initOrbitals() {
     const count = this.businesses.length + 1; // +1 for "add" planet
-    const TILT = 1.25;
-    const SPEED = 0.0012;
+    const SPEED = 0.0008;
 
     // Create orbital entries for businesses + the add planet
     this._orbitals = [];
@@ -151,7 +150,6 @@ export class Home {
         index: i,
         theta: thetaOffset,
         speed: SPEED,
-        tilt: TILT,
         el: null,
         glowEl: null,
         nameEl: null,
@@ -208,7 +206,8 @@ export class Home {
     if (!systemEl) return;
 
     const getRect = () => systemEl.getBoundingClientRect();
-    const focalLength = 600;
+    const MIN_DIST = 90; // anti-collision threshold in px
+    const REPULSION = 0.0004; // repulsion strength
 
     const animate = () => {
       this._animId = requestAnimationFrame(animate);
@@ -216,7 +215,36 @@ export class Home {
       const r = getRect();
       const cx = r.width / 2;
       const cy = r.height / 2;
-      const orbitRadius = Math.min(cx, cy) * 0.75;
+      const orbitRadius = Math.min(cx, cy) * 0.78;
+
+      // ─── Advance orbit + anti-collision ───
+      if (!this._paused) {
+        for (const orb of this._orbitals) {
+          orb.theta += orb.speed;
+        }
+        // Repulsion: push apart planets that are too close
+        for (let i = 0; i < this._orbitals.length; i++) {
+          for (let j = i + 1; j < this._orbitals.length; j++) {
+            const a = this._orbitals[i];
+            const b = this._orbitals[j];
+            const ax = cx + orbitRadius * Math.cos(a.theta);
+            const ay = cy + orbitRadius * Math.sin(a.theta);
+            const bx = cx + orbitRadius * Math.cos(b.theta);
+            const by = cy + orbitRadius * Math.sin(b.theta);
+            const dx = bx - ax;
+            const dy = by - ay;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MIN_DIST && dist > 0) {
+              const force = (MIN_DIST - dist) * REPULSION;
+              // Push thetas apart
+              const angleDiff = b.theta - a.theta;
+              const sign = angleDiff >= 0 ? 1 : -1;
+              a.theta -= sign * force;
+              b.theta += sign * force;
+            }
+          }
+        }
+      }
 
       let totalGlow = 0;
       const planetPositions = [];
@@ -224,90 +252,66 @@ export class Home {
       for (const orb of this._orbitals) {
         if (!orb.el) continue;
 
-        // Only advance orbit if NOT paused
-        if (!this._paused) {
-          orb.theta += orb.speed;
-        }
+        // ─── 2D circular orbit ───
+        const screenX = cx + orbitRadius * Math.cos(orb.theta);
+        const screenY = cy + orbitRadius * Math.sin(orb.theta);
 
-        const cosT = Math.cos(orb.theta);
-        const sinT = Math.sin(orb.theta);
+        // z-index: planets at top (sin < 0) behind center, bottom (sin > 0) in front
+        const sinVal = Math.sin(orb.theta);
+        const zIndex = Math.round(50 + sinVal * 50);
+        planetPositions.push({ x: screenX, y: screenY });
 
-        const x = orbitRadius * cosT;
-        const zOrbit = orbitRadius * sinT;
+        const scale = 1.0;
+        const borderAlpha = 0.3;
+        const shadowSpread = 16;
 
-        const cosTilt = Math.cos(orb.tilt);
-        const sinTilt = Math.sin(orb.tilt);
-        const y = zOrbit * sinTilt;
-        const z = zOrbit * cosTilt;
-
-        const perspective = focalLength / (focalLength + z);
-        const screenX = cx + x * perspective;
-        const screenY = cy - y * perspective;
-
-        const zNorm = (z + orbitRadius) / (2 * orbitRadius);
-        planetPositions.push({ x: screenX, y: screenY, zNorm });
-
-        // ─── Larger planets, fully sharp, no blur ───
-        const scale = 0.55 + zNorm * 0.8;           // 0.55 → 1.35
-        const opacity = 0.45 + zNorm * 0.55;         // 0.45 → 1.0
-        const zIndex = Math.round(zNorm * 100);
-        const borderAlpha = 0.12 + zNorm * 0.33;
-        const shadowSpread = zNorm * 24;
-        const nameOpacity = 0.2 + zNorm * 0.8;
-
-        // Apply — NO blur, fully crisp always
-        orb.el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+        orb.el.style.transform = `translate(-50%, -50%) scale(${scale})`;
         orb.el.style.left = `${screenX.toFixed(1)}px`;
         orb.el.style.top = `${screenY.toFixed(1)}px`;
-        orb.el.style.opacity = opacity.toFixed(3);
+        orb.el.style.opacity = '1';
         orb.el.style.filter = 'none';
         orb.el.style.zIndex = zIndex;
 
         // Dynamic sphere shadow + sun illumination
         const imgEl = orb.el.querySelector('.orbit-world-img');
         if (imgEl) {
-          // ─── Sun illumination direction ───
-          // Calculate angle from planet to center (where the sun is)
           const relX = screenX - cx;
           const relY = screenY - cy;
           const relDist = Math.sqrt(relX * relX + relY * relY) || 1;
-          const toCenterX = -relX / relDist;  // normalized direction toward sun
+          const toCenterX = -relX / relDist;
           const toCenterY = -relY / relDist;
 
-          // Map light position onto sphere surface for ::before gradient
-          const sunX = 50 + toCenterX * 25;   // 25% → 75%
+          const sunX = 50 + toCenterX * 25;
           const sunY = 50 + toCenterY * 25;
           imgEl.style.setProperty('--sun-x', `${sunX.toFixed(1)}%`);
           imgEl.style.setProperty('--sun-y', `${sunY.toFixed(1)}%`);
 
-          // Sun-facing edge glow (purple light on the side facing center)
-          const edgeGlowX = (toCenterX * (3 + zNorm * 5)).toFixed(1);
-          const edgeGlowY = (toCenterY * (3 + zNorm * 5)).toFixed(1);
-          const sunGlowAlpha = (0.08 + zNorm * 0.22).toFixed(3);
-          const sunGlowSpread = Math.round(10 + zNorm * 14);
+          const edgeGlowX = (toCenterX * 6).toFixed(1);
+          const edgeGlowY = (toCenterY * 6).toFixed(1);
 
           imgEl.style.borderColor = `rgba(124, 58, 237, ${borderAlpha.toFixed(3)})`;
           imgEl.style.boxShadow = `
-            inset 0 -5px 12px rgba(0, 0, 0, ${(0.15 + (1 - zNorm) * 0.2).toFixed(3)}),
-            inset 0 3px 8px rgba(167, 139, 250, ${(borderAlpha * 0.15).toFixed(3)}),
-            0 0 ${shadowSpread.toFixed(0)}px rgba(124, 58, 237, ${(borderAlpha * 0.4).toFixed(3)}),
-            0 ${Math.round(3 + zNorm * 5)}px ${Math.round(6 + zNorm * 10)}px rgba(0, 0, 0, ${(0.15 + zNorm * 0.1).toFixed(3)}),
-            ${edgeGlowX}px ${edgeGlowY}px ${sunGlowSpread}px rgba(167, 139, 250, ${sunGlowAlpha})
+            inset 0 -5px 12px rgba(0, 0, 0, 0.2),
+            inset 0 3px 8px rgba(167, 139, 250, 0.04),
+            0 0 ${shadowSpread}px rgba(124, 58, 237, 0.12),
+            0 5px 12px rgba(0, 0, 0, 0.2),
+            ${edgeGlowX}px ${edgeGlowY}px 18px rgba(167, 139, 250, 0.2)
           `;
         }
 
         if (orb.nameEl) {
-          orb.nameEl.style.opacity = nameOpacity.toFixed(3);
+          orb.nameEl.style.opacity = '1';
         }
 
         if (orb.glowEl) {
-          const glowOpacity = Math.max(0, (zNorm - 0.5) * 2) * 0.5;
-          orb.glowEl.style.opacity = glowOpacity.toFixed(3);
+          orb.glowEl.style.opacity = '0.3';
         }
 
         // Point Light
-        const proximity = 1 - Math.min(Math.sqrt(x * x + (y * 0.5) * (y * 0.5)) / orbitRadius, 1);
-        const lightIntensity = zNorm > 0.4 ? Math.pow(proximity, 2) * 0.3 : 0;
+        const proximity = 1 - Math.min(Math.sqrt(
+          (screenX - cx) * (screenX - cx) + (screenY - cy) * (screenY - cy)
+        ) / orbitRadius, 1);
+        const lightIntensity = Math.pow(proximity, 2) * 0.25;
         totalGlow += lightIntensity;
 
         if (this._pointLights) {
@@ -339,22 +343,20 @@ export class Home {
 
         const DURATION = 3500;
         const elapsed = now - st.startTime;
-        const t = (elapsed % DURATION) / DURATION; // 0→1 loop
+        const t = (elapsed % DURATION) / DURATION;
 
         const target = planetPositions[st.targetIdx % planetPositions.length];
         if (!target) { el.style.opacity = '0'; continue; }
 
-        // Curved path from center to planet with slight arc
         const arcOffset = Math.sin(t * Math.PI) * 15;
         const px = cx + (target.x - cx) * t + arcOffset;
         const py = cy + (target.y - cy) * t - arcOffset;
 
-        // Fade: in during 0-20%, full 20-70%, out 70-100%
         let opacity;
         if (t < 0.2) opacity = t / 0.2;
         else if (t < 0.7) opacity = 1;
         else opacity = 1 - (t - 0.7) / 0.3;
-        opacity *= 0.6 * target.zNorm; // dimmer for far planets
+        opacity *= 0.5;
 
         const scale = 0.5 + Math.sin(t * Math.PI) * 0.5;
         el.style.left = `${px.toFixed(1)}px`;
