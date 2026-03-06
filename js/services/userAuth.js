@@ -825,15 +825,16 @@ class UserAuth {
 
   // ─── Timeline Steps ────────────────────────────────────
   async getTimelineSteps(businessId) {
-    const q = query(collection(db, 'business-timeline'), where('businessId', '==', businessId), orderBy('order', 'asc'));
+    const q = query(collection(db, 'business-timeline'), where('businessId', '==', businessId));
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
   onTimelineSnapshot(businessId, callback) {
-    const q = query(collection(db, 'business-timeline'), where('businessId', '==', businessId), orderBy('order', 'asc'));
+    const q = query(collection(db, 'business-timeline'), where('businessId', '==', businessId));
     return onSnapshot(q, snap => {
-      callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const steps = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order || 0) - (b.order || 0));
+      callback(steps);
     });
   }
 

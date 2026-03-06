@@ -2183,7 +2183,14 @@ export class SuperAdmin {
     const selectEl = content.querySelector('#sa-tl-biz-select');
 
     const loadSteps = async () => {
-      const steps = await userAuth.getTimelineSteps(this._selectedTimelineBiz);
+      let steps;
+      try {
+        steps = await userAuth.getTimelineSteps(this._selectedTimelineBiz);
+      } catch (e) {
+        console.error('Timeline load error:', e);
+        listEl.innerHTML = `<div style="text-align:center;padding:var(--space-6);color:var(--red-400);">Error cargando pasos: ${e.message}</div>`;
+        return;
+      }
       if (steps.length === 0) {
         listEl.innerHTML = '<div style="text-align:center;padding:var(--space-6);color:var(--text-muted);">No hay pasos. Agrega el primero.</div>';
       } else {
@@ -2232,14 +2239,20 @@ export class SuperAdmin {
     // Add step
     content.querySelector('#sa-tl-add').addEventListener('click', async () => {
       const title = prompt('Título del paso:');
-      if (!title) return;
-      const steps = await userAuth.getTimelineSteps(this._selectedTimelineBiz);
-      const nextOrder = steps.length > 0 ? Math.max(...steps.map(s => s.order)) + 1 : 1;
+      if (!title || !title.trim()) return;
       try {
-        await userAuth.addTimelineStep(this._selectedTimelineBiz, title, 'pendiente', nextOrder);
+        let nextOrder = 1;
+        try {
+          const steps = await userAuth.getTimelineSteps(this._selectedTimelineBiz);
+          if (steps.length > 0) nextOrder = Math.max(...steps.map(s => s.order || 0)) + 1;
+        } catch (_) { /* first step, order=1 */ }
+        await userAuth.addTimelineStep(this._selectedTimelineBiz, title.trim(), 'pendiente', nextOrder);
         Toast.success('Paso agregado');
         loadSteps();
-      } catch (e) { Toast.error('Error: ' + e.message); }
+      } catch (e) {
+        console.error('Timeline add error:', e);
+        Toast.error('Error al guardar: ' + e.message);
+      }
     });
 
     loadSteps();
