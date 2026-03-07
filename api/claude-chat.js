@@ -20,9 +20,9 @@ module.exports = async function handler(req, res) {
     const { messages, systemPrompt } = req.body;
 
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-5-20241022',
       max_tokens: 1024,
-      system: systemPrompt,
+      system: systemPrompt || 'Eres un asistente útil. Responde en español.',
       messages: messages.map(m => ({
         role: m.role,
         content: m.content
@@ -32,7 +32,7 @@ module.exports = async function handler(req, res) {
     const content = response.content[0]?.text || '';
     res.status(200).json({ content });
   } catch (err) {
-    console.error('Claude API error:', err);
-    res.status(500).json({ error: 'Error al comunicarse con Claude' });
+    console.error('Claude API error:', err.message || err);
+    res.status(500).json({ error: err.message || 'Error al comunicarse con Claude' });
   }
 };
