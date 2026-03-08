@@ -10,6 +10,104 @@ const salon507Contacts = require('../data/salon507-contacts.json');
 const tcpContacts = require('../data/tcp-contacts.json');
 const janelleContacts = require('../data/janelle-contacts.json');
 
+// ─── Real trend data from JSON contacts ─────────────────────────────
+// Aggregate all contacts that have date fields (8 of 10 files)
+const ALL_CONTACTS_WITH_DATES = [
+  ...cakefitContacts,
+  ...colsonContacts,
+  ...cristianContacts,
+  ...glowinContacts,
+  ...hechizosContacts,
+  ...resultadosContacts,
+  ...salon507Contacts,
+  ...tabaresContacts
+  // janelleContacts & tcpContacts excluded: no date fields
+];
+
+// Per-business contacts for registration trend
+const BUSINESS_CONTACTS = [
+  { key: 'cakefit', name: 'Cake Fit', color: '#F97316', contacts: cakefitContacts },
+  { key: 'colson', name: 'La Colson', color: '#EC4899', contacts: colsonContacts },
+  { key: 'cristian', name: 'Cristian Studio', color: '#8B5CF6', contacts: cristianContacts },
+  { key: 'glowin', name: 'Glowin Strong', color: '#10B981', contacts: glowinContacts },
+  { key: 'hechizos', name: 'Hechizos Salón', color: '#D946EF', contacts: hechizosContacts },
+  { key: 'resultados', name: 'Resultados Inevitables', color: '#06B6D4', contacts: resultadosContacts },
+  { key: 'salon507', name: 'Salón 507', color: '#F43F5E', contacts: salon507Contacts },
+  { key: 'tabares', name: 'Jesus Tabares Salón', color: '#EF4444', contacts: tabaresContacts }
+];
+
+/** Extract YYYY-MM-DD from any contact date format */
+function toDateKey(dateStr) {
+  if (!dateStr || typeof dateStr !== 'string' || dateStr.length < 10) return null;
+  return dateStr.slice(0, 10);
+}
+
+/**
+ * Compute real trend data from JSON contact dates.
+ * @param {string} range - '7d','30d','90d','365d'
+ */
+function computeRealTrends(range) {
+  const days = range === '7d' ? 7 : range === '90d' ? 90 : range === '365d' ? 365 : 30;
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+
+  // Build date keys for the range
+  const dateKeys = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    dateKeys.push(d.toISOString().slice(0, 10));
+  }
+  const rangeStart = dateKeys[0];
+
+  // Single pass: bucket by createdAt and lastPayment
+  const newUsersByDay = {};
+  const activeByDay = {};
+  let newUsersThisRange = 0;
+
+  for (const contact of ALL_CONTACTS_WITH_DATES) {
+    const createdDay = toDateKey(contact.createdAt);
+    if (createdDay && createdDay >= rangeStart && createdDay <= today) {
+      newUsersByDay[createdDay] = (newUsersByDay[createdDay] || 0) + 1;
+      newUsersThisRange++;
+    }
+    const paymentDay = toDateKey(contact.lastPayment);
+    if (paymentDay && paymentDay >= rangeStart && paymentDay <= today) {
+      activeByDay[paymentDay] = (activeByDay[paymentDay] || 0) + 1;
+    }
+  }
+
+  // Per-business registration bucketing
+  const regByBiz = {};
+  for (const { key, contacts } of BUSINESS_CONTACTS) {
+    const byDay = {};
+    for (const c of contacts) {
+      const day = toDateKey(c.createdAt);
+      if (day && day >= rangeStart && day <= today) {
+        byDay[day] = (byDay[day] || 0) + 1;
+      }
+    }
+    regByBiz[key] = byDay;
+  }
+
+  // Build trend arrays
+  const userActivityTrend = dateKeys.map(date => ({
+    date,
+    newUsers: newUsersByDay[date] || 0,
+    activeUsers: activeByDay[date] || 0
+  }));
+
+  const registrationTrend = dateKeys.map(date => {
+    const entry = { date };
+    for (const { key } of BUSINESS_CONTACTS) {
+      entry[key] = (regByBiz[key][date]) || 0;
+    }
+    return entry;
+  });
+
+  return { newUsersThisRange, userActivityTrend, registrationTrend };
+}
+
 // ─── Multi-project Firebase initialization ──────────────────────────
 function getApp(name, envVar) {
   const existing = admin.apps.find(a => a.name === name);
@@ -228,9 +326,16 @@ module.exports = async function handler(req, res) {
     const dbRush = getDb('rush-ride', 'FIREBASE_SA_RUSH_RIDE');
     const dbXazai = getDb('xazai', 'FIREBASE_SA_XAZAI');
 
-    // If no Firebase connections available, return mock
+    // If no Firebase connections available, return mock + real trends
     if (!dbAccios && !dbRush && !dbXazai) {
-      return res.status(200).json(generateMockData(range));
+      const fallback = generateMockData(range);
+      const realTrends = computeRealTrends(range);
+      return res.status(200).json({
+        ...fallback,
+        kpis: { ...fallback.kpis, newUsersThisRange: realTrends.newUsersThisRange },
+        userActivityTrend: realTrends.userActivityTrend,
+        registrationTrend: realTrends.registrationTrend
+      });
     }
 
     // Fetch from available projects in parallel
@@ -335,6 +440,8 @@ module.exports = async function handler(req, res) {
     const activeMembers = byBusiness['rush-ride'].activeMembers || 0;
     const totalOrders = (byBusiness['xazai'].collections?.orders || 0) + (byBusiness['rush-ride'].collections?.reservations || 0);
 
+    const realTrends = computeRealTrends(range);
+
     res.status(200).json({
       mock: !dbAccios || !dbRush || !dbXazai,
       timestamp: new Date().toISOString(),
@@ -344,12 +451,12 @@ module.exports = async function handler(req, res) {
         totalRevenue: Math.round(totalRevenue * 100) / 100,
         activeMembers,
         totalOrders,
-        newUsersThisRange: mock.kpis.newUsersThisRange,
+        newUsersThisRange: realTrends.newUsersThisRange,
         avgRevenuePerUser: totalUsers > 0 ? Math.round((totalRevenue / totalUsers) * 100) / 100 : 0
       },
       byBusiness,
-      revenueTrend: mock.revenueTrend,
-      userActivityTrend: mock.userActivityTrend,
+      registrationTrend: realTrends.registrationTrend,
+      userActivityTrend: realTrends.userActivityTrend,
       recentActivity: mock.recentActivity
     });
 

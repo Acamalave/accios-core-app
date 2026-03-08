@@ -256,7 +256,7 @@ export class CommandCenter {
       <div class="cc-charts-grid">
         <div class="cc-chart-card">
           <div class="cc-chart-card__header">
-            <div class="cc-chart-card__title">Revenue Trend</div>
+            <div class="cc-chart-card__title">Registros</div>
           </div>
           <div class="cc-chart-wrap"><canvas id="cc-chart-revenue"></canvas></div>
         </div>
@@ -311,7 +311,7 @@ export class CommandCenter {
     const ctx = document.getElementById('cc-chart-revenue');
     if (!ctx || !window.Chart) return;
 
-    const trend = data.revenueTrend || [];
+    const trend = data.registrationTrend || [];
     const labels = trend.map(t => {
       const d = new Date(t.date);
       return d.toLocaleDateString('es', { month: 'short', day: 'numeric' });
@@ -321,43 +321,34 @@ export class CommandCenter {
     const step = Math.max(1, Math.floor(trend.length / 30));
     const filteredLabels = labels.map((l, i) => i % step === 0 ? l : '');
 
+    const bizSeries = [
+      { key: 'cakefit', label: 'Cake Fit', color: '#F97316' },
+      { key: 'colson', label: 'La Colson', color: '#EC4899' },
+      { key: 'cristian', label: 'Cristian Studio', color: '#8B5CF6' },
+      { key: 'glowin', label: 'Glowin Strong', color: '#10B981' },
+      { key: 'hechizos', label: 'Hechizos Salón', color: '#D946EF' },
+      { key: 'resultados', label: 'Resultados', color: '#06B6D4' },
+      { key: 'salon507', label: 'Salón 507', color: '#F43F5E' },
+      { key: 'tabares', label: 'J. Tabares', color: '#EF4444' }
+    ];
+
+    // Only include businesses that have at least 1 registration in the range
+    const datasets = bizSeries
+      .filter(b => trend.some(t => (t[b.key] || 0) > 0))
+      .map(b => ({
+        label: b.label,
+        data: trend.map(t => t[b.key] || 0),
+        borderColor: b.color,
+        backgroundColor: b.color + '18',
+        fill: false,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2
+      }));
+
     this.charts.revenue = new Chart(ctx, {
       type: 'line',
-      data: {
-        labels: filteredLabels,
-        datasets: [
-          {
-            label: 'ACCIOS CORE',
-            data: trend.map(t => t.accios),
-            borderColor: '#7C3AED',
-            backgroundColor: 'rgba(124, 58, 237, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            borderWidth: 2
-          },
-          {
-            label: 'Rush Ride',
-            data: trend.map(t => t.rush),
-            borderColor: '#39FF14',
-            backgroundColor: 'rgba(57, 255, 20, 0.05)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            borderWidth: 2
-          },
-          {
-            label: 'Xazai',
-            data: trend.map(t => t.xazai),
-            borderColor: '#F59E0B',
-            backgroundColor: 'rgba(245, 158, 11, 0.05)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            borderWidth: 2
-          }
-        ]
-      },
+      data: { labels: filteredLabels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -367,7 +358,7 @@ export class CommandCenter {
         },
         scales: {
           x: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 }, maxRotation: 0 } },
-          y: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 }, callback: v => '$' + v } }
+          y: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 } }, beginAtZero: true }
         }
       }
     });
@@ -1238,12 +1229,17 @@ export class CommandCenter {
   }
 
   _updateChartsInPlace(data) {
-    // Revenue chart
-    if (this.charts.revenue && data.revenueTrend) {
-      const trend = data.revenueTrend;
-      this.charts.revenue.data.datasets[0].data = trend.map(t => t.accios);
-      this.charts.revenue.data.datasets[1].data = trend.map(t => t.rush);
-      this.charts.revenue.data.datasets[2].data = trend.map(t => t.xazai);
+    // Registration chart
+    if (this.charts.revenue && data.registrationTrend) {
+      const trend = data.registrationTrend;
+      const bizKeys = ['cakefit', 'colson', 'cristian', 'glowin', 'hechizos', 'resultados', 'salon507', 'tabares'];
+      // Update datasets that have data
+      const activeKeys = bizKeys.filter(k => trend.some(t => (t[k] || 0) > 0));
+      activeKeys.forEach((key, i) => {
+        if (this.charts.revenue.data.datasets[i]) {
+          this.charts.revenue.data.datasets[i].data = trend.map(t => t[key] || 0);
+        }
+      });
       this.charts.revenue.update('none');
     }
 
