@@ -229,22 +229,12 @@ export class CommandCenter {
         <div class="cc-kpi-card">
           <div class="cc-kpi-card__label">Revenue Total</div>
           <div class="cc-kpi-card__value cc-kpi-card__value--purple">${fmtMoney(k.totalRevenue)}</div>
-          <div class="cc-kpi-card__sub">Combined ${this.dateRange} period</div>
+          <div class="cc-kpi-card__sub">Combined lifetime</div>
         </div>
         <div class="cc-kpi-card">
-          <div class="cc-kpi-card__label">Miembros Activos</div>
-          <div class="cc-kpi-card__value cc-kpi-card__value--green">${k.activeMembers}</div>
-          <div class="cc-kpi-card__sub">Rush Ride Studio</div>
-        </div>
-        <div class="cc-kpi-card">
-          <div class="cc-kpi-card__label">Total Ordenes</div>
-          <div class="cc-kpi-card__value">${fmt(k.totalOrders)}</div>
-          <div class="cc-kpi-card__sub">Reservas + pedidos</div>
-        </div>
-        <div class="cc-kpi-card">
-          <div class="cc-kpi-card__label">Nuevos Usuarios</div>
-          <div class="cc-kpi-card__value cc-kpi-card__value--amber">${k.newUsersThisRange}</div>
-          <div class="cc-kpi-card__sub">This ${this.dateRange} period</div>
+          <div class="cc-kpi-card__label">Total Transacciones</div>
+          <div class="cc-kpi-card__value cc-kpi-card__value--amber">${fmt(k.totalTransactions)}</div>
+          <div class="cc-kpi-card__sub">Pagos registrados</div>
         </div>
         <div class="cc-kpi-card">
           <div class="cc-kpi-card__label">Avg Revenue/User</div>
@@ -256,7 +246,7 @@ export class CommandCenter {
       <div class="cc-charts-grid">
         <div class="cc-chart-card">
           <div class="cc-chart-card__header">
-            <div class="cc-chart-card__title">Registros</div>
+            <div class="cc-chart-card__title">Comportamiento de Consumo</div>
           </div>
           <div class="cc-chart-wrap"><canvas id="cc-chart-revenue"></canvas></div>
         </div>
@@ -311,15 +301,12 @@ export class CommandCenter {
     const ctx = document.getElementById('cc-chart-revenue');
     if (!ctx || !window.Chart) return;
 
-    const trend = data.registrationTrend || [];
+    const trend = data.consumptionTrend || [];
     const labels = trend.map(t => {
-      const d = new Date(t.date);
-      return d.toLocaleDateString('es', { month: 'short', day: 'numeric' });
+      const [y, m] = t.month.split('-');
+      const d = new Date(+y, +m - 1);
+      return d.toLocaleDateString('es', { month: 'short', year: '2-digit' });
     });
-
-    // Show at most ~30 labels
-    const step = Math.max(1, Math.floor(trend.length / 30));
-    const filteredLabels = labels.map((l, i) => i % step === 0 ? l : '');
 
     const bizSeries = [
       { key: 'cakefit', label: 'Cake Fit', color: '#F97316' },
@@ -332,7 +319,7 @@ export class CommandCenter {
       { key: 'tabares', label: 'J. Tabares', color: '#EF4444' }
     ];
 
-    // Only include businesses that have at least 1 registration in the range
+    // Only include businesses that have activity in at least 1 month
     const datasets = bizSeries
       .filter(b => trend.some(t => (t[b.key] || 0) > 0))
       .map(b => ({
@@ -340,24 +327,31 @@ export class CommandCenter {
         data: trend.map(t => t[b.key] || 0),
         borderColor: b.color,
         backgroundColor: b.color + '18',
-        fill: false,
+        fill: true,
         tension: 0.4,
-        pointRadius: 0,
+        pointRadius: 3,
+        pointBackgroundColor: b.color,
         borderWidth: 2
       }));
 
     this.charts.revenue = new Chart(ctx, {
       type: 'line',
-      data: { labels: filteredLabels, datasets },
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { intersect: false, mode: 'index' },
         plugins: {
-          legend: { display: true, position: 'top', labels: { color: '#A78BFA', font: { size: 10, family: "'Inter'" }, boxWidth: 12, padding: 12 } }
+          legend: { display: true, position: 'top', labels: { color: '#A78BFA', font: { size: 10, family: "'Inter'" }, boxWidth: 12, padding: 12 } },
+          tooltip: {
+            callbacks: {
+              title: (items) => items[0]?.label || '',
+              label: (item) => `${item.dataset.label}: ${item.raw} eventos`
+            }
+          }
         },
         scales: {
-          x: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 }, maxRotation: 0 } },
+          x: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 }, maxRotation: 45 } },
           y: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 } }, beginAtZero: true }
         }
       }
@@ -1229,11 +1223,10 @@ export class CommandCenter {
   }
 
   _updateChartsInPlace(data) {
-    // Registration chart
-    if (this.charts.revenue && data.registrationTrend) {
-      const trend = data.registrationTrend;
+    // Consumption behavior chart
+    if (this.charts.revenue && data.consumptionTrend) {
+      const trend = data.consumptionTrend;
       const bizKeys = ['cakefit', 'colson', 'cristian', 'glowin', 'hechizos', 'resultados', 'salon507', 'tabares'];
-      // Update datasets that have data
       const activeKeys = bizKeys.filter(k => trend.some(t => (t[k] || 0) > 0));
       activeKeys.forEach((key, i) => {
         if (this.charts.revenue.data.datasets[i]) {

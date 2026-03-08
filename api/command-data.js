@@ -60,16 +60,14 @@ function computeRealTrends(range) {
   }
   const rangeStart = dateKeys[0];
 
-  // Single pass: bucket by createdAt and lastPayment
+  // Single pass: bucket by createdAt and lastPayment for daily trends
   const newUsersByDay = {};
   const activeByDay = {};
-  let newUsersThisRange = 0;
 
   for (const contact of ALL_CONTACTS_WITH_DATES) {
     const createdDay = toDateKey(contact.createdAt);
     if (createdDay && createdDay >= rangeStart && createdDay <= today) {
       newUsersByDay[createdDay] = (newUsersByDay[createdDay] || 0) + 1;
-      newUsersThisRange++;
     }
     const paymentDay = toDateKey(contact.lastPayment);
     if (paymentDay && paymentDay >= rangeStart && paymentDay <= today) {
@@ -77,35 +75,47 @@ function computeRealTrends(range) {
     }
   }
 
-  // Per-business registration bucketing
-  const regByBiz = {};
-  for (const { key, contacts } of BUSINESS_CONTACTS) {
-    const byDay = {};
-    for (const c of contacts) {
-      const day = toDateKey(c.createdAt);
-      if (day && day >= rangeStart && day <= today) {
-        byDay[day] = (byDay[day] || 0) + 1;
-      }
-    }
-    regByBiz[key] = byDay;
-  }
-
-  // Build trend arrays
   const userActivityTrend = dateKeys.map(date => ({
     date,
     newUsers: newUsersByDay[date] || 0,
     activeUsers: activeByDay[date] || 0
   }));
 
-  const registrationTrend = dateKeys.map(date => {
-    const entry = { date };
+  // ── Consumption behavior: monthly activity by business (last 12 months) ──
+  const monthKeys = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthKeys.push(d.toISOString().slice(0, 7)); // YYYY-MM
+  }
+
+  const consumByBiz = {};
+  for (const { key, contacts } of BUSINESS_CONTACTS) {
+    const byMonth = {};
+    for (const c of contacts) {
+      // Count both createdAt and lastPayment as activity events
+      const created = toDateKey(c.createdAt);
+      if (created) {
+        const m = created.slice(0, 7);
+        if (monthKeys.includes(m)) byMonth[m] = (byMonth[m] || 0) + 1;
+      }
+      const paid = toDateKey(c.lastPayment);
+      if (paid && paid !== created) {
+        const m = paid.slice(0, 7);
+        if (monthKeys.includes(m)) byMonth[m] = (byMonth[m] || 0) + 1;
+      }
+    }
+    consumByBiz[key] = byMonth;
+  }
+
+  const consumptionTrend = monthKeys.map(month => {
+    const entry = { month };
     for (const { key } of BUSINESS_CONTACTS) {
-      entry[key] = (regByBiz[key][date]) || 0;
+      entry[key] = (consumByBiz[key] && consumByBiz[key][month]) || 0;
     }
     return entry;
   });
 
-  return { newUsersThisRange, userActivityTrend, registrationTrend };
+  return { userActivityTrend, consumptionTrend };
 }
 
 // ─── Multi-project Firebase initialization ──────────────────────────
@@ -332,9 +342,8 @@ module.exports = async function handler(req, res) {
       const realTrends = computeRealTrends(range);
       return res.status(200).json({
         ...fallback,
-        kpis: { ...fallback.kpis, newUsersThisRange: realTrends.newUsersThisRange },
         userActivityTrend: realTrends.userActivityTrend,
-        registrationTrend: realTrends.registrationTrend
+        consumptionTrend: realTrends.consumptionTrend
       });
     }
 
@@ -437,8 +446,14 @@ module.exports = async function handler(req, res) {
 
     const totalUsers = Object.values(byBusiness).reduce((s, b) => s + (b.users || 0), 0);
     const totalRevenue = Object.values(byBusiness).reduce((s, b) => s + (b.revenue || 0), 0);
-    const activeMembers = byBusiness['rush-ride'].activeMembers || 0;
-    const totalOrders = (byBusiness['xazai'].collections?.orders || 0) + (byBusiness['rush-ride'].collections?.reservations || 0);
+
+    // Total payment transactions across all sources
+    const jsonTransactions = [colsonContacts, cristianContacts, tabaresContacts, cakefitContacts, glowinContacts, hechizosContacts, salon507Contacts, tcpContacts, janelleContacts]
+      .reduce((s, arr) => s + arr.reduce((a, c) => a + (c.transactionCount || 0), 0), 0);
+    const fbTransactions = (byBusiness['xazai'].collections?.orders || 0) +
+      (byBusiness['rush-ride'].collections?.reservations || 0) +
+      (byBusiness['accios-core'].collections?.fin_transactions || 0);
+    const totalTransactions = jsonTransactions + fbTransactions;
 
     const realTrends = computeRealTrends(range);
 
@@ -449,13 +464,11 @@ module.exports = async function handler(req, res) {
       kpis: {
         totalUsers,
         totalRevenue: Math.round(totalRevenue * 100) / 100,
-        activeMembers,
-        totalOrders,
-        newUsersThisRange: realTrends.newUsersThisRange,
+        totalTransactions,
         avgRevenuePerUser: totalUsers > 0 ? Math.round((totalRevenue / totalUsers) * 100) / 100 : 0
       },
       byBusiness,
-      registrationTrend: realTrends.registrationTrend,
+      consumptionTrend: realTrends.consumptionTrend,
       userActivityTrend: realTrends.userActivityTrend,
       recentActivity: mock.recentActivity
     });
