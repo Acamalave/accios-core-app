@@ -1,4 +1,11 @@
 const admin = require('firebase-admin');
+const colsonContacts = require('../data/colson-contacts.json');
+const resultadosContacts = require('../data/resultados-contacts.json');
+const cristianContacts = require('../data/cristian-contacts.json');
+const tabaresContacts = require('../data/tabares-contacts.json');
+const cakefitContacts = require('../data/cakefit-contacts.json');
+const glowinContacts = require('../data/glowin-contacts.json');
+const hechizosContacts = require('../data/hechizos-contacts.json');
 
 function getApp(name, envVar) {
   const existing = admin.apps.find(a => a.name === name);
@@ -145,6 +152,13 @@ async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
     accios: { exists: false },
     rushRide: { exists: false },
     xazai: { exists: false },
+    laColson: { exists: false },
+    resultados: { exists: false },
+    cristian: { exists: false },
+    tabares: { exists: false },
+    cakefit: { exists: false },
+    glowin: { exists: false },
+    hechizos: { exists: false },
     timeline: []
   };
 
@@ -306,17 +320,243 @@ async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
     } catch (e) { console.warn('Xazai profile error:', e.message); }
   }
 
+  // ─── La Colson (CSV static data) ───────────────────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const colsonMatch = colsonContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (colsonMatch) {
+      const colsonFields = {};
+      if (colsonMatch.name) colsonFields.name = colsonMatch.name;
+      if (colsonMatch.email) colsonFields.email = colsonMatch.email;
+      if (colsonMatch.phone) colsonFields.phone = colsonMatch.phone;
+      if (colsonMatch.addresses && colsonMatch.addresses.length) colsonFields.direccion = colsonMatch.addresses.join(' | ');
+      if (colsonMatch.tags && colsonMatch.tags.length) colsonFields.etiquetas = colsonMatch.tags;
+      if (colsonMatch.createdAt) colsonFields.createdAt = colsonMatch.createdAt;
+      rawFields['la-colson'] = colsonFields;
+      result.laColson = { exists: true, ...colsonMatch };
+      result.unified.businesses.push('la-colson');
+      if (colsonMatch.name && !result.unified.name) result.unified.name = colsonMatch.name;
+      if (colsonMatch.email && !result.unified.email) result.unified.email = colsonMatch.email;
+    } else {
+      result.laColson = { exists: false };
+    }
+  }
+
+  // ─── Resultados Inevitables (CSV static data) ───────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const riMatch = resultadosContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (riMatch) {
+      const riFields = {};
+      if (riMatch.name) riFields.name = riMatch.name;
+      if (riMatch.email) riFields.email = riMatch.email;
+      if (riMatch.phone) riFields.phone = riMatch.phone;
+      if (riMatch.birthDate) riFields.birthDate = riMatch.birthDate;
+      if (riMatch.addresses && riMatch.addresses.length) riFields.direccion = riMatch.addresses.join(' | ');
+      if (riMatch.company) riFields.company = riMatch.company;
+      if (riMatch.tags && riMatch.tags.length) riFields.etiquetas = riMatch.tags;
+      if (riMatch.instagram) riFields.instagram = riMatch.instagram;
+      if (riMatch.cedula) riFields.cedula = riMatch.cedula;
+      if (riMatch.createdAt) riFields.createdAt = riMatch.createdAt;
+      rawFields['resultados'] = riFields;
+      result.resultados = { exists: true, ...riMatch };
+      result.unified.businesses.push('resultados');
+      if (riMatch.name && !result.unified.name) result.unified.name = riMatch.name;
+      if (riMatch.email && !result.unified.email) result.unified.email = riMatch.email;
+    } else {
+      result.resultados = { exists: false };
+    }
+  }
+
+  // ─── Cristian Studio (CSV payments data) ────────────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const csMatch = cristianContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (csMatch) {
+      const csFields = {};
+      if (csMatch.name) csFields.name = csMatch.name;
+      if (csMatch.email) csFields.email = csMatch.email;
+      if (csMatch.phone) csFields.phone = csMatch.phone;
+      if (csMatch.totalSpent) csFields.totalSpent = csMatch.totalSpent;
+      if (csMatch.transactionCount) csFields.transactionCount = csMatch.transactionCount;
+      if (csMatch.paymentMethods?.length) csFields.paymentMethods = csMatch.paymentMethods;
+      if (csMatch.lastPayment) csFields.lastPayment = csMatch.lastPayment;
+      if (csMatch.addresses?.length) csFields.direccion = csMatch.addresses.join(' | ');
+      if (csMatch.createdAt) csFields.createdAt = csMatch.createdAt;
+      rawFields['cristian'] = csFields;
+      result.cristian = { exists: true, ...csMatch };
+      result.unified.businesses.push('cristian');
+      if (csMatch.name && !result.unified.name) result.unified.name = csMatch.name;
+      if (csMatch.email && !result.unified.email) result.unified.email = csMatch.email;
+    } else {
+      result.cristian = { exists: false };
+    }
+  }
+
+  // ─── Jesus Tabares Salón (CSV payments data) ────────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const jtMatch = tabaresContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (jtMatch) {
+      const jtFields = {};
+      if (jtMatch.name) jtFields.name = jtMatch.name;
+      if (jtMatch.email) jtFields.email = jtMatch.email;
+      if (jtMatch.phone) jtFields.phone = jtMatch.phone;
+      if (jtMatch.totalSpent) jtFields.totalSpent = jtMatch.totalSpent;
+      if (jtMatch.transactionCount) jtFields.transactionCount = jtMatch.transactionCount;
+      if (jtMatch.paymentMethods?.length) jtFields.paymentMethods = jtMatch.paymentMethods;
+      if (jtMatch.lastPayment) jtFields.lastPayment = jtMatch.lastPayment;
+      if (jtMatch.createdAt) jtFields.createdAt = jtMatch.createdAt;
+      rawFields['tabares'] = jtFields;
+      result.tabares = { exists: true, ...jtMatch };
+      result.unified.businesses.push('tabares');
+      if (jtMatch.name && !result.unified.name) result.unified.name = jtMatch.name;
+      if (jtMatch.email && !result.unified.email) result.unified.email = jtMatch.email;
+    } else {
+      result.tabares = { exists: false };
+    }
+  }
+
+  // ─── Cake Fit (CSV payments data) ──────────────────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const cfMatch = cakefitContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (cfMatch) {
+      const cfFields = {};
+      if (cfMatch.name) cfFields.name = cfMatch.name;
+      if (cfMatch.email) cfFields.email = cfMatch.email;
+      if (cfMatch.phone) cfFields.phone = cfMatch.phone;
+      if (cfMatch.totalSpent) cfFields.totalSpent = cfMatch.totalSpent;
+      if (cfMatch.transactionCount) cfFields.transactionCount = cfMatch.transactionCount;
+      if (cfMatch.paymentMethods?.length) cfFields.paymentMethods = cfMatch.paymentMethods;
+      if (cfMatch.cardDetails?.length) cfFields.cardDetails = cfMatch.cardDetails;
+      if (cfMatch.lastPayment) cfFields.lastPayment = cfMatch.lastPayment;
+      if (cfMatch.addresses?.length) cfFields.addresses = cfMatch.addresses;
+      if (cfMatch.createdAt) cfFields.createdAt = cfMatch.createdAt;
+      rawFields['cakefit'] = cfFields;
+      result.cakefit = { exists: true, ...cfMatch };
+      result.unified.businesses.push('cakefit');
+      if (cfMatch.name && !result.unified.name) result.unified.name = cfMatch.name;
+      if (cfMatch.email && !result.unified.email) result.unified.email = cfMatch.email;
+    } else {
+      result.cakefit = { exists: false };
+    }
+  }
+
+  // ─── Glowin Strong (CSV payments data) ──────────────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const gsMatch = glowinContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (gsMatch) {
+      const gsFields = {};
+      if (gsMatch.name) gsFields.name = gsMatch.name;
+      if (gsMatch.email) gsFields.email = gsMatch.email;
+      if (gsMatch.phone) gsFields.phone = gsMatch.phone;
+      if (gsMatch.totalSpent) gsFields.totalSpent = gsMatch.totalSpent;
+      if (gsMatch.transactionCount) gsFields.transactionCount = gsMatch.transactionCount;
+      if (gsMatch.paymentMethods?.length) gsFields.paymentMethods = gsMatch.paymentMethods;
+      if (gsMatch.cardDetails?.length) gsFields.cardDetails = gsMatch.cardDetails;
+      if (gsMatch.products?.length) gsFields.products = gsMatch.products;
+      if (gsMatch.lastPayment) gsFields.lastPayment = gsMatch.lastPayment;
+      if (gsMatch.addresses?.length) gsFields.addresses = gsMatch.addresses;
+      if (gsMatch.createdAt) gsFields.createdAt = gsMatch.createdAt;
+      rawFields['glowin'] = gsFields;
+      result.glowin = { exists: true, ...gsMatch };
+      result.unified.businesses.push('glowin');
+      if (gsMatch.name && !result.unified.name) result.unified.name = gsMatch.name;
+      if (gsMatch.email && !result.unified.email) result.unified.email = gsMatch.email;
+    } else {
+      result.glowin = { exists: false };
+    }
+  }
+
+  // ─── Hechizos Salón (CSV contacts + payments data) ─────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const hsMatch = hechizosContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (hsMatch) {
+      const hsFields = {};
+      if (hsMatch.name) hsFields.name = hsMatch.name;
+      if (hsMatch.email) hsFields.email = hsMatch.email;
+      if (hsMatch.phone) hsFields.phone = hsMatch.phone;
+      if (hsMatch.totalSpent) hsFields.totalSpent = hsMatch.totalSpent;
+      if (hsMatch.transactionCount) hsFields.transactionCount = hsMatch.transactionCount;
+      if (hsMatch.paymentMethods?.length) hsFields.paymentMethods = hsMatch.paymentMethods;
+      if (hsMatch.cardDetails?.length) hsFields.cardDetails = hsMatch.cardDetails;
+      if (hsMatch.products?.length) hsFields.products = hsMatch.products;
+      if (hsMatch.lastPayment) hsFields.lastPayment = hsMatch.lastPayment;
+      if (hsMatch.addresses?.length) hsFields.addresses = hsMatch.addresses;
+      if (hsMatch.createdAt) hsFields.createdAt = hsMatch.createdAt;
+      rawFields['hechizos'] = hsFields;
+      result.hechizos = { exists: true, ...hsMatch };
+      result.unified.businesses.push('hechizos');
+      if (hsMatch.name && !result.unified.name) result.unified.name = hsMatch.name;
+      if (hsMatch.email && !result.unified.email) result.unified.email = hsMatch.email;
+    } else {
+      result.hechizos = { exists: false };
+    }
+  }
+
   // ─── Build unified allFields (merge + dedup) ───────────────
   result.allFields = buildAllFields(rawFields);
 
   // Calculate aggregates for unified
-  result.unified.totalSpent = (result.xazai.totalSpent || 0);
+  result.unified.totalSpent = (result.xazai.totalSpent || 0) + (result.cristian.totalSpent || 0) + (result.tabares.totalSpent || 0) + (result.cakefit.totalSpent || 0) + (result.glowin.totalSpent || 0) + (result.hechizos.totalSpent || 0);
   if (result.accios.transactions) {
     result.unified.totalSpent += result.accios.transactions.reduce((s, t) => s + (t.totalAmount || t.amount || 0), 0);
   }
 
   // First seen = earliest createdAt across sources
-  const dates = [rawFields['accios-core']?.createdAt, rawFields['rush-ride']?.createdAt, rawFields['xazai']?.createdAt].filter(Boolean);
+  const dates = [rawFields['accios-core']?.createdAt, rawFields['rush-ride']?.createdAt, rawFields['xazai']?.createdAt, rawFields['la-colson']?.createdAt, rawFields['resultados']?.createdAt, rawFields['cristian']?.createdAt, rawFields['tabares']?.createdAt, rawFields['cakefit']?.createdAt, rawFields['glowin']?.createdAt, rawFields['hechizos']?.createdAt].filter(Boolean);
   if (dates.length) result.unified.firstSeen = dates.sort()[0];
 
   // Sort timeline by date descending
@@ -333,9 +573,9 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const phone = req.query.phone;
+  const phone = req.query.phone || '';
   const email = req.query.email || '';
-  if (!phone) return res.status(400).json({ error: 'phone parameter required' });
+  if (!phone && !email) return res.status(400).json({ error: 'phone or email parameter required' });
 
   try {
     const dbAccios = getDb('accios-core', 'FIREBASE_SERVICE_ACCOUNT');

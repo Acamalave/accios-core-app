@@ -1,0 +1,2994 @@
+[
+  {
+    "name": "Juan H",
+    "email": "jdhqlife@gmail.com",
+    "totalSpent": 559.86,
+    "transactionCount": 14,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong",
+      "✨de Cero a Fit✨"
+    ],
+    "lastPayment": "2025-03-20",
+    "createdAt": "2025-01-12"
+  },
+  {
+    "name": "Pache Salinas",
+    "email": "pachesalinas@saludyfitness.net",
+    "totalSpent": 369.92,
+    "transactionCount": 8,
+    "paymentMethods": [
+      "Pagar personalmente",
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 2341"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong",
+      "✨de Cero a Fit✨",
+      "Glowin x 100"
+    ],
+    "addresses": [
+      "Ciudad de Panamá, 000000, PAN"
+    ],
+    "lastPayment": "2025-02-17",
+    "createdAt": "2025-01-08",
+    "phone": "+507 6376-2116"
+  },
+  {
+    "name": "Pache Salinas",
+    "email": "pache.salinas94@gmail.com",
+    "totalSpent": 289.94,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong",
+      "GlowinStrong",
+      "✨de Cero a Fit✨",
+      "Glowin x 100"
+    ],
+    "lastPayment": "2025-09-07",
+    "createdAt": "2025-01-08"
+  },
+  {
+    "name": "Patricia Lopez",
+    "email": "plm08091990@gmail.com",
+    "totalSpent": 279.93,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2026-02-02",
+    "createdAt": "2025-04-25",
+    "phone": "+507 6529-7775"
+  },
+  {
+    "name": "Andreina Atencio",
+    "email": "andreina09aa@gmail.com",
+    "totalSpent": 199.95,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-10-07",
+    "createdAt": "2025-01-27",
+    "phone": "+507 6674-1283"
+  },
+  {
+    "name": "María Isabel Hernández",
+    "email": "mhdez17@outlook.es",
+    "totalSpent": 159.96,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-21",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "KathyPaola Echeverria",
+    "email": "kathypao.26@gmail.com",
+    "totalSpent": 159.96,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-10-30",
+    "createdAt": "2025-08-31",
+    "phone": "+507 6949-7526"
+  },
+  {
+    "name": "Lilena Rodriguez",
+    "email": "lilena.rodriguez@gmail.com",
+    "totalSpent": 159.96,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong",
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-08",
+    "createdAt": "2025-02-08"
+  },
+  {
+    "name": "Jessica Brugiati",
+    "email": "jmbrugiati6@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-07",
+    "createdAt": "2025-03-09",
+    "phone": "67819379"
+  },
+  {
+    "name": "Delia Lazo",
+    "email": "bajareque80@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-05-27",
+    "createdAt": "2025-04-12",
+    "phone": "50761307372"
+  },
+  {
+    "name": "Yamila Isa",
+    "email": "yamilaisa28@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-07",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Juan Huanaco",
+    "email": "juanhuanacodev@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit✨",
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-10",
+    "createdAt": "2025-01-06"
+  },
+  {
+    "name": null,
+    "email": "bonillabetsy22@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-23",
+    "createdAt": "2025-05-24"
+  },
+  {
+    "name": "Belkis Torres",
+    "email": "belkis0893@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-27",
+    "createdAt": "2025-04-27",
+    "phone": "62671186"
+  },
+  {
+    "name": "Amanda Piedrahita",
+    "email": "amandapiedrahita1192@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-06-21",
+    "createdAt": "2025-05-10",
+    "phone": "62899080"
+  },
+  {
+    "name": "Carolina Guzmán",
+    "email": "caguzmanf@outlook.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-16",
+    "createdAt": "2025-01-15"
+  },
+  {
+    "name": "Mirelis Mancilla",
+    "email": "mirelis.mancilla@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente",
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 7959"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "addresses": [
+      "Panamá, 507, PAN"
+    ],
+    "lastPayment": "2025-03-17",
+    "createdAt": "2025-01-16",
+    "phone": "+507 6253-5646"
+  },
+  {
+    "name": null,
+    "email": "ginaherrero@hotmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-06",
+    "createdAt": "2025-01-31"
+  },
+  {
+    "name": "Kristine Mendieta",
+    "email": "kristine_mendieta@outlook.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-07-09",
+    "createdAt": "2025-04-20",
+    "phone": "66158844"
+  },
+  {
+    "name": "Ana Priscilla Herrera",
+    "email": "anapriscy@hotmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-20",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Mark Palm",
+    "email": "mark13palm@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-09",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Ingrid Rvias",
+    "email": "ingridrivas_24@hotmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-10-13",
+    "createdAt": "2025-01-19"
+  },
+  {
+    "name": null,
+    "email": "katherinevers@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-17",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Ivania Barrios",
+    "email": "ibarriospardo@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-09-01",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Denisse González",
+    "email": "dgonz1093@gmail.com",
+    "totalSpent": 119.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-01-02",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Krash Panama Inc",
+    "email": "krashpanamainc@gmail.com",
+    "totalSpent": 109.97,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-01-16",
+    "createdAt": "2024-12-23"
+  },
+  {
+    "name": null,
+    "email": "asantam49@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong",
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-09",
+    "createdAt": "2025-03-08"
+  },
+  {
+    "name": "Mileyka Estrada",
+    "email": "mileyka.estrada@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-07-15",
+    "createdAt": "2025-07-08"
+  },
+  {
+    "name": "Rake Matamoros",
+    "email": "raquelitamata@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-27",
+    "createdAt": "2025-01-16",
+    "phone": "63497683"
+  },
+  {
+    "name": null,
+    "email": "lulanares94@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-05",
+    "createdAt": "2025-02-05"
+  },
+  {
+    "name": "Viviana Melo",
+    "email": "vivianamelo06@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-14",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Judith Reynardus",
+    "email": "judithreynardus@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-07-07",
+    "createdAt": "2025-01-16",
+    "phone": "670805685"
+  },
+  {
+    "name": null,
+    "email": "analisaarcacha@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-08-19",
+    "createdAt": "2025-08-12"
+  },
+  {
+    "name": "Doraliza Franco",
+    "email": "doraliza.franco@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-05-01",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Mariel Sanchez",
+    "email": "marielsanchezaguilar@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-12-23",
+    "createdAt": "2025-10-06"
+  },
+  {
+    "name": "Tatiana Correa",
+    "email": "tm.correa19@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-07-01",
+    "createdAt": "2025-05-23",
+    "phone": "64122821"
+  },
+  {
+    "name": "Yirson Rondon",
+    "email": "yirsonjosemartinez@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-11",
+    "createdAt": "2025-02-24"
+  },
+  {
+    "name": "Ednita Chu",
+    "email": "ednitachk@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-27",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Maria Isabel Cervantes",
+    "email": "mary02020991@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-05",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Lyanne Nieto",
+    "email": "lyanne.nieto@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-28",
+    "createdAt": "2025-01-16",
+    "phone": "69813499"
+  },
+  {
+    "name": "Nadier Gonzalez",
+    "email": "nadierg15@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 3174"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "addresses": [
+      "Panama, 0801, PAN"
+    ],
+    "lastPayment": "2025-03-05",
+    "createdAt": "2025-02-02",
+    "phone": "+507 6780-9949"
+  },
+  {
+    "name": "Adolfo González-Ruiz",
+    "email": "adolfogra16@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-05-14",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Nisla Viggiano",
+    "email": "nislaviggiano@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-11-06",
+    "createdAt": "2025-10-29"
+  },
+  {
+    "name": "Bella Zabala",
+    "email": "bellagza@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-01-27",
+    "createdAt": "2025-06-01"
+  },
+  {
+    "name": "Ana Araya",
+    "email": "anaga.araya@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-17",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Ana Barsallo",
+    "email": "abarsallo15@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-10-22",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Raquel Castrellón",
+    "email": "ramequel@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-10-01",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": null,
+    "email": "katia_38@outlook.es",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-28",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Meykann C Calderón",
+    "email": "meykanncalderon@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-03",
+    "createdAt": "2025-02-03",
+    "phone": "60480254"
+  },
+  {
+    "name": "Yolanda Pineda",
+    "email": "yolanda_26pineda@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-10-22",
+    "createdAt": "2025-10-19",
+    "phone": "+507 6126-6906"
+  },
+  {
+    "name": "Patricia De Leon",
+    "email": "patricia.deleon.a@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-08-02",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Cristina Castillo",
+    "email": "cristina.castillovergara@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-06-24",
+    "createdAt": "2025-05-21"
+  },
+  {
+    "name": "Nisla Sauri",
+    "email": "nislasauri@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-17",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": null,
+    "email": "melissa.mares2708@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-26",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "Dulcidio De La Guardia",
+    "email": "ddelaguardia@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-03",
+    "createdAt": "2025-01-16",
+    "phone": "+507 6671-1664"
+  },
+  {
+    "name": "Ruddy Nieto",
+    "email": "ruddy_2109@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-05",
+    "createdAt": "2025-03-01"
+  },
+  {
+    "name": "Naza Chinchilla Villarreal",
+    "email": "nazareth1992xx@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-07",
+    "createdAt": "2025-03-07"
+  },
+  {
+    "name": "Anna Infante",
+    "email": "annainfantep@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-27",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Irene González",
+    "email": "irene_ester@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-11",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": null,
+    "email": "mirca2173@yahoo.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-03",
+    "createdAt": "2025-09-03"
+  },
+  {
+    "name": "María Fernanda Orellanes",
+    "email": "mariaorellanes@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-20",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Milhy Qiu",
+    "email": "milhy_0404@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-07-13",
+    "createdAt": "2025-04-16",
+    "phone": "+507 6066-4000"
+  },
+  {
+    "name": "Ana María Mejia Rodriguez",
+    "email": "anamaria.mejia.r@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-03-20",
+    "createdAt": "2025-02-24"
+  },
+  {
+    "name": "Denise Marciaga",
+    "email": "denisel16.dm@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-11-16",
+    "createdAt": "2025-05-16"
+  },
+  {
+    "name": "Gabriela Socias",
+    "email": "gabrielanatalisocias@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-10-03",
+    "createdAt": "2025-09-08",
+    "phone": "+507 6274-6756"
+  },
+  {
+    "name": "Vicky Taft",
+    "email": "vickytaft@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-17",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Viomara Ramírez",
+    "email": "viomararamirez@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-28",
+    "createdAt": "2025-01-16",
+    "phone": "62466134"
+  },
+  {
+    "name": "ashley troetsch",
+    "email": "atroetsch1@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-16",
+    "createdAt": "2025-11-15"
+  },
+  {
+    "name": null,
+    "email": "alyarias2194@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-05-09",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": null,
+    "email": "dolmosquiel@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-29",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Marimar Rojo Romo",
+    "email": "marimarrojor@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-10-21",
+    "createdAt": "2025-09-03",
+    "phone": "+52 33 3677 6859"
+  },
+  {
+    "name": "María Elena Palma",
+    "email": "maelena16@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-09",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Larissa Caballero",
+    "email": "laryelizacaball@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-10",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Ricardo Yau",
+    "email": "ricaryau_12@hotmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-03",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Carlina Chung",
+    "email": "carlina.chung@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-01",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Daniela Calderon",
+    "email": "danicalderon12@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-16",
+    "createdAt": "2025-02-16"
+  },
+  {
+    "name": "Paula Florez",
+    "email": "pvflorezv@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong",
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-06-13",
+    "createdAt": "2025-02-09"
+  },
+  {
+    "name": "Andrea Suarez",
+    "email": "andreasuarezcosta@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-03-01",
+    "createdAt": "2025-09-08",
+    "phone": "+507 6679-8886"
+  },
+  {
+    "name": "Denisse González",
+    "email": "manuelpv.597@gmail.com",
+    "totalSpent": 79.98,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-16",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Daniela Calvo",
+    "email": "danielacalvop@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-02-05",
+    "createdAt": "2025-02-05"
+  },
+  {
+    "name": "Jennifer Rivas",
+    "email": "jrivasfisher@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-05-30",
+    "createdAt": "2025-05-30"
+  },
+  {
+    "name": null,
+    "email": "anagm@icazalaw.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-11",
+    "createdAt": "2025-02-11"
+  },
+  {
+    "name": "Karla Cervantes",
+    "email": "arq.kcervantes@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-19",
+    "createdAt": "2025-03-19",
+    "phone": "+52 612 141 3522"
+  },
+  {
+    "name": "Rocio Brito",
+    "email": "rociobritos8@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-07",
+    "createdAt": "2025-09-07",
+    "phone": "+507 6761-2253"
+  },
+  {
+    "name": "Yaremis Villarreal",
+    "email": "yare_mis@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-11",
+    "createdAt": "2025-09-11",
+    "phone": "+507 6070-1263"
+  },
+  {
+    "name": "gina herrero",
+    "email": "gherreroc201@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-12",
+    "createdAt": "2025-02-01"
+  },
+  {
+    "name": null,
+    "email": "clariseelkiria@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-08",
+    "createdAt": "2025-04-08"
+  },
+  {
+    "name": "Nathalie Ruiz",
+    "email": "nathalie.ruiz2687@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-10-20",
+    "createdAt": "2025-10-19",
+    "phone": "+507 6360-9890"
+  },
+  {
+    "name": "Ana Isabel Real",
+    "email": "anaisabel1893@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-28",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Silvia Sandoval",
+    "email": "silviasandoval.83@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-26",
+    "createdAt": "2025-01-26"
+  },
+  {
+    "name": "Liliana Barsallo",
+    "email": "lilibarsallo@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-06-29",
+    "createdAt": "2025-04-27",
+    "phone": "60318349"
+  },
+  {
+    "name": "Rita Tello Saenz",
+    "email": "drarptello@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-28",
+    "createdAt": "2025-04-28",
+    "phone": "69491276"
+  },
+  {
+    "name": "Ana Lucia de la Guardia",
+    "email": "analuciadlg@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": null,
+    "email": "mathanasiadis@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": null,
+    "email": "evansmarian13@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-07",
+    "createdAt": "2025-04-07"
+  },
+  {
+    "name": "michelle kachok",
+    "email": "kachok29@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "María José Valdez",
+    "email": "majov.arq@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-05-14",
+    "createdAt": "2025-05-14"
+  },
+  {
+    "name": "Yaremis Villarreal",
+    "email": "yaremiss0692@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-11",
+    "createdAt": "2025-09-11"
+  },
+  {
+    "name": "Daymar Yuil",
+    "email": "daymaryuil@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-08",
+    "createdAt": "2025-04-08",
+    "phone": "62029038"
+  },
+  {
+    "name": "Rubi Aguila",
+    "email": "rubidelcaa@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-06-18",
+    "createdAt": "2025-06-18"
+  },
+  {
+    "name": "Psicóloga Gabriela Zelaya",
+    "email": "psicgabrielazelaya@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-12-10",
+    "createdAt": "2025-12-10"
+  },
+  {
+    "name": "Carolina Guzmán Flores",
+    "email": "guzman.carolana@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-16",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": null,
+    "email": "melina.zamorano04.mz@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": null,
+    "email": "melissacastillostaff@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": null,
+    "email": "andreacole02@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-03-05",
+    "createdAt": "2026-03-05"
+  },
+  {
+    "name": "Odalys Escalona",
+    "email": "odalysescalona@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-09-08",
+    "createdAt": "2025-09-08"
+  },
+  {
+    "name": "Vielka Indira Gutierrez",
+    "email": "vielkaindiragutierrez@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-06",
+    "createdAt": "2025-09-06",
+    "phone": "+507 6684-5108"
+  },
+  {
+    "name": "Maria A. Urgelles",
+    "email": "mariale.urgelles@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2026-03-03",
+    "createdAt": "2026-03-03",
+    "phone": "+507 6294-8646"
+  },
+  {
+    "name": "Ania Ramos",
+    "email": "ania.ramosc27@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-12",
+    "createdAt": "2025-09-12"
+  },
+  {
+    "name": "Maria Alejandra Ruiz",
+    "email": "m4riaalejandra@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "Sandra Ramirez",
+    "email": "sandra.p.ramirez.v@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "Dulcidio De La Guardia",
+    "email": "dulcidio25@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-15",
+    "createdAt": "2025-01-15",
+    "phone": "+507 6674-4852"
+  },
+  {
+    "name": null,
+    "email": "lilibarsalloc@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Astry Luque",
+    "email": "astryluque79@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-21",
+    "createdAt": "2026-02-20"
+  },
+  {
+    "name": "Ruddy Stephanie Nieto Ramirez",
+    "email": "ruddy2109@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-01",
+    "createdAt": "2025-03-01"
+  },
+  {
+    "name": "Eva Hernandez",
+    "email": "evajhleone@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-10",
+    "createdAt": "2025-03-10",
+    "phone": "+32 493 84 21 90"
+  },
+  {
+    "name": null,
+    "email": "blancacarolinasandoval@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-06",
+    "createdAt": "2025-04-06"
+  },
+  {
+    "name": null,
+    "email": "reynapr17@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-05-03",
+    "createdAt": "2025-05-03"
+  },
+  {
+    "name": "Paola Miranda",
+    "email": "paolayami04@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-02-09",
+    "createdAt": "2025-02-09"
+  },
+  {
+    "name": null,
+    "email": "alison.garcia.2012@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-26",
+    "createdAt": "2025-01-26"
+  },
+  {
+    "name": "Romina Bustamante",
+    "email": "rombusgia8@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-28",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": null,
+    "email": "lmurillov@caosa.com.mx",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-09-07",
+    "createdAt": "2025-09-07"
+  },
+  {
+    "name": "Sandra Ogazon",
+    "email": "sandra@multiholding.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-16",
+    "createdAt": "2025-02-16"
+  },
+  {
+    "name": "Diana Fabrega",
+    "email": "diana.fabrega16@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-27",
+    "createdAt": "2025-01-27"
+  },
+  {
+    "name": null,
+    "email": "lizzalineth@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-24"
+  },
+  {
+    "name": "Laura",
+    "email": "laubruce53@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-08-15",
+    "createdAt": "2025-08-15"
+  },
+  {
+    "name": "Beatriz Crespo",
+    "email": "beacrespo10@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-11",
+    "createdAt": "2025-09-11",
+    "phone": "+507 6675-8411"
+  },
+  {
+    "name": null,
+    "email": "anidejanon@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Celine Canto",
+    "email": "celinecanto18@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "KAREN LOPEZ",
+    "email": "unatalkarenlopez@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-23",
+    "createdAt": "2025-02-23"
+  },
+  {
+    "name": "Maria Victoria Langman",
+    "email": "langman.mv@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-09",
+    "createdAt": "2025-02-09",
+    "phone": "+507 6617-8879"
+  },
+  {
+    "name": "Ximena Barria",
+    "email": "xbarriamatos@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-11-29",
+    "phone": "+41 79 553 06 37"
+  },
+  {
+    "name": "Jeanine Cabarcos",
+    "email": "jeanine.c96@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-01",
+    "createdAt": "2025-09-01"
+  },
+  {
+    "name": null,
+    "email": "fabivelasquez@icloud.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-12",
+    "createdAt": "2025-02-12"
+  },
+  {
+    "name": "Maria Andrea Mendez",
+    "email": "ma.andrea.mendez@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-22",
+    "createdAt": "2025-04-22"
+  },
+  {
+    "name": null,
+    "email": "alsantamb@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-28",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Gisselle Dorcy",
+    "email": "gisselledorcy@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-17",
+    "createdAt": "2025-02-17",
+    "phone": "66539053"
+  },
+  {
+    "name": "Soleil Morales",
+    "email": "soleil.morales@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-28",
+    "createdAt": "2025-04-28",
+    "phone": "+1 770-330-6631"
+  },
+  {
+    "name": "María José Amarillas",
+    "email": "maria.joseav@live.com.mx",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-06-20",
+    "createdAt": "2025-06-20"
+  },
+  {
+    "name": "Carolina César Ávila",
+    "email": "caro.cesaravila@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Rachell Quintero",
+    "email": "rachell.q23@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "Hasel Lore",
+    "email": "hasel_moore24@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-19",
+    "createdAt": "2025-11-19"
+  },
+  {
+    "name": "Ana Patricia Glaize",
+    "email": "ana.glaize@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-17",
+    "createdAt": "2025-02-17"
+  },
+  {
+    "name": "Yariela Miranda",
+    "email": "yarielamiranda01@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-27",
+    "createdAt": "2025-01-27"
+  },
+  {
+    "name": "roxy sanjur",
+    "email": "roxarys3091@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-08-31",
+    "createdAt": "2025-08-31",
+    "phone": "+5762670564"
+  },
+  {
+    "name": "Nelly Mosquera",
+    "email": "nelly1391@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-10",
+    "createdAt": "2025-11-10"
+  },
+  {
+    "name": "Reyes",
+    "email": "vivianarborace@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-05",
+    "createdAt": "2025-03-05",
+    "phone": "66358888"
+  },
+  {
+    "name": "Maria Alejandra Ruiz",
+    "email": "maria.alejandraruiz@outlook.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-03",
+    "createdAt": "2025-09-03",
+    "phone": "+507 6948-1404"
+  },
+  {
+    "name": "Maru Arauz",
+    "email": "maruarauz1611@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-01",
+    "createdAt": "2025-09-01"
+  },
+  {
+    "name": "Maria Renee Montesinos Segura",
+    "email": "mrenee.ms@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-06-05",
+    "createdAt": "2025-06-05"
+  },
+  {
+    "name": "Kenia Gonzalez",
+    "email": "jamalykenia28@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-08-31",
+    "createdAt": "2025-08-31",
+    "phone": "+507 6557-8203"
+  },
+  {
+    "name": "ISABEL CUADROS",
+    "email": "isabelcuadros@icloud.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-05-02",
+    "createdAt": "2025-05-02"
+  },
+  {
+    "name": "Viviana Melo",
+    "email": "vivianamelo06@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-16",
+    "createdAt": "2025-01-16"
+  },
+  {
+    "name": "Daniela Zegarra",
+    "email": "daniela.zegarra10@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-07-01",
+    "createdAt": "2025-07-01",
+    "phone": "+507 6200-1458"
+  },
+  {
+    "name": "Stephanie Nuñez",
+    "email": "snunezlinares@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-05-06",
+    "createdAt": "2025-05-06",
+    "phone": "6251-8442"
+  },
+  {
+    "name": null,
+    "email": "alisonhoo2209@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-08-27",
+    "createdAt": "2025-08-27"
+  },
+  {
+    "name": "Maya Levy",
+    "email": "mayalevys94@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-24",
+    "createdAt": "2025-03-24",
+    "phone": "66167788"
+  },
+  {
+    "name": null,
+    "email": "adrisanchez1675@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-20",
+    "createdAt": "2025-04-20"
+  },
+  {
+    "name": "Mónica M. Barraza C.",
+    "email": "mbarraza318@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27",
+    "phone": "+507 6204-7004"
+  },
+  {
+    "name": "Monica Quiroz",
+    "email": "monicai.quirozg@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22",
+    "phone": "+507 6433-3537"
+  },
+  {
+    "name": "Angeles Alejandra Sequera Ceseña",
+    "email": "alejandra.sqc@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-07-08",
+    "createdAt": "2025-07-08"
+  },
+  {
+    "name": "Anaeva Barria",
+    "email": "anaevabarria@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-15",
+    "createdAt": "2025-04-15",
+    "phone": "62535704"
+  },
+  {
+    "name": "Natalie Novey",
+    "email": "natalienovey16@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-11-03",
+    "createdAt": "2025-11-03",
+    "phone": "+507 6673-0443"
+  },
+  {
+    "name": "Daniela Giacometti",
+    "email": "dgiacomettis@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-26",
+    "createdAt": "2025-01-26",
+    "phone": "67475535"
+  },
+  {
+    "name": "Yanssy A. Gallardo C.",
+    "email": "yanssy23@icloud.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-06-29",
+    "createdAt": "2025-06-29",
+    "phone": "+507 6199-3893"
+  },
+  {
+    "name": null,
+    "email": "alejandra.maldonado13@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "Ainoa Pupo",
+    "email": "ainoapupo@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-08-31",
+    "createdAt": "2025-08-31"
+  },
+  {
+    "name": null,
+    "email": "isca.tristan@yahoo.es",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-04-08",
+    "createdAt": "2025-04-08"
+  },
+  {
+    "name": "Karelis Abrego",
+    "email": "abrego.karelys@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-05",
+    "createdAt": "2025-09-05",
+    "phone": "+507 6883-1901"
+  },
+  {
+    "name": "Yakie Arosemena",
+    "email": "maedya@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-02",
+    "createdAt": "2025-04-02"
+  },
+  {
+    "name": "Andrea Cole",
+    "email": "coleandrea02@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "Blanca Naomi Ramírez Robles",
+    "email": "rblancaramirez30@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-02-24",
+    "createdAt": "2025-02-24",
+    "phone": "6121614404"
+  },
+  {
+    "name": "Patricia Palencia",
+    "email": "palencia.patricia@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-06-16",
+    "createdAt": "2025-06-16",
+    "phone": "7172017773"
+  },
+  {
+    "name": "Massiel Vizcaíno R",
+    "email": "massielviz@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-01",
+    "createdAt": "2025-04-01",
+    "phone": "3310208886"
+  },
+  {
+    "name": "Nicole Tapia",
+    "email": "nicolest_08@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-29",
+    "createdAt": "2025-04-28",
+    "phone": "69809930"
+  },
+  {
+    "name": "Brittany Metka",
+    "email": "brittany.metka@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-27",
+    "createdAt": "2025-01-27",
+    "phone": "3188565140"
+  },
+  {
+    "name": null,
+    "email": "ana_r5@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-07-17",
+    "createdAt": "2025-07-17"
+  },
+  {
+    "name": "Andrea de la Fuente",
+    "email": "andreadelafuented@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-07",
+    "createdAt": "2025-09-07"
+  },
+  {
+    "name": null,
+    "email": "hello@cristhyyau.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-09-25",
+    "createdAt": "2025-09-25"
+  },
+  {
+    "name": null,
+    "email": "bonimel.2@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-05-24",
+    "createdAt": "2025-05-24"
+  },
+  {
+    "name": "Karla Rodriguez",
+    "email": "karla.irina@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Thammires Lopes Correia da Silva",
+    "email": "thammires.lc@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-09",
+    "createdAt": "2025-09-08"
+  },
+  {
+    "name": "Samantha Hernández",
+    "email": "smhl15290@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-09-06",
+    "createdAt": "2025-09-06"
+  },
+  {
+    "name": null,
+    "email": "anar.miro26@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-07-06",
+    "createdAt": "2025-07-06"
+  },
+  {
+    "name": "Jetza Gonzalez",
+    "email": "jetzaduarte@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-09-01",
+    "createdAt": "2025-09-01"
+  },
+  {
+    "name": "Andrea Gal'Lino Ráez",
+    "email": "andreagallinor@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2026-02-22"
+  },
+  {
+    "name": "Melissa Corella",
+    "email": "mcorella14@outlook.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-07-21",
+    "createdAt": "2025-06-25"
+  },
+  {
+    "name": "Mariel Ortega",
+    "email": "mareortegav@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-03-19",
+    "createdAt": "2025-03-19"
+  },
+  {
+    "name": "Irene Sasso",
+    "email": "irenesassob@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-19",
+    "createdAt": "2025-01-19"
+  },
+  {
+    "name": "Ivonne Fariñas",
+    "email": "iff2109@hotmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "✨de Cero a Fit by GlowinStrong"
+    ],
+    "lastPayment": "2025-01-26",
+    "createdAt": "2025-01-26"
+  },
+  {
+    "name": "Diana A",
+    "email": "dmpa88@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2026-02-22",
+    "createdAt": "2025-04-16",
+    "phone": "+502 3075 3636"
+  },
+  {
+    "name": "David Martínez",
+    "email": "d.martinez9224@gmail.com",
+    "totalSpent": 39.99,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "products": [
+      "GlowinStrong"
+    ],
+    "lastPayment": "2025-01-16",
+    "createdAt": "2025-01-16",
+    "phone": "61133314"
+  },
+  {
+    "name": "andrea cole",
+    "email": "cole737@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2026-03-05"
+  },
+  {
+    "email": "alonia.arias@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-05-09"
+  },
+  {
+    "name": "Milhy Qiu Wu",
+    "email": "milhyqw@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-06-26"
+  },
+  {
+    "name": "Acacio Malave",
+    "email": "malave.acacio@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2024-12-10"
+  },
+  {
+    "name": "Ana Priscilla Herrera",
+    "email": "anapriscillaherrera@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-01-18"
+  },
+  {
+    "email": "romays2809@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-04-07"
+  },
+  {
+    "name": "Vicky Taft",
+    "email": "vatafta@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-12"
+  },
+  {
+    "name": "soraya ortega",
+    "email": "ayaros2723@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2026-01-20"
+  },
+  {
+    "name": "Karina Sanchez",
+    "email": "karinasanches1235@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-10"
+  },
+  {
+    "email": "ppalencia@hotmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-06-19"
+  },
+  {
+    "name": "Mircalla Hall Nieto",
+    "email": "mirca2173@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2026-02-04"
+  },
+  {
+    "name": "Edith Batista",
+    "email": "batista_edith@hotmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-11"
+  },
+  {
+    "email": "rosycastillo27@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-12-06"
+  },
+  {
+    "name": "Camila Fernandez",
+    "email": "camilafqueipo@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-09-18"
+  },
+  {
+    "email": "alisonhoi2209@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-10-22"
+  },
+  {
+    "email": "anettequiel@icloud.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-13"
+  },
+  {
+    "name": "Andreína Atencio",
+    "email": "andreina_09@hotmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-02-24"
+  },
+  {
+    "name": "Angeles Alejandra Sequera Cesena",
+    "email": "asequera@uabc.edu.mx",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-08-11"
+  },
+  {
+    "name": "Maria Hernandez",
+    "email": "mariah.a1789@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-01-16"
+  },
+  {
+    "email": "anapriscy@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-25"
+  },
+  {
+    "name": "Joselyn Morera",
+    "email": "josmorera17@outlook.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2026-02-19"
+  },
+  {
+    "name": "Hasel Moore",
+    "email": "haselmoore2488@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-01-28"
+  },
+  {
+    "email": "jamiecastro22@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-01-27"
+  },
+  {
+    "name": "Najma Arjona",
+    "email": "sleepingwithflowers@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-12-31"
+  },
+  {
+    "name": "Ivonne Fariñas",
+    "email": "ifafo2109@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-16"
+  },
+  {
+    "email": "nazareth12dayan@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-03-07"
+  },
+  {
+    "email": "pache_salinas@hotmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-08-31"
+  },
+  {
+    "name": "Pecan Style",
+    "email": "itspecanstyle@gmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-05-01"
+  },
+  {
+    "email": "mileyka.estrada@gmail.con",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "createdAt": "2025-09-08"
+  }
+]

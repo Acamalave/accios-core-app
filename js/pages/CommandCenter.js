@@ -103,8 +103,10 @@ export class CommandCenter {
 
   async _fetchProfile(phone, email) {
     try {
-      let url = `/api/command-profile?phone=${encodeURIComponent(phone)}`;
-      if (email) url += `&email=${encodeURIComponent(email)}`;
+      const params = [];
+      if (phone) params.push(`phone=${encodeURIComponent(phone)}`);
+      if (email) params.push(`email=${encodeURIComponent(email)}`);
+      let url = `/api/command-profile?${params.join('&')}`;
       const res = await fetch(apiUrl(url));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
@@ -214,8 +216,8 @@ export class CommandCenter {
     }
 
     const k = d.kpis;
-    const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n);
-    const fmtMoney = (n) => n >= 1000 ? '$' + (n / 1000).toFixed(1) + 'K' : '$' + n.toFixed(0);
+    const fmt = (n) => n.toLocaleString('es-PA');
+    const fmtMoney = (n) => '$' + n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     content.innerHTML = `
       <div class="cc-kpi-grid">
@@ -500,7 +502,7 @@ export class CommandCenter {
         <div class="cc-activity__item" data-biz="${a.business}">
           <div class="cc-activity__icon">${icons[a.type] || '📌'}</div>
           <div class="cc-activity__text">
-            <span class="cc-biz-badge cc-biz-badge--${a.business === 'rush-ride' ? 'rush' : a.business === 'xazai' ? 'xazai' : 'accios'}">${(data.byBusiness[a.business]?.name || a.business).split(' ')[0]}</span>
+            <span class="cc-biz-badge cc-biz-badge--${a.business === 'rush-ride' ? 'rush' : a.business === 'xazai' ? 'xazai' : a.business === 'la-colson' ? 'colson' : a.business === 'resultados' ? 'resultados' : a.business === 'cristian' ? 'cristian' : a.business === 'tabares' ? 'tabares' : a.business === 'cakefit' ? 'cakefit' : a.business === 'glowin' ? 'glowin' : a.business === 'hechizos' ? 'hechizos' : 'accios'}">${(data.byBusiness[a.business]?.name || a.business).split(' ')[0]}</span>
             ${a.description}
           </div>
           <div class="cc-activity__time">${timeAgo}</div>
@@ -520,6 +522,13 @@ export class CommandCenter {
           <button class="cc-filter-chip${this.userFilter === 'all' ? ' active' : ''}" data-filter="all">Todos</button>
           <button class="cc-filter-chip${this.userFilter === 'cross_rush' ? ' active' : ''}" data-filter="cross_rush">No en Rush Ride</button>
           <button class="cc-filter-chip${this.userFilter === 'cross_xazai' ? ' active' : ''}" data-filter="cross_xazai">No en Xazai</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_colson' ? ' active' : ''}" data-filter="cross_colson">No en La Colson</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_resultados' ? ' active' : ''}" data-filter="cross_resultados">No en RI</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_cristian' ? ' active' : ''}" data-filter="cross_cristian">No en CS</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_tabares' ? ' active' : ''}" data-filter="cross_tabares">No en JT</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_cakefit' ? ' active' : ''}" data-filter="cross_cakefit">No en CF</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_glowin' ? ' active' : ''}" data-filter="cross_glowin">No en GS</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_hechizos' ? ' active' : ''}" data-filter="cross_hechizos">No en HS</button>
           <button class="cc-filter-chip${this.userFilter === 'vip' ? ' active' : ''}" data-filter="vip">VIP</button>
           <button class="cc-filter-chip${this.userFilter === 'churn' ? ' active' : ''}" data-filter="churn">Riesgo Fuga</button>
         </div>
@@ -569,6 +578,13 @@ export class CommandCenter {
       if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">AC</span>';
       if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">RR</span>';
       if (b === 'xazai') return '<span class="cc-biz-badge cc-biz-badge--xazai">XZ</span>';
+      if (b === 'la-colson') return '<span class="cc-biz-badge cc-biz-badge--colson">LC</span>';
+      if (b === 'resultados') return '<span class="cc-biz-badge cc-biz-badge--resultados">RI</span>';
+      if (b === 'cristian') return '<span class="cc-biz-badge cc-biz-badge--cristian">CS</span>';
+      if (b === 'tabares') return '<span class="cc-biz-badge cc-biz-badge--tabares">JT</span>';
+      if (b === 'cakefit') return '<span class="cc-biz-badge cc-biz-badge--cakefit">CF</span>';
+      if (b === 'glowin') return '<span class="cc-biz-badge cc-biz-badge--glowin">GS</span>';
+      if (b === 'hechizos') return '<span class="cc-biz-badge cc-biz-badge--hechizos">HS</span>';
       return `<span class="cc-biz-badge">${b}</span>`;
     };
 
@@ -611,7 +627,7 @@ export class CommandCenter {
       row.addEventListener('click', () => {
         const phone = row.dataset.phone;
         const email = row.dataset.email;
-        if (phone) this._openProfile(phone, email);
+        if (phone || email) this._openProfile(phone, email);
       });
     });
 
@@ -679,6 +695,13 @@ export class CommandCenter {
             if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">ACCIOS CORE</span>';
             if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">Rush Ride</span>';
             if (b === 'xazai') return '<span class="cc-biz-badge cc-biz-badge--xazai">Xazai</span>';
+            if (b === 'la-colson') return '<span class="cc-biz-badge cc-biz-badge--colson">La Colson</span>';
+            if (b === 'resultados') return '<span class="cc-biz-badge cc-biz-badge--resultados">Resultados Inevitables</span>';
+            if (b === 'cristian') return '<span class="cc-biz-badge cc-biz-badge--cristian">Cristian Studio</span>';
+            if (b === 'tabares') return '<span class="cc-biz-badge cc-biz-badge--tabares">Jesus Tabares Salón</span>';
+            if (b === 'cakefit') return '<span class="cc-biz-badge cc-biz-badge--cakefit">Cake Fit</span>';
+            if (b === 'glowin') return '<span class="cc-biz-badge cc-biz-badge--glowin">Glowin Strong</span>';
+            if (b === 'hechizos') return '<span class="cc-biz-badge cc-biz-badge--hechizos">Hechizos Salón</span>';
             return '';
           }).join('')}
         </div>
@@ -702,6 +725,13 @@ export class CommandCenter {
         ${this._renderBusinessSection('accios-core', 'ACCIOS CORE', profile.accios)}
         ${this._renderBusinessSection('rush-ride', 'Rush Ride Studio', profile.rushRide)}
         ${this._renderBusinessSection('xazai', 'Xazai', profile.xazai)}
+        ${this._renderBusinessSection('la-colson', 'La Colson', profile.laColson)}
+        ${this._renderBusinessSection('resultados', 'Resultados Inevitables', profile.resultados)}
+        ${this._renderBusinessSection('cristian', 'Cristian Studio', profile.cristian)}
+        ${this._renderBusinessSection('tabares', 'Jesus Tabares Salón', profile.tabares)}
+        ${this._renderBusinessSection('cakefit', 'Cake Fit', profile.cakefit)}
+        ${this._renderBusinessSection('glowin', 'Glowin Strong', profile.glowin)}
+        ${this._renderBusinessSection('hechizos', 'Hechizos Salón', profile.hechizos)}
         ${this._renderTimeline(profile.timeline)}
       </div>`;
 
@@ -719,7 +749,10 @@ export class CommandCenter {
       totalSpent: 'Total Gastado', totalOrders: 'Total Órdenes',
       businesses: 'Negocios Vinculados', membership: 'Membresía',
       favoriteItems: 'Favoritos', lastOrderDate: 'Último Pedido',
-      firstSeen: 'Primera Vez', updatedAt: 'Actualizado'
+      firstSeen: 'Primera Vez', updatedAt: 'Actualizado',
+      etiquetas: 'Etiquetas', tags: 'Etiquetas', addresses: 'Direcciones',
+      birthDate: 'Fecha de Nacimiento', company: 'Compañía', instagram: 'Instagram', cedula: 'Cédula',
+      transactionCount: 'Transacciones', paymentMethods: 'Métodos de Pago', lastPayment: 'Último Pago'
     };
     return labels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
   }
@@ -757,6 +790,13 @@ export class CommandCenter {
     if (src === 'accios-core') return '<span class="cc-dossier-src cc-dossier-src--accios">AC</span>';
     if (src === 'rush-ride') return '<span class="cc-dossier-src cc-dossier-src--rush">RR</span>';
     if (src === 'xazai') return '<span class="cc-dossier-src cc-dossier-src--xazai">XZ</span>';
+    if (src === 'la-colson') return '<span class="cc-dossier-src cc-dossier-src--colson">LC</span>';
+    if (src === 'resultados') return '<span class="cc-dossier-src cc-dossier-src--resultados">RI</span>';
+    if (src === 'cristian') return '<span class="cc-dossier-src cc-dossier-src--cristian">CS</span>';
+    if (src === 'tabares') return '<span class="cc-dossier-src cc-dossier-src--tabares">JT</span>';
+    if (src === 'cakefit') return '<span class="cc-dossier-src cc-dossier-src--cakefit">CF</span>';
+    if (src === 'glowin') return '<span class="cc-dossier-src cc-dossier-src--glowin">GS</span>';
+    if (src === 'hechizos') return '<span class="cc-dossier-src cc-dossier-src--hechizos">HS</span>';
     return `<span class="cc-dossier-src">${src}</span>`;
   }
 
@@ -798,7 +838,7 @@ export class CommandCenter {
         </div>`;
     }
 
-    const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : 'accios';
+    const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : key === 'la-colson' ? 'colson' : key === 'resultados' ? 'resultados' : key === 'cristian' ? 'cristian' : key === 'tabares' ? 'tabares' : key === 'cakefit' ? 'cakefit' : key === 'glowin' ? 'glowin' : key === 'hechizos' ? 'hechizos' : 'accios';
     let items = '';
 
     if (key === 'accios-core') {
@@ -861,6 +901,129 @@ export class CommandCenter {
           </div>`).join('');
       }
       if (data.totalOrders) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalOrders} órdenes totales · $${(data.totalSpent || 0).toFixed(2)} total</div>`;
+    }
+
+    if (key === 'la-colson') {
+      // Tags/Etiquetas
+      if (data.tags?.length) {
+        items += `<div class="cc-profile-item"><span>Etiquetas:</span></div>`;
+        items += `<div style="padding:2px 12px 8px;display:flex;flex-wrap:wrap;gap:4px;">${data.tags.map(t => `<span class="cc-dossier-tag">${t}</span>`).join('')}</div>`;
+      }
+      // Addresses
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'resultados') {
+      if (data.instagram) items += `<div class="cc-profile-item"><span>📸 @${data.instagram}</span></div>`;
+      if (data.cedula) items += `<div class="cc-profile-item"><span>🪪 Cédula: ${data.cedula}</span></div>`;
+      if (data.birthDate) items += `<div class="cc-profile-item"><span>🎂 ${this._formatDate(data.birthDate)}</span></div>`;
+      if (data.company) items += `<div class="cc-profile-item"><span>🏢 ${data.company}</span></div>`;
+      if (data.tags?.length) {
+        items += `<div class="cc-profile-item"><span>Etiquetas:</span></div>`;
+        items += `<div style="padding:2px 12px 8px;display:flex;flex-wrap:wrap;gap:4px;">${data.tags.map(t => `<span class="cc-dossier-tag">${t}</span>`).join('')}</div>`;
+      }
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'cristian') {
+      if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#8B5CF6;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
+      if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
+      if (data.paymentMethods?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.paymentMethods.join(', ')}</span></div>`;
+      }
+      if (data.lastPayment) items += `<div class="cc-profile-item"><span>📅 Último pago: ${this._formatDate(data.lastPayment)}</span></div>`;
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'tabares') {
+      if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#EF4444;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
+      if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
+      if (data.paymentMethods?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.paymentMethods.join(', ')}</span></div>`;
+      }
+      if (data.lastPayment) items += `<div class="cc-profile-item"><span>📅 Último pago: ${this._formatDate(data.lastPayment)}</span></div>`;
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'cakefit') {
+      if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#F97316;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
+      if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
+      if (data.paymentMethods?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.paymentMethods.join(', ')}</span></div>`;
+      }
+      if (data.cardDetails?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.cardDetails.join(', ')}</span></div>`;
+      }
+      if (data.lastPayment) items += `<div class="cc-profile-item"><span>📅 Último pago: ${this._formatDate(data.lastPayment)}</span></div>`;
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'glowin') {
+      if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#10B981;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
+      if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
+      if (data.paymentMethods?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.paymentMethods.join(', ')}</span></div>`;
+      }
+      if (data.cardDetails?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.cardDetails.join(', ')}</span></div>`;
+      }
+      if (data.products?.length) {
+        items += `<div class="cc-profile-item"><span>📦 ${data.products.join(', ')}</span></div>`;
+      }
+      if (data.lastPayment) items += `<div class="cc-profile-item"><span>📅 Último pago: ${this._formatDate(data.lastPayment)}</span></div>`;
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'hechizos') {
+      if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#D946EF;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
+      if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
+      if (data.paymentMethods?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.paymentMethods.join(', ')}</span></div>`;
+      }
+      if (data.cardDetails?.length) {
+        items += `<div class="cc-profile-item"><span>💳 ${data.cardDetails.join(', ')}</span></div>`;
+      }
+      if (data.products?.length) {
+        items += `<div class="cc-profile-item"><span>📦 ${data.products.join(', ')}</span></div>`;
+      }
+      if (data.lastPayment) items += `<div class="cc-profile-item"><span>📅 Último pago: ${this._formatDate(data.lastPayment)}</span></div>`;
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
     }
 
     return `
@@ -1000,8 +1163,8 @@ export class CommandCenter {
   _smartUpdateOverview() {
     if (!this.kpiData) return;
     const k = this.kpiData.kpis;
-    const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n);
-    const fmtMoney = (n) => n >= 1000 ? '$' + (n / 1000).toFixed(1) + 'K' : '$' + n.toFixed(0);
+    const fmt = (n) => n.toLocaleString('es-PA');
+    const fmtMoney = (n) => '$' + n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const newValues = [fmt(k.totalUsers), fmtMoney(k.totalRevenue), String(k.activeMembers), fmt(k.totalOrders), String(k.newUsersThisRange), fmtMoney(k.avgRevenuePerUser)];
     const cards = this.container.querySelectorAll('.cc-kpi-card');

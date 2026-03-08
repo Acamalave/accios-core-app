@@ -1,0 +1,4862 @@
+[
+  {
+    "name": "Cristian Ortiz",
+    "email": "cristianjoanortizgonzalez@gmail.com",
+    "phone": "+50762721975",
+    "totalSpent": 1019.7,
+    "transactionCount": 36,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-25",
+    "createdAt": "2025-05-08"
+  },
+  {
+    "name": "Wilfredo Gonzalez",
+    "email": "sagonzalez16@hotmail.com",
+    "phone": "+50766775399",
+    "totalSpent": 725.76,
+    "transactionCount": 19,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Joanluis Hernandez",
+    "email": "johanluishernandez9@gmail.com",
+    "phone": "+50762871129",
+    "totalSpent": 603.66,
+    "transactionCount": 14,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-16",
+    "createdAt": "2025-05-10"
+  },
+  {
+    "name": "Moisés Jaspe",
+    "email": "flowwwalcanza@gmail.com",
+    "phone": "+50761201162",
+    "totalSpent": 526.6,
+    "transactionCount": 19,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-04-02"
+  },
+  {
+    "name": "RAY Ferrini",
+    "email": "ray.ferrini02@gmail.com",
+    "phone": "+50762133862",
+    "totalSpent": 484.6,
+    "transactionCount": 14,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-25",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "John Dorza",
+    "email": "jrodas2491@gmail.com",
+    "phone": "+50761304623",
+    "totalSpent": 375.01,
+    "transactionCount": 19,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-05-07"
+  },
+  {
+    "name": "George Pérez Perez",
+    "email": "michaelperezv054@hotmail.com",
+    "phone": "+50762029499",
+    "totalSpent": 362.84,
+    "transactionCount": 13,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-04-07"
+  },
+  {
+    "name": "Alan castillero",
+    "email": "alanlcv@hotmail.com",
+    "phone": "+50763784992",
+    "totalSpent": 352.89,
+    "transactionCount": 12,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Nelson Escorihuela",
+    "email": "nelsonescori8@gmail.com",
+    "phone": "+50768246853",
+    "totalSpent": 342.85,
+    "transactionCount": 14,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-04-02"
+  },
+  {
+    "name": "Jesus Tabares",
+    "email": "antoniotabares241@gmail.com",
+    "phone": "+50763666294",
+    "totalSpent": 329.96,
+    "transactionCount": 11,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-19",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Alejo Jaimes",
+    "email": "guillermoja86@gmail.com",
+    "phone": "+50764057094",
+    "totalSpent": 312.6,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-02",
+    "createdAt": "2025-05-31"
+  },
+  {
+    "name": "Juan Carlos Escobar",
+    "email": "eidanjc1224@gmail.com",
+    "phone": "+50767552799",
+    "totalSpent": 307.25,
+    "transactionCount": 8,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-04",
+    "createdAt": "2025-04-17"
+  },
+  {
+    "name": "sean burke",
+    "email": "seanburke507@gmail.com",
+    "phone": "+50769832773",
+    "totalSpent": 302.2,
+    "transactionCount": 12,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-04-17"
+  },
+  {
+    "name": "Acacio Malave",
+    "email": "malave.acacio@gmail.com",
+    "phone": "+50768204698",
+    "totalSpent": 284.64,
+    "transactionCount": 8,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-11",
+    "createdAt": "2025-03-25"
+  },
+  {
+    "name": "Loredano Magnani",
+    "email": "loredano17@gmail.com",
+    "phone": "+50768769508",
+    "totalSpent": 282.52,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-04-11"
+  },
+  {
+    "name": "Alexander Davila",
+    "email": "alexanderdavila1@hotmail.com",
+    "phone": "+50768900337",
+    "totalSpent": 263.3,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-17",
+    "createdAt": "2025-04-07"
+  },
+  {
+    "name": "Luis Enrique Terrado Pittí",
+    "email": "lterrado2494@gmail.com",
+    "phone": "+50765517656",
+    "totalSpent": 259.1,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-29",
+    "createdAt": "2025-04-14"
+  },
+  {
+    "name": "Gamer Nasser",
+    "email": "gamer92nasser@gmail.com",
+    "phone": "+50763838519",
+    "totalSpent": 256.6,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-12",
+    "createdAt": "2025-04-11"
+  },
+  {
+    "name": "samir esturain",
+    "email": "esturain1596@gmail.com",
+    "phone": "+50764669387",
+    "totalSpent": 248.63,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-14",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Anthony Baloy",
+    "email": "baloycarlos54@gmail.com",
+    "phone": "+50764781082",
+    "totalSpent": 241.82,
+    "transactionCount": 22,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-04-07"
+  },
+  {
+    "name": "Pablo Medina",
+    "email": "pablomedina199020161@gmail.com",
+    "phone": "+50763271819",
+    "totalSpent": 238.75,
+    "transactionCount": 8,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-08",
+    "createdAt": "2025-04-25"
+  },
+  {
+    "name": "Jose Jose",
+    "email": "plinio@zandrino.com",
+    "phone": "+50769205573",
+    "totalSpent": 230.79,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-25",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Carlos Adolfo Guerra Hernandez",
+    "email": "guerracarlosa2@gmail.com",
+    "phone": "+50765727722",
+    "totalSpent": 226.76,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-21",
+    "createdAt": "2025-04-20"
+  },
+  {
+    "name": "Gabriel Pino",
+    "email": "gabrielpinollorente13@gmail.com",
+    "phone": "+50762419854",
+    "totalSpent": 221.55,
+    "transactionCount": 13,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-07-11"
+  },
+  {
+    "name": "Jonny Trainer",
+    "email": "jonnathanespinosa4@gmail.com",
+    "phone": "+50762463428",
+    "totalSpent": 220.49,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-05",
+    "createdAt": "2025-04-02"
+  },
+  {
+    "name": "Ragueb El Bonney",
+    "email": "raguebelbonney@hotmail.com",
+    "phone": "+50760300080",
+    "totalSpent": 205.5,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-12",
+    "createdAt": "2025-05-27"
+  },
+  {
+    "name": "Ovil Moreno",
+    "email": "ovilmoreno@yahoo.com",
+    "phone": "+50766721577",
+    "totalSpent": 200.85,
+    "transactionCount": 9,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-04-13"
+  },
+  {
+    "name": "Martin Ruiz",
+    "email": "martinruiz16@gmail.com",
+    "phone": "+50766749396",
+    "totalSpent": 197.45,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-07-05"
+  },
+  {
+    "name": "José Andrade",
+    "email": "jjjjjjjjjjjj@gmail.com",
+    "phone": "+50766051843",
+    "totalSpent": 197.25,
+    "transactionCount": 11,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-07",
+    "createdAt": "2025-06-09"
+  },
+  {
+    "name": "Wilson Cárdenas",
+    "email": "wilson.cardenas98@gmail.com",
+    "phone": "+50760707799",
+    "totalSpent": 197.15,
+    "transactionCount": 12,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-16",
+    "createdAt": "2025-04-29"
+  },
+  {
+    "name": "Enoc Arcia",
+    "email": "enocka0290@gmail.com",
+    "phone": "+50766016951",
+    "totalSpent": 195.5,
+    "transactionCount": 11,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "leonardo gañango",
+    "email": "cocineroljg@gmail.com",
+    "phone": "+50762976860",
+    "totalSpent": 192.6,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-05",
+    "createdAt": "2025-04-02"
+  },
+  {
+    "name": "Jose luis Rodriguez",
+    "email": "fisioforceintegral@gmail.com",
+    "phone": "+50767556334",
+    "totalSpent": 190.85,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-06-26"
+  },
+  {
+    "name": "Franklin Othon García",
+    "email": "fothong17@gmail.com",
+    "phone": "+50764951626",
+    "totalSpent": 184.1,
+    "transactionCount": 10,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Katty Fontalvo",
+    "email": "katty_fontalvo@icloud.com",
+    "phone": "+50763696266",
+    "totalSpent": 182.7,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-12",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Ahmed Daya",
+    "email": "ahmeddaya06@gmail.com",
+    "phone": "+50769036206",
+    "totalSpent": 182.7,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-25",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "Ibrahim Bangali",
+    "email": "ibrahimbarca100@gmail.com",
+    "phone": "+50769615160",
+    "totalSpent": 181.9,
+    "transactionCount": 9,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-30",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "Moises Cortizo",
+    "email": "moi_cortizo@hotmail.com",
+    "phone": "+50766744767",
+    "totalSpent": 168.8,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-22",
+    "createdAt": "2025-05-22"
+  },
+  {
+    "name": "Julio Paznio",
+    "email": "juliopaz941@gmail.com",
+    "phone": "+50769804694",
+    "totalSpent": 165.25,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-07",
+    "createdAt": "2025-05-23"
+  },
+  {
+    "name": "kahizar souhair salah lara",
+    "email": "souhairsalah.20@gmail.com",
+    "totalSpent": 157.1,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-01",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Noel Labrador",
+    "email": "noellabrador44@gmail.com",
+    "phone": "+50766539614",
+    "totalSpent": 155.15,
+    "transactionCount": 14,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-05",
+    "createdAt": "2025-04-09"
+  },
+  {
+    "name": "Guillermo Ponce",
+    "email": "guilleponce2090@gmail.com",
+    "phone": "+50761426905",
+    "totalSpent": 155.15,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-20",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "Brayan Reyes",
+    "email": "brayandicel@icloud.com",
+    "phone": "+50764292009",
+    "totalSpent": 152.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-24",
+    "createdAt": "2025-07-24"
+  },
+  {
+    "name": "Samer Richani",
+    "email": "samerichani327@gmail.com",
+    "phone": "+50764363496",
+    "totalSpent": 151.65,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Jormi Molina",
+    "email": "jormimolina8@gmail.com",
+    "phone": "+50766290185",
+    "totalSpent": 151.3,
+    "transactionCount": 8,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-06",
+    "createdAt": "2025-04-07"
+  },
+  {
+    "name": "Jose Santiago Martinez Montaño",
+    "email": "j.santiago1301@gmail.com",
+    "phone": "+50767172807",
+    "totalSpent": 148.05,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-12",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Luis Turner",
+    "email": "luiscarlostl@hotmail.com",
+    "phone": "+50762827931",
+    "totalSpent": 144.45,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-04-02"
+  },
+  {
+    "name": "Mario Perez",
+    "email": "perezmariob283@gmail.com",
+    "phone": "+50763085342",
+    "totalSpent": 144.2,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-09",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Winder Gonzalez",
+    "email": "windergonzalezh@gmail.com",
+    "phone": "+50765356197",
+    "totalSpent": 142.35,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-03",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Diego Pantoja",
+    "email": "diego.pantojaw@gmail.com",
+    "phone": "+50768992949",
+    "totalSpent": 140.95,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-21",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Aaron Arosemena",
+    "email": "a-arosemena@hotmail.com",
+    "phone": "+50767215859",
+    "totalSpent": 138.4,
+    "transactionCount": 13,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Abdullah Daya",
+    "email": "abdulhadaya_05@hotmail.com",
+    "phone": "+50760375856",
+    "totalSpent": 137.72,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-09",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Yonan Avila",
+    "email": "y.rodriguez8281@gmail.com",
+    "phone": "+50764611283",
+    "totalSpent": 132.45,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-31",
+    "createdAt": "2025-07-20"
+  },
+  {
+    "name": "Thiago Shockness",
+    "email": "thiagoshockness05@gmail.com",
+    "phone": "+50767605382",
+    "totalSpent": 128.4,
+    "transactionCount": 8,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-29",
+    "createdAt": "2025-04-24"
+  },
+  {
+    "name": "Simon de Jesus Peña Mendoza",
+    "email": "simonjesus@gmail.com",
+    "phone": "+50762339748",
+    "totalSpent": 127.06,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-06-28"
+  },
+  {
+    "name": "luis javier carranza rivera",
+    "email": "lcarranzarivera@gmail.com",
+    "phone": "+50765562236",
+    "totalSpent": 124.2,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-19",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Gamer Nassr Nasser",
+    "email": "gamernassr@gmail.com",
+    "phone": "+50763838519",
+    "totalSpent": 123.05,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-06-08"
+  },
+  {
+    "name": "Eli Levy",
+    "email": "elilevy91@gmail.com",
+    "phone": "+50764133034",
+    "totalSpent": 120.91,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-05",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Alejandro Acerman",
+    "email": "jdjdjdjddjd@gmail.com",
+    "phone": "+50765691344",
+    "totalSpent": 116.05,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-11",
+    "createdAt": "2025-07-09"
+  },
+  {
+    "name": "Ricardo Martinez",
+    "email": "ricardo.martinez.z@gmail.com",
+    "phone": "+50763143859",
+    "totalSpent": 114.2,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-27",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Ruben cortez",
+    "email": "cortezruben91@gmail.com",
+    "phone": "+50768103489",
+    "totalSpent": 112.35,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-07-12"
+  },
+  {
+    "name": "Josue Suarez",
+    "email": "sujokimotors@gmail.com",
+    "phone": "+50767365268",
+    "totalSpent": 112.35,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-13",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "William Vanderdys",
+    "email": "wvanderdys@gmail.com",
+    "phone": "+50768188305",
+    "totalSpent": 111.3,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-13",
+    "createdAt": "2025-08-02"
+  },
+  {
+    "name": "Yenifer",
+    "email": "jdjdkdkd@gmail.com",
+    "phone": "+50769696969",
+    "totalSpent": 110,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-15",
+    "createdAt": "2025-09-15"
+  },
+  {
+    "name": "Ahmed Patel",
+    "email": "ahmedspatelb@gmail.com",
+    "phone": "+50764890019",
+    "totalSpent": 107.37,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-22",
+    "createdAt": "2025-04-24"
+  },
+  {
+    "name": "Gabriel Ramirez frida",
+    "email": "racingcarsmultiservicios@gmail.com",
+    "phone": "+50762055139",
+    "totalSpent": 106.75,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-23",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Esteban Suarez",
+    "email": "estebansuarez1802@gmail.com",
+    "phone": "+50768078732",
+    "totalSpent": 106.3,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "HERNANDO CORDOBA",
+    "email": "hernando.cordoba.522@udelas.ac.pa",
+    "totalSpent": 106.25,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-06",
+    "createdAt": "2025-05-31"
+  },
+  {
+    "name": "Carlos Villareal",
+    "email": "cmvillarreal9407@gmail.com",
+    "phone": "+50768206017",
+    "totalSpent": 104.9,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-08",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Hernando Córdoba",
+    "email": "hecor507@gmail.com",
+    "phone": "+50769835776",
+    "totalSpent": 104.3,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-14",
+    "createdAt": "2025-06-28"
+  },
+  {
+    "name": "saade chamaa",
+    "email": "saadech@gmail.com",
+    "phone": "+50768189900",
+    "totalSpent": 104.2,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-21",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Cristyan palma",
+    "email": "cristyanpalma@gmail.com",
+    "phone": "+50760706936",
+    "totalSpent": 102.8,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-05-29"
+  },
+  {
+    "name": "Gabriel Mendoza",
+    "email": "harbinger.g21@gmail.com",
+    "phone": "+50767289187",
+    "totalSpent": 101.65,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-03",
+    "createdAt": "2025-04-17"
+  },
+  {
+    "name": "Gabo Acosta",
+    "email": "twoedj7869@gmail.com",
+    "phone": "+50768541414",
+    "totalSpent": 101.65,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-16",
+    "createdAt": "2025-06-04"
+  },
+  {
+    "name": "Jorge Perea Pérez",
+    "email": "jorge.perea@hotmail.es",
+    "phone": "+50769486108",
+    "totalSpent": 101.65,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-25",
+    "createdAt": "2025-06-25"
+  },
+  {
+    "name": "Jhonj Torres",
+    "email": "jhontorresv03@gmail.com",
+    "phone": "+50762568185",
+    "totalSpent": 96.3,
+    "transactionCount": 6,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-05",
+    "createdAt": "2025-05-09"
+  },
+  {
+    "name": "Richard Zerpa",
+    "email": "richardjoeltrainer@gmail.com",
+    "phone": "+50769940893",
+    "totalSpent": 96.3,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Ricardo Suarez",
+    "email": "ing.suarezs@gmail.com",
+    "phone": "+50768501417",
+    "totalSpent": 96.3,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-27",
+    "createdAt": "2025-04-25"
+  },
+  {
+    "name": "Andres Rios",
+    "email": "vasquezafr@gmail.com",
+    "phone": "+50769494241",
+    "totalSpent": 94.16,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-31",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Luis Enrique Duran Arias",
+    "email": "luisduran24091987@gmail.com",
+    "phone": "+50766326597",
+    "totalSpent": 92.04,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-30",
+    "createdAt": "2025-06-20"
+  },
+  {
+    "name": "Joel José Vega  Rodriguez",
+    "email": "joeljosevegar@gmail.com",
+    "phone": "+50764303084",
+    "totalSpent": 90.95,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-18",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Andres Belisario",
+    "email": "j.r.instalaciones00@gmail.com",
+    "phone": "+50764532904",
+    "totalSpent": 89.75,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-05",
+    "createdAt": "2025-07-22"
+  },
+  {
+    "name": "Diego Irausquin",
+    "email": "diego.irausquin@gmail.com",
+    "phone": "+50768619503",
+    "totalSpent": 87.45,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-21",
+    "createdAt": "2025-04-22"
+  },
+  {
+    "name": "Joshua Grenald",
+    "email": "joshuagrenald507@gmail.com",
+    "phone": "+50767579290",
+    "totalSpent": 85,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-15",
+    "createdAt": "2025-08-08"
+  },
+  {
+    "name": "Willy Ortiz",
+    "email": "willy.oz.777@gmail.com",
+    "phone": "+50764625737",
+    "totalSpent": 82.85,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-30",
+    "createdAt": "2025-04-24"
+  },
+  {
+    "name": "Joseth Vasquez",
+    "email": "vjosetheduardo@gmail.com",
+    "phone": "+50765237658",
+    "totalSpent": 81.75,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-19",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Carlos Reales",
+    "email": "carlosreales26@gmail.com",
+    "phone": "+50764520942",
+    "totalSpent": 81.4,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-07",
+    "createdAt": "2025-05-01"
+  },
+  {
+    "name": "Andrea Dos santos",
+    "email": "andreina_2santos@hotmail.com",
+    "phone": "+50762586261",
+    "totalSpent": 80.25,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-04-23"
+  },
+  {
+    "name": "Azael Florez",
+    "email": "azafe.19@gmail.com",
+    "phone": "+50769827234",
+    "totalSpent": 80.25,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-06",
+    "createdAt": "2025-04-14"
+  },
+  {
+    "name": "Juan Arauz",
+    "email": "juanraularauz28@gmail.com",
+    "phone": "+50765040389",
+    "totalSpent": 80.25,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-05",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "Yeltsin Paul Abrego",
+    "email": "yeltpau1392@gmail.com",
+    "phone": "+50768012776",
+    "totalSpent": 80.25,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-04",
+    "createdAt": "2025-06-30"
+  },
+  {
+    "name": "Alfonso Martinez",
+    "email": "alfonsomartinez77@icloud.com",
+    "phone": "+50768498896",
+    "totalSpent": 80.25,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-16",
+    "createdAt": "2025-06-28"
+  },
+  {
+    "name": "Esteban Mendoza",
+    "email": "esteban0772@gmail.com",
+    "phone": "+50764801596",
+    "totalSpent": 80.25,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-11",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Jorge Arauz",
+    "email": "jorgearauz21@hotmail.com",
+    "phone": "+50762540887",
+    "totalSpent": 80.25,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-09",
+    "createdAt": "2025-04-23"
+  },
+  {
+    "name": "Juan Alzate",
+    "email": "alzate9602@gmail.com",
+    "phone": "+50763408323",
+    "totalSpent": 78.85,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-29",
+    "createdAt": "2025-04-18"
+  },
+  {
+    "name": "Jorge Castillo",
+    "email": "jorgeleonardo42@gmail.com",
+    "phone": "+50769961199",
+    "totalSpent": 76.15,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-21",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Ricardo Giraldez",
+    "email": "giraldezricardo@gmail.com",
+    "phone": "+50769753148",
+    "totalSpent": 74.9,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-11",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "Junior leal",
+    "email": "lealinsauste02@gmail.com",
+    "phone": "+50762308398",
+    "totalSpent": 74.9,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-29",
+    "createdAt": "2025-04-29"
+  },
+  {
+    "name": "Aaron Chacon",
+    "email": "monicarangel1322@gmail.com",
+    "phone": "+50764155840",
+    "totalSpent": 74.9,
+    "transactionCount": 7,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-14",
+    "createdAt": "2025-04-20"
+  },
+  {
+    "name": "Luis Ureña",
+    "email": "luisabdiel19@gmail.com",
+    "phone": "+50764316324",
+    "totalSpent": 74.2,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-20",
+    "createdAt": "2025-07-13"
+  },
+  {
+    "name": "Rommer Hurtado",
+    "email": "rommer.hurtadorp@gmail.com",
+    "phone": "+50762714790",
+    "totalSpent": 73.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-29",
+    "createdAt": "2025-05-08"
+  },
+  {
+    "name": "Roberto antonio Mendoza",
+    "email": "roberto01mendoza@gmail.com",
+    "phone": "+50762333613",
+    "totalSpent": 72.76,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-08",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Peter Diaz",
+    "email": "diazpeter10@gmail.com",
+    "phone": "+50766183020",
+    "totalSpent": 72.75,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-05-17"
+  },
+  {
+    "name": "Eli Levy",
+    "email": "elilevy91@hotmail.com",
+    "phone": "+50764133034",
+    "totalSpent": 69.55,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-15",
+    "createdAt": "2025-07-21"
+  },
+  {
+    "name": "Adrian Perez",
+    "email": "dirigible_dinamicos.6d@icloud.com",
+    "phone": "+50762577475",
+    "totalSpent": 69.55,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-20",
+    "createdAt": "2025-07-31"
+  },
+  {
+    "name": "Isac",
+    "email": "kikikik@gmail.com",
+    "phone": "+50762540637",
+    "totalSpent": 68.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-06-21"
+  },
+  {
+    "name": "Daniel Arjona",
+    "email": "arjonadaniel@gmail.com",
+    "phone": "+50762140327",
+    "totalSpent": 68.15,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-12",
+    "createdAt": "2025-07-17"
+  },
+  {
+    "name": "Christian Delgado",
+    "email": "christian_war01@hotmail.com",
+    "phone": "+50768476107",
+    "totalSpent": 68.15,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-06",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Rafael Langshaw",
+    "email": "rlangshaw@gmail.com",
+    "phone": "+50768854456",
+    "totalSpent": 66.33,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-13",
+    "createdAt": "2025-04-09"
+  },
+  {
+    "name": "Daniel eduardo castro gutierrez",
+    "email": "angeles208613@gmail.com",
+    "phone": "+50763769469",
+    "totalSpent": 65,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-21",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Abdula abowath",
+    "email": "abdulaabowath@hotmail.com",
+    "phone": "+50765000762",
+    "totalSpent": 64.2,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-07",
+    "createdAt": "2025-04-24"
+  },
+  {
+    "name": "Anco Chaparro",
+    "email": "ancochaparro@gmail.com",
+    "phone": "+50761590465",
+    "totalSpent": 64.2,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-19",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Abdullah Daya",
+    "email": "abudaya99@gmail.com",
+    "phone": "+50760375856",
+    "totalSpent": 64.2,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-06",
+    "createdAt": "2025-05-23"
+  },
+  {
+    "name": "Adrian Muñoz",
+    "email": "adrianetr1234@gmail.com",
+    "phone": "+50738736438",
+    "totalSpent": 64.2,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-04",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "Luis Arango",
+    "email": "angelarango995@gmail.com",
+    "phone": "+50761631042",
+    "totalSpent": 64.2,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-27",
+    "createdAt": "2025-04-20"
+  },
+  {
+    "name": "Luis Felipe Cruz González",
+    "email": "lfcg.xic@gmail.com",
+    "phone": "+50766073231",
+    "totalSpent": 63.15,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-09",
+    "createdAt": "2025-07-10"
+  },
+  {
+    "name": "Bolivar Fung",
+    "email": "bolivar19fung@gmail.com",
+    "phone": "+50767475636",
+    "totalSpent": 62.8,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-16",
+    "createdAt": "2025-05-02"
+  },
+  {
+    "name": "Joselin Tinaure",
+    "email": "joselinbta@gmail.com",
+    "phone": "+50763758779",
+    "totalSpent": 62.8,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-05",
+    "createdAt": "2025-04-13"
+  },
+  {
+    "name": "Yanluis Mendoza",
+    "email": "yanpaveo25@gmail.com",
+    "phone": "+50763288533",
+    "totalSpent": 62.8,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-25",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Luis Rodriguez",
+    "email": "arqluisrodriguez91@gmail.com",
+    "phone": "+50762687997",
+    "totalSpent": 62.06,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-15",
+    "createdAt": "2025-05-16"
+  },
+  {
+    "name": "Samuel Castillo",
+    "email": "samuelcastilloolivar@gmail.com",
+    "phone": "+50767011555",
+    "totalSpent": 61.75,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-22",
+    "createdAt": "2025-06-08"
+  },
+  {
+    "name": "Sakir Jasat",
+    "email": "sakirule@gmail.com",
+    "phone": "+50760309647",
+    "totalSpent": 61.4,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-02",
+    "createdAt": "2025-07-06"
+  },
+  {
+    "name": "Carlos Pulgarin",
+    "email": "cepulgarinr@gmail.com",
+    "phone": "+50712172710",
+    "totalSpent": 61.4,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Carlos Flores",
+    "email": "carlos030289@gmail.com",
+    "phone": "+50762017885",
+    "totalSpent": 56.71,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-05",
+    "createdAt": "2025-04-13"
+  },
+  {
+    "name": "Santiago Hernández",
+    "email": "santiagohjimenz@gmail.com",
+    "phone": "+50763320621",
+    "totalSpent": 56.05,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-28",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Carlos Gomez",
+    "email": "carloshs1940@hotmail.com",
+    "phone": "+50765988439",
+    "totalSpent": 55,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Cristian Garrido",
+    "email": "cristian.0696@hotmail.com",
+    "phone": "+50767027465",
+    "totalSpent": 54,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-21",
+    "createdAt": "2025-08-21"
+  },
+  {
+    "name": "Paolo Gonzales",
+    "email": "paogoz01@gmail.com",
+    "phone": "+50764842561",
+    "totalSpent": 53.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2026-01-05",
+    "createdAt": "2025-12-29"
+  },
+  {
+    "name": "Edgar Ureña",
+    "email": "edgar1380@hotmail.com",
+    "phone": "+50766866094",
+    "totalSpent": 53.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-11",
+    "createdAt": "2025-05-18"
+  },
+  {
+    "name": "Juan Carlos Escobar",
+    "email": "eidan_1224@hotmail.com",
+    "phone": "+50767552799",
+    "totalSpent": 53.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-19",
+    "createdAt": "2025-06-03"
+  },
+  {
+    "name": "Rodrigo Farrugia",
+    "email": "rodrigofarrugia31@hotmail.com",
+    "phone": "+50762452608",
+    "totalSpent": 53.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-08",
+    "createdAt": "2025-04-06"
+  },
+  {
+    "name": "Israel Israel",
+    "email": "gsjsvdjdjd@gmail.com",
+    "phone": "+50766666666",
+    "totalSpent": 53.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-22",
+    "createdAt": "2025-05-22"
+  },
+  {
+    "name": "Yager Bejarano",
+    "email": "ybejarano71@gmail.com",
+    "phone": "+50764675033",
+    "totalSpent": 53.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-10",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Reimer Terán",
+    "email": "reimerteran@gmail.com",
+    "phone": "+50760059749",
+    "totalSpent": 52.1,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Diego Pantoja",
+    "email": "diego.pantoja@chevron.com",
+    "phone": "+50766191679",
+    "totalSpent": 51.75,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-12",
+    "createdAt": "2025-05-31"
+  },
+  {
+    "name": "Jercy Javier",
+    "email": "jercyjavier@gmail.com",
+    "phone": "+50762119966",
+    "totalSpent": 50.15,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-08-29"
+  },
+  {
+    "name": "Jesus Abreu",
+    "email": "jldgusko@gmail.com",
+    "phone": "+50768949209",
+    "totalSpent": 48.15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-17",
+    "createdAt": "2025-12-17"
+  },
+  {
+    "name": "Paul edwards",
+    "email": "jackferrata@gmail.com",
+    "phone": "+50764032544",
+    "totalSpent": 48.15,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-08-09"
+  },
+  {
+    "name": "Diego Ng",
+    "email": "ngdiego14@gmail.com",
+    "phone": "+50768895817",
+    "totalSpent": 48.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "Jose Morales",
+    "email": "jose.morales_18@hotmail.com",
+    "phone": "+50764399191",
+    "totalSpent": 48.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-14",
+    "createdAt": "2025-04-14"
+  },
+  {
+    "name": "Dora Lise",
+    "email": "doralicedleg@gmail.com",
+    "phone": "+50767394218",
+    "totalSpent": 48.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-05-20"
+  },
+  {
+    "name": "Salvador Pitty",
+    "email": "salvadorpitty21@gmail.com",
+    "phone": "+50761408276",
+    "totalSpent": 48.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-19",
+    "createdAt": "2025-06-01"
+  },
+  {
+    "name": "Miguel Angel Quijada Cutolo",
+    "email": "miguelquijada19@gmail.com",
+    "phone": "+50766188319",
+    "totalSpent": 48.15,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-13",
+    "createdAt": "2025-05-30"
+  },
+  {
+    "name": "Carlos Guada",
+    "email": "carlosguada5@gmail.com",
+    "phone": "+4244375699",
+    "totalSpent": 48.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-23",
+    "createdAt": "2025-05-24"
+  },
+  {
+    "name": "Gabriel J",
+    "email": "jdjdjdjd@gmail.com",
+    "phone": "+50767289187",
+    "totalSpent": 48.15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-07-31"
+  },
+  {
+    "name": "Luis Eduardo Avila",
+    "email": "lavilafranchi@gmail.com",
+    "phone": "+50762530740",
+    "totalSpent": 48.15,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-05-13"
+  },
+  {
+    "name": "Antonio Thomas",
+    "email": "jajayosoyyo.at@gmail.com",
+    "totalSpent": 48.15,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-25",
+    "createdAt": "2025-05-02"
+  },
+  {
+    "name": "Madeline Machado",
+    "email": "mzulay14@gmail.com",
+    "phone": "+50762297356",
+    "totalSpent": 48.15,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-12",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "George Guillen",
+    "email": "gagpty@gmail.com",
+    "phone": "+50766121779",
+    "totalSpent": 48.15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-19",
+    "createdAt": "2025-05-19"
+  },
+  {
+    "name": "Jhonattan Hernandez Gonzalez",
+    "email": "j.honattan08@hotmail.com",
+    "totalSpent": 48.15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-27",
+    "createdAt": "2025-04-27"
+  },
+  {
+    "name": "Carlos Ariel Cervantes",
+    "email": "carlosariel80@gmail.com",
+    "totalSpent": 47.8,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-05",
+    "createdAt": "2025-07-05"
+  },
+  {
+    "name": "Rogelio Aikman",
+    "email": "raikman@eagle.org",
+    "phone": "+50766730377",
+    "totalSpent": 47.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-02",
+    "createdAt": "2025-07-18"
+  },
+  {
+    "name": "Pedro Ferrini",
+    "email": "pedrojose0821@gmail.com",
+    "phone": "+50766285185",
+    "totalSpent": 46.75,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-26",
+    "createdAt": "2025-04-23"
+  },
+  {
+    "name": "Ragueb El Bonney",
+    "email": "raguebelbonney@gmail.com",
+    "phone": "+50760300080",
+    "totalSpent": 46.75,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-23",
+    "createdAt": "2025-03-31"
+  },
+  {
+    "name": "Mariscal Batista",
+    "email": "mariscal3022@gmail.com",
+    "phone": "+50764234750",
+    "totalSpent": 46.05,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-19",
+    "createdAt": "2025-07-29"
+  },
+  {
+    "name": "Alfonso Hastamorir Sanchez",
+    "email": "ahastamorir@gmail.com",
+    "totalSpent": 45.8,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-13",
+    "createdAt": "2025-08-25"
+  },
+  {
+    "name": "Juan Filopoulos",
+    "email": "partesautomotrices507@gmail.com",
+    "phone": "+50760700505",
+    "totalSpent": 45,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-30",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Abdullah Patel",
+    "email": "abdullah_patel1999@hotmail.com",
+    "phone": "+50761548665",
+    "totalSpent": 42.8,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-22",
+    "createdAt": "2025-07-22"
+  },
+  {
+    "name": "Carlos Cervantes",
+    "email": "carlosariel@hotmail.con",
+    "phone": "+50769838547",
+    "totalSpent": 42.8,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-20",
+    "createdAt": "2025-07-20"
+  },
+  {
+    "name": "Bryan Aparicio",
+    "email": "bg5042619@gmail.com",
+    "phone": "+50768627381",
+    "totalSpent": 42.8,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-06",
+    "createdAt": "2025-05-27"
+  },
+  {
+    "name": "Maicol Valencia",
+    "email": "michael980251@hotmail.com",
+    "phone": "+50767898265",
+    "totalSpent": 42.8,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-04",
+    "createdAt": "2025-07-04"
+  },
+  {
+    "name": "Carlos RIONDA",
+    "email": "alejandro.rionda.08964@gmail.com",
+    "phone": "+50761081204",
+    "totalSpent": 42.8,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-26",
+    "createdAt": "2025-05-10"
+  },
+  {
+    "name": "Héctor Peña",
+    "email": "penamaciashectoralexis@gmail.com",
+    "phone": "+3153792135",
+    "totalSpent": 42.8,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-19",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Carlos Benedetti",
+    "email": "cbenedetti43@gmail.com",
+    "phone": "+50761503305",
+    "totalSpent": 41.7,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-04-29"
+  },
+  {
+    "name": "Alihan Alan",
+    "email": "alihanalan48@gmail.com",
+    "phone": "+50765775503",
+    "totalSpent": 41.4,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-20",
+    "createdAt": "2025-06-01"
+  },
+  {
+    "name": "Luis Castillero",
+    "email": "luisfcvx@hotmail.com",
+    "phone": "+50762015320",
+    "totalSpent": 41.4,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-29",
+    "createdAt": "2025-04-14"
+  },
+  {
+    "name": "Yilibeth Morales",
+    "email": "yilitam2@gmail.com",
+    "phone": "+50768986997",
+    "totalSpent": 40.66,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-10",
+    "createdAt": "2025-04-28"
+  },
+  {
+    "name": "Javier Cerquera",
+    "email": "maurocerquera28@gmail.com",
+    "phone": "+50762773184",
+    "totalSpent": 40,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-22",
+    "createdAt": "2025-07-22"
+  },
+  {
+    "name": "Javier Cedeño",
+    "email": "javiwerdj1@gmail.com",
+    "phone": "+50762283159",
+    "totalSpent": 40,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-30",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Kenneth Ho",
+    "email": "kenneth35965@gmail.com",
+    "phone": "+50762402455",
+    "totalSpent": 37.45,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-19",
+    "createdAt": "2025-07-17"
+  },
+  {
+    "name": "David Bobadilla",
+    "email": "davidbobadilla1964@hotmail.com",
+    "phone": "+50766127857",
+    "totalSpent": 37.45,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-24",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "José Alejandro luna",
+    "email": "alejandrophotodigital@gmail.com",
+    "phone": "+50769237806",
+    "totalSpent": 37.45,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-25",
+    "createdAt": "2025-04-25"
+  },
+  {
+    "name": "Marcos Espinosa",
+    "email": "marcosespinosa2300@gmail.com",
+    "phone": "+50762885805",
+    "totalSpent": 36.05,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-29",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Jean Francisco",
+    "email": "jeanf2874@gmail.com",
+    "phone": "+50767668432",
+    "totalSpent": 34.77,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-05",
+    "createdAt": "2025-06-05"
+  },
+  {
+    "name": "Simon Peñaa",
+    "email": "simonjesus2001@hotmail.com",
+    "phone": "+50762339748",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-10-27"
+  },
+  {
+    "name": "Jn 66",
+    "email": "izquierdoj756@gmail.com",
+    "phone": "+50768417408",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-09-20"
+  },
+  {
+    "name": "Antonio Thomas",
+    "email": "antonio.t.r201393@gmail.com",
+    "phone": "+50765970241",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-08-21"
+  },
+  {
+    "name": "Kenny Reyes",
+    "email": "reyeskenny777@gmail.com",
+    "phone": "+50761196242",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-09-10"
+  },
+  {
+    "name": "Richard Lopez",
+    "email": "richy2116@gmail.com",
+    "phone": "+50766742883",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-26",
+    "createdAt": "2025-08-12"
+  },
+  {
+    "name": "Andrés Morales",
+    "email": "andresvillamil8705@gmail.com",
+    "phone": "+50763164123",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-20",
+    "createdAt": "2025-07-12"
+  },
+  {
+    "name": "Henry Aburto",
+    "email": "henrrykevinaburto_2022@yahoo.com",
+    "phone": "+50763590671",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-12",
+    "createdAt": "2025-09-12"
+  },
+  {
+    "name": "Dilan Moreno",
+    "email": "hdhdjdjdjd@gmail.com",
+    "phone": "+50763362430",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-12",
+    "createdAt": "2025-09-12"
+  },
+  {
+    "name": "Noel Velasquez",
+    "email": "kevaz02@gmail.com",
+    "phone": "+50766360523",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-20",
+    "createdAt": "2025-06-25"
+  },
+  {
+    "name": "Daniel Jjjjj",
+    "email": "bjjnnnnnn@gmail.com",
+    "phone": "+50766666666",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-16",
+    "createdAt": "2025-08-16"
+  },
+  {
+    "name": "Emanuel Ramírez",
+    "email": "emanuelramirezsuarez@gmail.com",
+    "phone": "+50763795108",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-02",
+    "createdAt": "2025-07-02"
+  },
+  {
+    "name": "Luiz Gustavo Da Fonseca Santos",
+    "email": "luizgustavo_fs@hotmail.com",
+    "phone": "+50769885776",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-26",
+    "createdAt": "2025-07-06"
+  },
+  {
+    "name": "Jeison Gonzalez",
+    "email": "jeiango1989@gmail.com",
+    "phone": "+50762420192",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-26",
+    "createdAt": "2025-07-02"
+  },
+  {
+    "name": "Jose Gomez",
+    "email": "longo1222@gmail.com",
+    "phone": "+50760041028",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-25",
+    "createdAt": "2025-07-25"
+  },
+  {
+    "name": "Jose Vega",
+    "email": "josevega98@hotmail.com",
+    "phone": "+50767321687",
+    "totalSpent": 32.1,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-21",
+    "createdAt": "2025-05-02"
+  },
+  {
+    "name": "Antonio N",
+    "email": "toni19_89@hotmail.com",
+    "phone": "+50765238809",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-14",
+    "createdAt": "2025-07-14"
+  },
+  {
+    "name": "Loredano Magnani",
+    "email": "loredano17@hotmail.com",
+    "phone": "+50768769508",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-05",
+    "createdAt": "2025-07-05"
+  },
+  {
+    "name": "Abdullah Kachhalia",
+    "email": "abdullah_kb@hotmail.com",
+    "phone": "+50760707911",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-28",
+    "createdAt": "2025-06-28"
+  },
+  {
+    "name": "Diego Moreno",
+    "email": "diegmoreno01@gmail.com",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-19",
+    "createdAt": "2025-06-19"
+  },
+  {
+    "name": "Nihuson Silva",
+    "email": "nihusonsilva@gmail.com",
+    "phone": "+50764622656",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-11",
+    "createdAt": "2025-04-17"
+  },
+  {
+    "name": "Angel Navarro",
+    "email": "angelfnv@gmail.com",
+    "phone": "+50760485797",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-07",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Víctor Rodríguez",
+    "email": "vidaroba2003@gmail.com",
+    "phone": "+50768563477",
+    "totalSpent": 32.1,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-01",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "ADALBERTO LEON",
+    "email": "djleonpro@gmail.com",
+    "phone": "+50761358045",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-31",
+    "createdAt": "2025-05-31"
+  },
+  {
+    "name": "Jhon Jaimes",
+    "email": "jhoncarj08@gmail.com",
+    "phone": "+50764510174",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-22",
+    "createdAt": "2025-05-22"
+  },
+  {
+    "name": "José asprilla",
+    "email": "joseagregorioasprilla@gmail.com",
+    "phone": "+50769241535",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-20",
+    "createdAt": "2025-05-20"
+  },
+  {
+    "name": "Asif Dasoo",
+    "email": "motoresdasoo@gmail.com",
+    "phone": "+50766737238",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-15",
+    "createdAt": "2025-05-15"
+  },
+  {
+    "name": "Steven Verde",
+    "email": "svdipietro1@gmail.com",
+    "phone": "+50765568612",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-15",
+    "createdAt": "2025-05-15"
+  },
+  {
+    "name": "Norbelis Perez",
+    "email": "norbelispico@gmail.com",
+    "phone": "+50763516771",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-11",
+    "createdAt": "2025-05-11"
+  },
+  {
+    "name": "Bolivar Fung",
+    "email": "bolivar19fung@yahoo.com",
+    "phone": "+50767475636",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-06",
+    "createdAt": "2025-05-06"
+  },
+  {
+    "name": "Fernando Samaniego",
+    "email": "fsamaniego1982@gmail.com",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-03",
+    "createdAt": "2025-05-03"
+  },
+  {
+    "name": "Danilo Paez",
+    "email": "danilopaez301@gmail.com",
+    "phone": "+50762812358",
+    "totalSpent": 32.1,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-02",
+    "createdAt": "2025-05-02"
+  },
+  {
+    "name": "Michael Carr",
+    "email": "michaelcarr216@gmail.com",
+    "phone": "+2165053963",
+    "totalSpent": 31.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-13",
+    "createdAt": "2025-06-13"
+  },
+  {
+    "name": "Mike Carr",
+    "email": "care.325@osu.edu",
+    "phone": "+2165053965",
+    "totalSpent": 31.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-16",
+    "createdAt": "2025-05-16"
+  },
+  {
+    "name": "David Lopez",
+    "email": "davidalopezr@gmail.com",
+    "phone": "+50764394331",
+    "totalSpent": 31.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-15",
+    "createdAt": "2025-12-15"
+  },
+  {
+    "name": "Roni Litmanovic",
+    "email": "roni@selladodeconcreto.com",
+    "phone": "+50761304528",
+    "totalSpent": 31.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-01",
+    "createdAt": "2025-07-01"
+  },
+  {
+    "name": "Alkaid Rodríguez",
+    "email": "alkaidrodriguez@gmail.com",
+    "phone": "+50761014151",
+    "totalSpent": 31.05,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-14",
+    "createdAt": "2025-04-05"
+  },
+  {
+    "name": "Jose Manuel",
+    "email": "jdbsksbshd@gmail.com",
+    "phone": "+50764397661",
+    "totalSpent": 30.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-07",
+    "createdAt": "2025-08-07"
+  },
+  {
+    "name": "Hansel Castillo",
+    "email": "hansel.promos@gmail.com",
+    "phone": "+7873480414",
+    "totalSpent": 30.5,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-22",
+    "createdAt": "2025-04-22"
+  },
+  {
+    "name": "Bladimir Nuñez",
+    "email": "bjjjhhuu@gmail.com",
+    "phone": "+50765845738",
+    "totalSpent": 30,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-29",
+    "createdAt": "2025-08-29"
+  },
+  {
+    "name": "Juan Berrocal",
+    "email": "crewfilmspanama@gmail.com",
+    "totalSpent": 30,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-03",
+    "createdAt": "2025-08-03"
+  },
+  {
+    "name": "Santiago Jaimes",
+    "email": "santiagojaimes0112@gmail.com",
+    "phone": "+50765987494",
+    "totalSpent": 30,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-23",
+    "createdAt": "2025-05-23"
+  },
+  {
+    "name": "Abel Castillo",
+    "email": "abelcastillocornejo@gmail.com",
+    "phone": "+50760182614",
+    "totalSpent": 30,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-26",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "Jonas Kienzle",
+    "email": "jonas.kienzle97@gmail.com",
+    "phone": "+17684307431",
+    "totalSpent": 30,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-26",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "Dylan Sánchez",
+    "email": "valeryortega978@gmail.com",
+    "phone": "+50768709791",
+    "totalSpent": 30,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-21",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "Javier Ackerman",
+    "email": "hdbdjdjdjd@mail.com",
+    "phone": "+50763539717",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-01",
+    "createdAt": "2025-12-01"
+  },
+  {
+    "name": "Richard Zerpa",
+    "email": "richardjoeltrainet@gmail.com",
+    "phone": "+50769940893",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-11-29"
+  },
+  {
+    "name": "Rosmel Garcia",
+    "email": "rosmelalexanderg@gmail.com",
+    "phone": "+50763113581",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-11-29"
+  },
+  {
+    "name": "Luis  ceballos",
+    "email": "mcdmcy@hotmail.com",
+    "phone": "+50762553201",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-24",
+    "createdAt": "2025-11-24"
+  },
+  {
+    "name": "Yonathan Medina",
+    "email": "med.yonathan@gmail.com",
+    "phone": "+6467848029",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-27",
+    "createdAt": "2025-09-27"
+  },
+  {
+    "name": "Mario Ortiz",
+    "email": "marioaf6788@gmail.com",
+    "phone": "+3618777033",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-26",
+    "createdAt": "2025-09-26"
+  },
+  {
+    "name": "Horacio Cofer",
+    "email": "horacio.cofe@gmail.com",
+    "phone": "+50766666666",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-13",
+    "createdAt": "2025-09-13"
+  },
+  {
+    "name": "Esau Saenz",
+    "email": "ensaenz12@gmail.com",
+    "phone": "+50767470324",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-19",
+    "createdAt": "2025-08-19"
+  },
+  {
+    "name": "Efrain Mejia",
+    "email": "efram514@gmail.com",
+    "phone": "+50762154231",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-08",
+    "createdAt": "2025-08-08"
+  },
+  {
+    "name": "Eiberto Rodriguez",
+    "email": "ipc3black@icloud.com",
+    "phone": "+50764134575",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-15",
+    "createdAt": "2025-07-15"
+  },
+  {
+    "name": "Abdiel cerrud",
+    "email": "abdielcerrud48@gmail.com",
+    "phone": "+3053151074",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-13",
+    "createdAt": "2025-07-13"
+  },
+  {
+    "name": "luis ng",
+    "email": "luisalberto_ng3@hotmail.com",
+    "phone": "+50762086945",
+    "totalSpent": 26.75,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-10",
+    "createdAt": "2025-07-10"
+  },
+  {
+    "name": "Luis Peralda",
+    "email": "luisfernandopm1997@gmail.com",
+    "phone": "+50763516263",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-02",
+    "createdAt": "2025-07-02"
+  },
+  {
+    "name": "Isaac Valencia",
+    "email": "isaacvalenciabarriap@gmail.com",
+    "phone": "+50763818020",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-30",
+    "createdAt": "2025-06-30"
+  },
+  {
+    "name": "alexander espitaleta",
+    "email": "alexanderespitaleta@gmail.com",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-28",
+    "createdAt": "2025-06-28"
+  },
+  {
+    "name": "Deivid",
+    "email": "pppppp@gmil.com",
+    "phone": "+50766666666",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-11",
+    "createdAt": "2025-06-11"
+  },
+  {
+    "name": "Oscar Rodríguez",
+    "email": "subcom280227@gmail.com",
+    "phone": "+50765397227",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-07",
+    "createdAt": "2025-06-07"
+  },
+  {
+    "name": "Reimon Power",
+    "email": "asdfgghj@gmail.com",
+    "phone": "+50765342690",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-05",
+    "createdAt": "2025-06-05"
+  },
+  {
+    "name": "Anthony Lopez",
+    "email": "anthonylopez152388@gmail.com",
+    "phone": "+50767938698",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-02",
+    "createdAt": "2025-06-02"
+  },
+  {
+    "name": "George Vargas",
+    "email": "george_1206@icloud.com",
+    "phone": "+50768631136",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-05-17"
+  },
+  {
+    "name": "Julio Gonzalez",
+    "email": "cesargonza1730@gmail.com",
+    "phone": "+50768897656",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-05-17"
+  },
+  {
+    "name": "Andry Fernandez",
+    "email": "andryfernandez20@gmail.com",
+    "phone": "+50763074458",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-15",
+    "createdAt": "2025-05-15"
+  },
+  {
+    "name": "Shivsm Patel",
+    "email": "sdp0615@gmail.com",
+    "phone": "+50767212716",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-12",
+    "createdAt": "2025-05-12"
+  },
+  {
+    "name": "Josué David Suarez",
+    "email": "josuesuarez.vp@gmail.com",
+    "phone": "+50767365268",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-10",
+    "createdAt": "2025-05-10"
+  },
+  {
+    "name": "Johan Bustos",
+    "email": "johanbusto@hotmail.com",
+    "phone": "+50766565840",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-09",
+    "createdAt": "2025-05-09"
+  },
+  {
+    "name": "Gustavo Ribeiro",
+    "email": "martins.ribeiro.pm@gmail.com",
+    "phone": "+31973012884",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-07",
+    "createdAt": "2025-05-07"
+  },
+  {
+    "name": "Zeid Dasoo",
+    "email": "zeiddasoo161@gmail.com",
+    "phone": "+50760460277",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-04",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "Emilio Aguilar",
+    "email": "yuliet@gmail.com",
+    "phone": "+50766666666",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-03",
+    "createdAt": "2025-05-03"
+  },
+  {
+    "name": "Arim Femenias",
+    "email": "ponceenmar@gmail.com",
+    "phone": "+50764091017",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-02",
+    "createdAt": "2025-05-02"
+  },
+  {
+    "name": "Adan Perez",
+    "email": "adan@als-gs.com",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-01",
+    "createdAt": "2025-05-01"
+  },
+  {
+    "name": "Luisguillermo Moran",
+    "email": "luisguillermomoran67@gmail.com",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-29",
+    "createdAt": "2025-04-29"
+  },
+  {
+    "name": "Roberto Gomez",
+    "email": "roberto121806@gmail.com",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-21",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "Olmedo Aguirre",
+    "email": "adonissolmedo@gmail.com",
+    "phone": "+50762272000",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-19",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Alxander yosman Papa",
+    "email": "grupoaa1@gmail.com",
+    "phone": "+50762322108",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-10",
+    "createdAt": "2025-04-10"
+  },
+  {
+    "name": "Alexander Jimenez",
+    "email": "alexjimenez1422@gmail.com",
+    "phone": "+50768846656",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-06",
+    "createdAt": "2025-04-06"
+  },
+  {
+    "name": "Diego Cordero",
+    "email": "diecord14@gmail.com",
+    "phone": "+50762587247",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-04",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Luis Enrique Hernandez",
+    "email": "luiseherz@gmail.com",
+    "phone": "+50769491362",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-03",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Daniel Torres",
+    "email": "ztorresdaniel@gmail.com",
+    "phone": "+50766284762",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-03",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Héctor Ramirez",
+    "email": "pollyperetz@icloud.com",
+    "phone": "+50766889023",
+    "totalSpent": 26.75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-03",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Eduardo Vallarino",
+    "email": "vallarinoalemaneduardo@hotmail.com",
+    "phone": "+50760014040",
+    "totalSpent": 25.7,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-03",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Julian Cortes",
+    "email": "juliancortes2019@gmail.com",
+    "totalSpent": 25,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-30",
+    "createdAt": "2025-08-30"
+  },
+  {
+    "name": "Richard Figuera",
+    "email": "rf300676@gmail.com",
+    "phone": "+50763053287",
+    "totalSpent": 25,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-29",
+    "createdAt": "2025-07-29"
+  },
+  {
+    "name": "Arturo Edmonds",
+    "email": "arturoedmonds30@gmail.com",
+    "phone": "+50767028926",
+    "totalSpent": 25,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-24",
+    "createdAt": "2025-05-24"
+  },
+  {
+    "name": "Rudy Molinares",
+    "email": "casadevida.senegal@gmail.com",
+    "totalSpent": 25,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-21",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "Julio Barbosa",
+    "email": "juliobarbosakafree@gmail.com",
+    "phone": "+50760251439",
+    "totalSpent": 24.61,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-11",
+    "createdAt": "2025-04-11"
+  },
+  {
+    "name": "Alexander Pineda",
+    "email": "alexandergato1004@gmail.com",
+    "phone": "+50769338318",
+    "totalSpent": 24,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-19",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Jhoan vega",
+    "email": "jhoanelice@hotmail.com",
+    "phone": "+50762589990",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-11-22"
+  },
+  {
+    "name": "Ali Casivar",
+    "email": "maxibaggio.10@gmail.com",
+    "phone": "+2645087426",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-13",
+    "createdAt": "2025-10-13"
+  },
+  {
+    "name": "Jose Peña",
+    "email": "leidylopez16080090@gmail.com",
+    "phone": "+50763169186",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-02",
+    "createdAt": "2025-07-02"
+  },
+  {
+    "name": "Allan Arauz",
+    "email": "allanarauz41@gmail.com",
+    "phone": "+50766799200",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-18",
+    "createdAt": "2025-06-18"
+  },
+  {
+    "name": "Sebastián Contreras",
+    "email": "juansecontreras2016@gmail.com",
+    "phone": "+50761717951",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-13",
+    "createdAt": "2025-06-13"
+  },
+  {
+    "name": "Luis Arturo sanchez",
+    "email": "luisarturo.sm@gmail.com",
+    "phone": "+50762259090",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-05",
+    "createdAt": "2025-06-05"
+  },
+  {
+    "name": "Alexander Dávila",
+    "email": "alexanderdavila1602@gmail.com",
+    "phone": "+50768900337",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-19",
+    "createdAt": "2025-05-19"
+  },
+  {
+    "name": "Steven Agredo",
+    "email": "marcos012167@gmail.com",
+    "phone": "+3002740481",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-07",
+    "createdAt": "2025-05-07"
+  },
+  {
+    "name": "adalberto leon",
+    "email": "nomadaentertaiment@gmail.com",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-30",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "Leonel Alfonzo",
+    "email": "infonellmusica@gmail.com",
+    "phone": "+50764584891",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-26",
+    "createdAt": "2025-04-26"
+  },
+  {
+    "name": "Boris González",
+    "email": "boris.agm28@gmail.com",
+    "phone": "+50763515650",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-25",
+    "createdAt": "2025-04-25"
+  },
+  {
+    "name": "Dimas Castillero",
+    "email": "dioniscastillero@gmail.com",
+    "phone": "+50767935879",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-12",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Henry Zambrano",
+    "email": "henryzambrano2409@gmail.com",
+    "phone": "+50760028348",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-09",
+    "createdAt": "2025-04-09"
+  },
+  {
+    "name": "Nelson Rojas",
+    "email": "nelsondesing25@gmail.com",
+    "phone": "+50765389747",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-04",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Luis Carranza",
+    "email": "carranza.29@hotmail.es",
+    "phone": "+50765562236",
+    "totalSpent": 21.4,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-03",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Victor Cancino",
+    "email": "jhsidd23@gmail.com",
+    "phone": "+50765555555",
+    "totalSpent": 21.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-13",
+    "createdAt": "2025-05-13"
+  },
+  {
+    "name": "Javier Monge",
+    "email": "gjgdfhvff@gmail.com",
+    "phone": "+50765971648",
+    "totalSpent": 20.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-05",
+    "createdAt": "2025-12-05"
+  },
+  {
+    "name": "Marianny Garcia",
+    "email": "garciahumbria0307@gmail.com",
+    "phone": "+50761313543",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-20",
+    "createdAt": "2025-12-20"
+  },
+  {
+    "name": "Cesar Maurera",
+    "email": "reverso-luchadero5e@icloud.com",
+    "phone": "+50760074223",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-07-31"
+  },
+  {
+    "name": "Carlos Penna",
+    "email": "totopenna@gmail.com",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-23",
+    "createdAt": "2025-07-23"
+  },
+  {
+    "name": "Alan Gonzalez",
+    "email": "alan_gonzalez14@yahoo.com",
+    "phone": "+50765157648",
+    "totalSpent": 20,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-21",
+    "createdAt": "2025-07-03"
+  },
+  {
+    "name": "Jose luis arguello",
+    "email": "joseluisarguellovasquez@gmail.com",
+    "phone": "+50763174339",
+    "totalSpent": 20,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-21",
+    "createdAt": "2025-07-21"
+  },
+  {
+    "name": "ricardo diaz",
+    "email": "superksguy7@gmail.com",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-04",
+    "createdAt": "2025-07-04"
+  },
+  {
+    "name": "Jose Gonzalez",
+    "email": "antonio_lamaravilla_850@hotmail.com",
+    "phone": "+50766307609",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-17",
+    "createdAt": "2025-06-17"
+  },
+  {
+    "name": "Muhsin Yildiz",
+    "email": "muhsin.yildiz@outlook.com",
+    "phone": "+12025979699",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-14",
+    "createdAt": "2025-06-14"
+  },
+  {
+    "name": "Enrique Palacios",
+    "email": "enriquedanielpalacios@gmail.com",
+    "phone": "+50769200535",
+    "totalSpent": 20,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-13",
+    "createdAt": "2025-06-13"
+  },
+  {
+    "name": "andres felipe zuluaga giraldo",
+    "email": "andryuz78098@gmail.com",
+    "totalSpent": 18.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-09",
+    "createdAt": "2025-08-09"
+  },
+  {
+    "name": "diomedes carrizo",
+    "email": "diomedes813@hotmail.com",
+    "phone": "+50762441720",
+    "totalSpent": 18,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-06",
+    "createdAt": "2025-06-06"
+  },
+  {
+    "name": "Aquilio Ramos",
+    "email": "aguilioramos7@gmail.com",
+    "phone": "+50768458716",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-21",
+    "createdAt": "2025-12-21"
+  },
+  {
+    "name": "Luis Rodriguez",
+    "email": "lr3599151@gmail.com",
+    "phone": "+50767753093",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-15",
+    "createdAt": "2025-12-15"
+  },
+  {
+    "name": "Humberto Martinez",
+    "email": "hummarti@gmail.com",
+    "phone": "+50765899924",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-11-29"
+  },
+  {
+    "name": "Michaell Nickray",
+    "email": "mnickray30@gmail.com",
+    "phone": "+50763536747",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-30",
+    "createdAt": "2025-10-30"
+  },
+  {
+    "name": "Michael Liang",
+    "email": "michaelliang127@gmail.com",
+    "phone": "+50766231078",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-27",
+    "createdAt": "2025-10-27"
+  },
+  {
+    "name": "Dylan Moreno",
+    "email": "dylanemoreno@icloud.com",
+    "phone": "+50763362430",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-18",
+    "createdAt": "2025-10-18"
+  },
+  {
+    "name": "Juan Pablo Gordon",
+    "email": "juanpablo.gordon@gmail.com",
+    "phone": "+50763784022",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-15",
+    "createdAt": "2025-09-15"
+  },
+  {
+    "name": "Josimar Zarate",
+    "email": "yozavi22@gmail.com",
+    "phone": "+50769902937",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-13",
+    "createdAt": "2025-09-13"
+  },
+  {
+    "name": "Angel Cantoral",
+    "email": "angel-98-15@hotmail.com",
+    "phone": "+50761723529",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-28",
+    "createdAt": "2025-08-28"
+  },
+  {
+    "name": "Jorge Hernadez",
+    "email": "jor.hdz.02@gmail.com",
+    "phone": "+50763062867",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-27",
+    "createdAt": "2025-08-27"
+  },
+  {
+    "name": "Carlos Villanueva",
+    "email": "villanuevacarlos203@gmail.com",
+    "phone": "+50763272304",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-23",
+    "createdAt": "2025-08-23"
+  },
+  {
+    "name": "Juan B Rosario",
+    "email": "jbrosario32@hotmail.com",
+    "phone": "+50766795065",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-22",
+    "createdAt": "2025-08-22"
+  },
+  {
+    "name": "Leonel Bonilla",
+    "email": "leonelbonilla2@gmail.com",
+    "phone": "+50763994148",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-19",
+    "createdAt": "2025-08-19"
+  },
+  {
+    "name": "Kevin Ramos",
+    "email": "kevinramos04@gmail.com",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-18",
+    "createdAt": "2025-08-18"
+  },
+  {
+    "name": "Kenny Reyes",
+    "email": "reyeskenny7@icloud.com",
+    "phone": "+50761196242",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-18",
+    "createdAt": "2025-08-18"
+  },
+  {
+    "name": "Anthony Georget",
+    "email": "antonygeorget@gmail.com",
+    "phone": "+50766927493",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-18",
+    "createdAt": "2025-08-18"
+  },
+  {
+    "name": "Rafael Caseres",
+    "email": "rafacaseres02@gamil.com",
+    "phone": "+50760597502",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-16",
+    "createdAt": "2025-08-16"
+  },
+  {
+    "name": "Karin Hall",
+    "email": "jdjdjdjdjd@gmail.com",
+    "phone": "+50765226300",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-10",
+    "createdAt": "2025-08-10"
+  },
+  {
+    "name": "Roderick Palacios",
+    "email": "rpemprende@outlook.com",
+    "phone": "+50769579943",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-10",
+    "createdAt": "2025-08-10"
+  },
+  {
+    "name": "Jeison Betancur",
+    "email": "betancurjeison31@gmail.com",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-10",
+    "createdAt": "2025-08-10"
+  },
+  {
+    "name": "Willy Ortiz",
+    "email": "jjjjjjjjjjj@gmail.com",
+    "phone": "+50764625737",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-07-31"
+  },
+  {
+    "name": "Henry Monroy",
+    "email": "henryemonroy@gmail.com",
+    "phone": "+50761436148",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-31",
+    "createdAt": "2025-07-31"
+  },
+  {
+    "name": "Jostin Martinez",
+    "email": "quinterojustin55@gmail.com",
+    "phone": "+50761482936",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-30",
+    "createdAt": "2025-07-30"
+  },
+  {
+    "name": "Guillermo Gomez",
+    "email": "guillermoarielgomez13@gmail.com",
+    "phone": "+50762377629",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-28",
+    "createdAt": "2025-07-28"
+  },
+  {
+    "name": "Gabriel Varela",
+    "email": "gabitovz94@hotmail.com",
+    "phone": "+50767677238",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-27",
+    "createdAt": "2025-07-27"
+  },
+  {
+    "name": "Leonardo Caicedo",
+    "email": "caicedo2552a@gmail.com",
+    "phone": "+50762202308",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-27",
+    "createdAt": "2025-07-27"
+  },
+  {
+    "name": "Santos Santos",
+    "email": "jjdjdjdjdjd@gmail.com",
+    "phone": "+3225712286",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-23",
+    "createdAt": "2025-07-23"
+  },
+  {
+    "name": "Felipe Marulanda",
+    "email": "jjjjjjjjjjjkgyudi@gmail.com",
+    "phone": "+50769525152",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-19",
+    "createdAt": "2025-07-19"
+  },
+  {
+    "name": "Jose Salazar",
+    "email": "jgubftybgfyh@gmail.com",
+    "phone": "+50766666666",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-18",
+    "createdAt": "2025-07-18"
+  },
+  {
+    "name": "Santiago Suarez",
+    "email": "santisua04@gmail.con",
+    "phone": "+3133022883",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-17",
+    "createdAt": "2025-07-17"
+  },
+  {
+    "name": "Alejo",
+    "email": "jjjjjjjj@gmail.com",
+    "phone": "+50760184998",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-14",
+    "createdAt": "2025-07-14"
+  },
+  {
+    "name": "Román Vasquez",
+    "email": "valdair995@gmail.com",
+    "phone": "+50762428637",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-12",
+    "createdAt": "2025-07-12"
+  },
+  {
+    "name": "Arquimedes Barrios",
+    "email": "arquimedesbarrios2912@gmail.com",
+    "phone": "+50762065504",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-12",
+    "createdAt": "2025-07-12"
+  },
+  {
+    "name": "Jaime Davis",
+    "email": "jdavisg@gmail.com",
+    "phone": "+50769491620",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-11",
+    "createdAt": "2025-07-11"
+  },
+  {
+    "name": "Marco Rivero",
+    "email": "marcoantonio2599@gmail.com",
+    "phone": "+50764869086",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-06",
+    "createdAt": "2025-07-06"
+  },
+  {
+    "name": "Daniel torres",
+    "email": "dm22016534@gmail.com",
+    "phone": "+50762087464",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-06",
+    "createdAt": "2025-07-06"
+  },
+  {
+    "name": "Anil Khatwani",
+    "email": "anilkk@hotmail.com",
+    "phone": "+50762330045",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-06",
+    "createdAt": "2025-07-06"
+  },
+  {
+    "name": "Oscar Alvia",
+    "email": "ivanalvia34@gmail.com",
+    "phone": "+50769253191",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-03",
+    "createdAt": "2025-07-03"
+  },
+  {
+    "name": "Marcos Barraza",
+    "email": "marcos07barraza@gmail.com",
+    "phone": "+50765023206",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-29",
+    "createdAt": "2025-06-29"
+  },
+  {
+    "name": "Ablelardo Giraldo",
+    "email": "jjjjjj@gmail.com",
+    "phone": "+50766666666",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-29",
+    "createdAt": "2025-06-29"
+  },
+  {
+    "name": "Gianpaolo Bonadies de la Guardia",
+    "email": "doralicedelag@gmail.com",
+    "phone": "+50767394218",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-26",
+    "createdAt": "2025-06-26"
+  },
+  {
+    "name": "Henry Arismendi",
+    "email": "henryarismendipty@gmail.com",
+    "phone": "+50762883104",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-26",
+    "createdAt": "2025-06-26"
+  },
+  {
+    "name": "Bryan Acosta",
+    "email": "brailen2295@hotmail.con",
+    "phone": "+50768557460",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-23",
+    "createdAt": "2025-06-23"
+  },
+  {
+    "name": "Kenny Matos",
+    "email": "kennymts95@gmail.com",
+    "phone": "+50764843386",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-21",
+    "createdAt": "2025-06-21"
+  },
+  {
+    "name": "Leandro Galego",
+    "email": "leandrogalego29@hotmail.com",
+    "phone": "+50767808804",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-20",
+    "createdAt": "2025-06-20"
+  },
+  {
+    "name": "Ricardo Ramos",
+    "email": "ricardoramos954@gmail.com",
+    "phone": "+50767806849",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-14",
+    "createdAt": "2025-06-14"
+  },
+  {
+    "name": "Genesis Pontier",
+    "email": "pontiergenesis06@gmail.com",
+    "phone": "+50765329862",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-09",
+    "createdAt": "2025-06-09"
+  },
+  {
+    "name": "Farid Saab",
+    "email": "fgabrielsaab@gmail.com",
+    "phone": "+50769410858",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-06",
+    "createdAt": "2025-06-06"
+  },
+  {
+    "name": "Juan david Albornos",
+    "email": "laramarissa78@gmail.com",
+    "phone": "+50767619839",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-06",
+    "createdAt": "2025-06-06"
+  },
+  {
+    "name": "Ernesto Fu",
+    "email": "ernestofulao@gmail.com",
+    "phone": "+50766695755",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-04",
+    "createdAt": "2025-06-04"
+  },
+  {
+    "name": "Johan Alvarez",
+    "email": "johanestebanalvarezdelgado94@gmail.com",
+    "phone": "+50769501790",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-04",
+    "createdAt": "2025-06-04"
+  },
+  {
+    "name": "Edwin Cedeño",
+    "email": "edwincedeno0612@gmail.com",
+    "phone": "+50765907450",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-31",
+    "createdAt": "2025-05-31"
+  },
+  {
+    "name": "Alvaro Diaz",
+    "email": "alvaro.diaz1610@hotmail.com",
+    "phone": "+50765080878",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-31",
+    "createdAt": "2025-05-31"
+  },
+  {
+    "name": "Felipe Gonzalez",
+    "email": "kninknkiii@gmail.con",
+    "phone": "+50769696969",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-30",
+    "createdAt": "2025-05-30"
+  },
+  {
+    "name": "Givan",
+    "email": "doradowingzone@gmail.com",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-27",
+    "createdAt": "2025-05-27"
+  },
+  {
+    "name": "Frankie Arrocha",
+    "email": "correotrash@aol.com",
+    "phone": "+50762262294",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-25",
+    "createdAt": "2025-05-25"
+  },
+  {
+    "name": "Maicol Uribe",
+    "email": "anidjar_26@hotmail.com",
+    "phone": "+50764913266",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-22",
+    "createdAt": "2025-05-22"
+  },
+  {
+    "name": "Juan Samaniego",
+    "email": "jsamaniego1721@gmail.com",
+    "phone": "+50764022227",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-05-17"
+  },
+  {
+    "name": "Alejandro",
+    "email": "alejandro100506011@gmail.com",
+    "phone": "+50763151564",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-05-17"
+  },
+  {
+    "name": "Ariana Leal",
+    "email": "arianalealg@gmail.com",
+    "phone": "+50765237762",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-17",
+    "createdAt": "2025-05-17"
+  },
+  {
+    "name": "Andres Alfonso Medina R.",
+    "email": "amedina2708@gmail.com",
+    "phone": "+50768154008",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-10",
+    "createdAt": "2025-05-10"
+  },
+  {
+    "name": "Enzo Pareja",
+    "email": "enzoblacknwhite@gmail.com",
+    "phone": "+50761137350",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-10",
+    "createdAt": "2025-05-10"
+  },
+  {
+    "name": "Armando Ortiz",
+    "email": "arortiz08@gmail.com",
+    "phone": "+50767353416",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-10",
+    "createdAt": "2025-05-10"
+  },
+  {
+    "name": "Carlos Gomezz",
+    "email": "hd32@gmail.com",
+    "phone": "+50769999999",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-09",
+    "createdAt": "2025-05-09"
+  },
+  {
+    "name": "Andy Pereyra",
+    "email": "pereyra868@gmail.com",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-08",
+    "createdAt": "2025-05-08"
+  },
+  {
+    "name": "Andres Ronero",
+    "email": "diromero.andres@gmail.com",
+    "phone": "+50768262365",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-07",
+    "createdAt": "2025-05-07"
+  },
+  {
+    "name": "Enzo Stagnaro",
+    "email": "enzostagnaro280@gmail.com",
+    "phone": "+50769827576",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-05",
+    "createdAt": "2025-05-05"
+  },
+  {
+    "name": "Mohamed Makda",
+    "email": "mohamedmakda78@gmail.com",
+    "phone": "+50769903731",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-04",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "Dave Castillo",
+    "email": "eddenzel_1010@hotmail.com",
+    "phone": "+50762665457",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-30",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "Yair Rodríguez",
+    "email": "jairrodriguezrg13@gmail.com",
+    "phone": "+50766587772",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-21",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "oliver Martínez",
+    "email": "om630335@gmail.com",
+    "phone": "+50761016169",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-20",
+    "createdAt": "2025-04-20"
+  },
+  {
+    "name": "Juanma Izquierdo",
+    "email": "jma705032@gmail.com",
+    "phone": "+50768417408",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-19",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Boris Caraballo",
+    "email": "borisisaac63@gmail.com",
+    "phone": "+50769292797",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-16",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Fernando Araúz",
+    "email": "fernandojavier208@gmail.com",
+    "phone": "+50769497277",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-16",
+    "createdAt": "2025-04-16"
+  },
+  {
+    "name": "Javier Chen",
+    "email": "j31chen@gmail.com",
+    "phone": "+50764714058",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-12",
+    "createdAt": "2025-04-12"
+  },
+  {
+    "name": "Manuel Gonzalez",
+    "email": "mdjgr28@gmail.com",
+    "phone": "+50767956593",
+    "totalSpent": 16.05,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-06",
+    "createdAt": "2025-04-06"
+  },
+  {
+    "name": "Gildian Barria",
+    "email": "gestionesseguras@hotmail.com",
+    "phone": "+50762892245",
+    "totalSpent": 16,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-08-01",
+    "createdAt": "2025-08-01"
+  },
+  {
+    "name": "Javier Moreno",
+    "email": "jm4490276@gmail.com",
+    "phone": "+50766623096",
+    "totalSpent": 15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-08",
+    "createdAt": "2025-12-08"
+  },
+  {
+    "name": "Andres Maduro",
+    "email": "smell-clog-0c@icloud.com",
+    "phone": "+50766185616",
+    "totalSpent": 15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-22",
+    "createdAt": "2025-11-22"
+  },
+  {
+    "name": "Hector Emilio Morales",
+    "email": "hector.morales09@hotmail.com",
+    "phone": "+50762535902",
+    "totalSpent": 15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-21",
+    "createdAt": "2025-10-21"
+  },
+  {
+    "name": "Sebastian patiño Patiño",
+    "email": "sebastianpatina079@gmail.com",
+    "phone": "+50764062704",
+    "totalSpent": 15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-07",
+    "createdAt": "2025-05-07"
+  },
+  {
+    "name": "Carlos Camarena",
+    "email": "camarena.c.a26@gmail.com",
+    "phone": "+50769424604",
+    "totalSpent": 15,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-13",
+    "createdAt": "2025-04-13"
+  },
+  {
+    "name": "Davis Gallardo",
+    "email": "rocoo813@icloud.com",
+    "phone": "+50769536689",
+    "totalSpent": 13.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-04",
+    "createdAt": "2025-04-04"
+  },
+  {
+    "name": "Maximiliano Pérez",
+    "email": "azkenazy25@gmail.com",
+    "phone": "+50766543723",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-29",
+    "createdAt": "2025-11-29"
+  },
+  {
+    "name": "Jose Machon",
+    "email": "josesimanm@gmail.com",
+    "phone": "+50766357327",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-10-16",
+    "createdAt": "2025-10-16"
+  },
+  {
+    "name": "CARLOS ALBERTO Barrios",
+    "email": "cabh.barrios@gmail.com",
+    "phone": "+50764851272",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-20",
+    "createdAt": "2025-07-20"
+  },
+  {
+    "name": "Andrea Suarez",
+    "email": "suarezandreac87@gmail.com",
+    "phone": "+50764910130",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-12",
+    "createdAt": "2025-07-12"
+  },
+  {
+    "name": "Lewis Rodríguez",
+    "email": "lwsrod@gmail.com",
+    "phone": "+50764117463",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-30",
+    "createdAt": "2025-06-30"
+  },
+  {
+    "name": "Bambino Arias",
+    "email": "juanarias@gmail.com",
+    "phone": "+50767492462",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-28",
+    "createdAt": "2025-06-28"
+  },
+  {
+    "name": "Yerson Rojas",
+    "email": "yersonrojas220@gmail.com",
+    "phone": "+50762545190",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-27",
+    "createdAt": "2025-06-27"
+  },
+  {
+    "name": "Miguel Aguirre",
+    "email": "aguirre.1997@gmail.com",
+    "phone": "+50760487669",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-09",
+    "createdAt": "2025-06-09"
+  },
+  {
+    "name": "Alxander Gomez",
+    "email": "alexandergb2710@gmail.com",
+    "phone": "+50763773538",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-07",
+    "createdAt": "2025-06-07"
+  },
+  {
+    "name": "Maria Rodrigues",
+    "email": "kskskskdkd@gmail.com",
+    "phone": "+50767841761",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-06",
+    "createdAt": "2025-06-06"
+  },
+  {
+    "name": "Yann paolo barreto",
+    "email": "yanpolbarreto@gmail.com",
+    "phone": "+50761184696",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-29",
+    "createdAt": "2025-05-29"
+  },
+  {
+    "name": "Marcos Lopez",
+    "email": "khjjfkk@hmail.com",
+    "phone": "+4375455714",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-21",
+    "createdAt": "2025-05-21"
+  },
+  {
+    "name": "maria lopez",
+    "email": "maleelopez8918@hotmail.com",
+    "phone": "+50764156173",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-14",
+    "createdAt": "2025-05-14"
+  },
+  {
+    "name": "Ismael Karodia",
+    "email": "ismaelkarodia@gmail.com",
+    "phone": "+50760632522",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-04",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "Usman Karodia",
+    "email": "karodiausman2@gmail.com",
+    "phone": "+50764249193",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-04",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "CHUCKY Movil",
+    "email": "chuckymovil818@gmail.com",
+    "phone": "+50768368354",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-21",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "Daniel Perez",
+    "email": "tuodiosoconsentido@gmail.com",
+    "phone": "+50768874122",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-21",
+    "createdAt": "2025-04-21"
+  },
+  {
+    "name": "Ivan Tovar",
+    "email": "ivan.tovar@sanofi.com",
+    "phone": "+50762625273",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-19",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Axel Marin",
+    "email": "axel.marin.white@gmail.com",
+    "phone": "+50769831822",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-17",
+    "createdAt": "2025-04-17"
+  },
+  {
+    "name": "Yury Cortez",
+    "email": "yury_cortez@hotmail.com",
+    "phone": "+50765653577",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-03",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Valentino Santana",
+    "email": "hamssadj98@gmail.com",
+    "phone": "+50761671045",
+    "totalSpent": 10.7,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-03",
+    "createdAt": "2025-04-03"
+  },
+  {
+    "name": "Jhon Cera",
+    "email": "jhoncera70@musite.com",
+    "phone": "+50763348353",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-03",
+    "createdAt": "2025-12-03"
+  },
+  {
+    "name": "Fidel Real",
+    "email": "fidelreal1978@gmail.com",
+    "phone": "+50767713483",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-12-03",
+    "createdAt": "2025-12-03"
+  },
+  {
+    "name": "Roberto Hurtado",
+    "email": "robertojhurtado@gmail.com",
+    "phone": "+50764157309",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-11-04",
+    "createdAt": "2025-11-04"
+  },
+  {
+    "name": "Nazer J",
+    "email": "jjjgjjhughj@hmail.com",
+    "phone": "+50764319381",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-07-23",
+    "createdAt": "2025-07-23"
+  },
+  {
+    "name": "Efrain Perez",
+    "email": "efrainperezg8@gmail.com",
+    "phone": "+50769696969",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-06-03",
+    "createdAt": "2025-06-03"
+  },
+  {
+    "name": "Gabriela Medina",
+    "email": "zairherrera2020@gmail.com",
+    "phone": "+50762173824",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-04",
+    "createdAt": "2025-05-04"
+  },
+  {
+    "name": "Hector Durango",
+    "email": "junierdiaz1200@gmail.com",
+    "phone": "+50766077130",
+    "totalSpent": 10,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-30",
+    "createdAt": "2025-04-30"
+  },
+  {
+    "name": "Antonio Sanchez",
+    "email": "rash_2968@hotmail.com",
+    "phone": "+50761205681",
+    "totalSpent": 8.56,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-22",
+    "createdAt": "2025-04-22"
+  },
+  {
+    "name": "Angel Farian mata Garcia",
+    "email": "afmg210101@icloud.com",
+    "phone": "+50761819207",
+    "totalSpent": 7.5,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-05-20",
+    "createdAt": "2025-05-20"
+  },
+  {
+    "name": "Fernado Gonzalez",
+    "email": "f.gonzalez7519@gmail.com",
+    "totalSpent": 5.35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-04-19",
+    "createdAt": "2025-04-19"
+  },
+  {
+    "name": "Julio César Cañas medina",
+    "email": "djcanas.103.9fm@gmail.com",
+    "phone": "+50765853372",
+    "totalSpent": 3,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Pagar personalmente"
+    ],
+    "lastPayment": "2025-09-10",
+    "createdAt": "2025-09-10"
+  }
+]
