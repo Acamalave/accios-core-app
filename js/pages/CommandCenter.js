@@ -264,7 +264,10 @@ export class CommandCenter {
           <div class="cc-chart-card__header">
             <div class="cc-chart-card__title">Business Share</div>
           </div>
-          <div class="cc-chart-wrap"><canvas id="cc-chart-share"></canvas></div>
+          <div class="cc-share-layout">
+            <div class="cc-share-legend" id="cc-share-legend"></div>
+            <div class="cc-share-donut"><canvas id="cc-chart-share"></canvas></div>
+          </div>
         </div>
         <div class="cc-chart-card">
           <div class="cc-chart-card__header">
@@ -379,6 +382,17 @@ export class CommandCenter {
     const values = Object.values(biz).map(b => b.revenue);
     const colors = Object.values(biz).map(b => b.color);
 
+    // Build custom legend with dot indicators
+    const legendEl = document.getElementById('cc-share-legend');
+    if (legendEl) {
+      legendEl.innerHTML = Object.values(biz).map(b => `
+        <div class="cc-share-legend__item">
+          <span class="cc-share-legend__dot" style="background:${b.color}"></span>
+          <span class="cc-share-legend__name">${b.name}</span>
+          <span class="cc-share-legend__val">$${(b.revenue || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span>
+        </div>`).join('');
+    }
+
     this.charts.share = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -390,7 +404,7 @@ export class CommandCenter {
         maintainAspectRatio: false,
         cutout: '65%',
         plugins: {
-          legend: { display: true, position: 'bottom', labels: { color: '#A78BFA', font: { size: 10, family: "'Inter'" }, padding: 12 } }
+          legend: { display: false }
         }
       }
     });
