@@ -93,11 +93,11 @@ function normalizePhone(phone) {
 async function fetchAndUnifyUsers(dbAccios, dbRush, dbXazai) {
   const userMap = new Map(); // keyed by normalized phone
 
-  // Fetch from all available projects in parallel
+  // Fetch from all available projects in parallel (graceful fallback on quota errors)
   const [acciosUsers, rushUsers, xazaiUsers] = await Promise.all([
-    dbAccios ? dbAccios.collection('users').get().then(s => s.docs.map(d => ({ id: d.id, ...d.data(), _src: 'accios-core' }))) : [],
-    dbRush ? dbRush.collection('users').get().then(s => s.docs.map(d => ({ id: d.id, ...d.data(), _src: 'rush-ride' }))) : [],
-    dbXazai ? dbXazai.collection('customers').get().then(s => s.docs.map(d => ({ id: d.id, ...d.data(), _src: 'xazai' }))) : []
+    dbAccios ? dbAccios.collection('users').get().then(s => s.docs.map(d => ({ id: d.id, ...d.data(), _src: 'accios-core' }))).catch(e => { console.error('Accios users fetch error:', e.message); return []; }) : [],
+    dbRush ? dbRush.collection('users').get().then(s => s.docs.map(d => ({ id: d.id, ...d.data(), _src: 'rush-ride' }))).catch(e => { console.error('Rush users fetch error:', e.message); return []; }) : [],
+    dbXazai ? dbXazai.collection('customers').get().then(s => s.docs.map(d => ({ id: d.id, ...d.data(), _src: 'xazai' }))).catch(e => { console.error('Xazai users fetch error:', e.message); return []; }) : []
   ]);
 
   // Merge by phone
@@ -508,13 +508,10 @@ module.exports = async function handler(req, res) {
     const dbXazai = getDb('xazai', 'FIREBASE_SA_XAZAI');
 
     let allUsers;
-    const useMock = !dbAccios && !dbRush && !dbXazai;
 
-    if (useMock) {
-      allUsers = generateMockUsers();
-    } else {
-      allUsers = await fetchAndUnifyUsers(dbAccios, dbRush, dbXazai);
-    }
+    // Always use real unified data (JSON contacts + Firebase when available)
+    allUsers = await fetchAndUnifyUsers(dbAccios, dbRush, dbXazai);
+    const useMock = false;
 
     // Apply search
     let filtered = allUsers;
