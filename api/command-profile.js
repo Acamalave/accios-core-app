@@ -6,6 +6,9 @@ const tabaresContacts = require('../data/tabares-contacts.json');
 const cakefitContacts = require('../data/cakefit-contacts.json');
 const glowinContacts = require('../data/glowin-contacts.json');
 const hechizosContacts = require('../data/hechizos-contacts.json');
+const salon507Contacts = require('../data/salon507-contacts.json');
+const tcpContacts = require('../data/tcp-contacts.json');
+const janelleContacts = require('../data/janelle-contacts.json');
 
 function getApp(name, envVar) {
   const existing = admin.apps.find(a => a.name === name);
@@ -159,6 +162,9 @@ async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
     cakefit: { exists: false },
     glowin: { exists: false },
     hechizos: { exists: false },
+    salon507: { exists: false },
+    tcp: { exists: false },
+    janelle: { exists: false },
     timeline: []
   };
 
@@ -546,17 +552,94 @@ async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
     }
   }
 
+  // ─── Salón 507 (CSV booking data) ─────────────────────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const s5Match = salon507Contacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (s5Match) {
+      const s5Fields = {};
+      if (s5Match.name) s5Fields.name = s5Match.name;
+      if (s5Match.email) s5Fields.email = s5Match.email;
+      if (s5Match.phone) s5Fields.phone = s5Match.phone;
+      if (s5Match.services?.length) s5Fields.services = s5Match.services;
+      if (s5Match.createdAt) s5Fields.createdAt = s5Match.createdAt;
+      rawFields['salon507'] = s5Fields;
+      result.salon507 = { exists: true, ...s5Match };
+      result.unified.businesses.push('salon507');
+      if (s5Match.name && !result.unified.name) result.unified.name = s5Match.name;
+      if (s5Match.email && !result.unified.email) result.unified.email = s5Match.email;
+    } else {
+      result.salon507 = { exists: false };
+    }
+  }
+
+  // ─── Tu Compra Panamá (xlsx casilleros + carga) ───────────
+  {
+    const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+    const tcMatch = tcpContacts.find(c => {
+      if (c.phone) {
+        const cDigits = c.phone.replace(/[^0-9]/g, '').slice(-8);
+        if (cDigits === digits) return true;
+      }
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (tcMatch) {
+      const tcFields = {};
+      if (tcMatch.name) tcFields.name = tcMatch.name;
+      if (tcMatch.email) tcFields.email = tcMatch.email;
+      if (tcMatch.phone) tcFields.phone = tcMatch.phone;
+      if (tcMatch.company) tcFields.company = tcMatch.company;
+      if (tcMatch.addresses?.length) tcFields.addresses = tcMatch.addresses;
+      if (tcMatch.tags?.length) tcFields.tags = tcMatch.tags;
+      rawFields['tcp'] = tcFields;
+      result.tcp = { exists: true, ...tcMatch };
+      result.unified.businesses.push('tcp');
+      if (tcMatch.name && !result.unified.name) result.unified.name = tcMatch.name;
+      if (tcMatch.email && !result.unified.email) result.unified.email = tcMatch.email;
+    } else {
+      result.tcp = { exists: false };
+    }
+  }
+
+  // ─── Janelle Innovación (xlsx name + email only) ──────────
+  {
+    const jMatch = janelleContacts.find(c => {
+      if (c.email && knownEmail && c.email.toLowerCase() === knownEmail.toLowerCase()) return true;
+      return false;
+    });
+    if (jMatch) {
+      const jFields = {};
+      if (jMatch.name) jFields.name = jMatch.name;
+      if (jMatch.email) jFields.email = jMatch.email;
+      rawFields['janelle'] = jFields;
+      result.janelle = { exists: true, ...jMatch };
+      result.unified.businesses.push('janelle');
+      if (jMatch.name && !result.unified.name) result.unified.name = jMatch.name;
+      if (jMatch.email && !result.unified.email) result.unified.email = jMatch.email;
+    } else {
+      result.janelle = { exists: false };
+    }
+  }
+
   // ─── Build unified allFields (merge + dedup) ───────────────
   result.allFields = buildAllFields(rawFields);
 
   // Calculate aggregates for unified
-  result.unified.totalSpent = (result.xazai.totalSpent || 0) + (result.cristian.totalSpent || 0) + (result.tabares.totalSpent || 0) + (result.cakefit.totalSpent || 0) + (result.glowin.totalSpent || 0) + (result.hechizos.totalSpent || 0);
+  result.unified.totalSpent = (result.xazai.totalSpent || 0) + (result.cristian.totalSpent || 0) + (result.tabares.totalSpent || 0) + (result.cakefit.totalSpent || 0) + (result.glowin.totalSpent || 0) + (result.hechizos.totalSpent || 0) + (result.salon507.totalSpent || 0) + (result.tcp.totalSpent || 0) + (result.janelle.totalSpent || 0);
   if (result.accios.transactions) {
     result.unified.totalSpent += result.accios.transactions.reduce((s, t) => s + (t.totalAmount || t.amount || 0), 0);
   }
 
   // First seen = earliest createdAt across sources
-  const dates = [rawFields['accios-core']?.createdAt, rawFields['rush-ride']?.createdAt, rawFields['xazai']?.createdAt, rawFields['la-colson']?.createdAt, rawFields['resultados']?.createdAt, rawFields['cristian']?.createdAt, rawFields['tabares']?.createdAt, rawFields['cakefit']?.createdAt, rawFields['glowin']?.createdAt, rawFields['hechizos']?.createdAt].filter(Boolean);
+  const dates = [rawFields['accios-core']?.createdAt, rawFields['rush-ride']?.createdAt, rawFields['xazai']?.createdAt, rawFields['la-colson']?.createdAt, rawFields['resultados']?.createdAt, rawFields['cristian']?.createdAt, rawFields['tabares']?.createdAt, rawFields['cakefit']?.createdAt, rawFields['glowin']?.createdAt, rawFields['hechizos']?.createdAt, rawFields['salon507']?.createdAt, rawFields['tcp']?.createdAt, rawFields['janelle']?.createdAt].filter(Boolean);
   if (dates.length) result.unified.firstSeen = dates.sort()[0];
 
   // Sort timeline by date descending

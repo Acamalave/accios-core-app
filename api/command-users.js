@@ -6,6 +6,9 @@ const tabaresContacts = require('../data/tabares-contacts.json');
 const cakefitContacts = require('../data/cakefit-contacts.json');
 const glowinContacts = require('../data/glowin-contacts.json');
 const hechizosContacts = require('../data/hechizos-contacts.json');
+const salon507Contacts = require('../data/salon507-contacts.json');
+const tcpContacts = require('../data/tcp-contacts.json');
+const janelleContacts = require('../data/janelle-contacts.json');
 
 // ─── Firebase helpers (shared pattern) ──────────────────────────────
 function getApp(name, envVar) {
@@ -384,6 +387,104 @@ async function fetchAndUnifyUsers(dbAccios, dbRush, dbXazai) {
     }
   });
 
+  // ─── Salón 507 (CSV booking data) ─────────────────────────
+  emailToPhone.clear();
+  for (const [k, u] of userMap.entries()) {
+    if (u.email) emailToPhone.set(u.email.toLowerCase(), k);
+  }
+
+  salon507Contacts.forEach(c => {
+    const phone = normalizePhone(c.phone || '');
+    if (phone) {
+      mergeUser({ name: c.name || '', phone: c.phone || '', email: c.email || '', totalSpent: c.totalSpent || 0, createdAt: c.createdAt || '', _src: 'salon507' });
+    } else if (c.email) {
+      const matchedKey = emailToPhone.get(c.email.toLowerCase());
+      if (matchedKey && userMap.has(matchedKey)) {
+        const merged = userMap.get(matchedKey);
+        if (!merged.businesses.includes('salon507')) merged.businesses.push('salon507');
+        merged.source['salon507'] = { docId: c.email };
+      } else {
+        const key = 'email:' + c.email.toLowerCase();
+        if (!userMap.has(key)) {
+          userMap.set(key, {
+            id: key, name: c.name || '', phone: '', email: c.email,
+            businesses: ['salon507'], totalSpent: 0, lastActive: '',
+            firstSeen: c.createdAt || '', vipScore: 0, ordersCount: 0,
+            source: { 'salon507': { docId: c.email } }
+          });
+        } else {
+          const existing = userMap.get(key);
+          if (!existing.businesses.includes('salon507')) existing.businesses.push('salon507');
+          existing.source['salon507'] = { docId: c.email };
+        }
+      }
+    }
+  });
+
+  // ─── Tu Compra Panamá (xlsx casilleros + carga) ───────────
+  emailToPhone.clear();
+  for (const [k, u] of userMap.entries()) {
+    if (u.email) emailToPhone.set(u.email.toLowerCase(), k);
+  }
+
+  tcpContacts.forEach(c => {
+    const phone = normalizePhone(c.phone || '');
+    if (phone) {
+      mergeUser({ name: c.name || '', phone: c.phone || '', email: c.email || '', totalSpent: c.totalSpent || 0, createdAt: '', _src: 'tcp' });
+    } else if (c.email) {
+      const matchedKey = emailToPhone.get(c.email.toLowerCase());
+      if (matchedKey && userMap.has(matchedKey)) {
+        const merged = userMap.get(matchedKey);
+        if (!merged.businesses.includes('tcp')) merged.businesses.push('tcp');
+        merged.source['tcp'] = { docId: c.email };
+      } else {
+        const key = 'email:' + c.email.toLowerCase();
+        if (!userMap.has(key)) {
+          userMap.set(key, {
+            id: key, name: c.name || '', phone: '', email: c.email,
+            businesses: ['tcp'], totalSpent: 0, lastActive: '',
+            firstSeen: '', vipScore: 0, ordersCount: 0,
+            source: { 'tcp': { docId: c.email } }
+          });
+        } else {
+          const existing = userMap.get(key);
+          if (!existing.businesses.includes('tcp')) existing.businesses.push('tcp');
+          existing.source['tcp'] = { docId: c.email };
+        }
+      }
+    }
+  });
+
+  // ─── Janelle Innovación (xlsx name + email only) ──────────
+  emailToPhone.clear();
+  for (const [k, u] of userMap.entries()) {
+    if (u.email) emailToPhone.set(u.email.toLowerCase(), k);
+  }
+
+  janelleContacts.forEach(c => {
+    if (!c.email) return;
+    const matchedKey = emailToPhone.get(c.email.toLowerCase());
+    if (matchedKey && userMap.has(matchedKey)) {
+      const merged = userMap.get(matchedKey);
+      if (!merged.businesses.includes('janelle')) merged.businesses.push('janelle');
+      merged.source['janelle'] = { docId: c.email };
+    } else {
+      const key = 'email:' + c.email.toLowerCase();
+      if (!userMap.has(key)) {
+        userMap.set(key, {
+          id: key, name: c.name || '', phone: '', email: c.email,
+          businesses: ['janelle'], totalSpent: 0, lastActive: '',
+          firstSeen: '', vipScore: 0, ordersCount: 0,
+          source: { 'janelle': { docId: c.email } }
+        });
+      } else {
+        const existing = userMap.get(key);
+        if (!existing.businesses.includes('janelle')) existing.businesses.push('janelle');
+        existing.source['janelle'] = { docId: c.email };
+      }
+    }
+  });
+
   return Array.from(userMap.values());
 }
 
@@ -453,6 +554,15 @@ module.exports = async function handler(req, res) {
         break;
       case 'cross_hechizos':
         filtered = filtered.filter(u => u.businesses.includes('accios-core') && !u.businesses.includes('hechizos'));
+        break;
+      case 'cross_salon507':
+        filtered = filtered.filter(u => u.businesses.includes('accios-core') && !u.businesses.includes('salon507'));
+        break;
+      case 'cross_tcp':
+        filtered = filtered.filter(u => u.businesses.includes('accios-core') && !u.businesses.includes('tcp'));
+        break;
+      case 'cross_janelle':
+        filtered = filtered.filter(u => u.businesses.includes('accios-core') && !u.businesses.includes('janelle'));
         break;
       case 'vip': {
         const sorted = [...filtered].sort((a, b) => b.totalSpent - a.totalSpent);

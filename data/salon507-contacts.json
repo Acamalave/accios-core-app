@@ -1,0 +1,458 @@
+[
+  {
+    "email": "malave.acacio@gmail.com",
+    "phone": "68204698",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Barbershop - La vida es demasiado corta para llevar el pelo aburrido"
+    ],
+    "createdAt": "2017-11-15"
+  },
+  {
+    "email": "nicoletgm@gmail.com",
+    "phone": "60866929",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Día de la inauguración - Servicios Gratuitos"
+    ],
+    "createdAt": "2017-11-16"
+  },
+  {
+    "email": "eortega31.mo@gmail.com",
+    "phone": "69995602",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Día de la inauguración - Servicios Gratuitos"
+    ],
+    "createdAt": "2017-11-16"
+  },
+  {
+    "email": "netvanessa@hotmail.com",
+    "phone": "61070561",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Día de la inauguración - Servicios Gratuitos"
+    ],
+    "createdAt": "2017-11-16"
+  },
+  {
+    "email": "karinamorales50@hotmail.com",
+    "phone": "61340549",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Día de la inauguración - Servicios Gratuitos"
+    ],
+    "createdAt": "2017-11-16"
+  },
+  {
+    "name": "Alejandra Soto Garay",
+    "email": "alejandramsg11@hotmail.com",
+    "phone": "66858379",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-01-09"
+  },
+  {
+    "name": "Andrea Quintero",
+    "email": "andreeq04@hotmail.com",
+    "phone": "68693097",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "KERATINA - Alisa  90% de la onda de tu cabello."
+    ],
+    "createdAt": "2018-03-03"
+  },
+  {
+    "name": "Andres cortes",
+    "email": "andycortes89@icloud.com",
+    "phone": "+573133287781",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "BARBERSHOP - La vida es demasiado corta para llevar el pelo aburrido y la barba desarreglada."
+    ],
+    "createdAt": "2018-01-20"
+  },
+  {
+    "name": "Antonio Gómez",
+    "email": "antoniogomeztineo@gmail.com",
+    "phone": "60363494",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "BARBERSHOP - La vida es demasiado corta para llevar el pelo aburrido y la barba desarreglada."
+    ],
+    "createdAt": "2017-12-21"
+  },
+  {
+    "name": "Aracelys",
+    "email": "miranda272988@gmail.com",
+    "phone": "69327114",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Maquillaje y peinado"
+    ],
+    "createdAt": "2017-12-13"
+  },
+  {
+    "name": "Carlos Jamdan",
+    "email": "cjamdan@gmail.com",
+    "phone": "+50767972137",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "BARBERSHOP - La vida es demasiado corta para llevar el pelo aburrido y la barba desarreglada."
+    ],
+    "createdAt": "2017-12-11"
+  },
+  {
+    "name": "Chantal",
+    "email": "chantaldegracia@gmail.com",
+    "phone": "64331242",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "KERATINA - Alisa  90% de la onda de tu cabello."
+    ],
+    "createdAt": "2018-01-04"
+  },
+  {
+    "name": "Cristhian Gómez",
+    "email": "cgomez@superxtra.com",
+    "phone": "61246904",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-25"
+  },
+  {
+    "name": "Daniela Lopez",
+    "email": "nanilop006@gmail.com",
+    "phone": "64551567",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Pestañas, cejas, corte de cabello, cirugía capilar"
+    ],
+    "createdAt": "2017-12-06"
+  },
+  {
+    "name": "Eduardo Barria",
+    "email": "eduardo_barria@yahoo.com",
+    "phone": "67092033",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "BARBERSHOP - La vida es demasiado corta para llevar el pelo aburrido y la barba desarreglada."
+    ],
+    "createdAt": "2017-12-12"
+  },
+  {
+    "name": "Eduardo Vega",
+    "email": "vega.eduardog@gmail.com",
+    "phone": "60708591",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-12-11"
+  },
+  {
+    "name": "Elia Blandon",
+    "email": "eliateresa23@gmail.com",
+    "phone": "60023010",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-12-14"
+  },
+  {
+    "name": "Estefania",
+    "email": "estefaniariccardi@gmail.com",
+    "phone": "62940605",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-15"
+  },
+  {
+    "name": "Federico",
+    "email": "federicomartunez26@gmail.com",
+    "phone": "68681786",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Compré oferta simple para el corte de cabello y barba"
+    ],
+    "createdAt": "2017-12-20"
+  },
+  {
+    "name": "Gaby",
+    "email": "dragabylorenzo@yahoo.com",
+    "phone": "69817852",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-22"
+  },
+  {
+    "name": "Gloris espino",
+    "email": "gloristell.espino@gmail.com",
+    "phone": "62753489",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "MANICURE - Haz que tu tarjeta de presentación sea ¡perfecta!"
+    ],
+    "createdAt": "2017-12-29"
+  },
+  {
+    "name": "Iván Rivera",
+    "email": "iorg_30@hotmail.com",
+    "phone": "67708475",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-11-28"
+  },
+  {
+    "name": "Jennia quintero",
+    "email": "jenniajqg@gmail.com",
+    "phone": "66720582",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CAMBIO DE COLOR - Consigue el color que deseas, ¡aquí!"
+    ],
+    "createdAt": "2018-01-03"
+  },
+  {
+    "name": "Jennifer Castillo",
+    "email": "jennicastillo7@gnail.com",
+    "phone": "61501763",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-12-16"
+  },
+  {
+    "name": "Jorge",
+    "email": "jorgeiguevarap@gmail.com",
+    "phone": "64541228",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "BARBERSHOP - La vida es demasiado corta para llevar el pelo aburrido y la barba desarreglada."
+    ],
+    "createdAt": "2017-11-30"
+  },
+  {
+    "name": "Karla Gonzalez",
+    "email": "karlag06@hotmail.com",
+    "phone": "67430406",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Lavado y blower"
+    ],
+    "createdAt": "2017-12-27"
+  },
+  {
+    "name": "Kathy Waterman",
+    "email": "kathywaterman18@gmail.com",
+    "phone": "67807618",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Peinado"
+    ],
+    "createdAt": "2018-01-27"
+  },
+  {
+    "name": "Mari Rodriguez",
+    "email": "m.rodriguez.15.93@gmail.com",
+    "phone": "64095553",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-12-18"
+  },
+  {
+    "name": "María Alejandra gutierrez",
+    "email": "marialeguti@gmail.com",
+    "phone": "62119654",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Splitenderpro"
+    ],
+    "createdAt": "2017-12-19"
+  },
+  {
+    "name": "Maria Echeverria",
+    "email": "mariai.echeverria@hotmail.com",
+    "phone": "63985727",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-12-18"
+  },
+  {
+    "name": "Mariel",
+    "email": "marielgonzalezmarin@gmail.com",
+    "phone": "62891095",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Split Ender"
+    ],
+    "createdAt": "2017-11-25"
+  },
+  {
+    "name": "Marlenis",
+    "email": "emarlenis25@hotmail.com",
+    "phone": "68842535",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-11-23"
+  },
+  {
+    "name": "Monica",
+    "email": "monique_81@hotmail.com",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-18"
+  },
+  {
+    "name": "Querube",
+    "email": "qarosemena@gmail.com",
+    "phone": "69829857",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "Blower con rizos y maquillaje"
+    ],
+    "createdAt": "2018-01-28"
+  },
+  {
+    "name": "Rosa",
+    "email": "rosa.carvajal218@gmail.com",
+    "phone": "62853176",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "KERATINA - Alisa  90% de la onda de tu cabello."
+    ],
+    "createdAt": "2017-12-20"
+  },
+  {
+    "name": "Ruben Eduardo Caballero",
+    "email": "rubencaba@yahoo.com",
+    "phone": "66199073",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-26"
+  },
+  {
+    "name": "Silvia",
+    "email": "silviahernandez_89@hotmail.com",
+    "phone": "+573133287781",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CORTE DE CABELLO DAMAS - Eres tan dinámica como tu último corte de cabello."
+    ],
+    "createdAt": "2018-01-20"
+  },
+  {
+    "name": "Sofia becciu",
+    "email": "sofia.becciu@hotmail.com",
+    "phone": "62182849",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-01-20"
+  },
+  {
+    "name": "Thalia moran",
+    "email": "thaliamoran17@hotmail.com",
+    "phone": "62193180",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-15"
+  },
+  {
+    "name": "Verónica Pérez Cuervo",
+    "email": "veronica@perezcuervo.com",
+    "phone": "66747099",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CORTE DE CABELLO DAMAS - Eres tan dinámica como tu último corte de cabello."
+    ],
+    "createdAt": "2017-12-21"
+  },
+  {
+    "name": "Yoirieth Vázquez delin",
+    "email": "yoirieth18@gmail.com",
+    "phone": "63480479",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2018-02-22"
+  },
+  {
+    "name": "Zenaida Abrego",
+    "email": "lulicordero06@gmail.com",
+    "phone": "66793435",
+    "totalSpent": 0,
+    "transactionCount": 0,
+    "services": [
+      "CIRUGÍA CAPILAR - Repara y alisa el 60% de la onda en tu cabello."
+    ],
+    "createdAt": "2017-12-26"
+  }
+]

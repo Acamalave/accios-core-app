@@ -502,7 +502,7 @@ export class CommandCenter {
         <div class="cc-activity__item" data-biz="${a.business}">
           <div class="cc-activity__icon">${icons[a.type] || '📌'}</div>
           <div class="cc-activity__text">
-            <span class="cc-biz-badge cc-biz-badge--${a.business === 'rush-ride' ? 'rush' : a.business === 'xazai' ? 'xazai' : a.business === 'la-colson' ? 'colson' : a.business === 'resultados' ? 'resultados' : a.business === 'cristian' ? 'cristian' : a.business === 'tabares' ? 'tabares' : a.business === 'cakefit' ? 'cakefit' : a.business === 'glowin' ? 'glowin' : a.business === 'hechizos' ? 'hechizos' : 'accios'}">${(data.byBusiness[a.business]?.name || a.business).split(' ')[0]}</span>
+            <span class="cc-biz-badge cc-biz-badge--${a.business === 'rush-ride' ? 'rush' : a.business === 'xazai' ? 'xazai' : a.business === 'la-colson' ? 'colson' : a.business === 'resultados' ? 'resultados' : a.business === 'cristian' ? 'cristian' : a.business === 'tabares' ? 'tabares' : a.business === 'cakefit' ? 'cakefit' : a.business === 'glowin' ? 'glowin' : a.business === 'hechizos' ? 'hechizos' : a.business === 'salon507' ? 'salon507' : a.business === 'tcp' ? 'tcp' : a.business === 'janelle' ? 'janelle' : 'accios'}">${(data.byBusiness[a.business]?.name || a.business).split(' ')[0]}</span>
             ${a.description}
           </div>
           <div class="cc-activity__time">${timeAgo}</div>
@@ -529,6 +529,9 @@ export class CommandCenter {
           <button class="cc-filter-chip${this.userFilter === 'cross_cakefit' ? ' active' : ''}" data-filter="cross_cakefit">No en CF</button>
           <button class="cc-filter-chip${this.userFilter === 'cross_glowin' ? ' active' : ''}" data-filter="cross_glowin">No en GS</button>
           <button class="cc-filter-chip${this.userFilter === 'cross_hechizos' ? ' active' : ''}" data-filter="cross_hechizos">No en HS</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_salon507' ? ' active' : ''}" data-filter="cross_salon507">No en S5</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_tcp' ? ' active' : ''}" data-filter="cross_tcp">No en TC</button>
+          <button class="cc-filter-chip${this.userFilter === 'cross_janelle' ? ' active' : ''}" data-filter="cross_janelle">No en JI</button>
           <button class="cc-filter-chip${this.userFilter === 'vip' ? ' active' : ''}" data-filter="vip">VIP</button>
           <button class="cc-filter-chip${this.userFilter === 'churn' ? ' active' : ''}" data-filter="churn">Riesgo Fuga</button>
         </div>
@@ -585,6 +588,9 @@ export class CommandCenter {
       if (b === 'cakefit') return '<span class="cc-biz-badge cc-biz-badge--cakefit">CF</span>';
       if (b === 'glowin') return '<span class="cc-biz-badge cc-biz-badge--glowin">GS</span>';
       if (b === 'hechizos') return '<span class="cc-biz-badge cc-biz-badge--hechizos">HS</span>';
+      if (b === 'salon507') return '<span class="cc-biz-badge cc-biz-badge--salon507">S5</span>';
+      if (b === 'tcp') return '<span class="cc-biz-badge cc-biz-badge--tcp">TC</span>';
+      if (b === 'janelle') return '<span class="cc-biz-badge cc-biz-badge--janelle">JI</span>';
       return `<span class="cc-biz-badge">${b}</span>`;
     };
 
@@ -702,6 +708,9 @@ export class CommandCenter {
             if (b === 'cakefit') return '<span class="cc-biz-badge cc-biz-badge--cakefit">Cake Fit</span>';
             if (b === 'glowin') return '<span class="cc-biz-badge cc-biz-badge--glowin">Glowin Strong</span>';
             if (b === 'hechizos') return '<span class="cc-biz-badge cc-biz-badge--hechizos">Hechizos Salón</span>';
+            if (b === 'salon507') return '<span class="cc-biz-badge cc-biz-badge--salon507">Salón 507</span>';
+            if (b === 'tcp') return '<span class="cc-biz-badge cc-biz-badge--tcp">Tu Compra Panamá</span>';
+            if (b === 'janelle') return '<span class="cc-biz-badge cc-biz-badge--janelle">Janelle Innovación</span>';
             return '';
           }).join('')}
         </div>
@@ -732,6 +741,9 @@ export class CommandCenter {
         ${this._renderBusinessSection('cakefit', 'Cake Fit', profile.cakefit)}
         ${this._renderBusinessSection('glowin', 'Glowin Strong', profile.glowin)}
         ${this._renderBusinessSection('hechizos', 'Hechizos Salón', profile.hechizos)}
+        ${this._renderBusinessSection('salon507', 'Salón 507', profile.salon507)}
+        ${this._renderBusinessSection('tcp', 'Tu Compra Panamá', profile.tcp)}
+        ${this._renderBusinessSection('janelle', 'Janelle Innovación', profile.janelle)}
         ${this._renderTimeline(profile.timeline)}
       </div>`;
 
@@ -797,6 +809,9 @@ export class CommandCenter {
     if (src === 'cakefit') return '<span class="cc-dossier-src cc-dossier-src--cakefit">CF</span>';
     if (src === 'glowin') return '<span class="cc-dossier-src cc-dossier-src--glowin">GS</span>';
     if (src === 'hechizos') return '<span class="cc-dossier-src cc-dossier-src--hechizos">HS</span>';
+    if (src === 'salon507') return '<span class="cc-dossier-src cc-dossier-src--salon507">S5</span>';
+    if (src === 'tcp') return '<span class="cc-dossier-src cc-dossier-src--tcp">TC</span>';
+    if (src === 'janelle') return '<span class="cc-dossier-src cc-dossier-src--janelle">JI</span>';
     return `<span class="cc-dossier-src">${src}</span>`;
   }
 
@@ -838,7 +853,7 @@ export class CommandCenter {
         </div>`;
     }
 
-    const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : key === 'la-colson' ? 'colson' : key === 'resultados' ? 'resultados' : key === 'cristian' ? 'cristian' : key === 'tabares' ? 'tabares' : key === 'cakefit' ? 'cakefit' : key === 'glowin' ? 'glowin' : key === 'hechizos' ? 'hechizos' : 'accios';
+    const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : key === 'la-colson' ? 'colson' : key === 'resultados' ? 'resultados' : key === 'cristian' ? 'cristian' : key === 'tabares' ? 'tabares' : key === 'cakefit' ? 'cakefit' : key === 'glowin' ? 'glowin' : key === 'hechizos' ? 'hechizos' : key === 'salon507' ? 'salon507' : key === 'tcp' ? 'tcp' : key === 'janelle' ? 'janelle' : 'accios';
     let items = '';
 
     if (key === 'accios-core') {
@@ -1024,6 +1039,29 @@ export class CommandCenter {
           </div>`).join('');
       }
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'salon507') {
+      if (data.services?.length) {
+        items += `<div class="cc-profile-item"><span>💇 ${data.services.join(', ')}</span></div>`;
+      }
+      if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primera cita: ${this._formatDate(data.createdAt)}</div>`;
+    }
+
+    if (key === 'tcp') {
+      if (data.company) items += `<div class="cc-profile-item"><span>🏢 ${data.company}</span></div>`;
+      if (data.tags?.length) items += `<div class="cc-profile-item"><span>🏷️ ${data.tags.join(', ')}</span></div>`;
+      if (data.addresses?.length) {
+        items += data.addresses.map(a => `
+          <div class="cc-profile-item">
+            <span>📍 ${a}</span>
+          </div>`).join('');
+      }
+    }
+
+    if (key === 'janelle') {
+      if (data.name) items += `<div class="cc-profile-item"><span>👤 ${data.name}</span></div>`;
+      if (data.email) items += `<div class="cc-profile-item"><span>📧 ${data.email}</span></div>`;
     }
 
     return `

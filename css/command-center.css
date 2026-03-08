@@ -522,6 +522,9 @@
 .cc-biz-badge--cakefit { background: rgba(249, 115, 22, 0.1); color: #F97316; border: 1px solid rgba(249, 115, 22, 0.2); }
 .cc-biz-badge--glowin { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
 .cc-biz-badge--hechizos { background: rgba(217, 70, 239, 0.1); color: #D946EF; border: 1px solid rgba(217, 70, 239, 0.2); }
+.cc-biz-badge--salon507 { background: rgba(244, 63, 94, 0.1); color: #F43F5E; border: 1px solid rgba(244, 63, 94, 0.2); }
+.cc-biz-badge--tcp { background: rgba(14, 165, 233, 0.1); color: #0EA5E9; border: 1px solid rgba(14, 165, 233, 0.2); }
+.cc-biz-badge--janelle { background: rgba(132, 204, 22, 0.1); color: #84CC16; border: 1px solid rgba(132, 204, 22, 0.2); }
 
 /* ─── Users Table ────────────────────────────────────────────────── */
 .cc-users-header {
@@ -857,6 +860,9 @@
 .cc-profile-section__title--cakefit { color: #F97316; }
 .cc-profile-section__title--glowin { color: #10B981; }
 .cc-profile-section__title--hechizos { color: #D946EF; }
+.cc-profile-section__title--salon507 { color: #F43F5E; }
+.cc-profile-section__title--tcp { color: #0EA5E9; }
+.cc-profile-section__title--janelle { color: #84CC16; }
 .cc-profile-section__title--inactive { color: var(--text-dim); }
 
 .cc-profile-item {
@@ -932,6 +938,9 @@
 .cc-dossier-src--cakefit { background: rgba(249, 115, 22, 0.1); color: #F97316; }
 .cc-dossier-src--glowin { background: rgba(16, 185, 129, 0.1); color: #10B981; }
 .cc-dossier-src--hechizos { background: rgba(217, 70, 239, 0.1); color: #D946EF; }
+.cc-dossier-src--salon507 { background: rgba(244, 63, 94, 0.1); color: #F43F5E; }
+.cc-dossier-src--tcp { background: rgba(14, 165, 233, 0.1); color: #0EA5E9; }
+.cc-dossier-src--janelle { background: rgba(132, 204, 22, 0.1); color: #84CC16; }
 
 .cc-dossier-tag {
   display: inline-flex;

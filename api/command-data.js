@@ -6,6 +6,9 @@ const tabaresContacts = require('../data/tabares-contacts.json');
 const cakefitContacts = require('../data/cakefit-contacts.json');
 const glowinContacts = require('../data/glowin-contacts.json');
 const hechizosContacts = require('../data/hechizos-contacts.json');
+const salon507Contacts = require('../data/salon507-contacts.json');
+const tcpContacts = require('../data/tcp-contacts.json');
+const janelleContacts = require('../data/janelle-contacts.json');
 
 // ─── Multi-project Firebase initialization ──────────────────────────
 function getApp(name, envVar) {
@@ -300,6 +303,30 @@ module.exports = async function handler(req, res) {
         users: hechizosContacts.length,
         revenue: Math.round(hechizosContacts.reduce((s, c) => s + (c.totalSpent || 0), 0) * 100) / 100,
         collections: { contacts: hechizosContacts.length }
+      },
+      'salon507': {
+        name: 'Salón 507',
+        color: '#F43F5E',
+        icon: 'content_cut',
+        users: salon507Contacts.length,
+        revenue: Math.round(salon507Contacts.reduce((s, c) => s + (c.totalSpent || 0), 0) * 100) / 100,
+        collections: { contacts: salon507Contacts.length }
+      },
+      'tcp': {
+        name: 'Tu Compra Panamá',
+        color: '#0EA5E9',
+        icon: 'local_shipping',
+        users: tcpContacts.length,
+        revenue: Math.round(tcpContacts.reduce((s, c) => s + (c.totalSpent || 0), 0) * 100) / 100,
+        collections: { contacts: tcpContacts.length }
+      },
+      'janelle': {
+        name: 'Janelle Innovación',
+        color: '#84CC16',
+        icon: 'lightbulb',
+        users: janelleContacts.length,
+        revenue: Math.round(janelleContacts.reduce((s, c) => s + (c.totalSpent || 0), 0) * 100) / 100,
+        collections: { contacts: janelleContacts.length }
       }
     };
 
