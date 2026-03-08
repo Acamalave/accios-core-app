@@ -1,6 +1,7 @@
 import userAuth from '../services/userAuth.js';
 import { Toast } from '../components/Toast.js';
 import { db, collection, query, where, orderBy, getDocs, limit, onSnapshot } from '../services/firebase.js';
+import { AdminChatPanel } from '../components/AdminChatPanel.js';
 
 export class SuperAdmin {
   constructor(container) {
@@ -77,6 +78,7 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'appointments' ? 'active' : ''}" data-tab="appointments">Citas<span id="sa-appts-badge" class="sa-notif-badge" style="display:none;"></span></button>
           <button class="superadmin-tab ${this.tab === 'behavior' ? 'active' : ''}" data-tab="behavior">Comportamiento</button>
           <button class="superadmin-tab ${this.tab === 'timeline' ? 'active' : ''}" data-tab="timeline">Timeline</button>
+          <button class="superadmin-tab ${this.tab === 'chat' ? 'active' : ''}" data-tab="chat">AI Chat</button>
         </div>
 
         <div id="sa-content">
@@ -111,6 +113,18 @@ export class SuperAdmin {
       userAuth.getAllQuotes().catch(() => []),
     ]);
     this.chargesData = await userAuth.ensureMonthlyMemberships(this.businesses, this.selectedMonth);
+
+    // Keep chat context updated with fresh data
+    if (this._chatPanel) {
+      this._chatPanel.updateContext({
+        users: this.users,
+        businesses: this.businesses,
+        episodes: this.episodes,
+        comments: this.comments,
+        appointments: this.appointments,
+        quotes: this.quotes,
+      });
+    }
   }
 
   _renderStats() {
@@ -204,7 +218,30 @@ export class SuperAdmin {
       this._renderBehavior(content);
     } else if (this.tab === 'timeline') {
       this._renderTimelineAdmin(content);
+    } else if (this.tab === 'chat') {
+      this._renderChat(content);
     }
+  }
+
+  // ─── AI CHAT TAB ───────────────────────────────────────
+
+  _renderChat(content) {
+    content.innerHTML = '<div id="sa-chat-container" style="height:calc(100vh - 280px);min-height:400px;display:flex;flex-direction:column;"></div>';
+
+    const chatContainer = content.querySelector('#sa-chat-container');
+
+    this._chatPanel = new AdminChatPanel(chatContainer, {
+      users: this.users,
+      businesses: this.businesses,
+      clients: [],
+      transactions: [],
+      episodes: this.episodes,
+      comments: this.comments,
+      appointments: this.appointments,
+      quotes: this.quotes,
+    });
+
+    this._chatPanel.render();
   }
 
   // ─── USERS TAB ─────────────────────────────────────────

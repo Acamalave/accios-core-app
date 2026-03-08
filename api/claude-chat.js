@@ -1,7 +1,3 @@
-const Anthropic = require('@anthropic-ai/sdk');
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 module.exports = async function handler(req, res) {
   // Explicit CORS headers for Capacitor native app (origin: https://localhost)
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,17 +15,32 @@ module.exports = async function handler(req, res) {
   try {
     const { messages, systemPrompt } = req.body;
 
-    const response = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1024,
-      system: systemPrompt || 'Eres un asistente útil. Responde en español.',
-      messages: messages.map(m => ({
-        role: m.role,
-        content: m.content
-      }))
+    const apiResponse = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: systemPrompt || 'Eres un asistente útil. Responde en español.',
+        messages: messages.map(m => ({
+          role: m.role,
+          content: m.content
+        }))
+      })
     });
 
-    const content = response.content[0]?.text || '';
+    const data = await apiResponse.json();
+
+    if (!apiResponse.ok) {
+      console.error('Claude API error:', JSON.stringify(data));
+      return res.status(apiResponse.status).json({ error: data.error?.message || 'API error' });
+    }
+
+    const content = data.content?.[0]?.text || '';
     res.status(200).json({ content });
   } catch (err) {
     console.error('Claude API error:', err.message || err);

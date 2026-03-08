@@ -2,7 +2,6 @@
   "name": "accios-core-api",
   "private": true,
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
     "firebase-admin": "^13.0.0"
   }
 }

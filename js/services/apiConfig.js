@@ -27,7 +27,7 @@ function detectNative() {
 }
 
 const isNative = detectNative();
-const API_BASE = isNative ? 'https://accios-core.vercel.app' : '';
+const API_BASE = isNative ? 'https://accioscore.com' : '';
 
 // Debug logging for native app troubleshooting
 if (isNative) {
