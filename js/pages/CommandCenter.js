@@ -259,18 +259,6 @@ export class CommandCenter {
             <div class="cc-share-donut"><canvas id="cc-chart-share"></canvas></div>
           </div>
         </div>
-        <div class="cc-chart-card">
-          <div class="cc-chart-card__header">
-            <div class="cc-chart-card__title">User Activity</div>
-          </div>
-          <div class="cc-chart-wrap"><canvas id="cc-chart-activity"></canvas></div>
-        </div>
-        <div class="cc-chart-card">
-          <div class="cc-chart-card__header">
-            <div class="cc-chart-card__title">Business Comparison</div>
-          </div>
-          <div class="cc-chart-wrap"><canvas id="cc-chart-comparison"></canvas></div>
-        </div>
       </div>
 
       <div class="cc-activity">
@@ -282,8 +270,6 @@ export class CommandCenter {
     requestAnimationFrame(() => {
       this._renderRevenueChart(d);
       this._renderShareChart(d);
-      this._renderActivityChart(d);
-      this._renderComparisonChart(d);
       this._renderActivityFeed(d);
     });
   }
@@ -390,96 +376,6 @@ export class CommandCenter {
         cutout: '65%',
         plugins: {
           legend: { display: false }
-        }
-      }
-    });
-  }
-
-  _renderActivityChart(data) {
-    const ctx = document.getElementById('cc-chart-activity');
-    if (!ctx || !window.Chart) return;
-
-    const trend = data.userActivityTrend || [];
-    const labels = trend.map(t => {
-      const d = new Date(t.date);
-      return d.toLocaleDateString('es', { month: 'short', day: 'numeric' });
-    });
-    const step = Math.max(1, Math.floor(trend.length / 30));
-    const filteredLabels = labels.map((l, i) => i % step === 0 ? l : '');
-
-    this.charts.activity = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: filteredLabels,
-        datasets: [
-          {
-            label: 'Activos',
-            data: trend.map(t => t.activeUsers),
-            backgroundColor: 'rgba(124, 58, 237, 0.4)',
-            borderColor: '#7C3AED',
-            borderWidth: 1,
-            borderRadius: 3
-          },
-          {
-            label: 'Nuevos',
-            data: trend.map(t => t.newUsers),
-            backgroundColor: 'rgba(57, 255, 20, 0.3)',
-            borderColor: '#39FF14',
-            borderWidth: 1,
-            borderRadius: 3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { intersect: false, mode: 'index' },
-        plugins: {
-          legend: { display: true, position: 'top', labels: { color: '#A78BFA', font: { size: 10, family: "'Inter'" }, boxWidth: 12, padding: 12 } }
-        },
-        scales: {
-          x: { stacked: true, grid: { display: false }, ticks: { color: '#6B5E99', font: { size: 9 }, maxRotation: 0 } },
-          y: { stacked: true, grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 } } }
-        }
-      }
-    });
-  }
-
-  _renderComparisonChart(data) {
-    const ctx = document.getElementById('cc-chart-comparison');
-    if (!ctx || !window.Chart) return;
-
-    const biz = data.byBusiness || {};
-    const names = Object.values(biz).map(b => b.name);
-    const colors = Object.values(biz).map(b => b.color);
-
-    this.charts.comparison = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Usuarios', 'Revenue ($)', 'Ordenes'],
-        datasets: Object.keys(biz).map((key, i) => ({
-          label: biz[key].name,
-          data: [
-            biz[key].users,
-            biz[key].revenue,
-            biz[key].collections?.orders || biz[key].collections?.reservations || biz[key].collections?.fin_transactions || 0
-          ],
-          backgroundColor: colors[i] + '50',
-          borderColor: colors[i],
-          borderWidth: 1,
-          borderRadius: 3
-        }))
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y',
-        plugins: {
-          legend: { display: true, position: 'top', labels: { color: '#A78BFA', font: { size: 10, family: "'Inter'" }, boxWidth: 12, padding: 12 } }
-        },
-        scales: {
-          x: { grid: { color: 'rgba(124, 58, 237, 0.06)' }, ticks: { color: '#6B5E99', font: { size: 9 } } },
-          y: { grid: { display: false }, ticks: { color: '#A78BFA', font: { size: 10, family: "'Inter'" } } }
         }
       }
     });
@@ -1243,28 +1139,6 @@ export class CommandCenter {
       this.charts.share.update('none');
     }
 
-    // Activity chart
-    if (this.charts.activity && data.userActivityTrend) {
-      const trend = data.userActivityTrend;
-      this.charts.activity.data.datasets[0].data = trend.map(t => t.activeUsers);
-      this.charts.activity.data.datasets[1].data = trend.map(t => t.newUsers);
-      this.charts.activity.update('none');
-    }
-
-    // Comparison chart
-    if (this.charts.comparison && data.byBusiness) {
-      const biz = data.byBusiness;
-      Object.keys(biz).forEach((key, i) => {
-        if (this.charts.comparison.data.datasets[i]) {
-          this.charts.comparison.data.datasets[i].data = [
-            biz[key].users,
-            biz[key].revenue,
-            biz[key].collections?.orders || biz[key].collections?.reservations || biz[key].collections?.fin_transactions || 0
-          ];
-        }
-      });
-      this.charts.comparison.update('none');
-    }
   }
 
   unmount() {

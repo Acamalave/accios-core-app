@@ -46,40 +46,8 @@ function toDateKey(dateStr) {
  * Compute real trend data from JSON contact dates.
  * @param {string} range - '7d','30d','90d','365d'
  */
-function computeRealTrends(range) {
-  const days = range === '7d' ? 7 : range === '90d' ? 90 : range === '365d' ? 365 : 30;
+function computeRealTrends() {
   const now = new Date();
-  const today = now.toISOString().slice(0, 10);
-
-  // Build date keys for the range
-  const dateKeys = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    dateKeys.push(d.toISOString().slice(0, 10));
-  }
-  const rangeStart = dateKeys[0];
-
-  // Single pass: bucket by createdAt and lastPayment for daily trends
-  const newUsersByDay = {};
-  const activeByDay = {};
-
-  for (const contact of ALL_CONTACTS_WITH_DATES) {
-    const createdDay = toDateKey(contact.createdAt);
-    if (createdDay && createdDay >= rangeStart && createdDay <= today) {
-      newUsersByDay[createdDay] = (newUsersByDay[createdDay] || 0) + 1;
-    }
-    const paymentDay = toDateKey(contact.lastPayment);
-    if (paymentDay && paymentDay >= rangeStart && paymentDay <= today) {
-      activeByDay[paymentDay] = (activeByDay[paymentDay] || 0) + 1;
-    }
-  }
-
-  const userActivityTrend = dateKeys.map(date => ({
-    date,
-    newUsers: newUsersByDay[date] || 0,
-    activeUsers: activeByDay[date] || 0
-  }));
 
   // ── Consumption behavior: monthly activity by business (last 12 months) ──
   const monthKeys = [];
@@ -115,7 +83,7 @@ function computeRealTrends(range) {
     return entry;
   });
 
-  return { userActivityTrend, consumptionTrend };
+  return { consumptionTrend };
 }
 
 // ─── Multi-project Firebase initialization ──────────────────────────
@@ -151,17 +119,6 @@ function generateMockData(range) {
       accios: Math.round(300 + Math.random() * 400),
       rush: Math.round(500 + Math.random() * 600),
       xazai: Math.round(200 + Math.random() * 500)
-    });
-  }
-
-  const activityTrend = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    activityTrend.push({
-      date: d.toISOString().slice(0, 10),
-      newUsers: Math.round(1 + Math.random() * 8),
-      activeUsers: Math.round(30 + Math.random() * 50)
     });
   }
 
@@ -205,7 +162,6 @@ function generateMockData(range) {
       }
     },
     revenueTrend: trend,
-    userActivityTrend: activityTrend,
     recentActivity: [
       { type: 'order', business: 'xazai', description: 'Nuevo pedido #1243 - $18.50', date: new Date(now - 1800000).toISOString(), icon: 'receipt' },
       { type: 'checkin', business: 'rush-ride', description: 'Check-in clase Cycling PM', date: new Date(now - 3600000).toISOString(), icon: 'fitness' },
@@ -339,10 +295,9 @@ module.exports = async function handler(req, res) {
     // If no Firebase connections available, return mock + real trends
     if (!dbAccios && !dbRush && !dbXazai) {
       const fallback = generateMockData(range);
-      const realTrends = computeRealTrends(range);
+      const realTrends = computeRealTrends();
       return res.status(200).json({
         ...fallback,
-        userActivityTrend: realTrends.userActivityTrend,
         consumptionTrend: realTrends.consumptionTrend
       });
     }
@@ -455,7 +410,7 @@ module.exports = async function handler(req, res) {
       (byBusiness['accios-core'].collections?.fin_transactions || 0);
     const totalTransactions = jsonTransactions + fbTransactions;
 
-    const realTrends = computeRealTrends(range);
+    const realTrends = computeRealTrends();
 
     res.status(200).json({
       mock: !dbAccios || !dbRush || !dbXazai,
@@ -469,7 +424,6 @@ module.exports = async function handler(req, res) {
       },
       byBusiness,
       consumptionTrend: realTrends.consumptionTrend,
-      userActivityTrend: realTrends.userActivityTrend,
       recentActivity: mock.recentActivity
     });
 
