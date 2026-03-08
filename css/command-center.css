@@ -891,6 +891,34 @@
   text-transform: uppercase;
 }
 
+/* ─── Personal details in header card ──────────────────── */
+.cc-profile-personal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.cc-profile-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+}
+.cc-profile-detail__icon {
+  font-size: 0.8rem;
+}
+.cc-profile-detail__text {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
 .cc-profile-body {
   padding: var(--space-4);
 }

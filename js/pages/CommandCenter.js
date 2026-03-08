@@ -568,6 +568,7 @@ export class CommandCenter {
 
     const p = profile.unified || {};
     const panel = modal.querySelector('.cc-profile-panel');
+    if (!panel) return; // Guard against race condition with polling
 
     // Find photo URL from allFields
     const photoField = (profile.allFields || []).find(f =>
@@ -576,6 +577,28 @@ export class CommandCenter {
     );
     const photoUrl = photoField?.value || '';
     const initials = (p.name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+    // Extract personal fields from allFields for header card
+    const allF = profile.allFields || [];
+    const getField = (key) => { const f = allF.find(x => x.key === key); return f ? f.value : null; };
+    const instagram = getField('instagram');
+    const birthDate = getField('birthDate');
+    const cedula = getField('cedula');
+    const company = getField('company');
+    const direccion = getField('direccion') || getField('addresses');
+    const talla = getField('talla') || getField('shoeSize');
+
+    // Build personal details HTML
+    let personalDetails = '';
+    if (instagram) personalDetails += `<div class="cc-profile-detail"><span class="cc-profile-detail__icon">📸</span><span class="cc-profile-detail__text">@${instagram}</span></div>`;
+    if (birthDate) personalDetails += `<div class="cc-profile-detail"><span class="cc-profile-detail__icon">🎂</span><span class="cc-profile-detail__text">${this._formatDate(birthDate)}</span></div>`;
+    if (cedula) personalDetails += `<div class="cc-profile-detail"><span class="cc-profile-detail__icon">🪪</span><span class="cc-profile-detail__text">${cedula}</span></div>`;
+    if (company) personalDetails += `<div class="cc-profile-detail"><span class="cc-profile-detail__icon">🏢</span><span class="cc-profile-detail__text">${company}</span></div>`;
+    if (direccion) {
+      const addr = Array.isArray(direccion) ? direccion.join(', ') : direccion;
+      personalDetails += `<div class="cc-profile-detail"><span class="cc-profile-detail__icon">📍</span><span class="cc-profile-detail__text">${addr}</span></div>`;
+    }
+    if (talla) personalDetails += `<div class="cc-profile-detail"><span class="cc-profile-detail__icon">👟</span><span class="cc-profile-detail__text">Talla ${talla}</span></div>`;
 
     panel.innerHTML = `
       <div class="cc-profile-header">
@@ -591,7 +614,7 @@ export class CommandCenter {
             ${p.email ? `<div class="cc-profile-email">${p.email}</div>` : ''}
           </div>
         </div>
-        <div style="display:flex;gap:4px;margin:var(--space-3) 0;">
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin:var(--space-3) 0;">
           ${(p.businesses || []).map(b => {
             if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">ACCIOS CORE</span>';
             if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">Rush Ride</span>';
@@ -623,9 +646,9 @@ export class CommandCenter {
             <div class="cc-profile-stat__label">Desde</div>
           </div>` : ''}
         </div>
+        ${personalDetails ? `<div class="cc-profile-personal">${personalDetails}</div>` : ''}
       </div>
       <div class="cc-profile-body">
-        ${this._renderDossierFields(profile.allFields || [])}
         ${this._renderBusinessSection('accios-core', 'ACCIOS CORE', profile.accios)}
         ${this._renderBusinessSection('rush-ride', 'Rush Ride Studio', profile.rushRide)}
         ${this._renderBusinessSection('xazai', 'Xazai', profile.xazai)}
@@ -741,12 +764,7 @@ export class CommandCenter {
 
   // ─── Business Sections ──────────────────────────────────────────
   _renderBusinessSection(key, name, data) {
-    if (!data || !data.exists) {
-      return `
-        <div class="cc-profile-section">
-          <div class="cc-profile-section__title cc-profile-section__title--inactive">${name} — No registrado</div>
-        </div>`;
-    }
+    if (!data || !data.exists) return ''; // Only show businesses where user is registered
 
     const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : key === 'la-colson' ? 'colson' : key === 'resultados' ? 'resultados' : key === 'cristian' ? 'cristian' : key === 'tabares' ? 'tabares' : key === 'cakefit' ? 'cakefit' : key === 'glowin' ? 'glowin' : key === 'hechizos' ? 'hechizos' : key === 'salon507' ? 'salon507' : key === 'tcp' ? 'tcp' : key === 'janelle' ? 'janelle' : 'accios';
     let items = '';
@@ -1099,7 +1117,7 @@ export class CommandCenter {
     const fmt = (n) => n.toLocaleString('es-PA');
     const fmtMoney = (n) => '$' + n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const newValues = [fmt(k.totalUsers), fmtMoney(k.totalRevenue), String(k.activeMembers), fmt(k.totalOrders), String(k.newUsersThisRange), fmtMoney(k.avgRevenuePerUser)];
+    const newValues = [fmt(k.totalUsers), fmtMoney(k.totalRevenue), fmt(k.totalTransactions), fmtMoney(k.avgRevenuePerUser)];
     const cards = this.container.querySelectorAll('.cc-kpi-card');
 
     cards.forEach((card, i) => {
