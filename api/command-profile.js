@@ -197,8 +197,12 @@ async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
   // ─── Rush Ride ─────────────────────────────────────────────
   if (dbRush) {
     try {
+      // Try exact phone, then without +507 prefix, then by email
       let userSnap = await dbRush.collection('users').where('phone', '==', phone).get();
-      // Fallback: search by email
+      if (userSnap.empty) {
+        const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+        userSnap = await dbRush.collection('users').where('phone', '==', digits).get();
+      }
       if (userSnap.empty && knownEmail) {
         userSnap = await dbRush.collection('users').where('email', '==', knownEmail).get();
       }
@@ -255,8 +259,15 @@ async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
         custData = byPhone.docs[0].data();
         custId = byPhone.docs[0].id;
       } else {
+        // Try doc ID
         const byId = await dbXazai.collection('customers').doc(phone).get();
         if (byId.exists) { custData = byId.data(); custId = byId.id; }
+        // Try without prefix
+        if (!custData) {
+          const digits = phone.replace(/[^0-9]/g, '').slice(-8);
+          const byDigits = await dbXazai.collection('customers').where('phone', '==', digits).get();
+          if (!byDigits.empty) { custData = byDigits.docs[0].data(); custId = byDigits.docs[0].id; }
+        }
         // Fallback: email
         if (!custData && knownEmail) {
           const byEmail = await dbXazai.collection('customers').where('email', '==', knownEmail).get();

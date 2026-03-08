@@ -101,9 +101,11 @@ export class CommandCenter {
     }
   }
 
-  async _fetchProfile(phone) {
+  async _fetchProfile(phone, email) {
     try {
-      const res = await fetch(apiUrl(`/api/command-profile?phone=${encodeURIComponent(phone)}`));
+      let url = `/api/command-profile?phone=${encodeURIComponent(phone)}`;
+      if (email) url += `&email=${encodeURIComponent(email)}`;
+      const res = await fetch(apiUrl(url));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) {
@@ -584,7 +586,7 @@ export class CommandCenter {
           </thead>
           <tbody>
             ${users.length === 0 ? '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);padding:2rem;">No se encontraron usuarios</td></tr>' : users.map(u => `
-              <tr data-phone="${u.phone || ''}" class="cc-user-row">
+              <tr data-phone="${u.phone || ''}" data-email="${u.email || ''}" class="cc-user-row">
                 <td>
                   <div class="cc-table__name">${u.name || 'Sin nombre'}</div>
                   <div class="cc-table__phone">${u.email || ''}</div>
@@ -608,7 +610,8 @@ export class CommandCenter {
     area.querySelectorAll('.cc-user-row').forEach(row => {
       row.addEventListener('click', () => {
         const phone = row.dataset.phone;
-        if (phone) this._openProfile(phone);
+        const email = row.dataset.email;
+        if (phone) this._openProfile(phone, email);
       });
     });
 
@@ -620,7 +623,7 @@ export class CommandCenter {
   }
 
   // ─── Profile Panel (Expediente Digital) ──────────────────────────
-  async _openProfile(phone) {
+  async _openProfile(phone, email) {
     const modal = document.getElementById('modal-root');
     if (!modal) return;
 
@@ -639,7 +642,7 @@ export class CommandCenter {
       if (e.target.id === 'cc-profile-overlay') this._closeProfile();
     });
 
-    const profile = await this._fetchProfile(phone);
+    const profile = await this._fetchProfile(phone, email);
     if (!profile) {
       this._closeProfile();
       Toast.show('Error cargando perfil', 'error');
