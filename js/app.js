@@ -13,6 +13,7 @@ import { PodcastWorld } from './pages/PodcastWorld.js';
 import { Finance } from './pages/Finance.js';
 import { ClientPortal } from './pages/ClientPortal.js';
 import { LaVainaPresentation } from './pages/LaVainaPresentation.js';
+import { CommandCenter } from './pages/CommandCenter.js';
 import behaviorService from './services/behaviorService.js';
 
 class App {
@@ -136,6 +137,10 @@ class App {
 
       case 'lavaina':
         pageInstance = new LaVainaPresentation(this.content, this.currentUser);
+        break;
+
+      case 'command-center':
+        pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
 
       default:
