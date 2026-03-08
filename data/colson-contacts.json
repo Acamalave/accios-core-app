@@ -1,8 +1,1411 @@
 [
   {
+    "name": "Jeisy Gantes",
+    "email": "jagu.26@hotmail.com",
+    "phone": "+50762166176",
+    "addresses": [
+      "Pueblo nuevo calle 9na urb stone, Panama, 8, 000000, Panamá"
+    ],
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL",
+      "Cliente"
+    ],
+    "createdAt": "2022-09-05 20:31",
+    "totalSpent": 375,
+    "transactionCount": 5,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6826"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL",
+      "CONSULTA SEGUIMIENTO PRESENCIAL",
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-08-09"
+  },
+  {
+    "name": "Alejandra garcia",
+    "email": "alejandrags89@hotmail.com",
+    "phone": "+50769317996",
+    "addresses": [
+      "PH CORAL PLAZA, TUMBA MUERTO, Panamá, 8, 0000, Panamá",
+      "Ph Coral Plaza, Panama, 8, 0000, Panamá",
+      "Panama, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "TEST DE BIENESTAR",
+      "SCAN FIT 3D",
+      "Cliente",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-07-12 12:22",
+    "totalSpent": 245,
+    "transactionCount": 4,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 7578"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL",
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2023-09-02"
+  },
+  {
+    "name": "Elizabeth Castillo",
+    "email": "cg.elizabeth87@gmail.com",
+    "phone": "+50765803318",
+    "addresses": [
+      "Nuevo arraijan calle 10 norte, Arraijan, 10, 507, Panamá",
+      "Nuevo Arraijan, Panama, 10, 507, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2023-03-09 20:40",
+    "totalSpent": 235,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 7201"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-05-22"
+  },
+  {
+    "name": "Juan Helgueros",
+    "email": "juanhelgueros@gmail.com",
+    "phone": "+50769225403",
+    "addresses": [
+      "Av Paseo de Mar PH Altamar 3801, Panama, 8, 0854, Panamá",
+      "PH Altamar del Este 3801, Panama, 8, 3804, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2023-05-07",
+    "totalSpent": 235,
+    "transactionCount": 3,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6413"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-08-05"
+  },
+  {
+    "name": "Kimberle Gomez",
+    "email": "kgomezlc05@gmail.com",
+    "phone": "+50765321604",
+    "addresses": [
+      "Panama, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "TEST DE BIENESTAR",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "Cliente",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-12-11 15:04",
+    "totalSpent": 165,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 5402"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL",
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-02-09"
+  },
+  {
+    "name": "Andrea Jaimes",
+    "email": "andrejmsc@hotmail.com",
+    "phone": "+50766733347",
+    "addresses": [
+      "Ph prestige calle 45 Este, Panamá, 8, 7096, Panamá",
+      "Ph Prestige calle 45 Bella Vista E, Panamá, 8, 7096, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2023-04-18 01:48",
+    "totalSpent": 165,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 5270"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-06-04"
+  },
+  {
+    "name": "Juan Dominici",
+    "email": "jdominici08@gmail.com",
+    "phone": "+50768345367",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-06-09",
+    "totalSpent": 150,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 0510"
+    ],
+    "products": [
+      "CONSULTA SEGUIMIENTO PRESENCIAL",
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-06-28"
+  },
+  {
+    "name": "Jesus Alexander Mojica Fossatti",
+    "email": "jesusmojicafossatti13@gmail.com",
+    "phone": "+50762230318",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL",
+      "Cliente"
+    ],
+    "createdAt": "2022-06-14",
+    "addresses": [
+      "Panama, Panama, Panamá"
+    ],
+    "totalSpent": 130,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 9857"
+    ],
+    "products": [
+      "CONSULTA SEGUIMIENTO PRESENCIAL",
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-09-06"
+  },
+  {
+    "name": "Gerard Gerard",
+    "email": "gerardbettsak@gmail.com",
+    "phone": "+50760920765",
+    "addresses": [
+      "Panama, Panama, 8, 00000, Panamá",
+      "punta pacifica, Panama, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "SCAN FIT 3D"
+    ],
+    "createdAt": "2023-05-31",
+    "totalSpent": 130,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 0758"
+    ],
+    "products": [
+      "SCAN FIT 3D",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-05-31"
+  },
+  {
+    "name": "Tathiana Córdoba",
+    "email": "tathiana_2931@hotmail.com",
+    "phone": "+50765115221",
+    "addresses": [
+      "Santo Domingo, Calle Vía Pedasi, Las Tablas, 7, 0731, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA ONLINE PRIMERA VEZ"
+    ],
+    "createdAt": "2023-02-08",
+    "totalSpent": 110,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6814"
+    ],
+    "products": [
+      "CITA ONLINE PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-02-08"
+  },
+  {
+    "name": "Maria alejandra",
+    "email": "mariagerli20@hotmail.com",
+    "phone": "+50766710273",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-08-29",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6454"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-08-29"
+  },
+  {
+    "name": "Nathaly Acevedo",
+    "email": "nathalyacevedo.cm@gmail.com",
+    "phone": "+50760017109",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "TEST DE BIENESTAR"
+    ],
+    "createdAt": "2022-06-08 19:24",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 7638"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-06-13"
+  },
+  {
+    "name": "Shadia Saab",
+    "email": "shadia.saab21@gmail.com",
+    "phone": "+50760424406",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-07-25",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 5441"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-07-25"
+  },
+  {
+    "name": "Santiago Ibarguen",
+    "email": "santiago@spi360consulting.com",
+    "phone": "+50766774863",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-06-09",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 2074"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-06-09"
+  },
+  {
+    "name": "Mabel del Carmen Martinez Montero",
+    "email": "mabeldelcarmenmm@gmail.com",
+    "phone": "+50769496318",
+    "tags": [
+      "TEST DE BIENESTAR",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL",
+      "COACHING DE BIENESTAR Y SALUD"
+    ],
+    "createdAt": "2022-08-15",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 2513"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-08-15"
+  },
+  {
+    "name": "Wendy",
+    "email": "angabralb@hotmail.com",
+    "phone": "+50760680025",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "Cliente",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-07-03",
+    "addresses": [
+      "Loma vista, Panama, Panamá, Panamá"
+    ],
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 0464"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-07-03"
+  },
+  {
+    "name": "Sandra Noriega",
+    "email": "snoriegas@gmail.com",
+    "phone": "+50764304616",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-06-09",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 7228"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-06-09"
+  },
+  {
+    "name": "miguel",
+    "email": "emiliani15@hotmail.com",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "Cliente",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-07-30",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4967"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "phone": "2368384",
+    "lastPayment": "2022-07-30"
+  },
+  {
+    "name": "Joseline mendoza",
+    "email": "jfmendoza74@hotmail.com",
+    "phone": "+50766141257",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL",
+      "Cliente"
+    ],
+    "createdAt": "2022-09-22",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 9273"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-09-22"
+  },
+  {
+    "name": "Melissa Chavez",
+    "email": "melichavezz@hotmail.com",
+    "phone": "+50769554415",
+    "addresses": [
+      "Panamá, Panamá, 8, NA, Panamá"
+    ],
+    "tags": [
+      "TEST DE BIENESTAR",
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-10-12 02:20",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 2521"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-03-28"
+  },
+  {
+    "name": "Luz Alejandra",
+    "email": "alejamorillor@gmail.com",
+    "phone": "+50762802991",
+    "addresses": [
+      "Ph san Roque, Panama, 8, 507, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-01-07 20:31",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 1176"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-01-31"
+  },
+  {
+    "name": "Carla Pozone",
+    "email": "pozonecarla@gmail.com",
+    "phone": "+50763525250",
+    "addresses": [
+      "Costa Sur Villa Valencia, Panama, 8, 11111, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-02-10 15:06",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 5333"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-03-06"
+  },
+  {
+    "name": "Meilyn Velásquez",
+    "email": "meilyn.velasquez@hilton.com",
+    "phone": "+50762415432",
+    "addresses": [
+      "Villa lucre, Panama, 8, 507, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-01-02",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6138"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-01-02"
+  },
+  {
+    "name": "Catherine Fouchard",
+    "email": "catherinefisiosports@gmail.com",
+    "phone": "+50766298362",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-10-12",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6272"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-10-12"
+  },
+  {
+    "name": "Hugo Moran R",
+    "email": "hugo@moranip.com",
+    "phone": "+50764146134",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "Cliente",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-09-16",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 8236"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-09-16"
+  },
+  {
+    "name": "Joel Watemberg",
+    "email": "joelwatemberg@gmail.com",
+    "phone": "+50768886555",
+    "addresses": [
+      "Avenida Balboa, PH Los Delfines, Panamá, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2023-01-17",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 3049"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-01-17"
+  },
+  {
+    "name": "Laura Carballeda",
+    "email": "lauracarballeda06@gmail.com",
+    "phone": "+50765505881",
+    "addresses": [
+      "Avenida balboa Ph Sky apt 24 F, Panama, 8, 0831, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-03-10",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4190"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-03-10"
+  },
+  {
+    "name": "Yatsury saez",
+    "email": "yatsury07@gmail.com",
+    "phone": "+50766756046",
+    "addresses": [
+      "Panamá, PANAMA, 8, 507, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-04-11 19:05",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4880"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-24"
+  },
+  {
+    "name": "Salomon forjoun",
+    "email": "farjoun28@gmail.com",
+    "phone": "+50763089100",
+    "addresses": [
+      "Punta pacifica, Panama, 8, 000000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-06",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 8825"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-06"
+  },
+  {
+    "name": "Maurin sovilla",
+    "email": "maureen.sovilla@bellaholdings.com",
+    "phone": "+50763209052",
+    "addresses": [
+      "Panama, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-05-22",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 1966"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-05-22"
+  },
+  {
+    "name": "Eliahu forjoun",
+    "email": "eliahufarjoun16@gmail.com",
+    "phone": "+50763089104",
+    "addresses": [
+      "Pacific point torre 300, Panama, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-06-24",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 8825"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-06-24"
+  },
+  {
+    "name": "Vanessa González",
+    "email": "dra.vanessagonzalez@gmail.com",
+    "phone": "+50766172089",
+    "addresses": [
+      "Clayton, Embassy Club, Panama, 8, 507, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-03-11",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 8630"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-03-11"
+  },
+  {
+    "name": "Abraham forjoun",
+    "email": "abfarjoun@hormail.com",
+    "phone": "+50766134307",
+    "addresses": [
+      "Punta pacifica, Panama, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-11",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 8825"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-11"
+  },
+  {
+    "name": "Juan David Guizado",
+    "email": "juand.guizado@gmail.com",
+    "phone": "+50766759511",
+    "addresses": [
+      "San Francisco, San Francisco, 8, 000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-24",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6795"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-24"
+  },
+  {
+    "name": "Yenelis Gómez",
+    "email": "yenelisgomez@gmail.com",
+    "phone": "+50762205719",
+    "addresses": [
+      "Panama, Panama, 8, Sn, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-04-08 22:11",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4611"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-08-16"
+  },
+  {
+    "name": "Celine",
+    "email": "celine.ana@icloud.com",
+    "phone": "+50783269203",
+    "addresses": [
+      "Paseo del norte Ph Victoria 61D, Panamá, 8, No tengo, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-03-11 23:55",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 2569"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-03-14"
+  },
+  {
+    "name": "Juan Gamez",
+    "email": "juancgamez01@gmail.com",
+    "phone": "+50761124074",
+    "addresses": [
+      "PH Lemon Tower, Panamá, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-17",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 3860"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-17"
+  },
+  {
+    "name": "Luisa Asturias",
+    "email": "jacomeasturias@gmail.com",
+    "phone": "+50766197578",
+    "addresses": [
+      "PH GreenView - Siuma Property, Panamá, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-08-06",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 0275"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-08-06"
+  },
+  {
+    "name": "Diana Chalem",
+    "email": "dianichalem@gmail.com",
+    "phone": "+50763791444",
+    "addresses": [
+      "Pacific Point Torre 600, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-27",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 0164"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-27"
+  },
+  {
+    "name": "Martin Sosa",
+    "email": "martinsosa@gmail.com",
+    "phone": "+50766155985",
+    "addresses": [
+      "Panama, Panama, 8, 0831-01712, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-04-25",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 1246"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-04-25"
+  },
+  {
+    "name": "Nelia Gonzalez",
+    "email": "nely0574@yahoo.com",
+    "phone": "+50766738222",
+    "addresses": [
+      "Villa Zaita, Las Cumbres, Panama, 8, 323, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-08",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4471"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-08"
+  },
+  {
+    "name": "Gustavo Tinker",
+    "email": "gustavotinker25@gmail.com",
+    "phone": "+50766738992",
+    "addresses": [
+      "Costa del este costa dorada, Panama, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-10",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4452"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-10"
+  },
+  {
+    "name": "Moises Naimark",
+    "email": "mnaimark@dreamproperties.com.pa",
+    "phone": "+50764509246",
+    "addresses": [
+      "Ave Centenario Dream Plaza Oficina 711, Panama, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-21",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 2431"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-21"
+  },
+  {
+    "name": "Mario bendayan",
+    "email": "mariobendayan@gmail.com",
+    "phone": "+50763057878",
+    "addresses": [
+      "Panama, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-03",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 9486"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-03"
+  },
+  {
+    "name": "chiara",
+    "email": "chiaracalderinil@gmail.com",
+    "phone": "+50762369930",
+    "addresses": [
+      "ph costamare, panama, 8, 00000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-07-30",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 1464"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-07-30"
+  },
+  {
+    "name": "Isaac Rodriguez",
+    "email": "isaac_rodriguez1629@hotmail.com",
+    "phone": "+50762630889",
+    "addresses": [
+      "Nuevo arraijan, Ecogardens, Panama, 10, 507, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2023-03-25",
+    "totalSpent": 95,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 5002"
+    ],
+    "products": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2023-03-25"
+  },
+  {
+    "name": "Ana Alonso",
+    "email": "ana.alonso93@icloud.com",
+    "phone": "+50764494775",
+    "tags": [
+      "CITA ONLINE PRIMERA VEZ"
+    ],
+    "createdAt": "2022-09-07",
+    "totalSpent": 75,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 6025"
+    ],
+    "products": [
+      "CONSULTA ONLINE PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-09-07"
+  },
+  {
+    "name": "Dalinda Pinto",
+    "email": "dapi20@gmail.com",
+    "phone": "+50769686072",
+    "addresses": [
+      "Costa Serena casa 83, Panama, 8, 0000, Panamá",
+      "Calle las flores residencial Camelias casa 11, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "SCAN FIT 3D"
+    ],
+    "createdAt": "2023-03-02",
+    "totalSpent": 70,
+    "transactionCount": 2,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 3728"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2023-05-05"
+  },
+  {
+    "name": "Wendy Gonzalez",
+    "email": "wendycarolinagonzalezhernandez@gmail.com",
+    "phone": "60680025",
+    "totalSpent": 70,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4246"
+    ],
+    "products": [
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "addresses": [
+      "Loma vista, Panama, 8, 0114, Panamá"
+    ],
+    "lastPayment": "2023-03-11",
+    "createdAt": "2023-03-11"
+  },
+  {
+    "name": "Lucia Dominici",
+    "email": "lucia.dominici@gmail.com",
+    "phone": "+50766742328",
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-07-16",
+    "totalSpent": 40,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 8815"
+    ],
+    "products": [
+      "CONSULTA PRESENCIAL PRIMERA VEZ"
+    ],
+    "lastPayment": "2022-07-16"
+  },
+  {
+    "name": "Ian Carlo Rovira",
+    "email": "icr@caspoetspanama.com",
+    "phone": "+50766764048",
+    "tags": [
+      "SCAN FIT 3D",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-06-14",
+    "totalSpent": 35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 9105"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2022-06-14"
+  },
+  {
+    "name": "Arturo Dorati",
+    "email": "arturo.dorati@gmail.com",
+    "phone": "+50766151343",
+    "addresses": [
+      "Brisas del golf, Panama, 8, 0000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "SCAN FIT 3D",
+      "CITA PRESENCIAL PRIMERA VEZ"
+    ],
+    "createdAt": "2022-12-30",
+    "totalSpent": 35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 6970"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2022-12-30"
+  },
+  {
+    "name": "Albaniz",
+    "email": "albaniz_01@hotmail.com",
+    "phone": "+50762636422",
+    "addresses": [
+      "Los Andes #2, Panamá, 8, 12345, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "SCAN FIT 3D"
+    ],
+    "createdAt": "2023-01-03",
+    "totalSpent": 35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4953"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2023-01-03"
+  },
+  {
+    "name": "Daniela Cabanzo",
+    "email": "danielarealty@gmail.com",
+    "phone": "+50761456841",
+    "addresses": [
+      "Santa María Golf & Country Club, Panama, 8, 12345, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "SCAN FIT 3D"
+    ],
+    "createdAt": "2023-01-03",
+    "totalSpent": 35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 4018"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2023-01-03"
+  },
+  {
+    "name": "Elvia",
+    "email": "elviayauyau@gmail.com",
+    "phone": "+50769821673",
+    "addresses": [
+      "Paseo del Norte, Panama, 8, 0000000, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "SCAN FIT 3D"
+    ],
+    "createdAt": "2023-03-09",
+    "totalSpent": 35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "mastercard **** 9650"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2023-03-09"
+  },
+  {
+    "name": "Sebastian Breton",
+    "email": "sebastianbreton31@gmail.com",
+    "phone": "+50766787002",
+    "addresses": [
+      "Costa del Este, Panama, 8, 02715, Panamá"
+    ],
+    "tags": [
+      "Cliente",
+      "SCAN FIT 3D"
+    ],
+    "createdAt": "2023-07-21",
+    "totalSpent": 35,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 8920"
+    ],
+    "products": [
+      "SCAN FIT 3D"
+    ],
+    "lastPayment": "2023-07-21"
+  },
+  {
+    "email": "laguna.jeanc@gmail.com",
+    "phone": "60811583",
+    "totalSpent": 3,
+    "transactionCount": 1,
+    "paymentMethods": [
+      "Tarjetas de crédito/débito"
+    ],
+    "cardDetails": [
+      "visa **** 5591"
+    ],
+    "products": [
+      "Presencial Prueba"
+    ],
+    "lastPayment": "2022-05-20",
+    "createdAt": "2022-05-20"
+  },
+  {
     "name": "María",
     "email": "anahty@hotmail.com",
-    "createdAt": "2022-06-07 17:47"
+    "createdAt": "2022-06-07 17:47",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Vanessa Cárdenas",
@@ -11,7 +1414,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-01 02:15"
+    "createdAt": "2022-08-01 02:15",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ricardo",
@@ -23,7 +1428,9 @@
     ],
     "addresses": [
       "Panama, Panama, Panamá"
-    ]
+    ],
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Kevin Ruiz",
@@ -32,7 +1439,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-09 22:56"
+    "createdAt": "2022-07-09 22:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ruth Ayarza",
@@ -41,7 +1450,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 21:41"
+    "createdAt": "2022-07-12 21:41",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Némesis Selena moreno Martínez",
@@ -50,7 +1461,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-28 14:42"
+    "createdAt": "2022-07-28 14:42",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Anette Zimmermann",
@@ -59,7 +1472,9 @@
     "tags": [
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-06-09 20:13"
+    "createdAt": "2022-06-09 20:13",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Chrystie Guerra",
@@ -68,7 +1483,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-27 15:36"
+    "createdAt": "2022-08-27 15:36",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Keidi Vargas",
@@ -77,12 +1494,16 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-09 20:46"
+    "createdAt": "2022-07-09 20:46",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Marianela",
     "email": "marianela.garrido@gmail.com",
-    "createdAt": "2022-08-23 17:22"
+    "createdAt": "2022-08-23 17:22",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Yanmileth Mendez",
@@ -91,7 +1512,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-07-12 14:30"
+    "createdAt": "2022-07-12 14:30",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Chamar Chambers",
@@ -105,7 +1528,9 @@
       "Cliente",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-07-27 01:06"
+    "createdAt": "2022-07-27 01:06",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Manuel Oliveira",
@@ -115,7 +1540,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-07-20 00:04"
+    "createdAt": "2022-07-20 00:04",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Braulio Gutierrez",
@@ -128,7 +1555,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-25 17:48"
+    "createdAt": "2022-08-25 17:48",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Francisco Zepeda",
@@ -138,7 +1567,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-06-28 13:37"
+    "createdAt": "2022-06-28 13:37",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Carolina Castillo",
@@ -150,21 +1581,9 @@
     "tags": [
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-08-17 22:01"
-  },
-  {
-    "name": "Jesus Alexander Mojica Fossatti",
-    "email": "jesusmojicafossatti13@gmail.com",
-    "phone": "+50762230318",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL",
-      "Cliente"
-    ],
-    "createdAt": "2022-06-14 21:18",
-    "addresses": [
-      "Panama, Panama, Panamá"
-    ]
+    "createdAt": "2022-08-17 22:01",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Alejandro Watson",
@@ -173,7 +1592,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-06-29 20:31"
+    "createdAt": "2022-06-29 20:31",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Sandra Noriega",
@@ -183,26 +1604,9 @@
       "CITA ONLINE PRIMERA VEZ",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-07-22 17:08"
-  },
-  {
-    "name": "Maria alejandra",
-    "email": "mariagerli20@hotmail.com",
-    "phone": "+50766710273",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-08-29 02:52"
-  },
-  {
-    "name": "Ian Carlo Rovira",
-    "email": "icr@caspoetspanama.com",
-    "phone": "+50766764048",
-    "tags": [
-      "SCAN FIT 3D",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-06-14 19:47"
+    "createdAt": "2022-07-22 17:08",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Erick Ulises Vargas Cruz",
@@ -212,7 +1616,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-06-20 22:07"
+    "createdAt": "2022-06-20 22:07",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Zoila Howard",
@@ -224,7 +1630,9 @@
       "Cliente",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-07-28 21:46"
+    "createdAt": "2022-07-28 21:46",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ortencia Jimenez",
@@ -236,17 +1644,9 @@
     "tags": [
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-17 22:32"
-  },
-  {
-    "name": "Nathaly Acevedo",
-    "email": "nathalyacevedo.cm@gmail.com",
-    "phone": "+50760017109",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "TEST DE BIENESTAR"
-    ],
-    "createdAt": "2022-06-08 19:24"
+    "createdAt": "2022-08-17 22:32",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ricardo Alemán",
@@ -255,7 +1655,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 19:42"
+    "createdAt": "2022-07-12 19:42",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Manuel Watson",
@@ -268,21 +1670,16 @@
       "SCAN FIT 3D",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-18 00:14"
-  },
-  {
-    "name": "Lucia Dominici",
-    "email": "lucia.dominici@gmail.com",
-    "phone": "+50766742328",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-07-16 17:09"
+    "createdAt": "2022-08-18 00:14",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Leonela Colson",
     "email": "info@lacolson.com",
-    "createdAt": "2022-07-12 15:14"
+    "createdAt": "2022-07-12 15:14",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Alberto Torres",
@@ -291,7 +1688,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-28 16:44"
+    "createdAt": "2022-07-28 16:44",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Keisy cruz",
@@ -300,7 +1699,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 11:53"
+    "createdAt": "2022-07-12 11:53",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ana quero",
@@ -309,7 +1710,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-10 15:15"
+    "createdAt": "2022-07-10 15:15",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "gabriela.851@hotmail.com",
@@ -317,7 +1720,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-18 19:30"
+    "createdAt": "2022-08-18 19:30",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Carlos Alberto Gondola",
@@ -329,16 +1734,9 @@
       "Cliente",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-06-28 20:49"
-  },
-  {
-    "name": "Shadia Saab",
-    "email": "shadia.saab21@gmail.com",
-    "phone": "+50760424406",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-07-25 15:14"
+    "createdAt": "2022-06-28 20:49",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jose",
@@ -347,7 +1745,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-02 00:52"
+    "createdAt": "2022-08-02 00:52",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Rafael Watson",
@@ -360,7 +1760,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-15 21:26"
+    "createdAt": "2022-08-15 21:26",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Milagros González",
@@ -370,18 +1772,18 @@
       "TEST DE BIENESTAR",
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-07-12 22:15"
-  },
-  {
-    "name": "Facebook user",
-    "createdAt": "2022-07-07 16:16"
+    "createdAt": "2022-07-12 22:15",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "lizbeth041328@gmail.com",
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 03:16"
+    "createdAt": "2022-07-12 03:16",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Maria Diaz",
@@ -393,7 +1795,9 @@
     "tags": [
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-08-29 19:07"
+    "createdAt": "2022-08-29 19:07",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Margarita Quintero",
@@ -402,14 +1806,18 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-07-22 14:56"
+    "createdAt": "2022-07-22 14:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "delgadillobe@gmail.com",
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 04:12"
+    "createdAt": "2022-07-12 04:12",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Valeria Vidal",
@@ -418,7 +1826,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-16 23:48"
+    "createdAt": "2022-08-16 23:48",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Samanta",
@@ -427,7 +1837,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-27 18:58"
+    "createdAt": "2022-08-27 18:58",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jose Ducreux",
@@ -436,16 +1848,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-10 16:30"
-  },
-  {
-    "name": "Santiago Ibarguen",
-    "email": "santiago@spi360consulting.com",
-    "phone": "+50766774863",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-06-09 16:54"
+    "createdAt": "2022-07-10 16:30",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Edith",
@@ -454,7 +1859,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-17 20:44"
+    "createdAt": "2022-07-17 20:44",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Alberto Dominguez",
@@ -463,7 +1870,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-09 20:46"
+    "createdAt": "2022-07-09 20:46",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Diana Viñas",
@@ -472,7 +1881,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-10 18:11"
+    "createdAt": "2022-07-10 18:11",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Bianca Corro",
@@ -481,7 +1892,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-07-13 01:24"
+    "createdAt": "2022-07-13 01:24",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Isael Pimentel",
@@ -493,7 +1906,9 @@
       "CITA CONTROL PRESENCIAL",
       "Cliente"
     ],
-    "createdAt": "2022-06-11 21:35"
+    "createdAt": "2022-06-11 21:35",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Zheily Odette González ramos",
@@ -502,7 +1917,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 06:29"
+    "createdAt": "2022-07-12 06:29",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Omar Núñez",
@@ -511,17 +1928,24 @@
     "tags": [
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-06-25 19:59"
+    "createdAt": "2022-06-25 19:59",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
-    "name": "leonela",
+    "name": "Luis Tovar",
     "email": "leonelacolson@hotmail.com",
-    "phone": "+50769975614",
-    "tags": [
-      "Presencial Prueba",
-      "TEST DE BIENESTAR"
+    "phone": "+50760257622",
+    "addresses": [
+      "Panama, Panama, Panamá"
     ],
-    "createdAt": "2022-05-20 22:21"
+    "tags": [
+      "CITA PRESENCIAL PRIMERA VEZ",
+      "CITA CONTROL PRESENCIAL"
+    ],
+    "createdAt": "2022-09-05 21:31",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Acacio Malave",
@@ -529,7 +1953,9 @@
     "tags": [
       "CITA ONLINE PRIMERA VEZ"
     ],
-    "createdAt": "2021-07-13 14:08"
+    "createdAt": "2021-07-13 14:08",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Emmanuel Segura",
@@ -543,7 +1969,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-24 23:12"
+    "createdAt": "2022-08-24 23:12",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Massiel Ramos",
@@ -552,11 +1980,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-28 13:45"
-  },
-  {
-    "name": "Enma Martinez Garcia",
-    "createdAt": "2022-05-19 23:14"
+    "createdAt": "2022-07-28 13:45",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Raul Garcia",
@@ -570,7 +1996,9 @@
     "createdAt": "2022-08-24 15:53",
     "addresses": [
       "Panama, Panama, Panamá"
-    ]
+    ],
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "María Alexandra Gouveia",
@@ -579,43 +2007,18 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-10 20:01"
-  },
-  {
-    "name": "Alejandra garcia",
-    "email": "alejandrags89@hotmail.com",
-    "phone": "+50769317996",
-    "addresses": [
-      "Panama, Panama, Panamá, Panamá",
-      "Ph Coral Plaza, Panama, Panamá, Panamá",
-      "PH CORAL PLAZA, TUMBA MUERTO, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "TEST DE BIENESTAR",
-      "SCAN FIT 3D",
-      "Cliente",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-07-12 12:22"
+    "createdAt": "2022-07-10 20:01",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "ma.roblesp70@gmail.com",
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 18:38"
-  },
-  {
-    "name": "Mabel del Carmen Martinez Montero",
-    "email": "mabeldelcarmenmm@gmail.com",
-    "phone": "+50769496318",
-    "tags": [
-      "TEST DE BIENESTAR",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL",
-      "COACHING DE BIENESTAR Y SALUD"
-    ],
-    "createdAt": "2022-08-15 14:35"
+    "createdAt": "2022-07-12 18:38",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Gloria Urrutia",
@@ -624,7 +2027,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-27 20:51"
+    "createdAt": "2022-08-27 20:51",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Erika Lopez",
@@ -633,7 +2038,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 15:25"
+    "createdAt": "2022-07-12 15:25",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Víctor Rivera",
@@ -642,7 +2049,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-10 00:05"
+    "createdAt": "2022-07-10 00:05",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Cristin Vergel",
@@ -655,17 +2064,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-25 02:56"
-  },
-  {
-    "name": "Juan Dominici",
-    "email": "jdominici08@gmail.com",
-    "phone": "+50768345367",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-06-09 20:48"
+    "createdAt": "2022-08-25 02:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Italo Cassino",
@@ -676,7 +2077,9 @@
       "CITA CONTROL PRESENCIAL",
       "Cliente"
     ],
-    "createdAt": "2022-06-07 21:52"
+    "createdAt": "2022-06-07 21:52",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Wanda Rovira",
@@ -685,11 +2088,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 19:07"
-  },
-  {
-    "name": "Leopoldo Enrique Colson Alvizu",
-    "createdAt": "2022-06-13 20:12"
+    "createdAt": "2022-07-12 19:07",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Elix Aurelio Guevara Rentería",
@@ -698,7 +2099,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-09 23:29"
+    "createdAt": "2022-07-09 23:29",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Diana Carolina Arauz",
@@ -706,7 +2109,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-28 12:47"
+    "createdAt": "2022-07-28 12:47",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Databa Rivera",
@@ -715,21 +2120,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 12:22"
-  },
-  {
-    "name": "Wendy",
-    "email": "angabralb@hotmail.com",
-    "phone": "+50760680025",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "Cliente",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-07-03 23:36",
-    "addresses": [
-      "Loma vista, Panama, Panamá, Panamá"
-    ]
+    "createdAt": "2022-07-12 12:22",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Dayra Chavez",
@@ -738,7 +2131,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-08-23 22:20"
+    "createdAt": "2022-08-23 22:20",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ana Bonilla",
@@ -747,7 +2142,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-18 03:04"
+    "createdAt": "2022-07-18 03:04",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Cesar Vigil",
@@ -755,7 +2152,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 21:09"
+    "createdAt": "2022-07-12 21:09",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "alex",
@@ -764,7 +2163,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-14 02:39"
+    "createdAt": "2022-07-14 02:39",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Leonel Gutierrez",
@@ -778,7 +2179,9 @@
       "CITA CONTROL PRESENCIAL",
       "Cliente"
     ],
-    "createdAt": "2022-08-28 12:17"
+    "createdAt": "2022-08-28 12:17",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jetlyz Fernandez",
@@ -787,14 +2190,18 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 23:49"
+    "createdAt": "2022-07-12 23:49",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "evelynelcock@hotmail.com",
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-12 04:20"
+    "createdAt": "2022-07-12 04:20",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "KARINA NAVARRO",
@@ -803,7 +2210,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-14 03:04"
+    "createdAt": "2022-07-14 03:04",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Eddy gonzalez",
@@ -814,7 +2223,9 @@
       "CITA CONTROL ONLINE",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-06-21 16:16"
+    "createdAt": "2022-06-21 16:16",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ruben Garcia",
@@ -823,7 +2234,9 @@
     "tags": [
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-06-09 20:47"
+    "createdAt": "2022-06-09 20:47",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jose Nieto",
@@ -836,7 +2249,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-29 23:01"
+    "createdAt": "2022-08-29 23:01",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ingrid Gonzalez",
@@ -849,16 +2264,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "Cliente"
     ],
-    "createdAt": "2022-08-17 13:25"
-  },
-  {
-    "name": "Sandra Noriega",
-    "email": "snoriegas@gmail.com",
-    "phone": "+50764304616",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-06-10 02:36"
+    "createdAt": "2022-08-17 13:25",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Sem Adames",
@@ -867,7 +2275,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-13 01:18"
+    "createdAt": "2022-07-13 01:18",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Arturo Miranda",
@@ -881,7 +2291,9 @@
       "SCAN FIT 3D",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-14 14:45"
+    "createdAt": "2022-08-14 14:45",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Yasmin Bhana",
@@ -891,17 +2303,9 @@
       "TEST DE BIENESTAR",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-07-12 03:18"
-  },
-  {
-    "name": "miguel",
-    "email": "emiliani15@hotmail.com",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "Cliente",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-07-30 10:24"
+    "createdAt": "2022-07-12 03:18",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Antonio",
@@ -910,7 +2314,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-17 13:36"
+    "createdAt": "2022-07-17 13:36",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Valeria Mora",
@@ -919,7 +2325,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-11 00:05"
+    "createdAt": "2022-07-11 00:05",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "María Fernanda vasquez",
@@ -928,7 +2336,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-10 14:27"
+    "createdAt": "2022-07-10 14:27",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Julian Torres",
@@ -938,7 +2348,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-07-07 14:00"
+    "createdAt": "2022-07-07 14:00",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Yamileth Campos",
@@ -947,45 +2359,18 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-07-28 04:51"
+    "createdAt": "2022-07-28 04:51",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
-    "name": "Joseline mendoza",
-    "email": "jfmendoza74@hotmail.com",
-    "phone": "+50766141257",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL",
-      "Cliente"
-    ],
-    "createdAt": "2022-09-22 20:38"
-  },
-  {
-    "name": "Melissa Chavez",
-    "email": "melichavezz@hotmail.com",
-    "phone": "+50769554415",
-    "addresses": [
-      "Panamá, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "TEST DE BIENESTAR",
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-10-12 02:20"
-  },
-  {
-    "name": "Jose Otero",
     "email": "jose_op30@hotmail.com",
-    "phone": "+50766149307",
-    "addresses": [
-      "Panama, Panama, Panamá"
-    ],
     "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL ONLINE"
     ],
-    "createdAt": "2022-10-04 20:18"
+    "createdAt": "2022-10-05 00:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Elvis Rodriguez",
@@ -998,18 +2383,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-13 23:57"
-  },
-  {
-    "name": "Jose Arroyo",
-    "phone": "+50775354821",
-    "addresses": [
-      "Panama, Panama, Panamá"
-    ],
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-11-12 11:36"
+    "createdAt": "2023-01-13 23:57",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Carlos Arosemena",
@@ -1022,7 +2398,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-12 18:21"
+    "createdAt": "2023-01-12 18:21",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Hugo Torrijos",
@@ -1036,20 +2414,9 @@
       "Cliente",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-11-17 21:28"
-  },
-  {
-    "name": "Luz Alejandra",
-    "email": "alejamorillor@gmail.com",
-    "phone": "+50762802991",
-    "addresses": [
-      "Ph san Roque, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-01-07 20:31"
+    "createdAt": "2022-11-17 21:28",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Rafael Hermida",
@@ -1061,12 +2428,16 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-11-29 22:21"
+    "createdAt": "2022-11-29 22:21",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "PARLACEN SUBSEDEPANAMÁ",
     "email": "subsedepma@gmail.com",
-    "createdAt": "2023-01-11 15:03"
+    "createdAt": "2023-01-11 15:03",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Juan Moreno",
@@ -1079,65 +2450,23 @@
       "Cliente",
       "SCAN FIT 3D"
     ],
-    "createdAt": "2023-01-17 21:28"
+    "createdAt": "2023-01-17 21:28",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Pedro Lopez",
     "email": "pl694205@gmail.com",
-    "createdAt": "2023-03-07 12:15"
+    "createdAt": "2023-03-07 12:15",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
-    "name": "Arturo Dorati",
-    "email": "arturo.dorati@gmail.com",
-    "phone": "+50766151343",
-    "addresses": [
-      "Brisas del golf, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "SCAN FIT 3D",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2022-12-30 19:13"
-  },
-  {
-    "name": "Carla Pozone",
-    "email": "pozonecarla@gmail.com",
-    "phone": "+50763525250",
-    "addresses": [
-      "Costa Sur Villa Valencia, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-02-10 15:06"
-  },
-  {
-    "name": "Meilyn Velásquez",
-    "email": "meilyn.velasquez@hilton.com",
-    "phone": "+50762415432",
-    "addresses": [
-      "Villa lucre, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-01-02 21:25"
-  },
-  {
-    "name": "Larissa Gonzalez",
+    "name": "Larissa González",
     "email": "larissagoonzalez@gmail.com",
-    "phone": "+50767807572",
-    "addresses": [
-      "Pabama, Panama, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-01-04 01:25"
+    "createdAt": "2023-01-03 14:45",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jose luis Delgado",
@@ -1151,31 +2480,31 @@
       "SCAN FIT 3D",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2023-03-03 00:35"
+    "createdAt": "2023-03-03 00:35",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
-    "name": "Diana Perez",
+    "name": "Diana Carolina",
     "email": "dianacaper@yahoo.es",
-    "phone": "+50760569833",
-    "addresses": [
-      "Panama, Panama, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-02-10 20:58"
+    "createdAt": "2023-02-07 11:31",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Rodrigo Carneiro",
     "email": "rodrigo.carneiro@pa.nestle.com",
     "phone": "+50760596156",
-    "createdAt": "2022-12-17 00:26"
+    "createdAt": "2022-12-17 00:26",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ana julia",
     "email": "anajulia26@live.com",
-    "createdAt": "2023-01-11 13:34"
+    "createdAt": "2023-01-11 13:34",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jose Solis",
@@ -1187,13 +2516,17 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-12-13 18:19"
+    "createdAt": "2022-12-13 18:19",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Rose Mery Bancroft",
     "email": "bancroftgirl@hotmail.com",
     "phone": "+50766296534",
-    "createdAt": "2022-11-09 16:13"
+    "createdAt": "2022-11-09 16:13",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Cesar Fernandez",
@@ -1207,43 +2540,30 @@
       "Cliente",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-10-24 14:56"
-  },
-  {
-    "name": "Catherine Fouchard",
-    "email": "catherinefisiosports@gmail.com",
-    "phone": "+50766298362",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-10-12 14:32"
+    "createdAt": "2022-10-24 14:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Brigett Quijada",
     "email": "bquijadam@icloud.com",
-    "createdAt": "2023-02-10 18:49"
+    "createdAt": "2023-02-10 18:49",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ana Quintero",
     "email": "aquintero1614@gmail.com",
-    "createdAt": "2023-03-07 03:47"
-  },
-  {
-    "name": "Hugo Moran R",
-    "email": "hugo@moranip.com",
-    "phone": "+50764146134",
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "Cliente",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-09-16 20:10"
+    "createdAt": "2023-03-07 03:47",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Acacio Malave",
     "email": "acamalave@krashpanama.com",
-    "createdAt": "2022-08-30 14:53"
+    "createdAt": "2022-08-30 14:53",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jonathan Arauz",
@@ -1256,36 +2576,30 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-23 17:40"
+    "createdAt": "2023-01-23 17:40",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Alicia",
     "email": "aliferraris@gmail.com",
-    "createdAt": "2023-03-04 22:09"
+    "createdAt": "2023-03-04 22:09",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Pi Se",
     "email": "pierre507@hotmail.com",
-    "createdAt": "2022-11-16 12:37"
+    "createdAt": "2022-11-16 12:37",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Tatiana vargas",
     "email": "tatiana@tradencargo.com",
-    "createdAt": "2023-03-03 02:53"
-  },
-  {
-    "name": "Joel Watemberg",
-    "email": "joelwatemberg@gmail.com",
-    "phone": "+50768886555",
-    "addresses": [
-      "Avenida Balboa, PH Los Delfines, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2023-01-17 16:21"
+    "createdAt": "2023-03-03 02:53",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Fernando Martinez",
@@ -1298,60 +2612,25 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-09-15 12:52"
-  },
-  {
-    "name": "Albaniz",
-    "email": "albaniz_01@hotmail.com",
-    "phone": "+50762636422",
-    "addresses": [
-      "Los Andes #2, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "SCAN FIT 3D"
-    ],
-    "createdAt": "2023-01-03 17:58"
+    "createdAt": "2022-09-15 12:52",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ana Arjona",
     "email": "anniearjona@hotmail.com",
     "phone": "+50764303190",
-    "createdAt": "2022-10-23 01:31"
+    "createdAt": "2022-10-23 01:31",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "FRANK",
     "email": "cvgjuventud@gmail.com",
     "phone": "+50766275599",
-    "createdAt": "2022-09-20 20:23"
-  },
-  {
-    "name": "Luis Tovar",
-    "email": "leonelacolson@hotmail.com",
-    "phone": "+50760257622",
-    "addresses": [
-      "Panama, Panama, Panamá"
-    ],
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-09-05 21:31"
-  },
-  {
-    "name": "Kimberle Gomez",
-    "email": "kgomezlc05@gmail.com",
-    "phone": "+50765321604",
-    "addresses": [
-      "Panama, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "TEST DE BIENESTAR",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "Cliente",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2022-12-11 15:04"
+    "createdAt": "2022-09-20 20:23",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Bassima Ghazal",
@@ -1364,7 +2643,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-07 19:03"
+    "createdAt": "2023-01-07 19:03",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Mariela De watson",
@@ -1376,7 +2657,9 @@
     "tags": [
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-08-31 21:46"
+    "createdAt": "2022-08-31 21:46",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Katheine Williams",
@@ -1385,7 +2668,9 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-09-18 19:42"
+    "createdAt": "2022-09-18 19:42",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Eduardo Arrue",
@@ -1397,7 +2682,9 @@
     "tags": [
       "SCAN FIT 3D"
     ],
-    "createdAt": "2022-12-16 12:37"
+    "createdAt": "2022-12-16 12:37",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ronie Moreno",
@@ -1410,7 +2697,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-11 01:54"
+    "createdAt": "2023-01-11 01:54",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Silvia Cavalli",
@@ -1422,11 +2711,15 @@
     ],
     "addresses": [
       "Panama, Panama, Panamá"
-    ]
+    ],
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "lisichen27@hotmail.com",
-    "createdAt": "2023-03-09 04:46"
+    "createdAt": "2023-03-09 04:46",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Christian Gomez",
@@ -1438,22 +2731,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-23 16:53"
-  },
-  {
-    "name": "Elizabeth Castillo",
-    "email": "cg.elizabeth87@gmail.com",
-    "phone": "+50765803318",
-    "addresses": [
-      "Nuevo arraijan calle 10 norte, Arraijan, Panamá Oeste, Panamá",
-      "Nuevo Arraijan, Panama, Panamá Oeste, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2023-03-09 20:40"
+    "createdAt": "2023-01-23 16:53",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Marcelo Gonzalez",
@@ -1463,7 +2743,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-16 19:57"
+    "createdAt": "2023-01-16 19:57",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Santiago Alzate",
@@ -1477,12 +2759,16 @@
       "Cliente",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-12-14 18:11"
+    "createdAt": "2022-12-14 18:11",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Sandra Dominguez",
     "email": "sandraisabeldominguez@gmail.com",
-    "createdAt": "2023-02-10 00:52"
+    "createdAt": "2023-02-10 00:52",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Mirna Mejia",
@@ -1495,21 +2781,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-03-08 22:04"
-  },
-  {
-    "name": "Dalinda Pinto",
-    "email": "dapi20@gmail.com",
-    "phone": "+50769686072",
-    "addresses": [
-      "Calle las flores residencial Camelias casa 11, Panama, Panamá, Panamá",
-      "Costa Serena casa 83, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "SCAN FIT 3D"
-    ],
-    "createdAt": "2023-03-02 13:10"
+    "createdAt": "2023-03-08 22:04",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Khadijah Kachalia",
@@ -1518,77 +2792,37 @@
     "tags": [
       "TEST DE BIENESTAR"
     ],
-    "createdAt": "2022-11-20 15:38"
-  },
-  {
-    "email": "jose_op30@hotmail.com",
-    "tags": [
-      "CITA CONTROL ONLINE"
-    ],
-    "createdAt": "2022-10-05 00:56"
+    "createdAt": "2022-11-20 15:38",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Sandra Webster",
     "email": "srobolt@gmail.com",
-    "createdAt": "2023-02-12 10:59"
+    "createdAt": "2023-02-12 10:59",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Eve",
     "email": "pintasola82@gmail.com",
-    "createdAt": "2023-03-02 14:29"
+    "createdAt": "2023-03-02 14:29",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
-    "name": "Ana Alonso",
-    "email": "ana.alonso93@icloud.com",
-    "phone": "+50764494775",
-    "tags": [
-      "CITA ONLINE PRIMERA VEZ"
-    ],
-    "createdAt": "2022-09-07 18:20"
-  },
-  {
-    "name": "Diana Carolina",
-    "email": "dianacaper@yahoo.es",
-    "createdAt": "2023-02-07 11:31"
-  },
-  {
-    "name": "Fabio Jaramillo",
+    "name": "FABIO JARAMILLO",
     "email": "jaralonso27@hotmail.com",
-    "phone": "+50765506092",
-    "addresses": [
-      "Panam, Panama, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-02-07 19:14"
-  },
-  {
-    "name": "Daniela Cabanzo",
-    "email": "danielarealty@gmail.com",
-    "phone": "+50761456841",
-    "addresses": [
-      "Santa María Golf & Country Club, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "SCAN FIT 3D"
-    ],
-    "createdAt": "2023-01-03 19:46"
+    "createdAt": "2023-02-07 12:51",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Pilar Santiago",
     "email": "pilarsantiago24@gmail.com",
-    "phone": "+50766763138",
-    "addresses": [
-      "Panama, Panama, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-02-17 13:31"
+    "createdAt": "2023-02-15 17:39",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Siriadny Diaz",
@@ -1601,17 +2835,16 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-03-10 18:51"
+    "createdAt": "2023-03-10 18:51",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Camille Rodriguez",
     "email": "camilleirodrigueza@gmail.com",
-    "createdAt": "2023-03-10 23:05"
-  },
-  {
-    "name": "FABIO JARAMILLO",
-    "email": "jaralonso27@hotmail.com",
-    "createdAt": "2023-02-07 12:51"
+    "createdAt": "2023-03-10 23:05",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Claudia Rueda",
@@ -1623,7 +2856,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-08-31 19:42"
+    "createdAt": "2022-08-31 19:42",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Tatiana Cortes",
@@ -1636,7 +2871,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-11 03:04"
+    "createdAt": "2023-01-11 03:04",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Sebastian Palacio",
@@ -1651,13 +2888,17 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "CITA CONTROL PRESENCIAL"
     ],
-    "createdAt": "2022-12-14 18:13"
+    "createdAt": "2022-12-14 18:13",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Stephanie Swasey",
     "email": "sswasey@gmail.com",
     "phone": "+50761300558",
-    "createdAt": "2022-10-09 13:13"
+    "createdAt": "2022-10-09 13:13",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Rogelio Paredes",
@@ -1669,12 +2910,16 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-12-02 12:20"
+    "createdAt": "2022-12-02 12:20",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Leonela Colson",
     "email": "leonelacolson93@gmail.com",
-    "createdAt": "2022-09-15 20:31"
+    "createdAt": "2022-09-15 20:31",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Laura Vega",
@@ -1687,7 +2932,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-03-04 16:06"
+    "createdAt": "2023-03-04 16:06",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "William Steven",
@@ -1701,7 +2948,9 @@
       "CITA CONTROL PRESENCIAL",
       "Cliente"
     ],
-    "createdAt": "2022-10-04 15:47"
+    "createdAt": "2022-10-04 15:47",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ricardo Moreno",
@@ -1714,7 +2963,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-18 19:48"
+    "createdAt": "2023-01-18 19:48",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Maricarmen Benavides",
@@ -1726,20 +2977,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-10-17 20:48"
-  },
-  {
-    "name": "Laura Carballeda",
-    "email": "lauracarballeda06@gmail.com",
-    "phone": "+50765505881",
-    "addresses": [
-      "Avenida balboa Ph Sky apt 24 F, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-03-11 02:56"
+    "createdAt": "2022-10-17 20:48",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Aldo Diaz",
@@ -1751,12 +2991,16 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-12 01:40"
+    "createdAt": "2023-01-12 01:40",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jovana Rodriguez",
     "email": "jo_rodriguez@cableonda.net",
-    "createdAt": "2023-01-26 17:57"
+    "createdAt": "2023-01-26 17:57",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Vladimir Alfaro",
@@ -1769,32 +3013,17 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-10 18:59"
-  },
-  {
-    "name": "Jeisy Gantes",
-    "email": "jagu.26@hotmail.com",
-    "phone": "+50762166176",
-    "addresses": [
-      "Pueblo nuevo calle 9na urb stone, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL",
-      "Cliente"
-    ],
-    "createdAt": "2022-09-05 20:31"
-  },
-  {
-    "name": "Larissa González",
-    "email": "larissagoonzalez@gmail.com",
-    "createdAt": "2023-01-03 14:45"
+    "createdAt": "2023-01-10 18:59",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Yeivis Quiroz",
     "email": "yeiquiroz14@gmail.com",
     "phone": "+50762088505",
-    "createdAt": "2023-03-10 00:51"
+    "createdAt": "2023-03-10 00:51",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Eliades Serrano",
@@ -1807,7 +3036,9 @@
       "CITA PRESENCIAL PRIMERA VEZ",
       "Cliente"
     ],
-    "createdAt": "2022-11-16 14:36"
+    "createdAt": "2022-11-16 14:36",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Carlos Beitia",
@@ -1819,7 +3050,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-09-13 01:03"
+    "createdAt": "2022-09-13 01:03",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jhon Uzcategui",
@@ -1832,7 +3065,9 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-27 21:20"
+    "createdAt": "2023-01-27 21:20",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Crismar Contreras",
@@ -1844,7 +3079,9 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-10-12 19:45"
+    "createdAt": "2022-10-12 19:45",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Dereck Franco",
@@ -1856,12 +3093,16 @@
     "tags": [
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2022-10-28 22:56"
+    "createdAt": "2022-10-28 22:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "María gonzalez",
     "email": "mariacarlotamichel@hotmail.com",
-    "createdAt": "2023-02-11 03:15"
+    "createdAt": "2023-02-11 03:15",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Milena Braddick",
@@ -1874,20 +3115,9 @@
       "Cliente",
       "SCAN FIT 3D"
     ],
-    "createdAt": "2023-01-20 13:00"
-  },
-  {
-    "name": "Elvia",
-    "email": "elviayauyau@gmail.com",
-    "phone": "+50769821673",
-    "addresses": [
-      "Paseo del Norte, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "SCAN FIT 3D"
-    ],
-    "createdAt": "2023-03-09 21:59"
+    "createdAt": "2023-01-20 13:00",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Aldair Brands",
@@ -1900,266 +3130,125 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-01-03 23:32"
-  },
-  {
-    "name": "Pilar Santiago",
-    "email": "pilarsantiago24@gmail.com",
-    "createdAt": "2023-02-15 17:39"
-  },
-  {
-    "name": "Tathiana Córdoba",
-    "email": "tathiana_2931@hotmail.com",
-    "phone": "+50765115221",
-    "addresses": [
-      "Santo Domingo, Calle Vía Pedasi, Las Tablas, Los Santos, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA ONLINE PRIMERA VEZ"
-    ],
-    "createdAt": "2023-02-08 18:19"
+    "createdAt": "2023-01-03 23:32",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Brenis de",
     "email": "bnspty@gmail.com",
-    "createdAt": "2023-03-12 01:40"
-  },
-  {
-    "name": "Yatsury saez",
-    "email": "yatsury07@gmail.com",
-    "phone": "+50766756046",
-    "addresses": [
-      "Panamá, PANAMA, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-04-11 19:05"
-  },
-  {
-    "name": "Salomon forjoun",
-    "email": "farjoun28@gmail.com",
-    "phone": "+50763089100",
-    "addresses": [
-      "Punta pacifica, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-06 14:49"
+    "createdAt": "2023-03-12 01:40",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Ali Javier",
     "email": "ajv100176@gmail.com",
-    "createdAt": "2023-04-01 23:04"
-  },
-  {
-    "name": "Maurin sovilla",
-    "email": "maureen.sovilla@bellaholdings.com",
-    "phone": "+50763209052",
-    "addresses": [
-      "Panama, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-05-22 12:26"
+    "createdAt": "2023-04-01 23:04",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Luz Carbono",
     "email": "luzmcarbono@gmail.com",
     "phone": "+50769838195",
-    "createdAt": "2023-07-30 04:39"
-  },
-  {
-    "name": "Eliahu forjoun",
-    "email": "eliahufarjoun16@gmail.com",
-    "phone": "+50763089104",
-    "addresses": [
-      "Pacific point torre 300, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-06-24 12:45"
-  },
-  {
-    "name": "Vanessa González",
-    "email": "dra.vanessagonzalez@gmail.com",
-    "phone": "+50766172089",
-    "addresses": [
-      "Clayton, Embassy Club, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-03-11 20:00"
+    "createdAt": "2023-07-30 04:39",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "melichavezz@gmail.com",
-    "createdAt": "2023-08-14 02:43"
+    "createdAt": "2023-08-14 02:43",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jose Breton",
     "email": "jbb0620@gmail.com",
     "phone": "+50766789677",
-    "createdAt": "2023-08-01 16:17"
-  },
-  {
-    "name": "Abraham forjoun",
-    "email": "abfarjoun@hormail.com",
-    "phone": "+50766134307",
-    "addresses": [
-      "Punta pacifica, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-11 12:05"
+    "createdAt": "2023-08-01 16:17",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Tania Martínez",
     "email": "tania.martinez.c@gmail.com",
-    "createdAt": "2023-04-07 17:16"
+    "createdAt": "2023-04-07 17:16",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Fulvia Herrera",
     "email": "fulviherrera08@gmail.com",
-    "createdAt": "2023-03-26 21:16"
+    "createdAt": "2023-03-26 21:16",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
-    "name": "Gipsy Gipsy",
+    "name": "Gipsy Hernández",
     "email": "gipsyhv@gmail.com",
-    "phone": "+50758724951",
-    "createdAt": "2023-05-16 22:33"
-  },
-  {
-    "name": "Juan David Guizado",
-    "email": "juand.guizado@gmail.com",
-    "phone": "+50766759511",
-    "addresses": [
-      "San Francisco, San Francisco, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-24 16:18"
+    "createdAt": "2023-05-29 20:45",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Sairy España",
     "email": "sairy_2112@hotmail.com",
-    "createdAt": "2023-04-01 07:09"
+    "createdAt": "2023-04-01 07:09",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Yudieer Rodríguez",
     "email": "yudieer62@gmail.com",
     "phone": "+50761726828",
-    "createdAt": "2023-05-05 21:29"
+    "createdAt": "2023-05-05 21:29",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Catalina Cuelho",
     "email": "catalina.cuelho@gmail.com",
     "phone": "+50763780026",
-    "createdAt": "2023-07-01 23:26"
+    "createdAt": "2023-07-01 23:26",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Abraham dabah",
     "email": "abedabah@gmail.com",
-    "createdAt": "2023-03-20 19:15"
-  },
-  {
-    "name": "Yenelis Gómez",
-    "email": "yenelisgomez@gmail.com",
-    "phone": "+50762205719",
-    "addresses": [
-      "Panama, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-04-08 22:11"
+    "createdAt": "2023-03-20 19:15",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Isabel Barreto",
     "email": "barretocisabel@gmail.com",
-    "createdAt": "2023-04-08 13:30"
-  },
-  {
-    "name": "Celine",
-    "email": "celine.ana@icloud.com",
-    "phone": "+50783269203",
-    "addresses": [
-      "Paseo del norte Ph Victoria 61D, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-03-11 23:55"
-  },
-  {
-    "name": "Juan Gamez",
-    "email": "juancgamez01@gmail.com",
-    "phone": "+50761124074",
-    "addresses": [
-      "PH Lemon Tower, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-17 04:06"
-  },
-  {
-    "name": "Sebastian Breton",
-    "email": "sebastianbreton31@gmail.com",
-    "phone": "+50766787002",
-    "addresses": [
-      "Costa del Este, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "SCAN FIT 3D"
-    ],
-    "createdAt": "2023-07-21 20:29"
+    "createdAt": "2023-04-08 13:30",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Valentina Gamez",
     "email": "valentinagamez@gmail.com",
     "phone": "+50762285105",
-    "createdAt": "2023-06-05 18:45"
+    "createdAt": "2023-06-05 18:45",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Yamel Khdled",
     "email": "yamelkw@gmail.com",
-    "createdAt": "2023-03-19 15:41"
-  },
-  {
-    "name": "Luisa Asturias",
-    "email": "jacomeasturias@gmail.com",
-    "phone": "+50766197578",
-    "addresses": [
-      "PH GreenView - Siuma Property, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-08-06 18:25"
+    "createdAt": "2023-03-19 15:41",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jessenia Velasquez",
     "email": "jessiv1991@gmail.com",
-    "createdAt": "2023-04-07 00:49"
+    "createdAt": "2023-04-07 00:49",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Elsibir Trejos",
@@ -2172,245 +3261,123 @@
       "Cliente",
       "CITA PRESENCIAL PRIMERA VEZ"
     ],
-    "createdAt": "2023-04-13 16:17"
+    "createdAt": "2023-04-13 16:17",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Jackie zayat",
     "email": "jackie@wipet.com",
-    "createdAt": "2023-04-20 21:10"
-  },
-  {
-    "name": "Diana Chalem",
-    "email": "dianichalem@gmail.com",
-    "phone": "+50763791444",
-    "addresses": [
-      "Pacific Point Torre 600, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-27 22:36"
-  },
-  {
-    "name": "Gerard Gerard",
-    "email": "gerardbettsak@gmail.com",
-    "phone": "+50760920765",
-    "addresses": [
-      "punta pacifica, Panama, Panamá, Panamá",
-      "Panama, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "SCAN FIT 3D"
-    ],
-    "createdAt": "2023-05-31 22:08"
+    "createdAt": "2023-04-20 21:10",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Glenys valero",
     "email": "gleval78@gmail.com",
     "phone": "+50763303973",
-    "createdAt": "2023-06-07 16:56"
+    "createdAt": "2023-06-07 16:56",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Stephanie",
     "email": "stephie0118.sa@gmail.com",
     "phone": "+50769739165",
-    "createdAt": "2023-08-18 20:51"
+    "createdAt": "2023-08-18 20:51",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Nicole Fraynd",
     "email": "nicolefraynd@gmail.com",
     "phone": "+50766760934",
-    "createdAt": "2023-08-01 14:12"
+    "createdAt": "2023-08-01 14:12",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Carlos Mayorga",
     "email": "mayorgacarlos@outlook.es",
-    "createdAt": "2023-04-11 20:22"
-  },
-  {
-    "name": "Martin Sosa",
-    "email": "martinsosa@gmail.com",
-    "phone": "+50766155985",
-    "addresses": [
-      "Panama, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-04-26 00:49"
+    "createdAt": "2023-04-11 20:22",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Rowan Stone",
     "email": "rowanrk6@gmail.com",
     "phone": "+50766430109",
-    "createdAt": "2023-08-08 03:38"
+    "createdAt": "2023-08-08 03:38",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "email": "jdtorrespty@gmail.com",
-    "createdAt": "2023-07-04 22:10"
+    "createdAt": "2023-07-04 22:10",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Isaac Attias",
     "email": "isaacattias10@gmail.com",
     "phone": "+50762306153",
-    "createdAt": "2023-07-17 15:07"
-  },
-  {
-    "name": "Nelia Gonzalez",
-    "email": "nely0574@yahoo.com",
-    "phone": "+50766738222",
-    "addresses": [
-      "Villa Zaita, Las Cumbres, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-08 14:49"
-  },
-  {
-    "name": "Andrea Jaimes",
-    "email": "andrejmsc@hotmail.com",
-    "phone": "+50766733347",
-    "addresses": [
-      "Ph Prestige calle 45 Bella Vista E, Panamá, Panamá, Panamá",
-      "Ph prestige calle 45 Este, Panamá, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2023-04-18 01:48"
+    "createdAt": "2023-07-17 15:07",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Grecia Barrios",
     "email": "greebarrios@gmail.com",
     "phone": "+50761184820",
-    "createdAt": "2023-06-12 19:37"
-  },
-  {
-    "name": "Gustavo Tinker",
-    "email": "gustavotinker25@gmail.com",
-    "phone": "+50766738992",
-    "addresses": [
-      "Costa del este costa dorada, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-10 19:41"
+    "createdAt": "2023-06-12 19:37",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Hazel Ramírez",
     "email": "hazelrl@yahoo.com",
     "phone": "+50762335435",
-    "createdAt": "2023-06-30 04:07"
+    "createdAt": "2023-06-30 04:07",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Tatiana meza",
     "email": "tatianameza.meza@gmail.com",
     "phone": "+50762300160",
-    "createdAt": "2023-08-05 21:23"
-  },
-  {
-    "name": "Moises Naimark",
-    "email": "mnaimark@dreamproperties.com.pa",
-    "phone": "+50764509246",
-    "addresses": [
-      "Ave Centenario Dream Plaza Oficina 711, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-21 15:36"
-  },
-  {
-    "name": "Juan Helgueros",
-    "email": "juanhelgueros@gmail.com",
-    "phone": "+50769225403",
-    "addresses": [
-      "PH Altamar del Este 3801, Panama, Panamá, Panamá",
-      "Av Paseo de Mar PH Altamar 3801, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ",
-      "CITA CONTROL PRESENCIAL"
-    ],
-    "createdAt": "2023-05-07 22:52"
+    "createdAt": "2023-08-05 21:23",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Cindy Gomez",
     "email": "arqcjgomez@gmail.com",
     "phone": "+50769973647",
-    "createdAt": "2023-06-11 14:05"
-  },
-  {
-    "name": "Mario bendayan",
-    "email": "mariobendayan@gmail.com",
-    "phone": "+50763057878",
-    "addresses": [
-      "Panama, Panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-04 04:20"
-  },
-  {
-    "name": "Gipsy Hernández",
-    "email": "gipsyhv@gmail.com",
-    "createdAt": "2023-05-29 20:45"
+    "createdAt": "2023-06-11 14:05",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Julissa",
     "email": "julissalorena16@gmail.com",
     "phone": "+50760060238",
-    "createdAt": "2023-07-24 01:47"
+    "createdAt": "2023-07-24 01:47",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Karina Plotnikoff",
     "email": "knplotnikoff@gmail.com",
-    "createdAt": "2023-04-06 03:20"
+    "createdAt": "2023-04-06 03:20",
+    "totalSpent": 0,
+    "transactionCount": 0
   },
   {
     "name": "Mayte Rodríguez",
     "email": "maytediluz@gmail.com",
     "phone": "+50768327043",
-    "createdAt": "2023-07-24 15:29"
-  },
-  {
-    "name": "chiara",
-    "email": "chiaracalderinil@gmail.com",
-    "phone": "+50762369930",
-    "addresses": [
-      "ph costamare, panama, Panamá, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-07-30 22:15"
-  },
-  {
-    "name": "Isaac Rodriguez",
-    "email": "isaac_rodriguez1629@hotmail.com",
-    "phone": "+50762630889",
-    "addresses": [
-      "Nuevo arraijan, Ecogardens, Panama, Panamá Oeste, Panamá"
-    ],
-    "tags": [
-      "Cliente",
-      "CITA PRESENCIAL PRIMERA VEZ"
-    ],
-    "createdAt": "2023-03-25 20:00"
+    "createdAt": "2023-07-24 15:29",
+    "totalSpent": 0,
+    "transactionCount": 0
   }
 ]

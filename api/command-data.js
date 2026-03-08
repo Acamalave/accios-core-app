@@ -250,7 +250,7 @@ module.exports = async function handler(req, res) {
         color: '#EC4899',
         icon: 'nutrition',
         users: colsonContacts.length,
-        revenue: 0,
+        revenue: Math.round(colsonContacts.reduce((s, c) => s + (c.totalSpent || 0), 0) * 100) / 100,
         collections: { contacts: colsonContacts.length }
       },
       'resultados': {
