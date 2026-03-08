@@ -1137,7 +1137,7 @@
   .cc-charts-grid { grid-template-columns: 1fr; }
   .cc-share-layout { flex-direction: column-reverse; }
   .cc-share-donut { width: 120px; height: 120px; }
-  .cc-share-legend { max-height: 160px; }
+  .cc-share-legend { max-height: none; }
   .cc-chart-wrap { height: 180px; }
   .cc-header { flex-direction: column; align-items: flex-start; }
   .cc-header__right { width: 100%; justify-content: space-between; }
