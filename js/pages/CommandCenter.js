@@ -619,7 +619,7 @@ export class CommandCenter {
     if (nextBtn) nextBtn.addEventListener('click', async () => { this.userPage++; await this._fetchAndRenderUsers(); });
   }
 
-  // ─── Profile Panel ────────────────────────────────────────────────
+  // ─── Profile Panel (Expediente Digital) ──────────────────────────
   async _openProfile(phone) {
     const modal = document.getElementById('modal-root');
     if (!modal) return;
@@ -630,7 +630,7 @@ export class CommandCenter {
         <div class="cc-profile-panel">
           <div class="cc-loading" style="min-height:300px;">
             <div class="cc-loading__spinner"></div>
-            <div class="cc-loading__text">CARGANDO PERFIL...</div>
+            <div class="cc-loading__text">CARGANDO EXPEDIENTE...</div>
           </div>
         </div>
       </div>`;
@@ -649,12 +649,29 @@ export class CommandCenter {
     const p = profile.unified || {};
     const panel = modal.querySelector('.cc-profile-panel');
 
+    // Find photo URL from allFields
+    const photoField = (profile.allFields || []).find(f =>
+      typeof f.value === 'string' && /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)/i.test(f.value) &&
+      /photo|avatar|image|picture|foto|profilePic|photoURL/i.test(f.key)
+    );
+    const photoUrl = photoField?.value || '';
+    const initials = (p.name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
     panel.innerHTML = `
       <div class="cc-profile-header">
         <button class="cc-profile-close" id="cc-profile-close">✕</button>
-        <div class="cc-profile-name">${p.name || 'Sin nombre'}</div>
-        <div class="cc-profile-phone">${p.phone || phone}</div>
-        <div style="display:flex;gap:4px;margin-bottom:var(--space-3);">
+        <div class="cc-profile-avatar-row">
+          ${photoUrl
+            ? `<img src="${photoUrl}" class="cc-profile-avatar" alt="">`
+            : `<div class="cc-profile-avatar cc-profile-avatar--initials">${initials}</div>`
+          }
+          <div>
+            <div class="cc-profile-name">${p.name || 'Sin nombre'}</div>
+            <div class="cc-profile-phone">${p.phone || phone}</div>
+            ${p.email ? `<div class="cc-profile-email">${p.email}</div>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;margin:var(--space-3) 0;">
           ${(p.businesses || []).map(b => {
             if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">ACCIOS CORE</span>';
             if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">Rush Ride</span>';
@@ -668,26 +685,109 @@ export class CommandCenter {
             <div class="cc-profile-stat__label">Total Spent</div>
           </div>
           <div class="cc-profile-stat">
-            <div class="cc-profile-stat__value">${p.vipScore || 0}</div>
-            <div class="cc-profile-stat__label">VIP Score</div>
-          </div>
-          <div class="cc-profile-stat">
             <div class="cc-profile-stat__value">${(p.businesses || []).length}</div>
             <div class="cc-profile-stat__label">Negocios</div>
           </div>
+          ${p.firstSeen ? `<div class="cc-profile-stat">
+            <div class="cc-profile-stat__value">${this._formatDate(p.firstSeen)}</div>
+            <div class="cc-profile-stat__label">Desde</div>
+          </div>` : ''}
         </div>
       </div>
       <div class="cc-profile-body">
-        ${this._renderProfileSection('accios-core', 'ACCIOS CORE', profile.accios)}
-        ${this._renderProfileSection('rush-ride', 'Rush Ride Studio', profile.rushRide)}
-        ${this._renderProfileSection('xazai', 'Xazai', profile.xazai)}
+        ${this._renderDossierFields(profile.allFields || [])}
+        ${this._renderBusinessSection('accios-core', 'ACCIOS CORE', profile.accios)}
+        ${this._renderBusinessSection('rush-ride', 'Rush Ride Studio', profile.rushRide)}
+        ${this._renderBusinessSection('xazai', 'Xazai', profile.xazai)}
         ${this._renderTimeline(profile.timeline)}
       </div>`;
 
     panel.querySelector('#cc-profile-close').addEventListener('click', () => this._closeProfile());
   }
 
-  _renderProfileSection(key, name, data) {
+  // ─── Dynamic Field Renderer (Expediente) ────────────────────────
+  _fieldLabel(key) {
+    const labels = {
+      name: 'Nombre', displayName: 'Nombre', email: 'Email', phone: 'Teléfono',
+      role: 'Rol', address: 'Dirección', direccion: 'Dirección',
+      photo: 'Foto', photoURL: 'Foto', avatar: 'Foto', profilePic: 'Foto',
+      shoeSize: 'Talla Zapato', talla: 'Talla', createdAt: 'Registrado',
+      lastLogin: 'Último Login', lastActive: 'Última Actividad',
+      totalSpent: 'Total Gastado', totalOrders: 'Total Órdenes',
+      businesses: 'Negocios Vinculados', membership: 'Membresía',
+      favoriteItems: 'Favoritos', lastOrderDate: 'Último Pedido',
+      firstSeen: 'Primera Vez', updatedAt: 'Actualizado'
+    };
+    return labels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
+  }
+
+  _fieldValue(key, val) {
+    if (val === null || val === undefined || val === '') return null;
+    // Image URL
+    if (typeof val === 'string' && /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)/i.test(val)) {
+      return `<img src="${val}" class="cc-dossier-img" alt="${key}">`;
+    }
+    // Array
+    if (Array.isArray(val)) {
+      if (val.length === 0) return null;
+      if (typeof val[0] === 'string') return val.map(v => `<span class="cc-dossier-tag">${v}</span>`).join('');
+      return `${val.length} items`;
+    }
+    // Object (membership, etc)
+    if (typeof val === 'object') {
+      const entries = Object.entries(val).filter(([, v]) => v !== null && v !== undefined && v !== '');
+      if (entries.length === 0) return null;
+      return entries.map(([k, v]) => `<span class="cc-dossier-subfield">${this._fieldLabel(k)}: ${v}</span>`).join('');
+    }
+    // Date string
+    if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+      return this._formatDate(val);
+    }
+    // Number that looks like money
+    if (typeof val === 'number' && (key.toLowerCase().includes('spent') || key.toLowerCase().includes('amount') || key.toLowerCase().includes('revenue'))) {
+      return `$${val.toFixed(2)}`;
+    }
+    return String(val);
+  }
+
+  _sourceBadge(src) {
+    if (src === 'accios-core') return '<span class="cc-dossier-src cc-dossier-src--accios">AC</span>';
+    if (src === 'rush-ride') return '<span class="cc-dossier-src cc-dossier-src--rush">RR</span>';
+    if (src === 'xazai') return '<span class="cc-dossier-src cc-dossier-src--xazai">XZ</span>';
+    return `<span class="cc-dossier-src">${src}</span>`;
+  }
+
+  _renderDossierFields(allFields) {
+    if (!allFields || allFields.length === 0) return '';
+
+    // Filter out fields already shown in header or internal
+    const skipInDossier = new Set(['name', 'displayName', 'phone', 'email', 'exists', 'id']);
+    const fields = allFields.filter(f => !skipInDossier.has(f.key));
+
+    if (fields.length === 0) return '';
+
+    const items = fields.map(f => {
+      const val = this._fieldValue(f.key, f.value);
+      if (!val) return '';
+      const srcBadges = f.sources.length < 3 ? f.sources.map(s => this._sourceBadge(s)).join('') : '';
+      return `
+        <div class="cc-dossier-field">
+          <div class="cc-dossier-field__label">${this._fieldLabel(f.key)} ${srcBadges}</div>
+          <div class="cc-dossier-field__value">${val}</div>
+        </div>`;
+    }).filter(Boolean).join('');
+
+    if (!items) return '';
+
+    return `
+      <div class="cc-profile-section">
+        <div class="cc-profile-section__title" style="color:var(--neon-green);">Expediente Digital</div>
+        <div class="cc-dossier-grid">${items}</div>
+      </div>`;
+  }
+
+  // ─── Business Sections ──────────────────────────────────────────
+  _renderBusinessSection(key, name, data) {
     if (!data || !data.exists) {
       return `
         <div class="cc-profile-section">
@@ -698,41 +798,72 @@ export class CommandCenter {
     const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : 'accios';
     let items = '';
 
-    if (key === 'accios-core' && data.transactions) {
-      items = data.transactions.slice(0, 5).map(t => `
-        <div class="cc-profile-item">
-          <span>${t.description || 'Transaccion'}</span>
-          <span class="cc-profile-item__amount" style="color:var(--purple-400);">$${(t.amount || t.totalAmount || 0).toFixed(2)}</span>
-          <span class="cc-profile-item__date">${t.date || ''}</span>
-        </div>`).join('');
+    if (key === 'accios-core') {
+      // Transactions
+      if (data.transactions?.length) {
+        items += data.transactions.slice(0, 5).map(t => `
+          <div class="cc-profile-item">
+            <span>${t.description || 'Transacción'}</span>
+            <span class="cc-profile-item__amount" style="color:var(--purple-400);">$${(t.totalAmount || t.amount || 0).toFixed(2)}</span>
+            <span class="cc-profile-item__date">${this._formatDate(t.createdAt || t.date)}</span>
+          </div>`).join('');
+      }
+      // Quotes
+      if (data.quotes?.length) {
+        items += `<div style="font-size:0.7rem;color:var(--text-dim);padding:8px 12px 2px;text-transform:uppercase;letter-spacing:0.05em;">Cotizaciones</div>`;
+        items += data.quotes.slice(0, 3).map(q => `
+          <div class="cc-profile-item">
+            <span>${q.items?.[0]?.description || 'Cotización'}</span>
+            <span class="cc-profile-item__amount" style="color:var(--purple-400);">$${(q.total || 0).toFixed(2)}</span>
+            <span class="cc-biz-badge" style="font-size:0.6rem;">${q.status || ''}</span>
+          </div>`).join('');
+      }
     }
 
     if (key === 'rush-ride') {
+      // Membership
       const m = data.membership;
-      const memberInfo = m ? `<div class="cc-profile-item"><span>Membresia: ${m.plan}</span><span class="cc-biz-badge cc-biz-badge--rush">${m.status}</span></div>` : '';
-      const classItems = (data.recentClasses || []).slice(0, 3).map(c => `
-        <div class="cc-profile-item">
-          <span>${c.className} — ${c.coach}</span>
-          <span class="cc-profile-item__date">${c.date}</span>
-        </div>`).join('');
-      items = memberInfo + classItems;
-      if (data.totalClasses) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalClasses} clases totales · ${data.thisMonth || 0} este mes</div>`;
+      if (m && typeof m === 'object') {
+        const plan = m.plan || m.type || m.name || '';
+        const status = m.status || '';
+        if (plan || status) items += `<div class="cc-profile-item"><span>Membresía: ${plan}</span><span class="cc-biz-badge cc-biz-badge--rush">${status}</span></div>`;
+      }
+      // Check-ins
+      if (data.recentCheckIns?.length) {
+        items += data.recentCheckIns.slice(0, 5).map(c => `
+          <div class="cc-profile-item">
+            <span>Check-in${c.className ? ': ' + c.className : ''}${c.coach ? ' — ' + c.coach : ''}</span>
+            <span class="cc-profile-item__date">${this._formatDate(c.date || c.createdAt)}</span>
+          </div>`).join('');
+      }
+      // Reservations
+      if (data.recentReservations?.length) {
+        items += `<div style="font-size:0.7rem;color:var(--text-dim);padding:8px 12px 2px;text-transform:uppercase;letter-spacing:0.05em;">Reservaciones</div>`;
+        items += data.recentReservations.slice(0, 3).map(r => `
+          <div class="cc-profile-item">
+            <span>${r.className || 'Reserva'}${r.coach ? ' — ' + r.coach : ''}</span>
+            <span class="cc-profile-item__date">${this._formatDate(r.date || r.createdAt)}</span>
+          </div>`).join('');
+      }
+      if (data.totalClasses) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalClasses} clases registradas</div>`;
     }
 
     if (key === 'xazai') {
-      items = (data.recentOrders || []).slice(0, 3).map(o => `
-        <div class="cc-profile-item">
-          <span>Pedido #${o.id?.slice(-4) || '?'} (${o.items} items)</span>
-          <span class="cc-profile-item__amount" style="color:#F59E0B;">$${(o.total || 0).toFixed(2)}</span>
-          <span class="cc-profile-item__date">${o.date || ''}</span>
-        </div>`).join('');
-      if (data.totalOrders) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalOrders} ordenes totales · $${(data.totalSpent || 0).toFixed(2)} total</div>`;
+      if (data.recentOrders?.length) {
+        items += data.recentOrders.slice(0, 5).map(o => `
+          <div class="cc-profile-item">
+            <span>Pedido #${(o.id || '').slice(-4) || '?'}${o.items ? ` (${o.items} items)` : ''}</span>
+            <span class="cc-profile-item__amount" style="color:#F59E0B;">$${(o.total || o.amount || 0).toFixed(2)}</span>
+            <span class="cc-profile-item__date">${this._formatDate(o.createdAt || o.date)}</span>
+          </div>`).join('');
+      }
+      if (data.totalOrders) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalOrders} órdenes totales · $${(data.totalSpent || 0).toFixed(2)} total</div>`;
     }
 
     return `
       <div class="cc-profile-section">
         <div class="cc-profile-section__title cc-profile-section__title--${colorClass}">${name}</div>
-        ${items}
+        ${items || '<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Sin actividad registrada</div>'}
       </div>`;
   }
 
@@ -742,9 +873,9 @@ export class CommandCenter {
       <div class="cc-profile-section">
         <div class="cc-profile-section__title" style="color:var(--text-secondary);">Timeline Consolidado</div>
         <div class="cc-timeline">
-          ${timeline.slice(0, 10).map(t => `
+          ${timeline.slice(0, 15).map(t => `
             <div class="cc-timeline__item" data-biz="${t.business}">
-              <div class="cc-timeline__date">${t.date}</div>
+              <div class="cc-timeline__date">${this._formatDate(t.date)}</div>
               <div class="cc-timeline__desc">${t.description}</div>
             </div>
           `).join('')}
