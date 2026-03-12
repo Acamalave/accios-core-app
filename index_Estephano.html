@@ -3399,7 +3399,7 @@ function mlGoTo(index) {
 // Keyboard
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { goHome(); return; }
-  if (!activePresentation) return;
+  if (activePresentation !== 'estephano' && activePresentation !== 'mlparts') return;
   if (['ArrowDown', 'ArrowRight', ' ', 'PageDown'].includes(e.key)) {
     e.preventDefault();
     activePresentation === 'estephano' ? esGoTo(esCurrentSlide + 1) : mlGoTo(mlCurrentSlide + 1);
@@ -3409,10 +3409,10 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Wheel
+// Wheel — only intercept for slide-based presentations (estephano/mlparts)
 let wheelTimeout;
 document.addEventListener('wheel', (e) => {
-  if (!activePresentation) return;
+  if (activePresentation !== 'estephano' && activePresentation !== 'mlparts') return;
   e.preventDefault();
   clearTimeout(wheelTimeout);
   wheelTimeout = setTimeout(() => {
@@ -3434,7 +3434,7 @@ document.addEventListener('touchstart', (e) => {
   touchOnNav = e.target.closest('.bottom-nav, .ml-bottom-nav') !== null;
 });
 document.addEventListener('touchend', (e) => {
-  if (!activePresentation || touchOnNav) return;
+  if ((activePresentation !== 'estephano' && activePresentation !== 'mlparts') || touchOnNav) return;
   const diff = touchStartY - e.changedTouches[0].clientY;
   const elapsed = Date.now() - touchStartTime;
   if (Math.abs(diff) < 60 || elapsed > 500) return;
