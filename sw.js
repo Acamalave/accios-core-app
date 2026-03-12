@@ -1,5 +1,5 @@
 // Service Worker for ACCIOS CORE — Offline-first PWA
-const CACHE_NAME = 'accios-core-v53';
+const CACHE_NAME = 'accios-core-v74';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -23,6 +23,8 @@ const STATIC_ASSETS = [
   '/css/lavaina.css',
   '/css/behavior.css',
   '/css/command-center.css',
+  '/css/business-dashboard.css',
+  '/js/pages/BusinessDashboard.js',
   '/manifest.json',
 ];
 

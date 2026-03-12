@@ -5,11 +5,17 @@
   height: 100dvh;
   padding-top: max(var(--space-6), env(safe-area-inset-top));
   padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
-  background: radial-gradient(
-    ellipse 80% 50% at 50% 120%,
-    rgba(124, 58, 237, 0.08) 0%,
-    transparent 70%
-  );
+  background:
+    radial-gradient(
+      ellipse 60% 40% at 50% 50%,
+      rgba(124, 58, 237, 0.06) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at 50% 120%,
+      rgba(124, 58, 237, 0.1) 0%,
+      transparent 70%
+    );
   overflow: hidden;
 }
 
@@ -106,139 +112,249 @@
   height: clamp(400px, 75vmin, 600px);
 }
 
-/* --- Single visible orbital ring (the path planets follow) --- */
-.orbital-ring {
+/* ─── Glowing Energy Orbital Ring ─── */
+.orbital-energy-ring {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 88%;
-  height: 42%;
-  border-radius: 50%;
-  border: 1px solid rgba(124, 58, 237, 0.08);
+  height: 88%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  box-shadow:
-    0 0 15px rgba(124, 58, 237, 0.03),
-    inset 0 0 15px rgba(124, 58, 237, 0.02);
-}
-
-/* Inner decorative ring (subtle secondary track) */
-.orbital-ring--inner {
-  width: 60%;
-  height: 28%;
-  border-color: rgba(124, 58, 237, 0.04);
-  box-shadow:
-    0 0 8px rgba(124, 58, 237, 0.015);
-}
-
-/* --- Central Hub (Luminous Purple Sun) --- */
-.orbital-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  animation: sunCoreShimmer 4s ease-in-out infinite;
-}
-
-/* Internal energy effects disabled — using bubble image instead */
-
-.orbital-center-text {
-  font-size: 1.3rem;
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.18em;
-  background: linear-gradient(135deg, var(--purple-200), var(--purple-400));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
   z-index: 2;
 }
 
-/* Brand text inside center sphere (legacy) */
-.orbital-center-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  position: relative;
-  z-index: 2;
+.orbital-energy-svg {
+  width: 100%;
+  height: 100%;
 }
 
-.orbital-center-brand-top {
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  background: linear-gradient(
-    135deg,
-    var(--purple-200) 0%,
-    var(--purple-400) 40%,
-    var(--purple-300) 60%,
-    var(--purple-100) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.4));
+.orbital-energy-segments {
+  animation: neonRingPulse 4s ease-in-out infinite;
+  transform-origin: center;
 }
 
-.orbital-center-brand-bottom {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  color: rgba(255, 255, 255, 0.55);
-  line-height: 1;
-}
-
-/* Bubble logo — positioned directly in orbital system */
-.orbital-center-logo {
+.orbital-ring-indicator {
   position: absolute;
-  top: 50%;
+  bottom: -2px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  z-index: 50;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  filter: brightness(1.3) contrast(1.4);
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
-/* Energy particles container */
-.energy-particles {
+.orbital-ring-pct {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(167, 139, 250, 0.8);
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+  background: rgba(8, 6, 20, 0.7);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.orbital-energy-trail {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 40;
 }
 
-.energy-particle {
+.orbit-trail-dot {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(220, 200, 255, 0.8);
+  box-shadow: 0 0 8px var(--energy-primary), 0 0 16px var(--energy-secondary);
+  will-change: transform, opacity;
+}
+
+/* ═══════════════════════════════════════════════
+   GEOMETRIC CORE — 3D Wireframe Structure
+   ═══════════════════════════════════════════════ */
+.core-geometric {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--core-size);
+  height: var(--core-size);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* 3D Scene container */
+.core-3d-scene {
+  position: absolute;
+  inset: 0;
+  perspective: 800px;
+  perspective-origin: 50% 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.core-3d-floater {
+  position: relative;
+  animation: coreBreathe 8s ease-in-out infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+/* Subtle purple/green wash over the logo — fully diffused, no edges */
+.core-3d-floater::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(57, 255, 20, 0.05) 0%,
+    rgba(139, 92, 246, 0.07) 30%,
+    transparent 60%
+  );
+  filter: blur(20px);
+  mix-blend-mode: normal;
+  animation: coreTintShift 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Specular highlight — subtle radial shimmer */
+.core-3d-floater::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 30% 25%,
+    rgba(167, 139, 250, 0.08) 0%,
+    rgba(57, 255, 20, 0.03) 25%,
+    transparent 50%
+  );
+  filter: blur(15px);
+  mix-blend-mode: normal;
+  animation: coreShimmer 7s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.core-hero-img {
+  position: relative;
+  z-index: 1;
+  width: var(--core-size);
+  height: var(--core-size);
+  object-fit: contain;
+  filter:
+    brightness(1.1) contrast(1.1) saturate(1.05)
+    drop-shadow(0 0 25px rgba(167, 139, 250, 0.5))
+    drop-shadow(0 0 50px rgba(124, 58, 237, 0.3))
+    drop-shadow(0 0 90px rgba(76, 29, 149, 0.2));
+  animation: coreImgBreath 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Ambient glow behind core */
+.core-ambient-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  height: 450px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(220, 200, 255, 0.9) 0%,
-    rgba(167, 139, 250, 0.6) 40%,
-    transparent 70%
+    rgba(124, 58, 237, 0.1) 0%,
+    rgba(124, 58, 237, 0.05) 30%,
+    rgba(76, 29, 149, 0.02) 55%,
+    transparent 75%
   );
+  filter: blur(25px);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientGlowPulse 5s ease-in-out infinite;
+}
+
+/* (core-text and core-logo-img removed — replaced by core-hero-img) */
+
+/* Spinning decorative rings around core */
+.core-orbit-ring {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px dashed rgba(167, 139, 250, 0.12);
+  animation: orbitSpin 30s linear infinite;
+  pointer-events: none;
+}
+
+.core-orbit-ring--2 {
+  inset: -26px;
+  border-style: dotted;
+  border-color: rgba(167, 139, 250, 0.06);
+  animation-duration: 50s;
+  animation-direction: reverse;
+}
+
+/* Volumetric light rays behind core */
+.core-volumetric-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 700px;
+  background:
+    conic-gradient(
+      from 0deg,
+      transparent 0deg,   var(--vol-light-color) 8deg,  transparent 16deg,
+      transparent 30deg,  var(--vol-light-color) 38deg, transparent 46deg,
+      transparent 60deg,  var(--vol-light-color) 68deg, transparent 76deg,
+      transparent 90deg,  var(--vol-light-color) 98deg, transparent 106deg,
+      transparent 120deg, var(--vol-light-color) 128deg, transparent 136deg,
+      transparent 150deg, var(--vol-light-color) 158deg, transparent 166deg,
+      transparent 180deg, var(--vol-light-color) 188deg, transparent 196deg,
+      transparent 210deg, var(--vol-light-color) 218deg, transparent 226deg,
+      transparent 240deg, var(--vol-light-color) 248deg, transparent 256deg,
+      transparent 270deg, var(--vol-light-color) 278deg, transparent 286deg,
+      transparent 300deg, var(--vol-light-color) 308deg, transparent 316deg,
+      transparent 330deg, var(--vol-light-color) 338deg, transparent 346deg,
+      transparent 360deg
+    );
+  mask-image: radial-gradient(circle, transparent 10%, black 20%, black 50%, transparent 75%);
+  -webkit-mask-image: radial-gradient(circle, transparent 10%, black 20%, black 50%, transparent 75%);
+  animation: volRaysSpin 60s linear infinite;
+  opacity: var(--vol-light-intensity);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  filter: blur(2px);
+}
+
+/* Assembly particle */
+.assembly-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220, 200, 255, 0.95) 0%, rgba(167, 139, 250, 0.9) 60%, transparent 100%);
+  box-shadow: 0 0 6px var(--energy-primary), 0 0 12px var(--energy-secondary);
   opacity: 0;
   pointer-events: none;
-  will-change: transform, opacity, left, top;
-  box-shadow:
-    0 0 4px rgba(167, 139, 250, 0.6),
-    0 0 10px rgba(124, 58, 237, 0.3);
+  will-change: transform, opacity;
+}
+
+/* Energy beam canvas overlay */
+.energy-beam-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 35;
 }
 
 /* "Digital Ecosystem" label — sits between orbital system and footer */
@@ -423,13 +539,44 @@
   will-change: opacity;
 }
 
-/* --- World Image (3D planet sphere) --- */
+/* ─── Holographic Node Container ─── */
+.orbit-world-holo {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+/* Hexagonal frame border */
+.orbit-world-holo-frame {
+  position: absolute;
+  inset: -4px;
+  clip-path: polygon(
+    50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%
+  );
+  background: linear-gradient(
+    135deg,
+    var(--holo-frame-color) 0%,
+    rgba(100, 200, 255, 0.15) 50%,
+    var(--holo-frame-color) 100%
+  );
+  z-index: 0;
+}
+
+/* Holographic shimmer overlay — disabled for crisp look */
+.orbit-world-holo-shimmer {
+  display: none;
+}
+
+/* World Image — clipped to hexagonal shape */
 .orbit-world-img {
   width: 96px;
   height: 96px;
-  border-radius: 50%;
+  clip-path: polygon(
+    50% 2%, 91% 26%, 91% 74%, 50% 98%, 9% 74%, 9% 26%
+  );
   overflow: hidden;
-  border: 2px solid rgba(124, 58, 237, 0.2);
+  border: none;
+  border-radius: 0;
   background: rgba(8, 6, 18, 0.9);
   display: flex;
   align-items: center;
@@ -437,71 +584,64 @@
   position: relative;
 }
 
-/* 3D sphere lighting — dynamic sun illumination via CSS vars */
-.orbit-world-img::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(
-      ellipse 55% 45% at var(--sun-x, 35%) var(--sun-y, 28%),
-      rgba(167, 139, 250, 0.22) 0%,
-      rgba(167, 139, 250, 0.06) 35%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 100% 100% at 50% 50%,
-      transparent 50%,
-      rgba(0, 0, 0, 0.4) 100%
-    );
-  z-index: 3;
-  pointer-events: none;
-}
-
-/* Specular highlight on the sphere */
+/* Holographic lighting overlay — disabled for crisp look */
+.orbit-world-img::before,
 .orbit-world-img::after {
-  content: '';
-  position: absolute;
-  top: 7%;
-  left: 20%;
-  width: 25%;
-  height: 15%;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(255, 255, 255, 0.12) 0%,
-    transparent 100%
-  );
-  z-index: 4;
-  pointer-events: none;
+  display: none;
 }
 
 .orbit-world-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.95) brightness(0.95) contrast(1.02);
+  filter: saturate(1) brightness(1) contrast(1);
   transition: filter 0.4s ease;
   position: relative;
   z-index: 1;
 }
 
-.orbit-world:hover .orbit-world-img {
-  border-color: var(--purple-400) !important;
-  box-shadow:
-    inset 0 0 20px rgba(124, 58, 237, 0.15),
-    0 0 24px rgba(124, 58, 237, 0.35),
-    0 0 50px rgba(124, 58, 237, 0.12) !important;
+.orbit-world:hover .orbit-world-holo-frame {
+  background: linear-gradient(
+    135deg,
+    rgba(167, 139, 250, 0.6) 0%,
+    rgba(100, 200, 255, 0.3) 50%,
+    rgba(167, 139, 250, 0.6) 100%
+  );
+  filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4));
 }
 
 .orbit-world:hover .orbit-world-img img {
   filter: saturate(1.1) brightness(0.95) contrast(1.05);
 }
 
-/* --- World Name (hidden for clean minimal look) --- */
+/* Scanline on hover */
+.orbit-world:hover .orbit-world-holo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    50% 2%, 91% 26%, 91% 74%, 50% 98%, 9% 74%, 9% 26%
+  );
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(167, 139, 250, 0.06) 2px,
+    rgba(167, 139, 250, 0.06) 3px
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* --- World Name (visible, clean) --- */
 .orbit-world-name {
-  display: none;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  white-space: nowrap;
+  transition: opacity 0.3s ease, text-shadow 0.3s ease;
 }
 
 .orbit-world:hover .orbit-world-name {
@@ -509,6 +649,19 @@
   text-shadow:
     0 0 12px rgba(167, 139, 250, 0.5),
     0 0 30px rgba(124, 58, 237, 0.2);
+}
+
+/* Data readout text below node name */
+.orbit-world-readout {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.35);
+  text-align: center;
+  display: block;
+  margin-top: -2px;
 }
 
 /* --- Ripple wave container (centered on planet) --- */
@@ -534,13 +687,14 @@
 }
 
 /* --- Active planet state (orbit paused, emitting waves) --- */
-.orbit-world--active .orbit-world-img {
-  border-color: var(--purple-400) !important;
-  box-shadow:
-    inset 0 0 16px rgba(124, 58, 237, 0.12),
-    0 0 20px rgba(124, 58, 237, 0.3),
-    0 0 45px rgba(124, 58, 237, 0.12),
-    0 0 80px rgba(124, 58, 237, 0.05) !important;
+.orbit-world--active .orbit-world-holo-frame {
+  background: linear-gradient(
+    135deg,
+    rgba(167, 139, 250, 0.7) 0%,
+    rgba(100, 200, 255, 0.35) 50%,
+    rgba(167, 139, 250, 0.7) 100%
+  );
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.5));
 }
 
 .orbit-world--active .orbit-world-name {
@@ -548,6 +702,371 @@
   text-shadow:
     0 0 12px rgba(167, 139, 250, 0.6),
     0 0 30px rgba(124, 58, 237, 0.3);
+}
+
+/* "Add my business" — hexagonal dashed style */
+.orbit-world--add .orbit-world-holo-frame {
+  background: none;
+}
+
+.orbit-world--add .orbit-world-img {
+  background: rgba(124, 58, 237, 0.04);
+  color: rgba(124, 58, 237, 0.5);
+}
+
+.orbit-world--add .orbit-world-holo-shimmer {
+  display: none;
+}
+
+.orbit-world--add:hover .orbit-world-holo-frame {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(124, 58, 237, 0.3));
+}
+
+.orbit-world--add:hover .orbit-world-img {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--purple-400);
+}
+
+
+/* ═══════════════════════════════════════════════
+   SIDE PANELS — Desktop Glassmorphism HUD
+   ═══════════════════════════════════════════════ */
+
+.home-panel {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--panel-width);
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur));
+  -webkit-backdrop-filter: blur(var(--panel-blur));
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: var(--space-5) var(--space-4);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  opacity: 0;
+  box-shadow:
+    inset 0 1px 0 0 var(--panel-border-top),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+.home-panel--left {
+  left: var(--space-5);
+  animation: panelSlideInLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) 2.5s forwards;
+}
+
+.home-panel--right {
+  right: var(--space-5);
+  animation: panelSlideInRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) 2.8s forwards;
+}
+
+/* Top edge glow */
+.home-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+.home-panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.home-panel-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.home-panel-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.home-panel-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.home-panel-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+}
+
+.home-panel-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.home-panel-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5), 0 0 12px rgba(16, 185, 129, 0.2);
+  animation: indicatorPulse 2s ease-in-out infinite;
+}
+
+/* ─── Rich Panel Components ─── */
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-header-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green-glow), 0 0 16px rgba(57, 255, 20, 0.2);
+  animation: neonGreenDotPulse 2.5s ease-in-out infinite;
+}
+
+.panel-header-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+/* Sparkline charts */
+.panel-sparkline {
+  width: 100%;
+  height: 32px;
+  display: block;
+}
+
+/* Big metric */
+.panel-big-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.panel-big-number {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+}
+
+.panel-big-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--neon-green);
+  background: var(--neon-green-bg);
+  border: 1px solid var(--neon-green-border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+/* Stat row */
+.panel-stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.panel-stat-big {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--neon-green);
+  font-family: var(--font-mono);
+  text-shadow: 0 0 8px var(--neon-green-glow), 0 0 20px rgba(57, 255, 20, 0.15);
+  animation: neonGreenGlowPulse 3s ease-in-out infinite;
+}
+
+.panel-stat-of {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-mono);
+}
+
+/* Circular gauge */
+.panel-gauge {
+  width: 64px;
+  height: 64px;
+}
+
+.panel-gauge-value {
+  position: relative;
+  margin-top: -46px;
+  display: block;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--purple-400);
+  font-family: var(--font-mono);
+  text-shadow: 0 0 6px rgba(139, 92, 246, 0.4), 0 0 14px rgba(139, 92, 246, 0.15);
+}
+
+/* Mini stat rows */
+.panel-mini-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.panel-mini-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.panel-mini-value {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-mono);
+}
+
+/* Right panel cards */
+.panel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.panel-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-card-icon {
+  font-size: 1rem;
+  color: var(--purple-400);
+  filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.4));
+}
+
+.panel-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.panel-card-subtitle {
+  font-size: 0.58rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.panel-card-desc {
+  font-size: 0.58rem;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.5;
+  margin: 0;
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+.panel-card-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.panel-card-tag {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: var(--purple-400);
+  font-family: var(--font-mono);
+}
+
+.panel-card-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.panel-card-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.panel-card-stat-val {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-mono);
+}
+
+.panel-card-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Hide panels on tablet and mobile */
+@media (max-width: 1100px) {
+  .home-panel {
+    display: none;
+  }
+}
+
+/* Backdrop filter fallback */
+@supports not (backdrop-filter: blur(1px)) {
+  .home-panel {
+    background: rgba(38, 38, 42, 0.97);
+  }
 }
 
 
@@ -972,18 +1491,25 @@
     height: clamp(340px, 78vmin, 480px);
   }
 
-  .orbital-center-logo {
-    width: 130px;
-    height: 130px;
-  }
-
   .home-ecosystem-label {
     bottom: 28px;
     font-size: 0.62rem;
   }
 
-  .orbital-center-glow {
-    inset: -55px;
+  /* Core responsive */
+  .core-geometric {
+    --core-size: var(--core-size-mobile);
+  }
+  .core-hero-img { width: var(--core-size-mobile); height: var(--core-size-mobile); }
+  .core-volumetric-rays { width: 400px; height: 400px; }
+  .core-ambient-glow { width: 250px; height: 250px; }
+  .core-orbit-ring { inset: -10px; }
+  .core-orbit-ring--2 { inset: -18px; }
+
+  /* Holographic nodes responsive */
+  .orbit-world-holo {
+    width: 80px;
+    height: 80px;
   }
 
   .orbit-world-img {
@@ -1000,9 +1526,18 @@
     font-size: 0.58rem;
   }
 
+  .orbit-world-readout {
+    display: none;
+  }
+
   .orbit-world-glow {
     width: 106px;
     height: 106px;
+  }
+
+  .orbital-energy-ring {
+    width: 85%;
+    height: 85%;
   }
 
   .point-light {
@@ -1044,10 +1579,14 @@
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
-  .orbital-center-logo {
-    width: 90px;
-    height: 90px;
+  /* Core responsive - small */
+  .core-geometric {
+    --core-size: var(--core-size-sm);
   }
+  .core-hero-img { width: var(--core-size-sm); height: var(--core-size-sm); }
+  .core-volumetric-rays { width: 250px; height: 250px; opacity: 0.5; }
+  .core-ambient-glow { width: 160px; height: 160px; }
+  .core-orbit-ring { display: none; }
 
   .home-ecosystem-label {
     bottom: 24px;
@@ -1055,14 +1594,15 @@
     letter-spacing: 0.18em;
   }
 
-  .orbital-center-glow {
-    inset: -35px;
+  /* Holographic nodes responsive - small */
+  .orbit-world-holo {
+    width: 56px;
+    height: 56px;
   }
 
   .orbit-world-img {
     width: 56px;
     height: 56px;
-    border-width: 1.5px;
   }
 
   .orbit-world-ripples {
@@ -1075,10 +1615,19 @@
     letter-spacing: 0.04em;
   }
 
+  .orbit-world-readout {
+    display: none;
+  }
+
   .orbit-world-glow {
     width: 72px;
     height: 72px;
     top: -8px;
+  }
+
+  .orbital-energy-ring {
+    width: 90%;
+    height: 90%;
   }
 
   .point-light {

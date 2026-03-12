@@ -14,6 +14,7 @@ import { Finance } from './pages/Finance.js';
 import { ClientPortal } from './pages/ClientPortal.js';
 import { LaVainaPresentation } from './pages/LaVainaPresentation.js';
 import { CommandCenter } from './pages/CommandCenter.js';
+// BusinessDashboard loaded dynamically to avoid module cache issues
 import behaviorService from './services/behaviorService.js';
 
 class App {
@@ -142,6 +143,12 @@ class App {
       case 'command-center':
         pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
+
+      case 'biz-dashboard': {
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=76');
+        pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
+        break;
+      }
 
       default:
         // Default to home

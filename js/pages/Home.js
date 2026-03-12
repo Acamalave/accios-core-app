@@ -1,4 +1,12 @@
 import userAuth from '../services/userAuth.js';
+import { apiUrl } from '../services/apiConfig.js';
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
 
 export class Home {
   constructor(container, currentUser) {
@@ -42,6 +50,17 @@ export class Home {
       this.businesses = [];
     }
 
+    // Fetch KPI data for superadmin panels
+    this._kpiData = null;
+    if (isSuperAdmin) {
+      try {
+        const res = await fetch(apiUrl('/api/command-data?range=30d'));
+        if (res.ok) this._kpiData = await res.json();
+      } catch (e) {
+        console.error('Failed to load KPI data:', e);
+      }
+    }
+
     const firstName = (user?.name || '').split(' ')[0] || '';
 
     this.container.innerHTML = `
@@ -69,6 +88,8 @@ export class Home {
           </button>
         </div>
 
+        ${this.businesses.length > 0 && isSuperAdmin ? this._buildSidePanels(firstName, user) : ''}
+
         <div class="home-ecosystem-label">Digital Ecosystem</div>
         <footer class="home-footer">Desarrollado por Acacio Malave</footer>
       </section>
@@ -77,30 +98,167 @@ export class Home {
     this._attachListeners();
 
     if (this.businesses.length > 0) {
+      this._runCoreAssembly();
       this._initOrbitals();
       this._startAnimation();
+      this._generateSparklines();
+
+      // Visibility API — pause animation when tab hidden
+      this._visHandler = () => {
+        if (document.hidden) {
+          if (this._animId) { cancelAnimationFrame(this._animId); this._animId = null; }
+        } else {
+          if (!this._animId) this._startAnimation();
+        }
+      };
+      document.addEventListener('visibilitychange', this._visHandler);
     }
   }
 
+  _buildSidePanels(firstName, user) {
+    const activeCount = this.businesses.filter(b => !/estephano/i.test(b.nombre)).length;
+    const total = this.businesses.length;
+    const k = this._kpiData?.kpis;
+    const fmt = (n) => (n || 0).toLocaleString('es-PA');
+    const fmtMoney = (n) => '$' + (n || 0).toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // Revenue gauge: ratio of avg revenue per user vs $100 target
+    const avgRev = k?.avgRevenuePerUser || 0;
+    const gaugeVal = Math.min(Math.round((avgRev / 100) * 100), 100);
+    const gaugeDash = (gaugeVal * 2.136).toFixed(1);
+    const gaugeGap = ((100 - gaugeVal) * 2.136).toFixed(1);
+
+    // Recent activity from KPI data
+    const activity = this._kpiData?.recentActivity || [];
+    const recent3 = activity.slice(0, 3);
+
+    return `
+      <aside class="home-panel home-panel--left" id="home-panel-left">
+        <div class="home-panel-section">
+          <div class="panel-header">
+            <span class="panel-header-dot"></span>
+            <span class="panel-header-title">Command Overview</span>
+          </div>
+        </div>
+        <div class="home-panel-divider"></div>
+        <div class="home-panel-section">
+          <div class="home-panel-label">USUARIOS TOTALES</div>
+          <div class="panel-stat-row">
+            <span class="panel-stat-big">${k ? fmt(k.totalUsers) : '--'}</span>
+          </div>
+        </div>
+        <div class="home-panel-section">
+          <div class="home-panel-label">REVENUE TOTAL</div>
+          <div class="panel-big-metric">
+            <span class="panel-big-number">${k ? fmtMoney(k.totalRevenue) : '--'}</span>
+          </div>
+        </div>
+        <div class="home-panel-divider"></div>
+        <div class="home-panel-section">
+          <div class="home-panel-label">TRANSACCIONES</div>
+          <div class="panel-stat-row">
+            <span class="panel-stat-big">${k ? fmt(k.totalTransactions) : '--'}</span>
+          </div>
+        </div>
+        <div class="home-panel-divider"></div>
+        <div class="home-panel-section" style="align-items: center;">
+          <div class="home-panel-label" style="align-self: flex-start;">AVG REVENUE / USER</div>
+          <svg class="panel-gauge" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(57,255,20,0.1)" stroke-width="5"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--neon-green)" stroke-width="5"
+              stroke-dasharray="${gaugeDash} ${gaugeGap}" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+          </svg>
+          <span class="panel-gauge-value">${k ? fmtMoney(avgRev) : '--'}</span>
+        </div>
+        <div class="home-panel-divider"></div>
+        <div class="home-panel-section">
+          <div class="panel-mini-stat">
+            <span class="panel-mini-label">Negocios Activos</span>
+            <span class="panel-mini-value">${activeCount}/${total}</span>
+          </div>
+          <div class="panel-mini-stat">
+            <span class="panel-mini-label">Ecosistema</span>
+            <span class="panel-mini-value">${total} nodos</span>
+          </div>
+        </div>
+      </aside>
+
+      <aside class="home-panel home-panel--right" id="home-panel-right">
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <span class="panel-card-icon">&#9883;</span>
+            <div>
+              <div class="panel-card-title">Metricas del Ecosistema</div>
+              <div class="panel-card-subtitle">Resumen General</div>
+            </div>
+          </div>
+          <div class="panel-card-stats">
+            <div class="panel-card-stat-row"><span>Usuarios</span><span class="panel-card-stat-val">${k ? fmt(k.totalUsers) : '--'}</span></div>
+            <div class="panel-card-stat-row"><span>Transacciones</span><span class="panel-card-stat-val">${k ? fmt(k.totalTransactions) : '--'}</span></div>
+            <div class="panel-card-stat-row"><span>Avg/User</span><span class="panel-card-stat-val">${k ? fmtMoney(k.avgRevenuePerUser) : '--'}</span></div>
+          </div>
+        </div>
+        <div class="home-panel-divider"></div>
+        ${recent3.length > 0 ? `
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <span class="panel-card-icon">&#9734;</span>
+            <div>
+              <div class="panel-card-title">Actividad Reciente</div>
+              <div class="panel-card-subtitle">Ultimos eventos</div>
+            </div>
+          </div>
+          <div class="panel-card-stats">
+            ${recent3.map(a => `
+              <div class="panel-card-stat-row">
+                <span>${a.icon || '•'} ${a.business || ''}</span>
+                <span class="panel-card-stat-val">${a.type || ''}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+        <div class="home-panel-divider"></div>
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <span class="panel-card-icon">&#128274;</span>
+            <div>
+              <div class="panel-card-title">Estado del Sistema</div>
+              <div class="panel-card-subtitle">Security</div>
+            </div>
+          </div>
+          <div class="panel-card-status-row">
+            <div class="home-panel-status-dot"></div>
+            <span>${k ? 'Todos los sistemas activos' : 'Sin conexion'}</span>
+          </div>
+        </div>
+      </aside>
+    `;
+  }
+
   _buildOrbitalSystem() {
-    const totalWorlds = this.businesses.length + 1; // +1 for "add" planet
     const worlds = this.businesses.map((biz, index) => {
       const isStandby = /estephano/i.test(biz.nombre);
       return `
         <div class="orbit-world${isStandby ? ' orbit-world--standby' : ''}" data-business-id="${biz.id}" data-orbit-index="${index}">
           <div class="orbit-world-glow"></div>
           <div class="orbit-world-ripples"></div>
-          <div class="orbit-world-img">
-            ${biz.logo
-              ? `<img src="${biz.logo}" alt="${biz.nombre}" draggable="false" />`
-              : `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                   <rect x="2" y="3" width="20" height="14" rx="2"/>
-                   <line x1="8" y1="21" x2="16" y2="21"/>
-                   <line x1="12" y1="17" x2="12" y2="21"/>
-                 </svg>`
-            }
+          <div class="orbit-world-holo">
+            <div class="orbit-world-holo-frame"></div>
+            <div class="orbit-world-holo-shimmer"></div>
+            <div class="orbit-world-img">
+              ${biz.logo
+                ? `<img src="${biz.logo}" alt="${biz.nombre}" draggable="false" />`
+                : `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                     <rect x="2" y="3" width="20" height="14" rx="2"/>
+                     <line x1="8" y1="21" x2="16" y2="21"/>
+                     <line x1="12" y1="17" x2="12" y2="21"/>
+                   </svg>`
+              }
+            </div>
           </div>
           <span class="orbit-world-name">${biz.nombre}</span>
+          <span class="orbit-world-readout">${biz.tipo || 'SISTEMA'}</span>
           ${isStandby ? '<span class="orbit-world-standby-badge">Stand by</span>' : ''}
         </div>
       `;
@@ -111,11 +269,14 @@ export class Home {
       <div class="orbit-world orbit-world--add" data-business-id="__add__" data-orbit-index="${this.businesses.length}">
         <div class="orbit-world-glow"></div>
         <div class="orbit-world-ripples"></div>
-        <div class="orbit-world-img orbit-world-img--add">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+        <div class="orbit-world-holo">
+          <div class="orbit-world-holo-frame"></div>
+          <div class="orbit-world-img">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
         </div>
         <span class="orbit-world-name">Mi Negocio</span>
       </div>
@@ -123,20 +284,224 @@ export class Home {
 
     return `
       <div class="orbital-system" id="orbital-system-3d">
-        <div class="orbital-ring"></div>
-        <div class="orbital-ring orbital-ring--inner"></div>
+        <!-- Glowing energy orbital ring -->
+        <div class="orbital-energy-ring" id="orbital-energy-ring">
+          <svg class="orbital-energy-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.5" result="blur1"/>
+                <feGaussianBlur stdDeviation="3.5" result="blur2"/>
+                <feMerge>
+                  <feMergeNode in="blur2"/>
+                  <feMergeNode in="blur1"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <circle cx="50" cy="50" r="44"
+              fill="none" stroke="rgba(139,92,246,0.03)" stroke-width="0.3" />
+            <circle cx="50" cy="50" r="44"
+              fill="none" stroke="var(--purple-500)" stroke-width="0.5"
+              stroke-linecap="round"
+              class="orbital-energy-segments" filter="url(#neonGlow)" />
+          </svg>
+          <div class="orbital-ring-indicator">
+            <span class="orbital-ring-pct">5%</span>
+          </div>
+          <div class="orbital-energy-trail" id="orbital-energy-trail"></div>
+        </div>
 
         <div class="orbital-point-lights" id="orbital-point-lights"></div>
 
         <div class="orbital-center-glow" id="orbital-center-glow"></div>
-        <img class="orbital-center-logo" src="assets/images/burbuja-ac.png" alt="ACCIOS CORE">
 
-        <div class="energy-particles" id="energy-particles"></div>
+        <!-- 3D Geometric Core -->
+        <div class="core-geometric" id="core-geometric">
+          <div class="core-volumetric-rays"></div>
+          <div class="core-ambient-glow"></div>
+          <div class="core-assembly-particles" id="core-assembly-particles"></div>
+          <div class="core-3d-scene">
+            <div class="core-3d-floater">
+              <img src="assets/images/logo-ac-clean.png" alt="ACCIOS CORE" class="core-hero-img" draggable="false" />
+            </div>
+          </div>
+          <div class="core-orbit-ring core-orbit-ring--1"></div>
+          <div class="core-orbit-ring core-orbit-ring--2"></div>
+        </div>
+
+        <!-- Energy beam canvas -->
+        <canvas class="energy-beam-canvas" id="energy-beam-canvas"></canvas>
 
         ${worlds}
         ${addPlanet}
       </div>
     `;
+  }
+
+  // ─── Core Assembly Animation ──────────────────────────
+
+  _runCoreAssembly() {
+    const core = this.container.querySelector('#core-geometric');
+    const particleContainer = this.container.querySelector('#core-assembly-particles');
+    if (!core || !particleContainer) return;
+
+    const scene3d = core.querySelector('.core-3d-scene');
+    const rings = core.querySelectorAll('.core-orbit-ring');
+    const rays = core.querySelector('.core-volumetric-rays');
+
+    // Hide core elements initially
+    if (scene3d) { scene3d.style.opacity = '0'; scene3d.style.transform = 'scale(0.3)'; }
+    rings.forEach(el => { el.style.opacity = '0'; });
+    if (rays) { rays.style.opacity = '0'; }
+
+    // Spawn assembly particles
+    const PARTICLE_COUNT = 50;
+    const assemblyParticles = [];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const el = document.createElement('div');
+      el.className = 'assembly-particle';
+      particleContainer.appendChild(el);
+
+      const angle = (Math.PI * 2 / PARTICLE_COUNT) * i + (Math.random() - 0.5) * 0.5;
+      const dist = 180 + Math.random() * 250;
+
+      assemblyParticles.push({
+        el,
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist,
+        vx: 0, vy: 0,
+        delay: i * 25,
+        arrived: false,
+        size: 2 + Math.random() * 4,
+      });
+    }
+
+    const K = 140, D = 18;
+    let startTime = null;
+    let allArrived = false;
+
+    const tick = (now) => {
+      if (!startTime) startTime = now;
+      const elapsed = now - startTime;
+      const dt = Math.min(1 / 60, 0.025);
+      let arrivedCount = 0;
+
+      for (const p of assemblyParticles) {
+        if (elapsed < p.delay) { p.el.style.opacity = '0'; continue; }
+        if (p.arrived) { arrivedCount++; continue; }
+
+        p.vx += (-K * p.x - D * p.vx) * dt;
+        p.vy += (-K * p.y - D * p.vy) * dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        const dist = Math.sqrt(p.x * p.x + p.y * p.y);
+        const opacity = Math.min(1, (elapsed - p.delay) / 300);
+
+        p.el.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`;
+        p.el.style.opacity = opacity.toFixed(2);
+        p.el.style.width = p.el.style.height = `${p.size}px`;
+
+        if (dist < 2 && Math.abs(p.vx) < 1 && Math.abs(p.vy) < 1) {
+          p.arrived = true;
+          p.el.style.opacity = '0';
+          arrivedCount++;
+        }
+      }
+
+      const progress = arrivedCount / assemblyParticles.length;
+
+      // Progressively reveal 3D scene
+      if (scene3d) {
+        const sceneP = Math.min(1, progress * 1.2);
+        scene3d.style.opacity = sceneP.toFixed(3);
+        scene3d.style.transform = `scale(${0.3 + sceneP * 0.7})`;
+      }
+
+      if (progress >= 1 && !allArrived) {
+        allArrived = true;
+        requestAnimationFrame(() => {
+          if (scene3d) { scene3d.style.transition = 'all 0.8s cubic-bezier(0.22, 1, 0.36, 1)'; scene3d.style.opacity = '1'; scene3d.style.transform = 'scale(1)'; }
+          rings.forEach(r => { r.style.transition = 'opacity 0.8s ease'; r.style.opacity = '1'; });
+          if (rays) { rays.style.transition = 'opacity 1.2s ease'; rays.style.opacity = String(getComputedStyle(document.documentElement).getPropertyValue('--vol-light-intensity').trim() || '0.9'); }
+          setTimeout(() => { particleContainer.innerHTML = ''; }, 600);
+          core.classList.add('core-geometric--assembled');
+        });
+        return;
+      }
+
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  }
+
+  // ─── Particle Stream System ──────────────────────────────
+
+  _initParticles() {
+    const w = window.innerWidth;
+    const count = w >= 1100 ? 250 : w >= 768 ? 120 : 80;
+    const trailLen = w >= 768 ? 12 : 6;
+
+    const purplePool = ['#A78BFA', '#7C3AED', '#8B5CF6'];
+    const cyanPool = ['#06B6D4', '#22D3EE', '#67E8F9'];
+
+    this._particles = [];
+    this._particleTrailLen = trailLen;
+
+    for (let i = 0; i < count; i++) {
+      const isCyan = Math.random() < 0.3;
+      const colors = isCyan ? cyanPool : purplePool;
+      const hex = colors[Math.floor(Math.random() * colors.length)];
+      const clusterBase = Math.floor(i / 8) * 0.4;
+
+      this._particles.push({
+        angle: Math.random() * Math.PI * 2,
+        speed: (0.0003 + Math.random() * 0.0006) * (Math.random() < 0.5 ? 1 : -1),
+        radiusX: 80 + Math.random() * 180 + clusterBase * 20,
+        radiusY: 60 + Math.random() * 140 + clusterBase * 15,
+        tilt: (Math.random() - 0.5) * 0.6,
+        size: 1 + Math.random() * 2.5,
+        color: hex,
+        alpha: 0.4 + Math.random() * 0.5,
+        trail: [],
+      });
+    }
+  }
+
+  // ─── Sparkline Generation ──────────────────────────────
+
+  _generateSparklines() {
+    const ids = ['spark-perf-1', 'spark-perf-2'];
+    for (const id of ids) {
+      const svg = this.container.querySelector(`#${id}`);
+      if (!svg) continue;
+
+      const pts = 20;
+      const vals = [];
+      let v = 15 + Math.random() * 10;
+      for (let i = 0; i < pts; i++) {
+        v = Math.max(2, Math.min(38, v + (Math.random() - 0.45) * 8));
+        vals.push(v);
+      }
+
+      const step = 200 / (pts - 1);
+      const points = vals.map((val, i) => `${(i * step).toFixed(1)},${(40 - val).toFixed(1)}`).join(' ');
+      const fillPoints = `0,40 ${points} 200,40`;
+
+      const gradId = `sparkGrad-${id}`;
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(139,92,246,0.25)"/>
+            <stop offset="100%" stop-color="rgba(139,92,246,0)"/>
+          </linearGradient>
+        </defs>
+        <polygon points="${fillPoints}" fill="url(#${gradId})" />
+        <polyline points="${points}" fill="none" stroke="var(--purple-400)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      `;
+    }
   }
 
   // ─── Solar System Engine ──────────────────────────────
@@ -182,23 +547,35 @@ export class Home {
       ).join('');
     }
 
-    // Energy particles pool
-    this._energyContainer = this.container.querySelector('#energy-particles');
-    this._energyPool = [];
-    this._energyState = [];
-    const PARTICLE_COUNT = this._orbitals.length * 2;
-    if (this._energyContainer) {
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const el = document.createElement('div');
-        el.className = 'energy-particle';
-        this._energyContainer.appendChild(el);
-        this._energyPool.push(el);
-        this._energyState.push({
-          active: false,
-          targetIdx: i % this._orbitals.length,
-          progress: 0,
-          delay: Math.random() * 4000 + i * 800,
-          startTime: performance.now() + Math.random() * 4000 + i * 800,
+    // Energy beam canvas (DPR capped at 2)
+    const systemEl = this.container.querySelector('#orbital-system-3d');
+    this._beamCanvas = this.container.querySelector('#energy-beam-canvas');
+    if (this._beamCanvas && systemEl) {
+      const r = systemEl.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      this._beamCanvas.width = r.width * dpr;
+      this._beamCanvas.height = r.height * dpr;
+      this._beamCanvas.style.width = r.width + 'px';
+      this._beamCanvas.style.height = r.height + 'px';
+      this._beamCtx = this._beamCanvas.getContext('2d');
+      this._beamDpr = dpr;
+    }
+
+    // Init particle streams
+    this._initParticles();
+
+    // Trail dots along orbit path
+    this._trailDots = [];
+    const trailContainer = this.container.querySelector('#orbital-energy-trail');
+    if (trailContainer) {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'orbit-trail-dot';
+        trailContainer.appendChild(dot);
+        this._trailDots.push({
+          el: dot,
+          theta: (Math.PI * 2 / 4) * i,
+          speed: 0.012,
         });
       }
     }
@@ -236,7 +613,7 @@ export class Home {
 
         // z-index: planets at top (sin < 0) behind center, bottom (sin > 0) in front
         const sinVal = Math.sin(orb.theta);
-        const zIndex = Math.round(50 + sinVal * 50);
+        const zIndex = Math.round(10 + sinVal * 5);
         planetPositions.push({ x: screenX, y: screenY });
 
         const scale = 1.0;
@@ -247,10 +624,12 @@ export class Home {
         orb.el.style.left = `${screenX.toFixed(1)}px`;
         orb.el.style.top = `${screenY.toFixed(1)}px`;
         orb.el.style.opacity = '1';
-        orb.el.style.filter = 'none';
         orb.el.style.zIndex = zIndex;
 
-        // Dynamic sphere shadow + sun illumination
+        // All planets stay crisp — no depth blur
+        orb.el.style.filter = 'none';
+
+        // Dynamic sun illumination on holographic node
         const imgEl = orb.el.querySelector('.orbit-world-img');
         if (imgEl) {
           const relX = screenX - cx;
@@ -263,18 +642,6 @@ export class Home {
           const sunY = 50 + toCenterY * 25;
           imgEl.style.setProperty('--sun-x', `${sunX.toFixed(1)}%`);
           imgEl.style.setProperty('--sun-y', `${sunY.toFixed(1)}%`);
-
-          const edgeGlowX = (toCenterX * 6).toFixed(1);
-          const edgeGlowY = (toCenterY * 6).toFixed(1);
-
-          imgEl.style.borderColor = `rgba(124, 58, 237, ${borderAlpha.toFixed(3)})`;
-          imgEl.style.boxShadow = `
-            inset 0 -5px 12px rgba(0, 0, 0, 0.2),
-            inset 0 3px 8px rgba(167, 139, 250, 0.04),
-            0 0 ${shadowSpread}px rgba(124, 58, 237, 0.12),
-            0 5px 12px rgba(0, 0, 0, 0.2),
-            ${edgeGlowX}px ${edgeGlowY}px 18px rgba(167, 139, 250, 0.2)
-          `;
         }
 
         if (orb.nameEl) {
@@ -310,37 +677,76 @@ export class Home {
         this._centerGlow.style.transform = `scale(${glowScale.toFixed(3)})`;
       }
 
-      // ─── Energy particles: flow from center to planets ───
+      // ─── Particle streams + faint node beams ───
       const now = performance.now();
-      for (let i = 0; i < this._energyState.length; i++) {
-        const st = this._energyState[i];
-        const el = this._energyPool[i];
-        if (!el) continue;
+      if (this._beamCtx && this._beamCanvas && this._particles) {
+        const dpr = this._beamDpr || 1;
+        const bctx = this._beamCtx;
+        bctx.clearRect(0, 0, this._beamCanvas.width, this._beamCanvas.height);
 
-        if (now < st.startTime) { el.style.opacity = '0'; continue; }
+        const beamTime = now * 0.001;
 
-        const DURATION = 3500;
-        const elapsed = now - st.startTime;
-        const t = (elapsed % DURATION) / DURATION;
+        // Faint beam lines to nodes (very subtle)
+        for (let i = 0; i < planetPositions.length; i++) {
+          const target = planetPositions[i];
+          if (!target) continue;
+          const pulse = 0.15 + Math.sin(beamTime * 2 + i * 1.2) * 0.1;
+          bctx.beginPath();
+          bctx.moveTo(cx * dpr, cy * dpr);
+          bctx.lineTo(target.x * dpr, target.y * dpr);
+          bctx.strokeStyle = `rgba(167,139,250,${(pulse * 0.25).toFixed(3)})`;
+          bctx.lineWidth = 0.5 * dpr;
+          bctx.stroke();
+        }
 
-        const target = planetPositions[st.targetIdx % planetPositions.length];
-        if (!target) { el.style.opacity = '0'; continue; }
+        // Particle stream rendering
+        for (const p of this._particles) {
+          p.angle += p.speed;
 
-        const arcOffset = Math.sin(t * Math.PI) * 15;
-        const px = cx + (target.x - cx) * t + arcOffset;
-        const py = cy + (target.y - cy) * t - arcOffset;
+          const px = cx + p.radiusX * Math.cos(p.angle);
+          const py = cy + p.radiusY * Math.sin(p.angle + p.tilt);
 
-        let opacity;
-        if (t < 0.2) opacity = t / 0.2;
-        else if (t < 0.7) opacity = 1;
-        else opacity = 1 - (t - 0.7) / 0.3;
-        opacity *= 0.5;
+          // Store trail
+          p.trail.push({ x: px, y: py });
+          if (p.trail.length > this._particleTrailLen) p.trail.shift();
 
-        const scale = 0.5 + Math.sin(t * Math.PI) * 0.5;
-        el.style.left = `${px.toFixed(1)}px`;
-        el.style.top = `${py.toFixed(1)}px`;
-        el.style.opacity = opacity.toFixed(3);
-        el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(2)})`;
+          // Draw trail
+          for (let t = 0; t < p.trail.length - 1; t++) {
+            const tp = p.trail[t];
+            const trailAlpha = (t / p.trail.length) * p.alpha * 0.4;
+            const trailSize = p.size * (t / p.trail.length) * 0.6;
+            bctx.beginPath();
+            bctx.arc(tp.x * dpr, tp.y * dpr, trailSize * dpr, 0, Math.PI * 2);
+            bctx.fillStyle = hexToRgba(p.color, trailAlpha);
+            bctx.fill();
+          }
+
+          // Draw particle
+          bctx.beginPath();
+          bctx.arc(px * dpr, py * dpr, p.size * dpr, 0, Math.PI * 2);
+          bctx.fillStyle = hexToRgba(p.color, p.alpha);
+          bctx.fill();
+
+          // Glow pass for larger particles
+          if (p.size > 2) {
+            bctx.beginPath();
+            bctx.arc(px * dpr, py * dpr, p.size * 2.5 * dpr, 0, Math.PI * 2);
+            bctx.fillStyle = hexToRgba(p.color, p.alpha * 0.12);
+            bctx.fill();
+          }
+        }
+      }
+
+      // ─── Orbit trail dots ───
+      if (this._trailDots) {
+        for (const trail of this._trailDots) {
+          trail.theta += trail.speed;
+          const tx = cx + orbitRadius * Math.cos(trail.theta);
+          const ty = cy + orbitRadius * Math.sin(trail.theta);
+          trail.el.style.left = `${tx.toFixed(1)}px`;
+          trail.el.style.top = `${ty.toFixed(1)}px`;
+          trail.el.style.transform = 'translate(-50%, -50%)';
+        }
       }
     };
 
@@ -485,10 +891,10 @@ export class Home {
           return;
         }
 
-        // ML Parts → timeline overlay
+        // ML Parts → business dashboard
         const bizNameText = world.querySelector('.orbit-world-name')?.textContent || '';
         if (/ml.?parts/i.test(bizNameText) || bizId === 'ml-parts') {
-          this._showTimeline(bizId, bizNameText);
+          window.location.hash = '#biz-dashboard/ml-parts';
           return;
         }
 
@@ -1048,6 +1454,14 @@ export class Home {
     if (this._rippleInterval) {
       clearInterval(this._rippleInterval);
     }
+    if (this._visHandler) {
+      document.removeEventListener('visibilitychange', this._visHandler);
+      this._visHandler = null;
+    }
+    this._beamCtx = null;
+    this._beamCanvas = null;
+    this._particles = null;
+    this._trailDots = [];
     // Note: Do NOT remove curtain-overlay or shield-overlay here — they must
     // persist through navigation so the animation plays on the new page.
   }

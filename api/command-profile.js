@@ -148,6 +148,23 @@ function buildAllFields(sources) {
 
 // ─── Real profile fetching ──────────────────────────────────────────
 async function fetchRealProfile(phone, email, dbAccios, dbRush, dbXazai) {
+  // Resolve merged identity: if this phone/email is a secondary, redirect to primary
+  try {
+    const fs = require('fs');
+    const mergePath = require('path').join(__dirname, '..', 'data', 'merged-contacts.json');
+    const mergeData = JSON.parse(fs.readFileSync(mergePath, 'utf-8'));
+    for (const m of (mergeData.merges || [])) {
+      const secNorm = normalizePhone(m.secondary.phone);
+      const phoneNorm = normalizePhone(phone);
+      if ((secNorm && phoneNorm && secNorm === phoneNorm) ||
+          (m.secondary.email && email && m.secondary.email.toLowerCase() === email.toLowerCase())) {
+        phone = m.primary.phone || phone;
+        if (m.primary.email) email = m.primary.email;
+        break;
+      }
+    }
+  } catch (e) { /* No merge file — continue normally */ }
+
   const result = {
     mock: false,
     unified: { name: '', phone, email: '', firstSeen: '', totalSpent: 0, vipScore: 0, businesses: [] },

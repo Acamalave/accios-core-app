@@ -485,6 +485,37 @@ async function fetchAndUnifyUsers(dbAccios, dbRush, dbXazai) {
     }
   });
 
+  // ─── Apply manual merges ─────────────────────────────────────────
+  try {
+    const fs = require('fs');
+    const mergePath = require('path').join(__dirname, '..', 'data', 'merged-contacts.json');
+    const mergeData = JSON.parse(fs.readFileSync(mergePath, 'utf-8'));
+    for (const m of (mergeData.merges || [])) {
+      const priKey = normalizePhone(m.primary.phone) || `email:${(m.primary.email || '').toLowerCase()}`;
+      const secKey = normalizePhone(m.secondary.phone) || `email:${(m.secondary.email || '').toLowerCase()}`;
+      const pri = userMap.get(priKey);
+      const sec = userMap.get(secKey);
+      if (pri && sec) {
+        // Merge secondary into primary
+        for (const b of sec.businesses) { if (!pri.businesses.includes(b)) pri.businesses.push(b); }
+        pri.totalSpent = (pri.totalSpent || 0) + (sec.totalSpent || 0);
+        pri.ordersCount = (pri.ordersCount || 0) + (sec.ordersCount || 0);
+        if (sec.firstSeen && (!pri.firstSeen || sec.firstSeen < pri.firstSeen)) pri.firstSeen = sec.firstSeen;
+        if (sec.lastActive && (!pri.lastActive || sec.lastActive > pri.lastActive)) pri.lastActive = sec.lastActive;
+        if (!pri.name && sec.name) pri.name = sec.name;
+        if (!pri.email && sec.email) pri.email = sec.email;
+        Object.assign(pri.source, sec.source);
+        userMap.delete(secKey);
+      } else if (sec && !pri) {
+        // Only secondary exists — re-key to primary
+        sec.id = priKey;
+        sec.phone = m.primary.phone || sec.phone;
+        userMap.set(priKey, sec);
+        userMap.delete(secKey);
+      }
+    }
+  } catch (e) { /* No merge file or parse error — ignore */ }
+
   return Array.from(userMap.values());
 }
 

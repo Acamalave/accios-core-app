@@ -19,6 +19,22 @@
   --neon-green-border: rgba(57, 255, 20, 0.25);
   --neon-green-glow: rgba(57, 255, 20, 0.3);
 
+  /* === Copper Orange (Warm Neon) === */
+  --copper-orange: #E8793A;
+  --copper-orange-bright: #FF8C42;
+  --copper-orange-dim: rgba(232, 121, 58, 0.6);
+  --copper-orange-bg: rgba(232, 121, 58, 0.08);
+  --copper-orange-border: rgba(232, 121, 58, 0.25);
+  --copper-orange-glow: rgba(232, 121, 58, 0.4);
+
+  /* === Icy Blue (Cold Neon) === */
+  --icy-blue: #56CCF2;
+  --icy-blue-bright: #7DE5FF;
+  --icy-blue-dim: rgba(86, 204, 242, 0.6);
+  --icy-blue-bg: rgba(86, 204, 242, 0.08);
+  --icy-blue-border: rgba(86, 204, 242, 0.25);
+  --icy-blue-glow: rgba(86, 204, 242, 0.4);
+
   /* === Semantic Colors === */
   --bg-primary:     #0A0A0F;
   --bg-secondary:   #12121A;
@@ -126,4 +142,37 @@
 
   /* === Gradient Text === */
   --gradient-primary: linear-gradient(135deg, #7C3AED, #6D28D9);
+
+  /* === Cinematic Core System === */
+  --core-size: 220px;
+  --core-size-mobile: 140px;
+  --core-size-sm: 90px;
+  --core-cube-size: 110px;
+  --core-metallic-1: #2a2a3e;
+  --core-metallic-2: #1a1a2e;
+  --core-metallic-3: #3d3d5c;
+  --core-highlight: rgba(167, 139, 250, 0.6);
+  --core-engrave-shadow: rgba(0, 0, 0, 0.8);
+  --core-engrave-light: rgba(200, 190, 255, 0.25);
+
+  /* Energy system */
+  --energy-primary: rgba(167, 139, 250, 0.9);
+  --energy-secondary: rgba(124, 58, 237, 0.7);
+
+  /* Holographic node system */
+  --holo-shimmer-1: rgba(167, 139, 250, 0.15);
+  --holo-shimmer-2: rgba(100, 200, 255, 0.08);
+  --holo-frame-color: rgba(167, 139, 250, 0.35);
+  --holo-scanline-color: rgba(167, 139, 250, 0.06);
+
+  /* Side panel glassmorphism */
+  --panel-bg: rgba(38, 38, 42, 0.55);
+  --panel-border: rgba(255, 255, 255, 0.06);
+  --panel-border-top: rgba(255, 255, 255, 0.15);
+  --panel-blur: 28px;
+  --panel-width: 280px;
+
+  /* Volumetric lighting */
+  --vol-light-color: rgba(124, 58, 237, 0.09);
+  --vol-light-intensity: 0.9;
 }

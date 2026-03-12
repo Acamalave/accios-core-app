@@ -603,6 +603,7 @@ export class CommandCenter {
     panel.innerHTML = `
       <div class="cc-profile-header">
         <button class="cc-profile-close" id="cc-profile-close">✕</button>
+        <button class="cc-profile-merge-btn" id="cc-profile-merge" title="Fusionar con otro contacto">⛓ Fusionar</button>
         <div class="cc-profile-avatar-row">
           ${photoUrl
             ? `<img src="${photoUrl}" class="cc-profile-avatar" alt="">`
@@ -614,7 +615,7 @@ export class CommandCenter {
             ${p.email ? `<div class="cc-profile-email">${p.email}</div>` : ''}
           </div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin:var(--space-3) 0;">
+        <div class="cc-profile-badges">
           ${(p.businesses || []).map(b => {
             if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">ACCIOS CORE</span>';
             if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">Rush Ride</span>';
@@ -633,9 +634,12 @@ export class CommandCenter {
           }).join('')}
         </div>
         <div class="cc-profile-stats">
-          <div class="cc-profile-stat">
+          <div class="cc-profile-stat cc-profile-stat--expandable" id="cc-stat-spent">
             <div class="cc-profile-stat__value">$${(p.totalSpent || 0).toFixed(0)}</div>
-            <div class="cc-profile-stat__label">Total Spent</div>
+            <div class="cc-profile-stat__label">Total Spent ▾</div>
+            <div class="cc-spent-breakdown" id="cc-spent-breakdown">
+              ${this._renderSpentBreakdown(profile)}
+            </div>
           </div>
           <div class="cc-profile-stat">
             <div class="cc-profile-stat__value">${(p.businesses || []).length}</div>
@@ -666,6 +670,15 @@ export class CommandCenter {
       </div>`;
 
     panel.querySelector('#cc-profile-close').addEventListener('click', () => this._closeProfile());
+
+    // Expandable Total Spent
+    const spentStat = panel.querySelector('#cc-stat-spent');
+    if (spentStat) spentStat.addEventListener('click', () => spentStat.classList.toggle('expanded'));
+
+    // Merge button
+    panel.querySelector('#cc-profile-merge')?.addEventListener('click', () => {
+      this._openMergeFlow(p.phone || phone, p.email || email, p.name || 'Sin nombre');
+    });
   }
 
   // ─── Dynamic Field Renderer (Expediente) ────────────────────────
@@ -977,10 +990,11 @@ export class CommandCenter {
       if (data.email) items += `<div class="cc-profile-item"><span>📧 ${data.email}</span></div>`;
     }
 
+    if (!items) return ''; // Don't show business section with no activity
     return `
       <div class="cc-profile-section">
         <div class="cc-profile-section__title cc-profile-section__title--${colorClass}">${name}</div>
-        ${items || '<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Sin actividad registrada</div>'}
+        ${items}
       </div>`;
   }
 
@@ -998,6 +1012,146 @@ export class CommandCenter {
           `).join('')}
         </div>
       </div>`;
+  }
+
+  // ─── Spent Breakdown (expandable) ────────────────────────────────
+  _renderSpentBreakdown(profile) {
+    const items = [];
+    const acciosSpent = (profile.accios?.transactions || []).reduce((s, t) => s + (t.totalAmount || t.amount || 0), 0);
+    if (acciosSpent > 0) items.push({ name: 'ACCIOS Core', amount: acciosSpent, color: '#A78BFA' });
+    const bizMap = [
+      ['rushRide', 'Rush Ride', '#39FF14'], ['xazai', 'Xazai', '#F59E0B'], ['laColson', 'La Colson', '#EC4899'],
+      ['resultados', 'Resultados', '#06B6D4'], ['cristian', 'Cristian Studio', '#8B5CF6'],
+      ['tabares', 'Jesus Tabares', '#EF4444'], ['cakefit', 'Cake Fit', '#F97316'],
+      ['glowin', 'Glowin Strong', '#10B981'], ['hechizos', 'Hechizos', '#D946EF'],
+      ['salon507', 'Salón 507', '#F43F5E'], ['tcp', 'Tu Compra Panamá', '#0EA5E9'],
+      ['janelle', 'Janelle', '#84CC16']
+    ];
+    for (const [key, name, color] of bizMap) {
+      const spent = profile[key]?.totalSpent || 0;
+      if (spent > 0) items.push({ name, amount: spent, color });
+    }
+    if (items.length === 0) return '<div style="padding:6px 0;font-size:0.65rem;color:var(--text-dim);text-align:center;">Sin detalle</div>';
+    return items.map(i => `
+      <div class="cc-spent-row">
+        <span class="cc-spent-row__dot" style="background:${i.color}"></span>
+        <span class="cc-spent-row__name">${i.name}</span>
+        <span class="cc-spent-row__amount">$${i.amount.toFixed(2)}</span>
+      </div>`).join('');
+  }
+
+  // ─── Merge Contacts Flow ───────────────────────────────────────────
+  async _openMergeFlow(currentPhone, currentEmail, currentName) {
+    const panel = document.querySelector('.cc-profile-panel');
+    if (!panel) return;
+
+    // Create merge overlay inside the profile panel
+    const overlay = document.createElement('div');
+    overlay.className = 'cc-merge-overlay';
+    overlay.innerHTML = `
+      <div class="cc-merge-panel">
+        <div class="cc-merge-header">
+          <div class="cc-merge-title">Fusionar Contacto</div>
+          <button class="cc-merge-close" id="cc-merge-close">✕</button>
+        </div>
+        <div class="cc-merge-info">Busca el contacto duplicado para fusionar con <strong>${currentName}</strong></div>
+        <input class="cc-merge-search" id="cc-merge-search" type="text" placeholder="Buscar por nombre, teléfono o email..." autofocus>
+        <div class="cc-merge-results" id="cc-merge-results"></div>
+      </div>`;
+    panel.appendChild(overlay);
+
+    overlay.querySelector('#cc-merge-close').addEventListener('click', () => overlay.remove());
+
+    const searchInput = overlay.querySelector('#cc-merge-search');
+    const resultsDiv = overlay.querySelector('#cc-merge-results');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      const q = searchInput.value.trim();
+      if (q.length < 2) { resultsDiv.innerHTML = ''; return; }
+      searchTimeout = setTimeout(async () => {
+        resultsDiv.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text-dim);font-size:0.75rem;">Buscando...</div>';
+        try {
+          const res = await fetch(`/api/command-users?search=${encodeURIComponent(q)}&limit=10`);
+          const data = await res.json();
+          const users = (data.users || []).filter(u => u.phone !== currentPhone);
+          if (users.length === 0) {
+            resultsDiv.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text-dim);font-size:0.75rem;">Sin resultados</div>';
+            return;
+          }
+          resultsDiv.innerHTML = users.map(u => `
+            <div class="cc-merge-result" data-phone="${u.phone || ''}" data-email="${u.email || ''}">
+              <div class="cc-merge-result__name">${u.name || 'Sin nombre'}</div>
+              <div class="cc-merge-result__detail">${u.phone || ''} · ${u.email || ''}</div>
+              <div class="cc-merge-result__badges">${(u.businesses || []).map(b => `<span class="cc-biz-badge cc-biz-badge--${b === 'accios-core' ? 'accios' : b === 'rush-ride' ? 'rush' : b === 'la-colson' ? 'colson' : b}" style="font-size:0.5rem;padding:1px 4px;">${b}</span>`).join('')}</div>
+            </div>`).join('');
+
+          resultsDiv.querySelectorAll('.cc-merge-result').forEach(row => {
+            row.addEventListener('click', () => {
+              const secPhone = row.dataset.phone;
+              const secEmail = row.dataset.email;
+              const secName = row.querySelector('.cc-merge-result__name').textContent;
+              this._confirmMerge(currentPhone, currentEmail, currentName, secPhone, secEmail, secName, overlay);
+            });
+          });
+        } catch (e) {
+          resultsDiv.innerHTML = '<div style="text-align:center;padding:12px;color:#EF4444;font-size:0.75rem;">Error buscando</div>';
+        }
+      }, 400);
+    });
+  }
+
+  async _confirmMerge(priPhone, priEmail, priName, secPhone, secEmail, secName, overlay) {
+    const resultsDiv = overlay.querySelector('#cc-merge-results');
+    const searchInput = overlay.querySelector('#cc-merge-search');
+    searchInput.style.display = 'none';
+
+    resultsDiv.innerHTML = `
+      <div class="cc-merge-confirm">
+        <div class="cc-merge-confirm__title">Confirmar Fusión</div>
+        <div class="cc-merge-confirm__row">
+          <div class="cc-merge-confirm__card">
+            <div style="font-weight:600;color:var(--neon-green);">PRINCIPAL</div>
+            <div>${priName}</div>
+            <div style="font-size:0.7rem;color:var(--text-dim);">${priPhone}<br>${priEmail || ''}</div>
+          </div>
+          <div style="font-size:1.5rem;color:var(--text-dim);align-self:center;">⟵</div>
+          <div class="cc-merge-confirm__card">
+            <div style="font-weight:600;color:var(--text-dim);">SE FUSIONA</div>
+            <div>${secName}</div>
+            <div style="font-size:0.7rem;color:var(--text-dim);">${secPhone}<br>${secEmail || ''}</div>
+          </div>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-dim);text-align:center;margin:8px 0;">Los datos de "${secName}" se combinarán con "${priName}"</div>
+        <div class="cc-merge-confirm__actions">
+          <button class="cc-merge-btn cc-merge-btn--cancel" id="cc-merge-cancel">Cancelar</button>
+          <button class="cc-merge-btn cc-merge-btn--confirm" id="cc-merge-confirm">Fusionar</button>
+        </div>
+      </div>`;
+
+    resultsDiv.querySelector('#cc-merge-cancel').addEventListener('click', () => overlay.remove());
+    resultsDiv.querySelector('#cc-merge-confirm').addEventListener('click', async () => {
+      resultsDiv.querySelector('#cc-merge-confirm').textContent = 'Fusionando...';
+      resultsDiv.querySelector('#cc-merge-confirm').disabled = true;
+      try {
+        await fetch('/api/command-merge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            primaryPhone: priPhone, primaryEmail: priEmail || '',
+            secondaryPhone: secPhone, secondaryEmail: secEmail || ''
+          })
+        });
+        overlay.remove();
+        this._closeProfile();
+        // Refresh users list
+        if (this.currentTab === 'users') this._renderTab();
+        if (typeof Toast !== 'undefined') Toast.show('Contactos fusionados', 'success');
+      } catch (e) {
+        if (typeof Toast !== 'undefined') Toast.show('Error fusionando', 'error');
+      }
+    });
   }
 
   _closeProfile() {
@@ -1032,7 +1186,7 @@ export class CommandCenter {
       if (days === 1) return 'Ayer';
       if (days < 7) return `Hace ${days}d`;
       if (days < 30) return `Hace ${Math.floor(days / 7)}sem`;
-      return d.toLocaleDateString('es-PA', { day: 'numeric', month: 'short', year: '2-digit' });
+      return d.toLocaleDateString('es-PA', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch { return '–'; }
   }
 
