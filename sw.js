@@ -1,11 +1,11 @@
 // Service Worker for ACCIOS CORE — Offline-first PWA
-const CACHE_NAME = 'accios-core-v74';
+const CACHE_NAME = 'accios-core-v83';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/Propuesta-Xazai-2026.html',
   '/index_Estephano.html',
-  '/assets/images/logo-ac.jpeg',
+  '/assets/images/Accios.001.png',
   '/assets/images/burbuja-ac.png',
   '/css/reset.css',
   '/css/variables.css',
@@ -24,6 +24,9 @@ const STATIC_ASSETS = [
   '/css/behavior.css',
   '/css/command-center.css',
   '/css/business-dashboard.css',
+  '/css/comms.css',
+  '/css/linatour-slides.css',
+  '/js/pages/CommCenter.js',
   '/js/pages/BusinessDashboard.js',
   '/manifest.json',
 ];

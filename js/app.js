@@ -13,7 +13,9 @@ import { PodcastWorld } from './pages/PodcastWorld.js';
 import { Finance } from './pages/Finance.js';
 import { ClientPortal } from './pages/ClientPortal.js';
 import { LaVainaPresentation } from './pages/LaVainaPresentation.js';
+import { LinaTourSlides } from './pages/LinaTourSlides.js';
 import { CommandCenter } from './pages/CommandCenter.js';
+import { CommCenter } from './pages/CommCenter.js';
 // BusinessDashboard loaded dynamically to avoid module cache issues
 import behaviorService from './services/behaviorService.js';
 
@@ -140,12 +142,20 @@ class App {
         pageInstance = new LaVainaPresentation(this.content, this.currentUser);
         break;
 
+      case 'linatour':
+        pageInstance = new LinaTourSlides(this.content, this.currentUser);
+        break;
+
+      case 'comms':
+        pageInstance = new CommCenter(this.content, this.currentUser, route.sub);
+        break;
+
       case 'command-center':
         pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
 
       case 'biz-dashboard': {
-        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=76');
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=93');
         pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
         break;
       }

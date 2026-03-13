@@ -1,12 +1,18 @@
 import userAuth from '../services/userAuth.js';
 
+/* ── Fingerprint SVG icon ── */
+const FINGERPRINT = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.5 7A10 10 0 0 1 12 2c5.52 0 10 4.48 10 10 0 1.5-.33 2.92-.93 4.2"/><path d="M6 18.7A10 10 0 0 1 2 12c0-3.13 1.44-5.93 3.69-7.77"/><path d="M12 8c2.21 0 4 1.79 4 4 0 2.96-1.22 5.63-3.18 7.54"/><path d="M8 11.6A4 4 0 0 1 12 8"/><path d="M12 12c0 4.08-1.65 7.78-4.33 10.45"/><path d="M19 14.12c-.73 2.27-2.02 4.29-3.76 5.92"/></svg>`;
+const FINGERPRINT_LG = FINGERPRINT.replace('width="24" height="24"', 'width="48" height="48"');
+
 export class Login {
   constructor(container, onLogin) {
     this.container = container;
     this.onLogin = onLogin;
-    this.step = 'phone'; // phone | denied | explain-pin | create-pin | pin
+    this.step = 'phone'; // phone | denied | explain-pin | create-pin | pin | biometric-offer
     this.phone = '';
     this.userData = null;
+    this._bioAvailable = false;
+    this._bioRegistered = false;
   }
 
   render() {
@@ -112,7 +118,8 @@ export class Login {
   _renderPinStep(isNew = false) {
     const title = isNew ? 'Crea tu PIN de acceso' : 'Ingresa tu PIN';
     const subtitle = isNew ? 'Elige 4 digitos que puedas recordar' : '';
-    return `
+
+    let html = `
       <p class="login-pin-title">${title}</p>
       ${subtitle ? `<p class="login-pin-subtitle">${subtitle}</p>` : ''}
       <div class="login-pin-wrapper">
@@ -134,6 +141,40 @@ export class Login {
         <span>${isNew ? 'Crear PIN' : 'Verificar'}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
       </button>
+    `;
+
+    // Biometric button for returning users who already registered fingerprint
+    if (!isNew && this._bioRegistered) {
+      html += `
+        <div class="login-bio-divider"><span>o</span></div>
+        <button id="login-bio-btn" class="login-btn login-btn--biometric" type="button">
+          ${FINGERPRINT}
+          <span>Usar huella digital</span>
+        </button>
+      `;
+    }
+
+    return html;
+  }
+
+  _renderBiometricOffer() {
+    return `
+      <div class="login-bio-offer">
+        <div class="login-bio-offer-icon">
+          ${FINGERPRINT_LG}
+        </div>
+        <h3 class="login-bio-offer-title">Acceso rapido</h3>
+        <p class="login-bio-offer-text">
+          Activa tu <strong>huella digital</strong> para ingresar sin PIN la proxima vez.
+        </p>
+        <button id="login-bio-enable" class="login-btn login-btn--biometric-enable">
+          ${FINGERPRINT}
+          <span>Activar huella digital</span>
+        </button>
+        <button id="login-bio-skip" class="login-btn login-btn--secondary" style="margin-top: var(--space-3);">
+          <span>Ahora no</span>
+        </button>
+      </div>
     `;
   }
 
@@ -171,6 +212,14 @@ export class Login {
 
     } else if (this.step === 'pin' || this.step === 'create-pin') {
       this._attachPinListeners();
+
+    } else if (this.step === 'biometric-offer') {
+      form.querySelector('#login-bio-enable')?.addEventListener('click', () => this._handleBiometricRegister());
+      form.querySelector('#login-bio-skip')?.addEventListener('click', () => {
+        userAuth.declineBiometric(this.phone);
+        userAuth.saveSession(this.userData);
+        this.onLogin?.(this.userData);
+      });
     }
   }
 
@@ -210,6 +259,14 @@ export class Login {
 
     const submitBtn = form.querySelector('#login-pin-submit');
     submitBtn?.addEventListener('click', () => this._handlePinSubmit());
+
+    // Biometric button listener (only present if _bioRegistered)
+    form.querySelector('#login-bio-btn')?.addEventListener('click', () => this._handleBiometricAuth());
+
+    // Auto-trigger biometric for seamless fingerprint login
+    if (this._bioRegistered && this.step === 'pin') {
+      setTimeout(() => this._handleBiometricAuth(), 600);
+    }
   }
 
   // ─── Step Transitions ──────────────────────────────────
@@ -218,6 +275,8 @@ export class Login {
     this.step = 'phone';
     this.phone = '';
     this.userData = null;
+    this._bioAvailable = false;
+    this._bioRegistered = false;
     const form = this.container.querySelector('#login-form');
     const subtitle = this.container.querySelector('#login-subtitle');
     form.innerHTML = this._renderPhoneStep();
@@ -276,7 +335,10 @@ export class Login {
         subtitle.textContent = `Hola ${result.data.name || ''}!`;
         this._attachListeners();
       } else {
-        // Has PIN — verify
+        // Has PIN — check biometric before showing PIN step
+        this._bioAvailable = this._isMobile() && await userAuth.isBiometricAvailable();
+        this._bioRegistered = this._bioAvailable && userAuth.isBiometricEnabled(this.phone);
+
         this.step = 'pin';
         const form = this.container.querySelector('#login-form');
         const subtitle = this.container.querySelector('#login-subtitle');
@@ -312,8 +374,21 @@ export class Login {
 
       try {
         await userAuth.createPin(this.phone, pin);
-        userAuth.saveSession(this.userData);
-        this.onLogin?.(this.userData);
+
+        // After creating PIN on mobile, offer biometric
+        this._bioAvailable = this._isMobile() && await userAuth.isBiometricAvailable();
+
+        if (this._bioAvailable) {
+          this.step = 'biometric-offer';
+          const form = this.container.querySelector('#login-form');
+          const subtitle = this.container.querySelector('#login-subtitle');
+          form.innerHTML = this._renderBiometricOffer();
+          subtitle.textContent = `Bienvenido ${this.userData?.name || ''}`;
+          this._attachListeners();
+        } else {
+          userAuth.saveSession(this.userData);
+          this.onLogin?.(this.userData);
+        }
       } catch (e) {
         this._showError(e.message || 'Error al crear PIN');
       }
@@ -334,8 +409,18 @@ export class Login {
       try {
         const valid = await userAuth.verifyPin(this.phone, pin);
         if (valid) {
-          userAuth.saveSession(this.userData);
-          this.onLogin?.(this.userData);
+          // Offer biometric if available, not registered, and not previously declined
+          if (this._bioAvailable && !this._bioRegistered && !userAuth.isBiometricDeclined(this.phone)) {
+            this.step = 'biometric-offer';
+            const form = this.container.querySelector('#login-form');
+            const subtitle = this.container.querySelector('#login-subtitle');
+            form.innerHTML = this._renderBiometricOffer();
+            subtitle.textContent = `Bienvenido ${this.userData?.name || ''}`;
+            this._attachListeners();
+          } else {
+            userAuth.saveSession(this.userData);
+            this.onLogin?.(this.userData);
+          }
         } else {
           this._showError('PIN incorrecto');
           const inputs = form.querySelectorAll('.login-pin-input');
@@ -350,7 +435,42 @@ export class Login {
     }
   }
 
+  // ─── Biometric Handlers ─────────────────────────────────
+
+  async _handleBiometricAuth() {
+    this._setLoading(true);
+    this._hideError();
+    try {
+      await userAuth.authenticateBiometric(this.phone);
+      userAuth.saveSession(this.userData);
+      this.onLogin?.(this.userData);
+    } catch (e) {
+      this._setLoading(false);
+      this._showError('No se pudo verificar la huella. Usa tu PIN.');
+      this.container.querySelector('#login-pin-1')?.focus();
+    }
+  }
+
+  async _handleBiometricRegister() {
+    this._setLoading(true);
+    this._hideError();
+    try {
+      await userAuth.registerBiometric(this.phone, this.userData?.name);
+      userAuth.saveSession(this.userData);
+      this.onLogin?.(this.userData);
+    } catch (e) {
+      // If registration fails (user cancelled, etc.), just login normally
+      userAuth.saveSession(this.userData);
+      this.onLogin?.(this.userData);
+    }
+  }
+
   // ─── Helpers ───────────────────────────────────────────
+
+  _isMobile() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      ('ontouchstart' in window && window.innerWidth <= 1024);
+  }
 
   _getPinValue(prefix) {
     let pin = '';

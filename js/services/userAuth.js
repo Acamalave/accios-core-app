@@ -854,6 +854,93 @@ class UserAuth {
   async deleteTimelineStep(stepId) {
     await deleteDoc(doc(db, 'business-timeline', stepId));
   }
+
+  // ─── Biometric Authentication (WebAuthn) ────────────
+
+  async isBiometricAvailable() {
+    if (!window.PublicKeyCredential) return false;
+    try {
+      return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    } catch { return false; }
+  }
+
+  isBiometricEnabled(phone) {
+    const f = this.formatPhone(phone);
+    return !!localStorage.getItem('accios-bio-' + f);
+  }
+
+  isBiometricDeclined(phone) {
+    const f = this.formatPhone(phone);
+    return !!localStorage.getItem('accios-bio-skip-' + f);
+  }
+
+  declineBiometric(phone) {
+    const f = this.formatPhone(phone);
+    localStorage.setItem('accios-bio-skip-' + f, '1');
+  }
+
+  async registerBiometric(phone, userName) {
+    const f = this.formatPhone(phone);
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+
+    const credential = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'ACCIOS CORE', id: window.location.hostname },
+        user: {
+          id: new TextEncoder().encode(f),
+          name: f,
+          displayName: userName || f,
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: 'public-key' },
+          { alg: -257, type: 'public-key' },
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required',
+          residentKey: 'preferred',
+        },
+        timeout: 60000,
+      },
+    });
+
+    const credId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+    localStorage.setItem('accios-bio-' + f, credId);
+    // Clear any previous decline flag
+    localStorage.removeItem('accios-bio-skip-' + f);
+    return true;
+  }
+
+  async authenticateBiometric(phone) {
+    const f = this.formatPhone(phone);
+    const stored = localStorage.getItem('accios-bio-' + f);
+    if (!stored) throw new Error('No biometric credential');
+
+    const credentialId = Uint8Array.from(atob(stored), c => c.charCodeAt(0));
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ id: credentialId, type: 'public-key', transports: ['internal'] }],
+        userVerification: 'required',
+        timeout: 60000,
+      },
+    });
+
+    // Update lastLogin in Firestore
+    try {
+      const docRef = doc(db, 'users', f);
+      await updateDoc(docRef, { lastLogin: new Date().toISOString() });
+    } catch (_) {}
+
+    return true;
+  }
+
+  disableBiometric(phone) {
+    localStorage.removeItem('accios-bio-' + this.formatPhone(phone));
+  }
 }
 
 export default new UserAuth();

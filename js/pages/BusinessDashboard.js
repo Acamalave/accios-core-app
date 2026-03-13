@@ -17,6 +17,12 @@ const ICONS = {
   arrowLeft: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,
   package: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`,
   info: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  lock: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  shield: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  folderLock: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><rect x="9" y="13" width="6" height="4" rx="1"/><path d="M10 13v-1a2 2 0 1 1 4 0v1"/></svg>`,
+  xClose: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  plus: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  trash: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
 };
 
 export class BusinessDashboard {
@@ -61,9 +67,70 @@ export class BusinessDashboard {
     // Resolve business metadata
     this._resolveBizMeta();
 
+    // Roadmap de servicios compartido por todos los negocios
+    const sharedServices = [
+      { label: 'PRIORIDAD INMEDIATA — Hito 0: Desbloqueo Operativo', done: false },
+      { label: 'HITO 1 — Optimización de Sitios Web para Conversión (CRO)', done: false },
+      { label: 'INFRAESTRUCTURA — Hito 2: Activación de CRM', done: false },
+      { label: 'SEMANAS 1-2 — Fase 1: Cimientos de Datos y Audiencias', done: false },
+      { label: 'SEMANAS 3-4 — Fase 2: Arquitectura de Pauta', done: false },
+      { label: 'MES 2+ — Fase 3: Despliegue Publicitario', done: false },
+      { label: 'MES 3+ — Fase 4: Integración Operativa Avanzada', done: false }
+    ];
+
+    // Client businesses to display as cards
+    this._clientBusinesses = [
+      {
+        id: 'ml-parts',
+        name: 'ML Parts',
+        subtitle: 'Repuestos industriales',
+        website: 'www.ml.parts',
+        photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
+        progress: 1,
+        services: sharedServices
+      },
+      {
+        id: 'megalift',
+        name: 'Megalift',
+        subtitle: 'Soluciones de elevación',
+        website: 'megalifts.com',
+        photo: 'assets/images/Negocios Estephano/Megalift.jpg',
+        progress: 1,
+        services: sharedServices
+      },
+      {
+        id: 'uniparts',
+        name: 'Uniparts',
+        subtitle: 'Distribución de partes',
+        website: 'upandina.com',
+        photo: 'assets/images/Negocios Estephano/Uniparts.png',
+        progress: 1,
+        services: sharedServices
+      },
+      {
+        id: 'grupo-rca',
+        name: 'Grupo RCA',
+        subtitle: 'Grupo empresarial',
+        website: 'Sin página web',
+        photo: 'assets/images/Negocios Estephano/Grupo RCA.png',
+        progress: 1,
+        services: sharedServices
+      },
+      {
+        id: 'parmonca',
+        name: 'Parmonca',
+        subtitle: 'Servicios industriales',
+        website: 'Sin página web',
+        photo: 'assets/images/Negocios Estephano/Parmonca.jpg',
+        progress: 1,
+        services: sharedServices
+      }
+    ];
+
     // Render full dashboard
     this.container.innerHTML = this._buildHTML();
     this._attachListeners();
+    this._attachPinListeners();
   }
 
   _resolveBizMeta() {
@@ -113,7 +180,7 @@ export class BusinessDashboard {
       : '--';
 
     return `
-    <section class="biz-dash">
+    <section class="biz-dash biz-dash--clients">
       <!-- Dust particle canvas (full dashboard background) -->
       <canvas class="biz-dash__dust-canvas" aria-hidden="true"></canvas>
 
@@ -129,15 +196,43 @@ export class BusinessDashboard {
         ${this._buildLeftPanel(m, avgRev)}
       </div>
 
-      <!-- Center: Visual -->
-      <div class="biz-dash__center">
-        ${this._buildCenter(m)}
+      <!-- Center: Free space -->
+      <div class="biz-dash__center biz-dash__center--empty"></div>
+
+      <!-- Right Panel: Client Business Cards (stacked) -->
+      <div class="biz-dash__panel biz-dash__panel--right biz-dash__clients-area">
+        <div class="biz-dash__clients-header">
+          <div class="biz-dash__clients-title-row">
+            <div class="biz-dash__panel-dot"></div>
+            <h2 class="biz-dash__clients-title">Negocios</h2>
+          </div>
+          <span class="biz-dash__clients-count">${this._clientBusinesses.length}</span>
+        </div>
+        <div class="biz-dash__clients-stack">
+          ${this._clientBusinesses.map((biz, i) => this._buildClientCard(biz, i)).join('')}
+        </div>
       </div>
 
-      <!-- Right Panel: Status -->
-      <div class="biz-dash__panel biz-dash__panel--right">
-        ${this._buildRightPanel(m)}
+      <!-- Credential PIN Overlay (inline, always present) -->
+      <div class="biz-cred__pin-overlay" id="cred-pin-overlay">
+        <div class="biz-cred__pin-box">
+          <button class="biz-cred__pin-close" id="cred-pin-close">${ICONS.xClose}</button>
+          <div class="biz-cred__pin-lock">${ICONS.lock}</div>
+          <h3 class="biz-cred__pin-title">Ingrese PIN</h3>
+          <p class="biz-cred__pin-sub">Acceso a bóveda de credenciales</p>
+          <div class="biz-cred__pin-inputs">
+            <input type="password" maxlength="1" class="biz-cred__pin-digit" data-pin="0" inputmode="numeric" autocomplete="off" />
+            <input type="password" maxlength="1" class="biz-cred__pin-digit" data-pin="1" inputmode="numeric" autocomplete="off" />
+            <input type="password" maxlength="1" class="biz-cred__pin-digit" data-pin="2" inputmode="numeric" autocomplete="off" />
+            <input type="password" maxlength="1" class="biz-cred__pin-digit" data-pin="3" inputmode="numeric" autocomplete="off" />
+          </div>
+          <div class="biz-cred__pin-error" id="cred-pin-error">PIN incorrecto</div>
+        </div>
       </div>
+
+      <!-- Credential Vault Overlay (content rendered dynamically) -->
+      <div class="biz-cred__vault-overlay" id="cred-vault-overlay"></div>
+
     </section>`;
   }
 
@@ -343,25 +438,76 @@ export class BusinessDashboard {
             <div class="biz-dash__metric-value biz-dash__metric-value--purple">${avgRev !== '--' ? '$' + avgRev : '--'}</div>
           </div>
         </div>
+      </div>
+
+      <!-- Credential Folder -->
+      <div class="biz-cred__folder" id="cred-folder-btn">
+        <div class="biz-cred__folder-icon">${ICONS.folderLock}</div>
+        <div class="biz-cred__folder-info">
+          <div class="biz-cred__folder-name">Credenciales</div>
+          <div class="biz-cred__folder-sub">Bóveda segura</div>
+        </div>
+        <div class="biz-cred__folder-shield">${ICONS.shield}</div>
       </div>`;
   }
 
-  _buildCenter(m) {
+  _buildClientCard(biz, index) {
+    const initials = biz.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const photoHTML = biz.photo
+      ? `<img class="biz-client__avatar-img" src="${biz.photo}" alt="${biz.name}" />`
+      : `<span class="biz-client__avatar-initials">${initials}</span>`;
+
+    const servicesHTML = biz.services.map(s => {
+      const label = typeof s === 'string' ? s : s.label;
+      const done = typeof s === 'object' && s.done;
+      const icon = done
+        ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`
+        : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
+      return `<div class="biz-client__service-item ${done ? 'biz-client__service-item--done' : ''}">
+        ${icon}
+        <span>${label}</span>
+      </div>`;
+    }).join('');
+
     return `
-      <!-- Ambient copper glow behind logo -->
-      <div class="biz-dash__hero-glow"></div>
-      <div class="biz-dash__hero-glow biz-dash__hero-glow--secondary"></div>
+      <div class="biz-client__card" data-client-id="${biz.id}" style="animation-delay: ${index * 0.08}s;">
+        <!-- Card Header -->
+        <div class="biz-client__header">
+          <div class="biz-client__avatar">
+            ${photoHTML}
+          </div>
+          <div class="biz-client__info">
+            <h3 class="biz-client__name">${biz.name}</h3>
+            <p class="biz-client__subtitle">${biz.subtitle}</p>
+          </div>
+        </div>
 
-      <!-- Metal ML Parts hero image -->
-      <div class="biz-dash__hero-wrap">
-        <img class="biz-dash__hero-img"
-             src="assets/images/logo-ml-parts-metal.jpeg"
-             alt="${m.name}" />
-      </div>
+        <!-- Website -->
+        <div class="biz-client__website">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>${biz.website}</span>
+        </div>
 
-      <div class="biz-dash__biz-sub">Business Dashboard</div>
+        <!-- Progress Bar -->
+        <div class="biz-client__progress-wrap">
+          <div class="biz-client__progress-header">
+            <span class="biz-client__progress-label">Progreso</span>
+            <span class="biz-client__progress-pct">${biz.progress}%</span>
+          </div>
+          <div class="biz-client__progress-track">
+            <div class="biz-client__progress-fill" style="width: ${biz.progress}%"></div>
+          </div>
+        </div>
 
-      ${this._buildActivityChart()}`;
+        <!-- Services Toggle -->
+        <button class="biz-client__services-toggle" data-toggle="${biz.id}">
+          <span>Roadmap</span>
+          <svg class="biz-client__toggle-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="biz-client__services-panel" id="services-${biz.id}">
+          ${servicesHTML}
+        </div>
+      </div>`;
   }
 
   _buildActivityChart() {
@@ -489,7 +635,7 @@ export class BusinessDashboard {
     // Known logo paths matching the orbital system
     const logos = {
       'ml-parts': 'assets/images/businesses/ml-parts.png',
-      'accios-core': 'assets/images/logo-ac.jpeg',
+      'accios-core': 'assets/images/Accios.001.png',
       'rush-ride': 'assets/images/businesses/rush-ride.png',
       'xazai': 'assets/images/businesses/xazai.png'
     };
@@ -517,40 +663,52 @@ export class BusinessDashboard {
       });
     });
 
-    // Remove dark background from hero JPEG via canvas pixel processing
-    const heroImg = this.container.querySelector('.biz-dash__hero-img');
-    if (heroImg) {
-      const process = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = heroImg.naturalWidth;
-        canvas.height = heroImg.naturalHeight;
-        ctx.drawImage(heroImg, 0, 0);
+    // Client card service toggle (expand/collapse)
+    this.container.querySelectorAll('.biz-client__services-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.toggle;
+        const panel = this.container.querySelector(`#services-${targetId}`);
+        if (!panel) return;
 
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const d = imgData.data;
+        const isOpen = panel.classList.contains('biz-client__services-panel--open');
+        // Close all other panels first
+        this.container.querySelectorAll('.biz-client__services-panel--open').forEach(p => {
+          p.classList.remove('biz-client__services-panel--open');
+          p.previousElementSibling?.classList.remove('biz-client__services-toggle--open');
+        });
 
-        for (let i = 0; i < d.length; i += 4) {
-          const r = d[i], g = d[i + 1], b = d[i + 2];
-          const lum = r * 0.299 + g * 0.587 + b * 0.114;
+        if (!isOpen) {
+          panel.classList.add('biz-client__services-panel--open');
+          btn.classList.add('biz-client__services-toggle--open');
+        }
+      });
+    });
 
-          if (lum < 22) {
-            d[i + 3] = 0;
-          } else if (lum < 55) {
-            d[i + 3] = Math.round(((lum - 22) / 33) * 255);
+    // Credential folder click → Biometric (if available) or PIN modal
+    const credBtn = this.container.querySelector('#cred-folder-btn');
+    if (credBtn) {
+      credBtn.addEventListener('click', async () => {
+        // Try biometric first on mobile devices
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+          ('ontouchstart' in window && window.innerWidth <= 1024);
+        const phone = this.currentUser?.phone;
+
+        if (isMobile && phone) {
+          try {
+            const bioAvailable = await userAuth.isBiometricAvailable();
+            const bioRegistered = bioAvailable && userAuth.isBiometricEnabled(phone);
+            if (bioRegistered) {
+              await userAuth.authenticateBiometric(phone);
+              this._showVault();
+              return;
+            }
+          } catch (_) {
+            // Biometric failed or cancelled → fall back to PIN
           }
         }
 
-        ctx.putImageData(imgData, 0, 0);
-        heroImg.src = canvas.toDataURL('image/png');
-        heroImg.classList.add('biz-dash__hero-img--loaded');
-      };
-
-      if (heroImg.complete && heroImg.naturalWidth > 0) {
-        process();
-      } else {
-        heroImg.addEventListener('load', process, { once: true });
-      }
+        this._showPinModal();
+      });
     }
 
     // ── Dust Particle System ─────────────────────────────────────
@@ -662,6 +820,243 @@ export class BusinessDashboard {
     this._dustRAF = requestAnimationFrame(animate);
   }
 
+  /* ══════════════════════════════════════════════════════════════
+     CREDENTIAL VAULT SYSTEM
+     ══════════════════════════════════════════════════════════════ */
+
+  _attachPinListeners() {
+    const overlay = this.container.querySelector('#cred-pin-overlay');
+    if (!overlay) return;
+
+    overlay.querySelector('#cred-pin-close')?.addEventListener('click', () => this._hidePinModal());
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) this._hidePinModal();
+    });
+
+    overlay.querySelectorAll('.biz-cred__pin-digit').forEach(input => {
+      input.addEventListener('input', () => {
+        const idx = parseInt(input.dataset.pin);
+        if (input.value.length === 1) {
+          if (idx < 3) {
+            overlay.querySelector(`.biz-cred__pin-digit[data-pin="${idx + 1}"]`)?.focus();
+          } else {
+            this._validatePin();
+          }
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value) {
+          const idx = parseInt(input.dataset.pin);
+          if (idx > 0) {
+            const prev = overlay.querySelector(`.biz-cred__pin-digit[data-pin="${idx - 1}"]`);
+            if (prev) { prev.value = ''; prev.focus(); }
+          }
+        }
+      });
+    });
+  }
+
+  _showPinModal() {
+    const overlay = this.container.querySelector('#cred-pin-overlay');
+    if (!overlay) return;
+    overlay.classList.add('biz-cred__pin-overlay--show');
+    setTimeout(() => {
+      overlay.querySelector('.biz-cred__pin-digit[data-pin="0"]')?.focus();
+    }, 300);
+  }
+
+  _hidePinModal() {
+    const overlay = this.container.querySelector('#cred-pin-overlay');
+    if (!overlay) return;
+    overlay.classList.remove('biz-cred__pin-overlay--show');
+    overlay.querySelectorAll('.biz-cred__pin-digit').forEach(i => i.value = '');
+    overlay.querySelector('#cred-pin-error')?.classList.remove('biz-cred__pin-error--show');
+  }
+
+  _validatePin() {
+    const overlay = this.container.querySelector('#cred-pin-overlay');
+    const digits = Array.from(overlay.querySelectorAll('.biz-cred__pin-digit'))
+      .map(i => i.value).join('');
+
+    if (digits === '1234') {
+      this._hidePinModal();
+      setTimeout(() => this._showVault(), 250);
+    } else {
+      overlay.querySelector('#cred-pin-error')?.classList.add('biz-cred__pin-error--show');
+      const box = overlay.querySelector('.biz-cred__pin-box');
+      box?.classList.add('biz-cred__pin-box--shake');
+      setTimeout(() => {
+        box?.classList.remove('biz-cred__pin-box--shake');
+        overlay.querySelectorAll('.biz-cred__pin-digit').forEach(i => i.value = '');
+        overlay.querySelector('.biz-cred__pin-digit[data-pin="0"]')?.focus();
+        overlay.querySelector('#cred-pin-error')?.classList.remove('biz-cred__pin-error--show');
+      }, 800);
+    }
+  }
+
+  _showVault() {
+    const overlay = this.container.querySelector('#cred-vault-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = this._buildVaultContent();
+    overlay.classList.add('biz-cred__vault-overlay--show');
+    this._attachVaultListeners();
+  }
+
+  _hideVault() {
+    const overlay = this.container.querySelector('#cred-vault-overlay');
+    overlay?.classList.remove('biz-cred__vault-overlay--show');
+  }
+
+  _buildVaultContent() {
+    const stored = this._getStoredCredentials();
+
+    const cardsHTML = this._clientBusinesses.map(biz => {
+      const initials = biz.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const photoHTML = biz.photo
+        ? `<img class="biz-cred__vault-avatar-img" src="${biz.photo}" alt="${biz.name}" />`
+        : `<span class="biz-cred__vault-avatar-initials">${initials}</span>`;
+
+      const bizCreds = stored[biz.id] || [];
+      const credsHTML = bizCreds.map((c, i) => `
+        <div class="biz-cred__saved-card">
+          <div class="biz-cred__saved-text">${this._escapeHTML(c.text)}</div>
+          <div class="biz-cred__saved-meta">
+            <span class="biz-cred__saved-date">${new Date(c.date).toLocaleDateString()}</span>
+            <button class="biz-cred__saved-delete" data-del-biz="${biz.id}" data-del-idx="${i}" title="Eliminar">${ICONS.trash}</button>
+          </div>
+        </div>`).join('');
+
+      return `
+      <div class="biz-cred__vault-card" data-vault-biz="${biz.id}">
+        <div class="biz-cred__vault-header" data-open-biz="${biz.id}">
+          <div class="biz-cred__vault-avatar">${photoHTML}</div>
+          <div class="biz-cred__vault-info">
+            <h4 class="biz-cred__vault-name">${biz.name}</h4>
+            <p class="biz-cred__vault-sub">${biz.subtitle}</p>
+          </div>
+          <span class="biz-cred__vault-badge">${bizCreds.length}</span>
+        </div>
+        <div class="biz-cred__vault-body" id="vault-body-${biz.id}">
+          <div class="biz-cred__vault-creds">${credsHTML}</div>
+          <div class="biz-cred__vault-form">
+            <textarea class="biz-cred__vault-input" id="vault-input-${biz.id}" placeholder="Escriba credencial o nota..." rows="2"></textarea>
+            <button class="biz-cred__vault-confirm" data-confirm-biz="${biz.id}">Confirmar</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="biz-cred__vault-container">
+      <div class="biz-cred__vault-titlebar">
+        <div class="biz-cred__vault-title-row">
+          ${ICONS.shield}
+          <h2 class="biz-cred__vault-title">Bóveda de Credenciales</h2>
+        </div>
+        <button class="biz-cred__vault-close" id="cred-vault-close">${ICONS.xClose}</button>
+      </div>
+      <div class="biz-cred__vault-grid">
+        ${cardsHTML}
+      </div>
+    </div>`;
+  }
+
+  _attachVaultListeners() {
+    const overlay = this.container.querySelector('#cred-vault-overlay');
+    if (!overlay) return;
+
+    // Close
+    overlay.querySelector('#cred-vault-close')?.addEventListener('click', () => this._hideVault());
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) this._hideVault();
+    });
+
+    // Card headers — toggle open/close
+    overlay.querySelectorAll('.biz-cred__vault-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const bizId = header.dataset.openBiz;
+        const card = header.closest('.biz-cred__vault-card');
+
+        // Close all other open cards
+        overlay.querySelectorAll('.biz-cred__vault-card--open').forEach(c => {
+          if (c !== card) c.classList.remove('biz-cred__vault-card--open');
+        });
+
+        card?.classList.toggle('biz-cred__vault-card--open');
+
+        // Focus textarea if opening
+        if (card?.classList.contains('biz-cred__vault-card--open')) {
+          setTimeout(() => overlay.querySelector(`#vault-input-${bizId}`)?.focus(), 350);
+        }
+      });
+    });
+
+    // Confirm buttons
+    overlay.querySelectorAll('.biz-cred__vault-confirm').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bizId = btn.dataset.confirmBiz;
+        const input = overlay.querySelector(`#vault-input-${bizId}`);
+        const text = input?.value?.trim();
+        if (!text) return;
+
+        this._saveCredentialToStorage(bizId, text);
+        // Re-render vault to show new saved card
+        const wasOpen = bizId;
+        this._showVault();
+        // Re-open the card that was being edited
+        setTimeout(() => {
+          const card = overlay.querySelector(`[data-vault-biz="${wasOpen}"]`);
+          card?.classList.add('biz-cred__vault-card--open');
+        }, 50);
+      });
+    });
+
+    // Delete buttons
+    overlay.querySelectorAll('.biz-cred__saved-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bizId = btn.dataset.delBiz;
+        const idx = parseInt(btn.dataset.delIdx);
+        this._deleteCredential(bizId, idx);
+        const wasOpen = bizId;
+        this._showVault();
+        setTimeout(() => {
+          const card = overlay.querySelector(`[data-vault-biz="${wasOpen}"]`);
+          card?.classList.add('biz-cred__vault-card--open');
+        }, 50);
+      });
+    });
+  }
+
+  /* ── Credential Storage (localStorage) ── */
+  _getStoredCredentials() {
+    try {
+      return JSON.parse(localStorage.getItem('biz_credentials') || '{}');
+    } catch { return {}; }
+  }
+
+  _saveCredentialToStorage(bizId, text) {
+    const creds = this._getStoredCredentials();
+    if (!creds[bizId]) creds[bizId] = [];
+    creds[bizId].push({ text, date: new Date().toISOString() });
+    localStorage.setItem('biz_credentials', JSON.stringify(creds));
+  }
+
+  _deleteCredential(bizId, index) {
+    const creds = this._getStoredCredentials();
+    if (creds[bizId]) {
+      creds[bizId].splice(index, 1);
+      if (creds[bizId].length === 0) delete creds[bizId];
+      localStorage.setItem('biz_credentials', JSON.stringify(creds));
+    }
+  }
+
+  _escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
   unmount() {
     // Cleanup dust particles
     if (this._dustRAF) cancelAnimationFrame(this._dustRAF);
@@ -670,5 +1065,9 @@ export class BusinessDashboard {
     if (section && this._dustMouseHandler) {
       section.removeEventListener('mousemove', this._dustMouseHandler);
     }
+    // Cleanup modals (now inline in dashboard, removed with container)
+    // Also cleanup any old modal-root leftovers
+    document.getElementById('cred-pin-overlay')?.remove();
+    document.getElementById('cred-vault-overlay')?.remove();
   }
 }

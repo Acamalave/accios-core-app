@@ -204,42 +204,10 @@
   transform-style: preserve-3d;
 }
 
-/* Subtle purple/green wash over the logo — fully diffused, no edges */
-.core-3d-floater::before {
-  content: '';
-  position: absolute;
-  inset: -40%;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(57, 255, 20, 0.05) 0%,
-    rgba(139, 92, 246, 0.07) 30%,
-    transparent 60%
-  );
-  filter: blur(20px);
-  mix-blend-mode: normal;
-  animation: coreTintShift 6s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Specular highlight — subtle radial shimmer */
+/* Glow overlays removed for clean transparent logo */
+.core-3d-floater::before,
 .core-3d-floater::after {
-  content: '';
-  position: absolute;
-  inset: -40%;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at 30% 25%,
-    rgba(167, 139, 250, 0.08) 0%,
-    rgba(57, 255, 20, 0.03) 25%,
-    transparent 50%
-  );
-  filter: blur(15px);
-  mix-blend-mode: normal;
-  animation: coreShimmer 7s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 3;
+  display: none;
 }
 
 .core-hero-img {
@@ -248,35 +216,13 @@
   width: var(--core-size);
   height: var(--core-size);
   object-fit: contain;
-  filter:
-    brightness(1.1) contrast(1.1) saturate(1.05)
-    drop-shadow(0 0 25px rgba(167, 139, 250, 0.5))
-    drop-shadow(0 0 50px rgba(124, 58, 237, 0.3))
-    drop-shadow(0 0 90px rgba(76, 29, 149, 0.2));
   animation: coreImgBreath 5s ease-in-out infinite;
   pointer-events: none;
 }
 
-/* Ambient glow behind core */
+/* Ambient glow behind core — disabled */
 .core-ambient-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 450px;
-  height: 450px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(124, 58, 237, 0.1) 0%,
-    rgba(124, 58, 237, 0.05) 30%,
-    rgba(76, 29, 149, 0.02) 55%,
-    transparent 75%
-  );
-  filter: blur(25px);
-  pointer-events: none;
-  z-index: 0;
-  animation: ambientGlowPulse 5s ease-in-out infinite;
+  display: none;
 }
 
 /* (core-text and core-logo-img removed — replaced by core-hero-img) */
@@ -390,6 +336,15 @@
 }
 
 /* Stand-by planet (e.g. Estephano) */
+/* Light background for logos that need it (e.g. Lina Tour) */
+.orbit-world--light-bg .orbit-world-img {
+  background: #ffffff;
+}
+.orbit-world--light-bg .orbit-world-img img {
+  object-fit: contain;
+  padding: 6px;
+}
+
 .orbit-world--standby {
   opacity: 0.55 !important;
   filter: grayscale(1) brightness(0.7);

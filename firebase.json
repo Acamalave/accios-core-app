@@ -1,0 +1,31 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "android/**",
+      "ios/**",
+      "**/*.bin",
+      "**/*.exe",
+      "**/*.sh",
+      "**/*.bat",
+      "**/gradlew",
+      "**/gradlew.bat",
+      "**/*.gradle",
+      "**/build/**",
+      "LinaTour_Presentacion_v3.docx",
+      "capacitor.config.*",
+      "package.json",
+      "package-lock.json",
+      "tsconfig.json"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

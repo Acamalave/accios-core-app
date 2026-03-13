@@ -336,12 +336,148 @@
   font-size: 0.875rem;
 }
 
+/* ===== BIOMETRIC AUTH ===== */
+
+/* Divider "o" */
+.login-bio-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.login-bio-divider::before,
+.login-bio-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+
+/* Fingerprint button on PIN step */
+.login-btn--biometric {
+  background: transparent;
+  border: 1px solid rgba(86, 204, 242, 0.25);
+  color: rgba(86, 204, 242, 0.9);
+  gap: var(--space-3);
+  transition: all 0.3s ease;
+}
+
+.login-btn--biometric:hover:not(:disabled) {
+  border-color: rgba(86, 204, 242, 0.45);
+  background: rgba(86, 204, 242, 0.06);
+  box-shadow: 0 0 24px rgba(86, 204, 242, 0.08);
+  transform: none;
+}
+
+.login-btn--biometric:active:not(:disabled) {
+  background: rgba(86, 204, 242, 0.12);
+}
+
+.login-btn--biometric svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* Biometric offer screen */
+.login-bio-offer {
+  text-align: center;
+  animation: bio-fade-in 0.5s ease-out;
+}
+
+@keyframes bio-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-bio-offer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(86, 204, 242, 0.12), rgba(86, 204, 242, 0.04));
+  border: 1px solid rgba(86, 204, 242, 0.2);
+  color: rgba(86, 204, 242, 0.9);
+  margin-bottom: var(--space-5);
+  animation: bio-pulse 2.5s ease-in-out infinite;
+  position: relative;
+}
+
+.login-bio-offer-icon::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(86, 204, 242, 0.08);
+  animation: bio-ring 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bio-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(86, 204, 242, 0.15), 0 0 30px rgba(86, 204, 242, 0.05); }
+  50% { box-shadow: 0 0 0 14px rgba(86, 204, 242, 0), 0 0 40px rgba(86, 204, 242, 0.08); }
+}
+
+@keyframes bio-ring {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.12); opacity: 0.15; }
+}
+
+.login-bio-offer-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.login-bio-offer-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: var(--space-6);
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-bio-offer-text strong {
+  color: rgba(86, 204, 242, 0.9);
+}
+
+/* Enable biometric button (gradient variant) */
+.login-btn--biometric-enable {
+  background: linear-gradient(135deg, rgba(86, 204, 242, 0.9), rgba(56, 152, 204, 0.9));
+  color: white;
+  gap: var(--space-3);
+  border: none;
+}
+
+.login-btn--biometric-enable:hover:not(:disabled) {
+  box-shadow: 0 4px 24px rgba(86, 204, 242, 0.25);
+  transform: translateY(-1px);
+}
+
+.login-btn--biometric-enable svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .login-title { font-size: 1.8rem; }
   .login-pin-input { width: 48px; height: 56px; font-size: 1.3rem; }
+  .login-bio-offer-icon { width: 76px; height: 76px; }
 }
 
 @media (max-width: 480px) {
   .login-pin-input { width: 44px; height: 50px; font-size: 1.1rem; }
+  .login-bio-offer-icon { width: 68px; height: 68px; }
 }

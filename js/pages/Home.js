@@ -81,6 +81,9 @@ export class Home {
             <button class="home-admin" id="home-command-btn" title="Command Center" style="position: fixed; top: var(--space-5); right: calc(var(--space-5) + 104px);">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
             </button>
+            <button class="home-admin" id="home-comms-btn" title="Comm Center" style="position: fixed; top: var(--space-5); right: calc(var(--space-5) + 156px);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>
+            </button>
           ` : ''}
           <button class="home-action-btn" id="home-logout" title="Cerrar sesion">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -237,10 +240,14 @@ export class Home {
   }
 
   _buildOrbitalSystem() {
+    // Businesses that need a white/light background in their hexagon
+    const lightBgNames = ['lina tour'];
+
     const worlds = this.businesses.map((biz, index) => {
       const isStandby = /estephano/i.test(biz.nombre);
+      const needsLightBg = lightBgNames.some(n => new RegExp(n, 'i').test(biz.nombre));
       return `
-        <div class="orbit-world${isStandby ? ' orbit-world--standby' : ''}" data-business-id="${biz.id}" data-orbit-index="${index}">
+        <div class="orbit-world${isStandby ? ' orbit-world--standby' : ''}${needsLightBg ? ' orbit-world--light-bg' : ''}" data-business-id="${biz.id}" data-orbit-index="${index}">
           <div class="orbit-world-glow"></div>
           <div class="orbit-world-ripples"></div>
           <div class="orbit-world-holo">
@@ -322,7 +329,7 @@ export class Home {
           <div class="core-assembly-particles" id="core-assembly-particles"></div>
           <div class="core-3d-scene">
             <div class="core-3d-floater">
-              <img src="assets/images/logo-ac-clean.png" alt="ACCIOS CORE" class="core-hero-img" draggable="false" />
+              <img src="assets/images/Accios.001.png" alt="ACCIOS CORE" class="core-hero-img" draggable="false" />
             </div>
           </div>
           <div class="core-orbit-ring core-orbit-ring--1"></div>
@@ -821,6 +828,10 @@ export class Home {
       window.location.hash = '#command-center';
     });
 
+    this.container.querySelector('#home-comms-btn')?.addEventListener('click', () => {
+      window.location.hash = '#comms';
+    });
+
     this.container.querySelector('#home-logout')?.addEventListener('click', () => {
       userAuth.clearSession();
       window.location.hash = '#login';
@@ -881,6 +892,15 @@ export class Home {
         if (bizId === 'lavaina') {
           this._triggerShieldTransition(() => {
             window.location.hash = '#lavaina';
+          });
+          return;
+        }
+
+        // Lina Tour → cruise wave transition → slides presentation
+        const bizNameLT = world.querySelector('.orbit-world-name')?.textContent || '';
+        if (/lina.?tour/i.test(bizNameLT) || bizId === 'lina-tour') {
+          this._triggerCruiseTransition(() => {
+            window.location.hash = '#linatour';
           });
           return;
         }
@@ -1210,6 +1230,81 @@ export class Home {
         submitBtn.innerHTML = '<span>Error — Reintentar</span>';
       }
     });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // CRUISE WAVE — Ocean horizon transition for Lina Tour
+  // ═══════════════════════════════════════════════════════
+  _triggerCruiseTransition(onComplete) {
+    document.querySelector('.lt-cruise-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'lt-cruise-overlay';
+    overlay.innerHTML = `
+      <div class="lt-cruise-horizon"></div>
+      <div class="lt-cruise-wave lt-cruise-wave--1"></div>
+      <div class="lt-cruise-wave lt-cruise-wave--2"></div>
+      <div class="lt-cruise-wave lt-cruise-wave--3"></div>
+      <div class="lt-cruise-compass">
+        <svg viewBox="0 0 60 60" width="60" height="60" fill="none" stroke="rgba(86,204,242,0.8)" stroke-width="1">
+          <circle cx="30" cy="30" r="26" opacity="0.3"/>
+          <line x1="30" y1="6" x2="30" y2="16" stroke-width="2"/>
+          <line x1="30" y1="44" x2="30" y2="54" stroke-width="1.5" opacity="0.5"/>
+          <line x1="6" y1="30" x2="16" y2="30" stroke-width="1.5" opacity="0.5"/>
+          <line x1="44" y1="30" x2="54" y2="30" stroke-width="1.5" opacity="0.5"/>
+          <polygon points="30,10 26,22 30,19 34,22" fill="rgba(212,168,67,0.9)" stroke="none"/>
+          <polygon points="30,50 26,38 30,41 34,38" fill="rgba(86,204,242,0.4)" stroke="none"/>
+        </svg>
+      </div>
+    `;
+
+    // Inline styles for the overlay
+    const s = overlay.style;
+    s.position = 'fixed';
+    s.inset = '0';
+    s.zIndex = '50000';
+    s.background = 'linear-gradient(180deg, #050a14 0%, #0a1628 40%, #0b4f6c 80%, #1b7a9e 100%)';
+    s.display = 'flex';
+    s.alignItems = 'center';
+    s.justifyContent = 'center';
+    s.opacity = '0';
+    s.transition = 'opacity 0.6s ease';
+
+    // Horizon line
+    const hz = overlay.querySelector('.lt-cruise-horizon');
+    hz.style.cssText = 'position:absolute;top:55%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(86,204,242,0.5),rgba(212,168,67,0.4),rgba(86,204,242,0.5),transparent);transform:scaleX(0);transition:transform 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s;';
+
+    // Waves
+    overlay.querySelectorAll('.lt-cruise-wave').forEach((w, i) => {
+      const delay = 0.2 + i * 0.15;
+      const yOff = 58 + i * 6;
+      w.style.cssText = `position:absolute;top:${yOff}%;left:-10%;width:120%;height:${40 - i*8}%;background:rgba(11,79,108,${0.25 - i*0.06});border-radius:50% 50% 0 0;transform:translateY(100%);transition:transform 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}s;`;
+    });
+
+    // Compass
+    const compass = overlay.querySelector('.lt-cruise-compass');
+    compass.style.cssText = 'position:relative;z-index:2;opacity:0;transform:scale(0.5) rotate(-90deg);transition:opacity 0.5s ease 0.6s, transform 0.8s cubic-bezier(0.22,1,0.36,1) 0.6s;';
+
+    document.body.appendChild(overlay);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      s.opacity = '1';
+      requestAnimationFrame(() => {
+        hz.style.transform = 'scaleX(1)';
+        overlay.querySelectorAll('.lt-cruise-wave').forEach(w => {
+          w.style.transform = 'translateY(0)';
+        });
+        compass.style.opacity = '1';
+        compass.style.transform = 'scale(1) rotate(0deg)';
+      });
+    });
+
+    // Navigate after animation
+    setTimeout(() => {
+      if (onComplete) onComplete();
+      setTimeout(() => overlay.remove(), 600);
+    }, 1400);
   }
 
   // ═══════════════════════════════════════════════════════
