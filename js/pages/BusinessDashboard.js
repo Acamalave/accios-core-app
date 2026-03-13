@@ -88,9 +88,7 @@ export class BusinessDashboard {
         photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
         progress: 1,
         emphasis: true,
-        services: [
-          { label: 'IRON PROTOCOL', done: false },
-        ]
+        services: []
       },
       {
         id: 'megalift',
@@ -531,13 +529,14 @@ export class BusinessDashboard {
         </div>
 
         <!-- Services Toggle -->
+        ${biz.services.length ? `
         <button class="biz-client__services-toggle" data-toggle="${biz.id}">
           <span>Roadmap</span>
           <svg class="biz-client__toggle-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="biz-client__services-panel" id="services-${biz.id}">
           ${servicesHTML}
-        </div>
+        </div>` : ''}
       </div>`;
   }
 
