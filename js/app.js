@@ -155,7 +155,7 @@ class App {
         break;
 
       case 'biz-dashboard': {
-        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=93');
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=94');
         pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
         break;
       }
