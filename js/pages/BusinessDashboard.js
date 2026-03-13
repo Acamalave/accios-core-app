@@ -83,11 +83,14 @@ export class BusinessDashboard {
       {
         id: 'ml-parts',
         name: 'ML Parts',
-        subtitle: 'Repuestos industriales',
+        subtitle: 'Repuestos industriales & suministro técnico',
         website: 'www.ml.parts',
         photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
         progress: 1,
-        services: sharedServices
+        emphasis: true,
+        services: [
+          { label: 'IRON PROTOCOL', done: false },
+        ]
       },
       {
         id: 'megalift',
@@ -498,7 +501,7 @@ export class BusinessDashboard {
     }).join('');
 
     return `
-      <div class="biz-client__card" data-client-id="${biz.id}" style="animation-delay: ${index * 0.08}s;">
+      <div class="biz-client__card${biz.emphasis ? ' biz-client__card--emphasis' : ''}" data-client-id="${biz.id}" style="animation-delay: ${index * 0.08}s;">
         <!-- Card Header -->
         <div class="biz-client__header">
           <div class="biz-client__avatar">

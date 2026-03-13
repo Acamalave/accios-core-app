@@ -824,6 +824,76 @@
 
 .biz-client__card:hover::after { opacity: 1; }
 
+/* ── Emphasis Card — Living Breathing Glow ── */
+.biz-client__card--emphasis {
+  border-color: rgba(249, 115, 22, 0.25);
+  background:
+    linear-gradient(145deg,
+      rgba(249, 115, 22, 0.06) 0%,
+      rgba(234, 88, 12, 0.03) 40%,
+      rgba(249, 115, 22, 0.05) 100%
+    );
+  animation: clientCardIn 0.5s ease both, emphasisBreathe 4s ease-in-out infinite 0.6s;
+}
+
+.biz-client__card--emphasis::before {
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(249, 115, 22, 0.55),
+    rgba(234, 88, 12, 0.35),
+    transparent
+  );
+  opacity: 1;
+}
+
+.biz-client__card--emphasis::after {
+  opacity: 1;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.7), transparent 70%);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+  animation: emphasisDotPulse 4s ease-in-out infinite;
+}
+
+@keyframes emphasisBreathe {
+  0%, 100% {
+    border-color: rgba(249, 115, 22, 0.2);
+    box-shadow:
+      0 0 0 0 transparent,
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(249, 115, 22, 0.03),
+      inset 0 0 20px rgba(249, 115, 22, 0.01);
+  }
+  50% {
+    border-color: rgba(249, 115, 22, 0.4);
+    box-shadow:
+      0 0 0 4px rgba(249, 115, 22, 0.04),
+      0 8px 40px rgba(0, 0, 0, 0.35),
+      0 0 50px rgba(249, 115, 22, 0.08),
+      inset 0 0 30px rgba(249, 115, 22, 0.03);
+  }
+}
+
+@keyframes emphasisDotPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+    opacity: 0.7;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(249, 115, 22, 0.7), 0 0 30px rgba(249, 115, 22, 0.2);
+    opacity: 1;
+  }
+}
+
+.biz-client__card--emphasis .biz-client__name {
+  color: #f97316;
+  text-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
+}
+
+.biz-client__card--emphasis .biz-client__progress-fill {
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.4);
+}
+
 /* Card Header: Avatar + Info */
 .biz-client__header {
   display: flex;
