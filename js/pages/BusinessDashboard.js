@@ -165,9 +165,9 @@ export class BusinessDashboard {
         subtitle: 'Soluciones industriales & mantenimiento integral',
         website: 'Sin página web',
         photo: 'assets/images/Negocios Estephano/Parmonca.jpg',
-        progress: 8,
+        progress: 1,
         services: [
-          { label: 'Auditoría integral del ecosistema digital', done: true },
+          { label: 'Auditoría integral del ecosistema digital', done: false },
           { label: 'Verificación de usuario Meta', done: false },
           { label: 'Creación de sitio web', done: false },
           { label: 'Programación de CRM', done: false },
