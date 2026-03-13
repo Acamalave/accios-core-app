@@ -141,6 +141,7 @@
   flex-direction: column;
   gap: 16px;
   justify-content: center;
+  background: transparent;
 }
 
 .biz-dash__panel::-webkit-scrollbar {
@@ -759,76 +760,90 @@
 .biz-dash__center--empty {
   justify-content: flex-end;
   padding-bottom: 0;
-  perspective: 800px;
   overflow: hidden;
 }
 
-/* ── Concrete Floor — Infinite Depth Effect ── */
-.biz-dash__center--empty::before {
-  content: '';
+/* ── Concrete Floor — Infinite Depth with Grid Lines ── */
+.biz-dash__floor {
   position: absolute;
   bottom: 0;
-  left: -20%;
-  right: -20%;
-  height: 65%;
-  background:
-    /* Subtle concrete texture via noise-like gradients */
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      rgba(255,255,255,0.008) 1px,
-      transparent 2px,
-      transparent 80px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      rgba(255,255,255,0.005) 1px,
-      transparent 2px,
-      transparent 60px
-    ),
-    /* Main surface gradient */
-    linear-gradient(
-      to top,
-      rgba(40, 38, 35, 0.25) 0%,
-      rgba(35, 33, 30, 0.18) 15%,
-      rgba(28, 26, 24, 0.10) 35%,
-      rgba(20, 18, 16, 0.04) 55%,
-      transparent 75%
-    );
-  transform: rotateX(58deg);
+  left: 0;
+  right: 0;
+  height: 60%;
+  transform: perspective(700px) rotateX(52deg);
   transform-origin: bottom center;
   pointer-events: none;
   z-index: 0;
-  mask-image:
-    linear-gradient(to top, black 0%, black 40%, transparent 100%),
-    linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-  mask-composite: intersect;
-  -webkit-mask-image:
-    linear-gradient(to top, black 0%, black 40%, transparent 100%),
-    linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-composite: source-in;
+  background:
+    /* Horizontal grid lines — closer spacing */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 38px,
+      rgba(255, 255, 255, 0.06) 38px,
+      rgba(255, 255, 255, 0.06) 39px
+    ),
+    /* Vertical grid lines — wider spacing */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 58px,
+      rgba(255, 255, 255, 0.05) 58px,
+      rgba(255, 255, 255, 0.05) 59px
+    ),
+    /* Concrete surface tone */
+    linear-gradient(
+      to top,
+      rgba(50, 48, 44, 0.35) 0%,
+      rgba(40, 38, 34, 0.22) 25%,
+      rgba(30, 28, 26, 0.10) 50%,
+      transparent 80%
+    );
+  mask-image: linear-gradient(to top, black 0%, black 30%, transparent 85%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 30%, transparent 85%);
 }
 
-/* Soft reflection line where floor meets darkness */
-.biz-dash__center--empty::after {
+/* Accent grid lines — copper tint at the near edge */
+.biz-dash__floor::before {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(249, 115, 22, 0.06) 20%,
-    rgba(255, 255, 255, 0.04) 50%,
-    rgba(249, 115, 22, 0.06) 80%,
-    transparent 100%
-  );
-  z-index: 1;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 38px,
+      rgba(249, 115, 22, 0.04) 38px,
+      rgba(249, 115, 22, 0.04) 39px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 58px,
+      rgba(249, 115, 22, 0.03) 58px,
+      rgba(249, 115, 22, 0.03) 59px
+    );
+  mask-image: linear-gradient(to top, black 0%, transparent 40%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 40%);
   pointer-events: none;
-  filter: blur(0.5px);
+}
+
+/* Horizon glow line */
+.biz-dash__floor::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(249, 115, 22, 0.12) 0%,
+    rgba(249, 115, 22, 0.04) 40%,
+    transparent 70%
+  );
+  filter: blur(2px);
+  pointer-events: none;
 }
 
 /* ── Individual Client Card — Premium Design ──────────────── */

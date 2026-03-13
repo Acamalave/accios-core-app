@@ -253,6 +253,9 @@ export class BusinessDashboard {
         ${this._buildLeftPanel(m, avgRev)}
       </div>
 
+      <!-- Concrete Floor — spans full width -->
+      <div class="biz-dash__floor"></div>
+
       <!-- Center: Free space -->
       <div class="biz-dash__center biz-dash__center--empty"></div>
 
