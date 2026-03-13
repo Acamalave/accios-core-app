@@ -1205,6 +1205,32 @@
   opacity: 0.6;
 }
 
+/* ── Phase Divider — visual stage separator inside roadmap ── */
+.biz-client__phase-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 4px;
+}
+
+.biz-client__phase-divider::before,
+.biz-client__phase-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.25), transparent);
+}
+
+.biz-client__phase-divider span {
+  font-family: var(--dash-font);
+  font-size: 8px;
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(249, 115, 22, 0.55);
+  white-space: nowrap;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 1200px) {
   .biz-dash--clients {

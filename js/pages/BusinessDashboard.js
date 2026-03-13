@@ -108,7 +108,7 @@ export class BusinessDashboard {
           { label: 'Pruebas', done: false },
           { label: 'Pase a producción', done: false },
           { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
           { label: 'Despliegue publicitario', done: false },
           { label: 'Monitoreo continuo', done: false },
         ]
@@ -131,7 +131,7 @@ export class BusinessDashboard {
           { label: 'Pruebas', done: false },
           { label: 'Pase a producción', done: false },
           { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
           { label: 'Despliegue publicitario', done: false },
           { label: 'Monitoreo continuo', done: false },
         ]
@@ -154,7 +154,7 @@ export class BusinessDashboard {
           { label: 'Pruebas', done: false },
           { label: 'Pase a producción', done: false },
           { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
           { label: 'Despliegue publicitario', done: false },
           { label: 'Monitoreo continuo', done: false },
         ]
@@ -177,7 +177,7 @@ export class BusinessDashboard {
           { label: 'Pruebas', done: false },
           { label: 'Pase a producción', done: false },
           { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
           { label: 'Despliegue publicitario', done: false },
           { label: 'Monitoreo continuo', done: false },
         ]
@@ -520,10 +520,12 @@ export class BusinessDashboard {
     const servicesHTML = biz.services.map(s => {
       const label = typeof s === 'string' ? s : s.label;
       const done = typeof s === 'object' && s.done;
+      const phase = typeof s === 'object' && s.phase;
       const icon = done
         ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`
         : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
-      return `<div class="biz-client__service-item ${done ? 'biz-client__service-item--done' : ''}">
+      const divider = phase ? `<div class="biz-client__phase-divider"><span>${phase}</span></div>` : '';
+      return `${divider}<div class="biz-client__service-item ${done ? 'biz-client__service-item--done' : ''}">
         ${icon}
         <span>${label}</span>
       </div>`;
