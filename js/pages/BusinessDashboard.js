@@ -129,7 +129,21 @@ export class BusinessDashboard {
         website: 'Sin página web',
         photo: 'assets/images/Negocios Estephano/Grupo RCA.png',
         progress: 1,
-        services: sharedServices
+        services: [
+          { label: 'Auditoría integral del ecosistema digital', done: false },
+          { label: 'Verificación de usuario Meta', done: false },
+          { label: 'Creación de sitio web', done: false },
+          { label: 'Programación de CRM', done: false },
+          { label: 'Activación de CRM', done: false },
+          { label: 'Inyección de base de datos', done: false },
+          { label: 'Conexión de Meta Pixel', done: false },
+          { label: 'Pruebas', done: false },
+          { label: 'Pase a producción', done: false },
+          { label: 'Revisión y ajustes', done: false },
+          { label: 'Arquitectura de pauta', done: false },
+          { label: 'Despliegue publicitario', done: false },
+          { label: 'Monitoreo continuo', done: false },
+        ]
       },
       {
         id: 'parmonca',
