@@ -758,7 +758,77 @@
 /* Empty center */
 .biz-dash__center--empty {
   justify-content: flex-end;
-  padding-bottom: 60px;
+  padding-bottom: 0;
+  perspective: 800px;
+  overflow: hidden;
+}
+
+/* ── Concrete Floor — Infinite Depth Effect ── */
+.biz-dash__center--empty::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -20%;
+  right: -20%;
+  height: 65%;
+  background:
+    /* Subtle concrete texture via noise-like gradients */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(255,255,255,0.008) 1px,
+      transparent 2px,
+      transparent 80px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(255,255,255,0.005) 1px,
+      transparent 2px,
+      transparent 60px
+    ),
+    /* Main surface gradient */
+    linear-gradient(
+      to top,
+      rgba(40, 38, 35, 0.25) 0%,
+      rgba(35, 33, 30, 0.18) 15%,
+      rgba(28, 26, 24, 0.10) 35%,
+      rgba(20, 18, 16, 0.04) 55%,
+      transparent 75%
+    );
+  transform: rotateX(58deg);
+  transform-origin: bottom center;
+  pointer-events: none;
+  z-index: 0;
+  mask-image:
+    linear-gradient(to top, black 0%, black 40%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to top, black 0%, black 40%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-composite: source-in;
+}
+
+/* Soft reflection line where floor meets darkness */
+.biz-dash__center--empty::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(249, 115, 22, 0.06) 20%,
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(249, 115, 22, 0.06) 80%,
+    transparent 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+  filter: blur(0.5px);
 }
 
 /* ── Individual Client Card — Premium Design ──────────────── */
