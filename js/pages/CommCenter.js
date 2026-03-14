@@ -6,7 +6,7 @@ import {
 } from '../services/firebase.js';
 
 /* ─────────────────────────────────────────────────────
- *  COMM CENTER — Real-time Chat + Jitsi Video Calls
+ *  COMM CENTER — Real-time Chat + Google Meet
  *  Futuristic communication hub for ACCIOS CORE
  * ───────────────────────────────────────────────────── */
 
@@ -31,9 +31,8 @@ export class CommCenter {
     this._presenceInterval = null;
     this._presenceMap = {};
 
-    // Jitsi
-    this._jitsiApi = null;
-    this._jitsiLoaded = false;
+    // Google Meet
+    this._meetAccount = 'malave.acacio@gmail.com';
   }
 
   /* ── Render ──────────────────────────────────── */
@@ -102,7 +101,6 @@ export class CommCenter {
     await this._loadContacts();
     this._subscribeToConversations();
     this._startPresenceHeartbeat();
-    this._loadJitsiAPI();
   }
 
   /* ── Load contacts from Firestore users ──── */
@@ -444,89 +442,22 @@ export class CommCenter {
     }
   }
 
-  /* ── Jitsi Meet — Load API ───────────────── */
-  _loadJitsiAPI() {
-    if (this._jitsiLoaded || document.querySelector('script[src*="jitsi"]')) {
-      this._jitsiLoaded = true;
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://meet.jit.si/external_api.js';
-    script.onload = () => { this._jitsiLoaded = true; };
-    document.head.appendChild(script);
-  }
-
-  /* ── Jitsi Meet — Start Call ─────────────── */
+  /* ── Google Meet — Start Call ─────────────── */
   async _startVideoCall() {
     if (!this.activeConversation || !this.activeContact) {
       Toast.warning('Selecciona un contacto primero');
       return;
     }
 
-    if (!this._jitsiLoaded || typeof JitsiMeetExternalAPI === 'undefined') {
-      Toast.warning('Cargando sistema de video... intenta de nuevo en unos segundos');
-      this._loadJitsiAPI();
-      return;
-    }
+    // Generate a unique meeting identifier
+    const meetId = `accios-${Date.now()}`;
+    const meetLink = 'https://meet.google.com/new';
 
-    const contactName = this.activeContact.name || this.activeContact.phone || '';
-    const roomName = `accios-${this.activeConversation.id}-${Date.now()}`;
-    const jitsiLink = `https://meet.jit.si/${roomName}`;
-
-    // Switch chat area to video mode
-    const body = this.container.querySelector('#comms-body');
-    body?.classList.add('comms-video-active');
-
-    const chatEl = this.container.querySelector('#comms-chat');
-    if (!chatEl) return;
-
-    chatEl.innerHTML = `
-      <div class="comms-video-container" id="comms-video-container"></div>
-      <div class="comms-video-overlay">
-        <button class="comms-video-end-btn" id="comms-end-call">Colgar</button>
-      </div>
-    `;
-
-    // Create Jitsi embed
-    try {
-      this._jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', {
-        roomName,
-        parentNode: document.getElementById('comms-video-container'),
-        width: '100%',
-        height: '100%',
-        configOverwrite: {
-          startWithAudioMuted: false,
-          startWithVideoMuted: false,
-          disableModeratorIndicator: true,
-          enableEmailInStats: false,
-          prejoinPageEnabled: false
-        },
-        interfaceConfigOverwrite: {
-          SHOW_JITSI_WATERMARK: false,
-          SHOW_WATERMARK_FOR_GUESTS: false,
-          SHOW_BRAND_WATERMARK: false,
-          TOOLBAR_BUTTONS: ['microphone', 'camera', 'desktop', 'chat', 'raisehand', 'tileview', 'hangup'],
-          DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
-        },
-        userInfo: {
-          displayName: this.currentUser.name || 'ACCIOS User'
-        }
-      });
-
-      // On hangup
-      this._jitsiApi.addListener('readyToClose', () => this._endVideoCall());
-    } catch (err) {
-      console.error('[CommCenter] Jitsi init error:', err);
-      Toast.error('Error iniciando videollamada');
-      this._endVideoCall();
-      return;
-    }
-
-    // End call button
-    chatEl.querySelector('#comms-end-call')?.addEventListener('click', () => this._endVideoCall());
+    // Open Google Meet in a new tab (will create a new meeting with logged-in Google account)
+    window.open(meetLink, '_blank', 'noopener,noreferrer');
 
     // Send meet-link message in chat
-    await this._sendMessage(jitsiLink, 'meet-link');
+    await this._sendMessage(`📹 Videollamada iniciada via Google Meet — únete aquí: ${meetLink}`, 'meet-link');
 
     // Save to meeting_logs
     const otherPhone = this.activeContact.phone || this.activeContact.id;
@@ -535,54 +466,16 @@ export class CommCenter {
       initiatorName: this.currentUser.name,
       participant: otherPhone,
       participantName: this.activeContact.name || otherPhone,
-      roomName,
-      jitsiLink,
+      meetId,
+      meetLink,
+      meetAccount: this._meetAccount,
       conversationId: this.activeConversation.id,
       startedAt: new Date().toISOString(),
       notes: '',
       createdAt: new Date().toISOString()
     });
 
-    Toast.success('Videollamada iniciada — link compartido en el chat');
-  }
-
-  /* ── Jitsi Meet — End Call ───────────────── */
-  _endVideoCall() {
-    if (this._jitsiApi) {
-      try { this._jitsiApi.dispose(); } catch (_) {}
-      this._jitsiApi = null;
-    }
-
-    const body = this.container.querySelector('#comms-body');
-    body?.classList.remove('comms-video-active');
-
-    // Restore chat area
-    const chatEl = this.container.querySelector('#comms-chat');
-    if (chatEl) {
-      chatEl.innerHTML = `
-        <div class="comms-chat__header" id="comms-chat-header"></div>
-        <div class="comms-chat__messages" id="comms-chat-messages"></div>
-        <div class="comms-chat__input-bar">
-          <textarea class="comms-chat__input" id="comms-chat-input" placeholder="Escribe un mensaje..." rows="1"></textarea>
-          <button class="comms-chat__send-btn" id="comms-send-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </div>
-      `;
-
-      chatEl.querySelector('#comms-send-btn')?.addEventListener('click', () => this._sendMessage());
-      chatEl.querySelector('#comms-chat-input')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this._sendMessage(); }
-      });
-    }
-
-    // Re-render chat
-    this._renderChatHeader();
-    if (this.activeConversation) {
-      this._subscribeToMessages(this.activeConversation.id);
-    }
-
-    Toast.info('Videollamada finalizada');
+    Toast.success('Google Meet abierto — comparte el link con tu contacto');
   }
 
   /* ── Presence ────────────────────────────── */
@@ -671,10 +564,6 @@ export class CommCenter {
     if (this._msgUnsub) this._msgUnsub();
     this._presenceUnsubs.forEach(u => u());
 
-    // Destroy Jitsi
-    if (this._jitsiApi) {
-      try { this._jitsiApi.dispose(); } catch (_) {}
-      this._jitsiApi = null;
-    }
+    // Google Meet opens in external tab — nothing to dispose
   }
 }
