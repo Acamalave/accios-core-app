@@ -994,18 +994,19 @@ export class BusinessDashboard {
 
     const tip = document.createElement('div');
     tip.className = 'biz-kpi-tooltip';
-    tip.innerHTML = `<div class="biz-kpi-tooltip__text">${this._esc(text)}</div>`;
+    tip.innerHTML = `
+      <div class="biz-kpi-tooltip__card">
+        <div class="biz-kpi-tooltip__text">${this._esc(text)}</div>
+        <div class="biz-kpi-tooltip__dismiss">Toca para cerrar</div>
+      </div>`;
 
-    // Position near the anchor
-    const rect = anchor.getBoundingClientRect();
-    tip.style.top = `${rect.bottom + 8}px`;
-    tip.style.left = `${Math.max(12, rect.left - 120)}px`;
+    // Centered on screen
     document.body.appendChild(tip);
 
-    // Auto-dismiss
-    const dismiss = () => { tip.remove(); document.removeEventListener('click', dismiss); };
+    // Dismiss on click anywhere
+    const dismiss = () => { tip.classList.add('biz-kpi-tooltip--exit'); setTimeout(() => tip.remove(), 300); document.removeEventListener('click', dismiss); };
     setTimeout(() => document.addEventListener('click', dismiss), 50);
-    setTimeout(() => tip.remove(), 5000);
+    setTimeout(() => { if (document.contains(tip)) dismiss(); }, 6000);
   }
 
   _openKpiDetail(kpi) {
