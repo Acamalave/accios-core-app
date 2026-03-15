@@ -2600,54 +2600,71 @@ export class BusinessDashboard {
   _onbPrecheck() {
     const isReturn = sessionStorage.getItem('onb_returning');
     const greetings = [
-      '¡Qué bueno que estás aquí de nuevo!',
-      '¡Bienvenido de vuelta! Continuemos donde lo dejamos.',
-      '¡Perfecto timing! Retomemos tu configuración.',
-      '¡Genial que regresaste! Tu ecosistema te espera.',
-      '¡Aquí estamos de nuevo! Terminemos la tarea juntos.',
+      'Bienvenido de vuelta.',
+      'Continuemos.',
+      'Retomemos donde lo dejamos.',
+      'Tu ecosistema te espera.',
     ];
     const title = isReturn
       ? greetings[Math.floor(Math.random() * greetings.length)]
-      : 'Antes de comenzar...';
+      : 'Configura tu ecosistema.';
+    const subtitle = isReturn
+      ? 'Tu progreso sigue aquí. Completa la configuración cuando estés listo.'
+      : 'Todo lo que necesitas para poner en marcha tu negocio digital, en un solo lugar.';
 
     return `
-      <div class="biz-onb__precheck">
-        <div class="biz-onb__precheck-orb">
-          <div class="biz-onb__precheck-orb-inner"></div>
-        </div>
-        <h2 class="biz-onb__precheck-title">${title}</h2>
-        <p class="biz-onb__precheck-q">¿Tienes al menos <strong>15 minutos</strong> para completar tu configuración?</p>
-
-        <div class="biz-onb__precheck-reqs">
-          <div class="biz-onb__precheck-reqs-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            En esta sección necesitarás
-          </div>
-          <ul class="biz-onb__precheck-list">
-            <li>Claves de tus <strong>redes sociales</strong> (Instagram, Facebook, Google, LinkedIn)</li>
-            <li>Usuarios y contraseñas de <strong>Odoo</strong>, <strong>DHL</strong> y otros servicios</li>
-            <li>Credenciales de tus <strong>dominios y hosting</strong></li>
-            <li>Información de <strong>brand board</strong> y marca</li>
-            <li>Datos de contacto de <strong>colaboradores clave</strong></li>
-          </ul>
-        </div>
-
-        <div class="biz-onb__precheck-time">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <div>
-            <span class="biz-onb__precheck-time-val">~15 minutos</span>
-            <span class="biz-onb__precheck-time-hint">6 carpetas · 5 negocios · Progreso guardado automáticamente</span>
+      <div class="biz-onb__pre">
+        <!-- Hero gradient orb -->
+        <div class="biz-onb__pre-hero">
+          <div class="biz-onb__pre-orb">
+            <div class="biz-onb__pre-orb-ring"></div>
+            <div class="biz-onb__pre-orb-core"></div>
+            <div class="biz-onb__pre-orb-flare"></div>
           </div>
         </div>
 
-        <div class="biz-onb__precheck-actions">
-          <button class="biz-onb__btn biz-onb__btn--glow" data-onb="yes">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Sí, estoy listo
+        <!-- Title -->
+        <h1 class="biz-onb__pre-title">${title}</h1>
+        <p class="biz-onb__pre-subtitle">${subtitle}</p>
+
+        <!-- Items - no boxes, just clean list -->
+        <div class="biz-onb__pre-items">
+          <div class="biz-onb__pre-item" style="--d:0.1s">
+            <div class="biz-onb__pre-item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>
+            </div>
+            <span>Redes sociales y presencia digital</span>
+          </div>
+          <div class="biz-onb__pre-item" style="--d:0.15s">
+            <div class="biz-onb__pre-item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <span>ERP, Odoo y servicios de envío</span>
+          </div>
+          <div class="biz-onb__pre-item" style="--d:0.2s">
+            <div class="biz-onb__pre-item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <span>Dominios, hosting y marca</span>
+          </div>
+          <div class="biz-onb__pre-item" style="--d:0.25s">
+            <div class="biz-onb__pre-item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+            </div>
+            <span>Equipo y colaboradores clave</span>
+          </div>
+        </div>
+
+        <!-- Time estimate - minimal -->
+        <p class="biz-onb__pre-time">Aproximadamente 15 minutos · Tu progreso se guarda automáticamente</p>
+
+        <!-- Actions -->
+        <div class="biz-onb__pre-actions">
+          <button class="biz-onb__pre-start" data-onb="yes">
+            Comenzar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
-          <button class="biz-onb__btn biz-onb__btn--ghost" data-onb="no">
-            No tengo tiempo ahora
-          </button>
+          <button class="biz-onb__pre-skip" data-onb="no">Ahora no</button>
         </div>
       </div>`;
   }
