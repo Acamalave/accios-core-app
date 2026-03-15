@@ -85,13 +85,18 @@ export class BusinessDashboard {
   }
 
   async render() {
-    // Auth guard — superadmin only
-    if (!this.currentUser || this.currentUser.role !== 'superadmin') {
+    // Auth guard — superadmin OR user with this business linked
+    const isSuperAdmin = this.currentUser?.role === 'superadmin';
+    const userBiz = this.currentUser?.businesses || [];
+    const hasAccess = isSuperAdmin || userBiz.includes(this.businessId);
+
+    if (!this.currentUser || !hasAccess) {
       this.container.innerHTML = `
         <section class="biz-dash" style="display:flex;align-items:center;justify-content:center;">
           <div style="text-align:center;color:var(--text-muted);font-family:var(--font-mono);">
             <div style="font-size:48px;margin-bottom:16px;">🔒</div>
             <div style="font-size:14px;">ACCESO DENEGADO</div>
+            <p style="font-size:12px;color:var(--text-dim);margin-top:8px;">No tienes este negocio vinculado</p>
             <button class="glass-btn" style="margin-top:16px;" onclick="window.location.hash='#home'">Volver</button>
           </div>
         </section>`;
