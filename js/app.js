@@ -1,7 +1,8 @@
 import { Toast } from './components/Toast.js';
 import router from './router.js';
 import userAuth from './services/userAuth.js';
-import notificationSystem from './components/NotificationSystem.js?v=132';
+import { db, doc, onSnapshot } from './services/firebase.js';
+import notificationSystem from './components/NotificationSystem.js?v=133';
 import behaviorService from './services/behaviorService.js';
 import liveSessionService from './services/liveSessionService.js';
 
@@ -44,18 +45,39 @@ class App {
       notificationSystem.init(this.currentUser);
       liveSessionService.start();
 
-      // Background: re-check role from Firestore (fixes stale sessions)
+      // Real-time listener: sync user document changes (role, businesses, name)
       if (session.phone) {
-        userAuth.lookupPhone(session.phone).then(result => {
-          if (result.exists && result.data.role !== session.role) {
-            userAuth.saveSession(result.data);
+        this._userDocUnsub = onSnapshot(doc(db, 'users', session.phone), (snap) => {
+          if (!snap.exists()) return;
+          const fresh = snap.data();
+          const prev = userAuth.getSession();
+          if (!prev) return;
+
+          // Detect changes in role, businesses, or name
+          const roleChanged = fresh.role !== prev.role;
+          const bizChanged = JSON.stringify(fresh.businesses || []) !== JSON.stringify(prev.businesses || []);
+          const nameChanged = fresh.name !== prev.name;
+
+          if (roleChanged || bizChanged || nameChanged) {
+            userAuth.saveSession({ ...prev, ...fresh });
             this.currentUser = userAuth.getSession();
-            // If role changed to collaborator, redirect now
-            if (result.data.role === 'collaborator' && window.location.hash !== '#collaborators') {
+
+            // Broadcast so any open page can react
+            document.dispatchEvent(new CustomEvent('accios-session-updated', { detail: this.currentUser }));
+
+            if (roleChanged && fresh.role === 'collaborator' && window.location.hash !== '#collaborators') {
               window.location.hash = '#collaborators';
             }
+
+            // If businesses changed, notify user and refresh current page
+            if (bizChanged) {
+              document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Acceso actualizado', type: 'info' } }));
+              // Force re-render by clearing router cache then resolving
+              router.currentHash = '';
+              router.resolve();
+            }
           }
-        }).catch(() => {});
+        }, () => {}); // Silent fail
       }
     }
 
@@ -63,6 +85,7 @@ class App {
     document.addEventListener('accios-logout', () => {
       notificationSystem.destroy();
       liveSessionService.stop();
+      if (this._userDocUnsub) { this._userDocUnsub(); this._userDocUnsub = null; }
     });
 
     // Router setup
@@ -158,7 +181,7 @@ class App {
       }
 
       case 'home': {
-        const { Home } = await import('./pages/Home.js?v=132');
+        const { Home } = await import('./pages/Home.js?v=133');
         pageInstance = new Home(this.content, this.currentUser);
         break;
       }
@@ -212,25 +235,25 @@ class App {
       }
 
       case 'collaborators': {
-        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=132');
+        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=133');
         pageInstance = new CollaboratorPanel(this.content, this.currentUser, route.sub);
         break;
       }
 
       case 'command-center': {
-        const { CommandCenter } = await import('./pages/CommandCenter.js?v=132');
+        const { CommandCenter } = await import('./pages/CommandCenter.js?v=133');
         pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
       }
 
       case 'biz-dashboard': {
-        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=132');
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=133');
         pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
         break;
       }
 
       default: {
-        const { Home } = await import('./pages/Home.js?v=132');
+        const { Home } = await import('./pages/Home.js?v=133');
         pageInstance = new Home(this.content, this.currentUser);
         break;
       }

@@ -122,6 +122,13 @@ export class SuperAdmin {
     this.chargesData = await userAuth.ensureMonthlyMemberships(this.businesses, this.selectedMonth);
 
     // Keep chat context updated with fresh data
+    this._syncChatContext();
+
+    // Start real-time listeners for users & businesses
+    this._startRealtimeSync();
+  }
+
+  _syncChatContext() {
     if (this._chatPanel) {
       this._chatPanel.updateContext({
         users: this.users,
@@ -132,6 +139,28 @@ export class SuperAdmin {
         quotes: this.quotes,
       });
     }
+  }
+
+  _startRealtimeSync() {
+    // Unsub previous listeners
+    if (this._usersUnsub) this._usersUnsub();
+    if (this._bizUnsub) this._bizUnsub();
+
+    // Real-time: users collection
+    this._usersUnsub = onSnapshot(collection(db, 'users'), (snap) => {
+      this.users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      this._renderStats();
+      if (this.tab === 'users') this._renderTab();
+      this._syncChatContext();
+    }, () => {});
+
+    // Real-time: businesses collection
+    this._bizUnsub = onSnapshot(collection(db, 'businesses'), (snap) => {
+      this.businesses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      this._renderStats();
+      if (this.tab === 'businesses') this._renderTab();
+      this._syncChatContext();
+    }, () => {});
   }
 
   _renderStats() {
@@ -2410,13 +2439,9 @@ export class SuperAdmin {
   }
 
   unmount() {
-    if (this._behaviorUnsub) {
-      this._behaviorUnsub();
-      this._behaviorUnsub = null;
-    }
-    if (this._liveUnsub) {
-      this._liveUnsub();
-      this._liveUnsub = null;
-    }
+    if (this._behaviorUnsub) { this._behaviorUnsub(); this._behaviorUnsub = null; }
+    if (this._liveUnsub) { this._liveUnsub(); this._liveUnsub = null; }
+    if (this._usersUnsub) { this._usersUnsub(); this._usersUnsub = null; }
+    if (this._bizUnsub) { this._bizUnsub(); this._bizUnsub = null; }
   }
 }
