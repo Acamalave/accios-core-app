@@ -1,4 +1,5 @@
 import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy, addDoc, writeBatch, onSnapshot } from './firebase.js';
+import { bizMatch } from './bizUtils.js';
 
 const SESSION_KEY = 'accios-user-session';
 
@@ -293,7 +294,7 @@ class UserAuth {
   async getChargesForBusiness(businessId, month) {
     try {
       const all = await this.getAllChargesForMonth(month);
-      return all.filter(c => c.businessId === businessId);
+      return all.filter(c => bizMatch(c.businessId, businessId));
     } catch (e) {
       console.error('Get charges for business failed:', e);
       return [];

@@ -1,6 +1,7 @@
 import { Toast } from '../components/Toast.js';
 import userAuth from '../services/userAuth.js';
 import { apiUrl } from '../services/apiConfig.js';
+import { normBiz } from '../services/bizUtils.js';
 
 export class CommandCenter {
   constructor(container, currentUser, sub) {
@@ -474,20 +475,25 @@ export class CommandCenter {
 
     const { users, total, page, totalPages } = this.usersData;
 
+    const BIZ_BADGE_MAP = {
+      accioscore: { cls: 'accios', label: 'AC' },
+      rushride: { cls: 'rush', label: 'RR' },
+      xazai: { cls: 'xazai', label: 'XZ' },
+      lacolson: { cls: 'colson', label: 'LC' },
+      resultados: { cls: 'resultados', label: 'RI' },
+      cristian: { cls: 'cristian', label: 'CS' },
+      tabares: { cls: 'tabares', label: 'JT' },
+      cakefit: { cls: 'cakefit', label: 'CF' },
+      glowin: { cls: 'glowin', label: 'GS' },
+      hechizos: { cls: 'hechizos', label: 'HS' },
+      salon507: { cls: 'salon507', label: 'S5' },
+      tcp: { cls: 'tcp', label: 'TC' },
+      janelle: { cls: 'janelle', label: 'JI' },
+      mlparts: { cls: 'mlparts', label: 'ML' },
+    };
     const bizBadge = (b) => {
-      if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">AC</span>';
-      if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">RR</span>';
-      if (b === 'xazai') return '<span class="cc-biz-badge cc-biz-badge--xazai">XZ</span>';
-      if (b === 'la-colson') return '<span class="cc-biz-badge cc-biz-badge--colson">LC</span>';
-      if (b === 'resultados') return '<span class="cc-biz-badge cc-biz-badge--resultados">RI</span>';
-      if (b === 'cristian') return '<span class="cc-biz-badge cc-biz-badge--cristian">CS</span>';
-      if (b === 'tabares') return '<span class="cc-biz-badge cc-biz-badge--tabares">JT</span>';
-      if (b === 'cakefit') return '<span class="cc-biz-badge cc-biz-badge--cakefit">CF</span>';
-      if (b === 'glowin') return '<span class="cc-biz-badge cc-biz-badge--glowin">GS</span>';
-      if (b === 'hechizos') return '<span class="cc-biz-badge cc-biz-badge--hechizos">HS</span>';
-      if (b === 'salon507') return '<span class="cc-biz-badge cc-biz-badge--salon507">S5</span>';
-      if (b === 'tcp') return '<span class="cc-biz-badge cc-biz-badge--tcp">TC</span>';
-      if (b === 'janelle') return '<span class="cc-biz-badge cc-biz-badge--janelle">JI</span>';
+      const entry = BIZ_BADGE_MAP[normBiz(b)];
+      if (entry) return `<span class="cc-biz-badge cc-biz-badge--${entry.cls}">${entry.label}</span>`;
       return `<span class="cc-biz-badge">${b}</span>`;
     };
 
@@ -619,20 +625,24 @@ export class CommandCenter {
         </div>
         <div class="cc-profile-badges">
           ${(p.businesses || []).map(b => {
-            if (b === 'accios-core') return '<span class="cc-biz-badge cc-biz-badge--accios">ACCIOS CORE</span>';
-            if (b === 'rush-ride') return '<span class="cc-biz-badge cc-biz-badge--rush">Rush Ride</span>';
-            if (b === 'xazai') return '<span class="cc-biz-badge cc-biz-badge--xazai">Xazai</span>';
-            if (b === 'la-colson') return '<span class="cc-biz-badge cc-biz-badge--colson">La Colson</span>';
-            if (b === 'resultados') return '<span class="cc-biz-badge cc-biz-badge--resultados">Resultados Inevitables</span>';
-            if (b === 'cristian') return '<span class="cc-biz-badge cc-biz-badge--cristian">Cristian Studio</span>';
-            if (b === 'tabares') return '<span class="cc-biz-badge cc-biz-badge--tabares">Jesus Tabares Salón</span>';
-            if (b === 'cakefit') return '<span class="cc-biz-badge cc-biz-badge--cakefit">Cake Fit</span>';
-            if (b === 'glowin') return '<span class="cc-biz-badge cc-biz-badge--glowin">Glowin Strong</span>';
-            if (b === 'hechizos') return '<span class="cc-biz-badge cc-biz-badge--hechizos">Hechizos Salón</span>';
-            if (b === 'salon507') return '<span class="cc-biz-badge cc-biz-badge--salon507">Salón 507</span>';
-            if (b === 'tcp') return '<span class="cc-biz-badge cc-biz-badge--tcp">Tu Compra Panamá</span>';
-            if (b === 'janelle') return '<span class="cc-biz-badge cc-biz-badge--janelle">Janelle Innovación</span>';
-            return '';
+            const BIZ_FULL = {
+              accioscore: { cls: 'accios', name: 'ACCIOS CORE' },
+              rushride: { cls: 'rush', name: 'Rush Ride' },
+              xazai: { cls: 'xazai', name: 'Xazai' },
+              lacolson: { cls: 'colson', name: 'La Colson' },
+              resultados: { cls: 'resultados', name: 'Resultados Inevitables' },
+              cristian: { cls: 'cristian', name: 'Cristian Studio' },
+              tabares: { cls: 'tabares', name: 'Jesus Tabares Salón' },
+              cakefit: { cls: 'cakefit', name: 'Cake Fit' },
+              glowin: { cls: 'glowin', name: 'Glowin Strong' },
+              hechizos: { cls: 'hechizos', name: 'Hechizos Salón' },
+              salon507: { cls: 'salon507', name: 'Salón 507' },
+              tcp: { cls: 'tcp', name: 'Tu Compra Panamá' },
+              janelle: { cls: 'janelle', name: 'Janelle Innovación' },
+              mlparts: { cls: 'mlparts', name: 'ML Parts' },
+            };
+            const entry = BIZ_FULL[normBiz(b)];
+            return entry ? `<span class="cc-biz-badge cc-biz-badge--${entry.cls}">${entry.name}</span>` : '';
           }).join('')}
         </div>
         <div class="cc-profile-stats">
@@ -781,10 +791,12 @@ export class CommandCenter {
   _renderBusinessSection(key, name, data) {
     if (!data || !data.exists) return ''; // Only show businesses where user is registered
 
-    const colorClass = key === 'rush-ride' ? 'rush' : key === 'xazai' ? 'xazai' : key === 'la-colson' ? 'colson' : key === 'resultados' ? 'resultados' : key === 'cristian' ? 'cristian' : key === 'tabares' ? 'tabares' : key === 'cakefit' ? 'cakefit' : key === 'glowin' ? 'glowin' : key === 'hechizos' ? 'hechizos' : key === 'salon507' ? 'salon507' : key === 'tcp' ? 'tcp' : key === 'janelle' ? 'janelle' : 'accios';
+    const COLOR_MAP = { rushride:'rush', xazai:'xazai', lacolson:'colson', resultados:'resultados', cristian:'cristian', tabares:'tabares', cakefit:'cakefit', glowin:'glowin', hechizos:'hechizos', salon507:'salon507', tcp:'tcp', janelle:'janelle', mlparts:'mlparts', accioscore:'accios' };
+    const nk = normBiz(key); // Normalized key for all comparisons
+    const colorClass = COLOR_MAP[nk] || 'accios';
     let items = '';
 
-    if (key === 'accios-core') {
+    if (nk === 'accioscore') {
       // Transactions
       if (data.transactions?.length) {
         items += data.transactions.slice(0, 5).map(t => `
@@ -806,7 +818,7 @@ export class CommandCenter {
       }
     }
 
-    if (key === 'rush-ride') {
+    if (nk === 'rushride') {
       // Membership
       const m = data.membership;
       if (m && typeof m === 'object') {
@@ -834,7 +846,7 @@ export class CommandCenter {
       if (data.totalClasses) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalClasses} clases registradas</div>`;
     }
 
-    if (key === 'xazai') {
+    if (nk === 'xazai') {
       if (data.recentOrders?.length) {
         items += data.recentOrders.slice(0, 5).map(o => `
           <div class="cc-profile-item">
@@ -846,7 +858,7 @@ export class CommandCenter {
       if (data.totalOrders) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">${data.totalOrders} órdenes totales · $${(data.totalSpent || 0).toFixed(2)} total</div>`;
     }
 
-    if (key === 'la-colson') {
+    if (nk === 'lacolson') {
       // Tags/Etiquetas
       if (data.tags?.length) {
         items += `<div class="cc-profile-item"><span>Etiquetas:</span></div>`;
@@ -862,7 +874,7 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'resultados') {
+    if (nk === 'resultados') {
       if (data.instagram) items += `<div class="cc-profile-item"><span>📸 @${data.instagram}</span></div>`;
       if (data.cedula) items += `<div class="cc-profile-item"><span>🪪 Cédula: ${data.cedula}</span></div>`;
       if (data.birthDate) items += `<div class="cc-profile-item"><span>🎂 ${this._formatDate(data.birthDate)}</span></div>`;
@@ -880,7 +892,7 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'cristian') {
+    if (nk === 'cristian') {
       if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#8B5CF6;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
       if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
       if (data.paymentMethods?.length) {
@@ -896,7 +908,7 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'tabares') {
+    if (nk === 'tabares') {
       if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#EF4444;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
       if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
       if (data.paymentMethods?.length) {
@@ -906,7 +918,7 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'cakefit') {
+    if (nk === 'cakefit') {
       if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#F97316;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
       if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
       if (data.paymentMethods?.length) {
@@ -925,7 +937,7 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'glowin') {
+    if (nk === 'glowin') {
       if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#10B981;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
       if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
       if (data.paymentMethods?.length) {
@@ -947,7 +959,7 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primer pago: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'hechizos') {
+    if (nk === 'hechizos') {
       if (data.totalSpent) items += `<div class="cc-profile-item"><span>💰 Total gastado</span><span class="cc-profile-item__amount" style="color:#D946EF;">$${(data.totalSpent || 0).toFixed(2)}</span></div>`;
       if (data.transactionCount) items += `<div class="cc-profile-item"><span>🧾 ${data.transactionCount} transacciones</span></div>`;
       if (data.paymentMethods?.length) {
@@ -969,14 +981,14 @@ export class CommandCenter {
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Registrado: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'salon507') {
+    if (nk === 'salon507') {
       if (data.services?.length) {
         items += `<div class="cc-profile-item"><span>💇 ${data.services.join(', ')}</span></div>`;
       }
       if (data.createdAt) items += `<div style="font-size:0.75rem;color:var(--text-dim);padding:4px 12px;">Primera cita: ${this._formatDate(data.createdAt)}</div>`;
     }
 
-    if (key === 'tcp') {
+    if (nk === 'tcp') {
       if (data.company) items += `<div class="cc-profile-item"><span>🏢 ${data.company}</span></div>`;
       if (data.tags?.length) items += `<div class="cc-profile-item"><span>🏷️ ${data.tags.join(', ')}</span></div>`;
       if (data.addresses?.length) {
@@ -987,7 +999,7 @@ export class CommandCenter {
       }
     }
 
-    if (key === 'janelle') {
+    if (nk === 'janelle') {
       if (data.name) items += `<div class="cc-profile-item"><span>👤 ${data.name}</span></div>`;
       if (data.email) items += `<div class="cc-profile-item"><span>📧 ${data.email}</span></div>`;
     }
@@ -1086,7 +1098,7 @@ export class CommandCenter {
             <div class="cc-merge-result" data-phone="${u.phone || ''}" data-email="${u.email || ''}">
               <div class="cc-merge-result__name">${u.name || 'Sin nombre'}</div>
               <div class="cc-merge-result__detail">${u.phone || ''} · ${u.email || ''}</div>
-              <div class="cc-merge-result__badges">${(u.businesses || []).map(b => `<span class="cc-biz-badge cc-biz-badge--${b === 'accios-core' ? 'accios' : b === 'rush-ride' ? 'rush' : b === 'la-colson' ? 'colson' : b}" style="font-size:0.5rem;padding:1px 4px;">${b}</span>`).join('')}</div>
+              <div class="cc-merge-result__badges">${(u.businesses || []).map(b => { const cm = { accioscore:'accios', rushride:'rush', lacolson:'colson', xazai:'xazai', mlparts:'mlparts' }; return `<span class="cc-biz-badge cc-biz-badge--${cm[normBiz(b)] || normBiz(b)}" style="font-size:0.5rem;padding:1px 4px;">${b}</span>`; }).join('')}</div>
             </div>`).join('');
 
           resultsDiv.querySelectorAll('.cc-merge-result').forEach(row => {

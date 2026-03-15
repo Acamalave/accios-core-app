@@ -1,5 +1,6 @@
 import { apiUrl } from '../services/apiConfig.js';
 import userAuth from '../services/userAuth.js';
+import { bizMatch } from '../services/bizUtils.js';
 import { Toast } from '../components/Toast.js';
 import {
   db, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
@@ -688,11 +689,11 @@ export class CollaboratorPanel {
       reqs = reqs.filter(r => (r.status || 'inbox') === this._statusFilter);
     }
 
-    // Business tag filter
+    // Business tag filter (normalized matching)
     if (this._bizFilter !== 'all') {
       reqs = reqs.filter(r => {
         const cardTags = r.tags || [];
-        return cardTags.includes(this._bizFilter);
+        return cardTags.some(t => bizMatch(t, this._bizFilter));
       });
     }
 

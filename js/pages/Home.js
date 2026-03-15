@@ -1,5 +1,6 @@
 import userAuth from '../services/userAuth.js';
 import { apiUrl } from '../services/apiConfig.js';
+import { bizMatch } from '../services/bizUtils.js';
 import {
   db, collection, doc, getDocs, updateDoc, onSnapshot,
   query, where, orderBy, Timestamp
@@ -1202,7 +1203,7 @@ export class Home {
         }
 
         // MDN Podcast → curtain close → podcast world
-        if (bizId === 'mdn-podcast') {
+        if (bizMatch(bizId, 'mdn-podcast')) {
           this._triggerCurtainTransition(() => {
             window.location.hash = '#podcast/mdn-podcast';
           });
@@ -1210,7 +1211,7 @@ export class Home {
         }
 
         // La Vaina → shield assembly → presentation page
-        if (bizId === 'lavaina') {
+        if (bizMatch(bizId, 'lavaina')) {
           this._triggerShieldTransition(() => {
             window.location.hash = '#lavaina';
           });
@@ -1218,8 +1219,7 @@ export class Home {
         }
 
         // Lina Tour → cruise wave transition → slides presentation
-        const bizNameLT = world.querySelector('.orbit-world-name')?.textContent || '';
-        if (/lina.?tour/i.test(bizNameLT) || bizId === 'lina-tour') {
+        if (bizMatch(bizId, 'lina-tour') || bizMatch(bizId, 'linatour')) {
           this._triggerCruiseTransition(() => {
             window.location.hash = '#linatour';
           });
@@ -1227,21 +1227,19 @@ export class Home {
         }
 
         // Xazai → business dashboard
-        if (bizId === 'xazai') {
+        if (bizMatch(bizId, 'xazai')) {
           window.location.hash = '#biz-dashboard/xazai';
           return;
         }
 
         // Rush Ride → business dashboard
-        const bizNameRR = world.querySelector('.orbit-world-name')?.textContent || '';
-        if (/rush.?ride/i.test(bizNameRR) || bizId === 'rush-ride') {
+        if (bizMatch(bizId, 'rush-ride') || bizMatch(bizId, 'rushride')) {
           window.location.hash = '#biz-dashboard/rush-ride';
           return;
         }
 
         // ML Parts → business dashboard
-        const bizNameText = world.querySelector('.orbit-world-name')?.textContent || '';
-        if (/ml.?parts/i.test(bizNameText) || bizId === 'ml-parts') {
+        if (bizMatch(bizId, 'ml-parts') || bizMatch(bizId, 'mlparts')) {
           window.location.hash = '#biz-dashboard/ml-parts';
           return;
         }
