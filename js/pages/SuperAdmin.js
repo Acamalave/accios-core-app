@@ -2,6 +2,7 @@ import userAuth from '../services/userAuth.js';
 import { Toast } from '../components/Toast.js';
 import { db, collection, query, where, orderBy, getDocs, limit, onSnapshot } from '../services/firebase.js';
 import { AdminChatPanel } from '../components/AdminChatPanel.js';
+import liveSessionService from '../services/liveSessionService.js';
 
 export class SuperAdmin {
   constructor(container) {
@@ -81,6 +82,7 @@ export class SuperAdmin {
           <button class="superadmin-tab ${this.tab === 'episodes' ? 'active' : ''}" data-tab="episodes">Capitulos</button>
           <button class="superadmin-tab ${this.tab === 'comments' ? 'active' : ''}" data-tab="comments">Comentarios<span id="sa-comments-badge" class="sa-notif-badge" style="display:none;"></span></button>
           <button class="superadmin-tab ${this.tab === 'appointments' ? 'active' : ''}" data-tab="appointments">Citas<span id="sa-appts-badge" class="sa-notif-badge" style="display:none;"></span></button>
+          <button class="superadmin-tab ${this.tab === 'live' ? 'active' : ''}" data-tab="live">Live<span class="sa-live-dot"></span></button>
           <button class="superadmin-tab ${this.tab === 'behavior' ? 'active' : ''}" data-tab="behavior">Comportamiento</button>
           <button class="superadmin-tab ${this.tab === 'timeline' ? 'active' : ''}" data-tab="timeline">Timeline</button>
           <button class="superadmin-tab ${this.tab === 'chat' ? 'active' : ''}" data-tab="chat">AI Chat</button>
@@ -219,6 +221,8 @@ export class SuperAdmin {
       this._renderAppointments(content);
     } else if (this.tab === 'quotes') {
       this._renderQuotes(content);
+    } else if (this.tab === 'live') {
+      this._renderLiveSessions(content);
     } else if (this.tab === 'behavior') {
       this._renderBehavior(content);
     } else if (this.tab === 'timeline') {
@@ -226,6 +230,111 @@ export class SuperAdmin {
     } else if (this.tab === 'chat') {
       this._renderChat(content);
     }
+  }
+
+  // ─── LIVE SESSIONS TAB ─────────────────────────────────
+
+  _renderLiveSessions(content) {
+    content.innerHTML = `
+      <div class="sa-live">
+        <div class="sa-live__header">
+          <h2 class="sa-live__title">Sesiones en Tiempo Real</h2>
+          <div class="sa-live__indicator">
+            <span class="sa-live__pulse"></span>
+            <span class="sa-live__status-text">Conectando...</span>
+          </div>
+        </div>
+        <div class="sa-live__grid" id="sa-live-grid">
+          <div style="text-align:center;color:var(--text-muted);padding:40px;">Escuchando sesiones activas...</div>
+        </div>
+        <div class="sa-live__detail" id="sa-live-detail" style="display:none;"></div>
+      </div>`;
+
+    // Unsubscribe previous listener if any
+    if (this._liveUnsub) { this._liveUnsub(); this._liveUnsub = null; }
+
+    this._liveUnsub = liveSessionService.subscribe((sessions) => {
+      const grid = this.container.querySelector('#sa-live-grid');
+      const statusText = this.container.querySelector('.sa-live__status-text');
+      if (!grid) return;
+
+      const onlineCount = sessions.filter(s => s.effectiveStatus === 'online').length;
+      if (statusText) statusText.textContent = `${onlineCount} usuario${onlineCount !== 1 ? 's' : ''} activo${onlineCount !== 1 ? 's' : ''}`;
+
+      if (sessions.length === 0) {
+        grid.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:40px;grid-column:1/-1;">Sin sesiones registradas</div>`;
+        return;
+      }
+
+      grid.innerHTML = sessions.map(s => {
+        const isOnline = s.effectiveStatus === 'online';
+        const isBg = s.status === 'background';
+        const statusClass = isOnline ? (isBg ? 'sa-live-card--background' : 'sa-live-card--online') : 'sa-live-card--offline';
+        const statusLabel = isOnline ? (isBg ? 'Background' : 'Activo') : 'Desconectado';
+        const statusDot = isOnline ? (isBg ? '🟡' : '🟢') : '🔴';
+        const deviceIcon = s.device === 'iOS' ? '📱' : s.device === 'Android' ? '📱' : '💻';
+        const initial = (s.name || '?')[0].toUpperCase();
+        const timeAgo = this._liveTimeAgo(s.lastPulse);
+        const pageLabel = this._esc(s.currentPageLabel || s.currentPage || '—');
+        const lastAction = this._esc(s.lastAction || '—');
+
+        // Duration since session start
+        const sessionMins = s.sessionStart ? Math.floor((Date.now() - s.sessionStart) / 60000) : 0;
+        const durationStr = sessionMins > 60 ? `${Math.floor(sessionMins / 60)}h ${sessionMins % 60}m` : `${sessionMins}m`;
+
+        return `
+          <div class="sa-live-card ${statusClass}" data-live-phone="${this._esc(s.phone)}">
+            <div class="sa-live-card__header">
+              <div class="sa-live-card__avatar">${initial}</div>
+              <div class="sa-live-card__info">
+                <div class="sa-live-card__name">${this._esc(s.name || s.phone)}</div>
+                <div class="sa-live-card__role">${this._esc(s.role || 'user')} ${deviceIcon}</div>
+              </div>
+              <div class="sa-live-card__status">
+                <span class="sa-live-card__dot">${statusDot}</span>
+                <span class="sa-live-card__status-label">${statusLabel}</span>
+              </div>
+            </div>
+            <div class="sa-live-card__current">
+              <div class="sa-live-card__page">
+                <span class="sa-live-card__page-icon">📍</span>
+                <span class="sa-live-card__page-name">${pageLabel}</span>
+              </div>
+              <div class="sa-live-card__action">
+                <span class="sa-live-card__action-icon">⚡</span>
+                <span class="sa-live-card__action-text">${lastAction}</span>
+              </div>
+            </div>
+            <div class="sa-live-card__footer">
+              <span class="sa-live-card__duration">⏱ ${durationStr}</span>
+              <span class="sa-live-card__pulse-ago">${timeAgo}</span>
+            </div>
+            ${s.actionLog?.length ? `
+            <div class="sa-live-card__log">
+              ${s.actionLog.slice().reverse().slice(0, 6).map(a => {
+                const icon = a.type === 'navigate' ? '🧭' : '⚡';
+                const t = new Date(a.ts);
+                const time = t.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                return `<div class="sa-live-card__log-entry">
+                  <span class="sa-live-card__log-icon">${icon}</span>
+                  <span class="sa-live-card__log-text">${this._esc(a.label)}</span>
+                  <span class="sa-live-card__log-time">${time}</span>
+                </div>`;
+              }).join('')}
+            </div>` : ''}
+          </div>`;
+      }).join('');
+    });
+  }
+
+  _liveTimeAgo(ts) {
+    if (!ts) return '';
+    const diff = Date.now() - ts;
+    if (diff < 5000) return 'ahora';
+    if (diff < 60000) return `hace ${Math.floor(diff / 1000)}s`;
+    if (diff < 3600000) return `hace ${Math.floor(diff / 60000)}m`;
+    if (diff < 86400000) return `hace ${Math.floor(diff / 3600000)}h`;
+    return `hace ${Math.floor(diff / 86400000)}d`;
   }
 
   // ─── AI CHAT TAB ───────────────────────────────────────
@@ -2304,6 +2413,10 @@ export class SuperAdmin {
     if (this._behaviorUnsub) {
       this._behaviorUnsub();
       this._behaviorUnsub = null;
+    }
+    if (this._liveUnsub) {
+      this._liveUnsub();
+      this._liveUnsub = null;
     }
   }
 }

@@ -1,8 +1,9 @@
 import { Toast } from './components/Toast.js';
 import router from './router.js';
 import userAuth from './services/userAuth.js';
-import notificationSystem from './components/NotificationSystem.js?v=129';
+import notificationSystem from './components/NotificationSystem.js?v=130';
 import behaviorService from './services/behaviorService.js';
+import liveSessionService from './services/liveSessionService.js';
 
 class App {
   constructor() {
@@ -41,6 +42,7 @@ class App {
     if (session) {
       this.currentUser = session;
       notificationSystem.init(this.currentUser);
+      liveSessionService.start();
 
       // Background: re-check role from Firestore (fixes stale sessions)
       if (session.phone) {
@@ -57,9 +59,10 @@ class App {
       }
     }
 
-    // Listen for logout to destroy notification system
+    // Listen for logout to destroy notification system and live tracking
     document.addEventListener('accios-logout', () => {
       notificationSystem.destroy();
+      liveSessionService.stop();
     });
 
     // Router setup
@@ -137,6 +140,7 @@ class App {
 
     // Track every page navigation
     behaviorService.track(page, 'page_navigate', { route: route.full });
+    liveSessionService.trackPage(page, route.sub || '');
 
     // Auth guard: only login accessible without session
     if (page !== 'login' && !this.currentUser) {
@@ -154,7 +158,7 @@ class App {
       }
 
       case 'home': {
-        const { Home } = await import('./pages/Home.js?v=129');
+        const { Home } = await import('./pages/Home.js?v=130');
         pageInstance = new Home(this.content, this.currentUser);
         break;
       }
@@ -208,25 +212,25 @@ class App {
       }
 
       case 'collaborators': {
-        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=129');
+        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=130');
         pageInstance = new CollaboratorPanel(this.content, this.currentUser, route.sub);
         break;
       }
 
       case 'command-center': {
-        const { CommandCenter } = await import('./pages/CommandCenter.js?v=129');
+        const { CommandCenter } = await import('./pages/CommandCenter.js?v=130');
         pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
       }
 
       case 'biz-dashboard': {
-        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=129');
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=130');
         pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
         break;
       }
 
       default: {
-        const { Home } = await import('./pages/Home.js?v=129');
+        const { Home } = await import('./pages/Home.js?v=130');
         pageInstance = new Home(this.content, this.currentUser);
         break;
       }
