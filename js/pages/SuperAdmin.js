@@ -276,11 +276,12 @@ export class SuperAdmin {
         <div class="sa-live__grid" id="sa-live-grid">
           <div style="text-align:center;color:var(--text-muted);padding:40px;">Escuchando sesiones activas...</div>
         </div>
-        <div class="sa-live__detail" id="sa-live-detail" style="display:none;"></div>
+        <div class="sa-live-detail-overlay" id="sa-live-detail" style="display:none;"></div>
       </div>`;
 
     // Unsubscribe previous listener if any
     if (this._liveUnsub) { this._liveUnsub(); this._liveUnsub = null; }
+    this._liveRendered = false; // Track if first render
 
     this._liveUnsub = liveSessionService.subscribe((sessions) => {
       const grid = this.container.querySelector('#sa-live-grid');
@@ -292,68 +293,298 @@ export class SuperAdmin {
 
       if (sessions.length === 0) {
         grid.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:40px;grid-column:1/-1;">Sin sesiones registradas</div>`;
+        this._liveSessions = [];
+        this._liveRendered = false;
         return;
       }
 
-      grid.innerHTML = sessions.map(s => {
-        const isOnline = s.effectiveStatus === 'online';
-        const isBg = s.status === 'background';
-        const statusClass = isOnline ? (isBg ? 'sa-live-card--background' : 'sa-live-card--online') : 'sa-live-card--offline';
-        const statusLabel = isOnline ? (isBg ? 'Background' : 'Activo') : 'Desconectado';
-        const statusDot = isOnline ? (isBg ? '🟡' : '🟢') : '🔴';
-        const deviceIcon = s.device === 'iOS' ? '📱' : s.device === 'Android' ? '📱' : '💻';
-        const initial = (s.name || '?')[0].toUpperCase();
-        const timeAgo = this._liveTimeAgo(s.lastPulse);
-        const pageLabel = this._esc(s.currentPageLabel || s.currentPage || '—');
-        const lastAction = this._esc(s.lastAction || '—');
+      // Store sessions for detail view
+      this._liveSessions = sessions;
 
-        // Duration since session start
-        const sessionMins = s.sessionStart ? Math.floor((Date.now() - s.sessionStart) / 60000) : 0;
-        const durationStr = sessionMins > 60 ? `${Math.floor(sessionMins / 60)}h ${sessionMins % 60}m` : `${sessionMins}m`;
+      // If detail is open, update it too
+      if (this._liveDetailPhone) {
+        const updated = sessions.find(s => s.phone === this._liveDetailPhone);
+        if (updated) this._updateLiveDetail(updated);
+      }
 
-        return `
-          <div class="sa-live-card ${statusClass}" data-live-phone="${this._esc(s.phone)}">
-            <div class="sa-live-card__header">
-              <div class="sa-live-card__avatar">${initial}</div>
-              <div class="sa-live-card__info">
-                <div class="sa-live-card__name">${this._esc(s.name || s.phone)}</div>
-                <div class="sa-live-card__role">${this._esc(s.role || 'user')} ${deviceIcon}</div>
-              </div>
-              <div class="sa-live-card__status">
-                <span class="sa-live-card__dot">${statusDot}</span>
-                <span class="sa-live-card__status-label">${statusLabel}</span>
-              </div>
-            </div>
-            <div class="sa-live-card__current">
-              <div class="sa-live-card__page">
-                <span class="sa-live-card__page-icon">📍</span>
-                <span class="sa-live-card__page-name">${pageLabel}</span>
-              </div>
-              <div class="sa-live-card__action">
-                <span class="sa-live-card__action-icon">⚡</span>
-                <span class="sa-live-card__action-text">${lastAction}</span>
-              </div>
-            </div>
-            <div class="sa-live-card__footer">
-              <span class="sa-live-card__duration">⏱ ${durationStr}</span>
-              <span class="sa-live-card__pulse-ago">${timeAgo}</span>
-            </div>
-            ${s.actionLog?.length ? `
-            <div class="sa-live-card__log">
-              ${s.actionLog.slice().reverse().slice(0, 6).map(a => {
-                const icon = a.type === 'navigate' ? '🧭' : '⚡';
-                const t = new Date(a.ts);
-                const time = t.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                return `<div class="sa-live-card__log-entry">
-                  <span class="sa-live-card__log-icon">${icon}</span>
-                  <span class="sa-live-card__log-text">${this._esc(a.label)}</span>
-                  <span class="sa-live-card__log-time">${time}</span>
-                </div>`;
-              }).join('')}
-            </div>` : ''}
-          </div>`;
-      }).join('');
+      // ── Smart update: patch existing cards instead of full rebuild ──
+      const existingCards = grid.querySelectorAll('.sa-live-card');
+      const existingPhones = new Set();
+      existingCards.forEach(c => existingPhones.add(c.dataset.livePhone));
+      const newPhones = new Set(sessions.map(s => s.phone));
+
+      // If card count changed or new/removed users → full rebuild with no animation on updates
+      const needsFullRebuild = !this._liveRendered || existingPhones.size !== newPhones.size ||
+        [...newPhones].some(p => !existingPhones.has(p));
+
+      if (needsFullRebuild) {
+        grid.innerHTML = sessions.map(s => this._buildLiveCardHTML(s, true)).join('');
+        this._liveRendered = true;
+        this._attachLiveCardClicks(grid);
+      } else {
+        // Patch each card in-place (no DOM rebuild, no animation replay)
+        sessions.forEach(s => {
+          const card = grid.querySelector(`.sa-live-card[data-live-phone="${CSS.escape(s.phone)}"]`);
+          if (!card) return;
+
+          const isOnline = s.effectiveStatus === 'online';
+          const isBg = s.status === 'background';
+          const statusClass = isOnline ? (isBg ? 'sa-live-card--background' : 'sa-live-card--online') : 'sa-live-card--offline';
+
+          // Update status class
+          card.className = `sa-live-card ${statusClass}`;
+          card.style.cursor = 'pointer';
+
+          // Update status label
+          const statusLabel = isOnline ? (isBg ? 'Background' : 'Activo') : 'Desconectado';
+          const statusDot = isOnline ? (isBg ? '🟡' : '🟢') : '🔴';
+          const dotEl = card.querySelector('.sa-live-card__dot');
+          const labelEl = card.querySelector('.sa-live-card__status-label');
+          if (dotEl) dotEl.textContent = statusDot;
+          if (labelEl) labelEl.textContent = statusLabel;
+
+          // Update page & action
+          const pageName = card.querySelector('.sa-live-card__page-name');
+          const actionText = card.querySelector('.sa-live-card__action-text');
+          if (pageName) pageName.textContent = s.currentPageLabel || s.currentPage || '—';
+          if (actionText) actionText.textContent = s.lastAction || '—';
+
+          // Update footer
+          const sessionMins = s.sessionStart ? Math.floor((Date.now() - s.sessionStart) / 60000) : 0;
+          const durationStr = sessionMins > 60 ? `${Math.floor(sessionMins / 60)}h ${sessionMins % 60}m` : `${sessionMins}m`;
+          const durEl = card.querySelector('.sa-live-card__duration');
+          const pulseEl = card.querySelector('.sa-live-card__pulse-ago');
+          if (durEl) durEl.textContent = `⏱ ${durationStr}`;
+          if (pulseEl) pulseEl.textContent = this._liveTimeAgo(s.lastPulse);
+
+          // Update activity log
+          let logEl = card.querySelector('.sa-live-card__log');
+          if (s.actionLog?.length) {
+            const logHTML = s.actionLog.slice().reverse().slice(0, 6).map(a => {
+              const icon = a.type === 'navigate' ? '🧭' : '⚡';
+              const t = new Date(a.ts);
+              const time = t.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+              return `<div class="sa-live-card__log-entry">
+                <span class="sa-live-card__log-icon">${icon}</span>
+                <span class="sa-live-card__log-text">${this._esc(a.label)}</span>
+                <span class="sa-live-card__log-time">${time}</span>
+              </div>`;
+            }).join('');
+            if (logEl) {
+              logEl.innerHTML = logHTML;
+            } else {
+              const div = document.createElement('div');
+              div.className = 'sa-live-card__log';
+              div.innerHTML = logHTML;
+              card.appendChild(div);
+            }
+          }
+        });
+      }
     });
+  }
+
+  _buildLiveCardHTML(s, isNew = false) {
+    const isOnline = s.effectiveStatus === 'online';
+    const isBg = s.status === 'background';
+    const statusClass = isOnline ? (isBg ? 'sa-live-card--background' : 'sa-live-card--online') : 'sa-live-card--offline';
+    const statusLabel = isOnline ? (isBg ? 'Background' : 'Activo') : 'Desconectado';
+    const statusDot = isOnline ? (isBg ? '🟡' : '🟢') : '🔴';
+    const deviceIcon = s.device === 'iOS' ? '📱' : s.device === 'Android' ? '📱' : '💻';
+    const initial = (s.name || '?')[0].toUpperCase();
+    const timeAgo = this._liveTimeAgo(s.lastPulse);
+    const pageLabel = this._esc(s.currentPageLabel || s.currentPage || '—');
+    const lastAction = this._esc(s.lastAction || '—');
+    const sessionMins = s.sessionStart ? Math.floor((Date.now() - s.sessionStart) / 60000) : 0;
+    const durationStr = sessionMins > 60 ? `${Math.floor(sessionMins / 60)}h ${sessionMins % 60}m` : `${sessionMins}m`;
+
+    return `
+      <div class="sa-live-card ${statusClass}${isNew ? ' sa-live-card--enter' : ''}" data-live-phone="${this._esc(s.phone)}" style="cursor:pointer;">
+        <div class="sa-live-card__header">
+          <div class="sa-live-card__avatar">${initial}</div>
+          <div class="sa-live-card__info">
+            <div class="sa-live-card__name">${this._esc(s.name || s.phone)}</div>
+            <div class="sa-live-card__role">${this._esc(s.role || 'user')} ${deviceIcon}</div>
+          </div>
+          <div class="sa-live-card__status">
+            <span class="sa-live-card__dot">${statusDot}</span>
+            <span class="sa-live-card__status-label">${statusLabel}</span>
+          </div>
+        </div>
+        <div class="sa-live-card__current">
+          <div class="sa-live-card__page">
+            <span class="sa-live-card__page-icon">📍</span>
+            <span class="sa-live-card__page-name">${pageLabel}</span>
+          </div>
+          <div class="sa-live-card__action">
+            <span class="sa-live-card__action-icon">⚡</span>
+            <span class="sa-live-card__action-text">${lastAction}</span>
+          </div>
+        </div>
+        <div class="sa-live-card__footer">
+          <span class="sa-live-card__duration">⏱ ${durationStr}</span>
+          <span class="sa-live-card__pulse-ago">${timeAgo}</span>
+        </div>
+        ${s.actionLog?.length ? `
+        <div class="sa-live-card__log">
+          ${s.actionLog.slice().reverse().slice(0, 6).map(a => {
+            const icon = a.type === 'navigate' ? '🧭' : '⚡';
+            const t = new Date(a.ts);
+            const time = t.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            return `<div class="sa-live-card__log-entry">
+              <span class="sa-live-card__log-icon">${icon}</span>
+              <span class="sa-live-card__log-text">${this._esc(a.label)}</span>
+              <span class="sa-live-card__log-time">${time}</span>
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+      </div>`;
+  }
+
+  _attachLiveCardClicks(grid) {
+    grid.querySelectorAll('.sa-live-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const phone = card.dataset.livePhone;
+        const session = this._liveSessions?.find(s => s.phone === phone);
+        if (session) this._showLiveDetail(session);
+      });
+    });
+  }
+
+  /* ── Live Detail Panel ── */
+  _showLiveDetail(session) {
+    this._liveDetailPhone = session.phone;
+    const overlay = this.container.querySelector('#sa-live-detail');
+    if (!overlay) return;
+
+    overlay.style.display = 'flex';
+    this._updateLiveDetail(session);
+
+    // Close on overlay bg click
+    overlay.onclick = (e) => {
+      if (e.target === overlay) this._closeLiveDetail();
+    };
+    // Close on ESC
+    this._liveDetailEsc = (e) => { if (e.key === 'Escape') this._closeLiveDetail(); };
+    document.addEventListener('keydown', this._liveDetailEsc);
+  }
+
+  _updateLiveDetail(s) {
+    const overlay = this.container.querySelector('#sa-live-detail');
+    if (!overlay || overlay.style.display === 'none') return;
+
+    const isOnline = s.effectiveStatus === 'online';
+    const isBg = s.status === 'background';
+    const statusLabel = isOnline ? (isBg ? 'En segundo plano' : 'Activo') : 'Desconectado';
+    const statusDot = isOnline ? (isBg ? '🟡' : '🟢') : '🔴';
+    const statusClass = isOnline ? (isBg ? 'bg' : 'online') : 'offline';
+    const deviceIcon = s.device === 'iOS' ? '📱' : s.device === 'Android' ? '📱' : '💻';
+    const initial = (s.name || '?')[0].toUpperCase();
+    const sessionMins = s.sessionStart ? Math.floor((Date.now() - s.sessionStart) / 60000) : 0;
+    const durationStr = sessionMins > 60 ? `${Math.floor(sessionMins / 60)}h ${sessionMins % 60}m` : `${sessionMins}m`;
+    const pageLabel = this._esc(s.currentPageLabel || s.currentPage || '—');
+    const lastAction = this._esc(s.lastAction || '—');
+
+    // Full action log (up to 30 entries from Firestore)
+    const logEntries = (s.actionLog || []).slice().reverse().map(a => {
+      const icon = a.type === 'navigate' ? '🧭' : '⚡';
+      const t = new Date(a.ts);
+      const time = t.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const date = t.toLocaleDateString('es', { day: 'numeric', month: 'short' });
+      return `<div class="sa-detail__log-entry">
+        <span class="sa-detail__log-icon">${icon}</span>
+        <div class="sa-detail__log-content">
+          <span class="sa-detail__log-text">${this._esc(a.label)}</span>
+          ${a.detail ? `<span class="sa-detail__log-detail">${this._esc(a.detail)}</span>` : ''}
+        </div>
+        <span class="sa-detail__log-time">${date} ${time}</span>
+      </div>`;
+    }).join('');
+
+    overlay.innerHTML = `
+      <div class="sa-detail-panel sa-detail-panel--${statusClass}">
+        <div class="sa-detail__top">
+          <button class="sa-detail__close" title="Cerrar">&times;</button>
+          <div class="sa-detail__profile">
+            <div class="sa-detail__avatar">${initial}</div>
+            <div class="sa-detail__user-info">
+              <h3 class="sa-detail__name">${this._esc(s.name || s.phone)}</h3>
+              <span class="sa-detail__role">${this._esc(s.role || 'user')}</span>
+              <span class="sa-detail__phone">${this._esc(s.phone)}</span>
+            </div>
+            <div class="sa-detail__status-badge sa-detail__status-badge--${statusClass}">
+              ${statusDot} ${statusLabel}
+            </div>
+          </div>
+        </div>
+
+        <div class="sa-detail__stats">
+          <div class="sa-detail__stat">
+            <span class="sa-detail__stat-icon">📍</span>
+            <div class="sa-detail__stat-content">
+              <span class="sa-detail__stat-label">Página actual</span>
+              <span class="sa-detail__stat-value">${pageLabel}</span>
+            </div>
+          </div>
+          <div class="sa-detail__stat">
+            <span class="sa-detail__stat-icon">⚡</span>
+            <div class="sa-detail__stat-content">
+              <span class="sa-detail__stat-label">Última acción</span>
+              <span class="sa-detail__stat-value">${lastAction}</span>
+            </div>
+          </div>
+          <div class="sa-detail__stat">
+            <span class="sa-detail__stat-icon">${deviceIcon}</span>
+            <div class="sa-detail__stat-content">
+              <span class="sa-detail__stat-label">Dispositivo</span>
+              <span class="sa-detail__stat-value">${this._esc(s.device || 'Desconocido')}</span>
+            </div>
+          </div>
+          <div class="sa-detail__stat">
+            <span class="sa-detail__stat-icon">⏱</span>
+            <div class="sa-detail__stat-content">
+              <span class="sa-detail__stat-label">Tiempo en sesión</span>
+              <span class="sa-detail__stat-value">${durationStr}</span>
+            </div>
+          </div>
+          <div class="sa-detail__stat">
+            <span class="sa-detail__stat-icon">📡</span>
+            <div class="sa-detail__stat-content">
+              <span class="sa-detail__stat-label">Último pulso</span>
+              <span class="sa-detail__stat-value">${this._liveTimeAgo(s.lastPulse)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sa-detail__log-section">
+          <h4 class="sa-detail__log-title">Registro de Actividad</h4>
+          <div class="sa-detail__log-list">
+            ${logEntries || '<div class="sa-detail__log-empty">Sin actividad registrada</div>'}
+          </div>
+        </div>
+
+        ${s.userAgent ? `
+        <div class="sa-detail__ua">
+          <span class="sa-detail__ua-label">User Agent</span>
+          <span class="sa-detail__ua-value">${this._esc(s.userAgent)}</span>
+        </div>` : ''}
+      </div>`;
+
+    // Close button
+    overlay.querySelector('.sa-detail__close')?.addEventListener('click', () => this._closeLiveDetail());
+  }
+
+  _closeLiveDetail() {
+    this._liveDetailPhone = null;
+    const overlay = this.container.querySelector('#sa-live-detail');
+    if (overlay) {
+      overlay.style.display = 'none';
+      overlay.innerHTML = '';
+    }
+    if (this._liveDetailEsc) {
+      document.removeEventListener('keydown', this._liveDetailEsc);
+      this._liveDetailEsc = null;
+    }
   }
 
   _liveTimeAgo(ts) {
