@@ -14,48 +14,109 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/glassmorphism.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/auth.css?v=91">
-  <link rel="stylesheet" href="css/pages.css?v=92">
-  <link rel="stylesheet" href="css/admin.css">
-  <link rel="stylesheet" href="css/onboarding.css">
-  <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/finance.css">
-  <link rel="stylesheet" href="css/lavaina.css">
-  <link rel="stylesheet" href="css/behavior.css">
-  <link rel="stylesheet" href="css/command-center.css">
-  <link rel="stylesheet" href="css/business-dashboard.css?v=98">
-  <link rel="stylesheet" href="css/linatour-slides.css">
-  <link rel="stylesheet" href="css/comms.css">
+  <link rel="stylesheet" href="css/reset.css?v=124">
+  <link rel="stylesheet" href="css/variables.css?v=124">
+  <link rel="stylesheet" href="css/base.css?v=124">
+  <link rel="stylesheet" href="css/layout.css?v=124">
+  <link rel="stylesheet" href="css/glassmorphism.css?v=124">
+  <link rel="stylesheet" href="css/components.css?v=124">
+  <link rel="stylesheet" href="css/animations.css?v=124">
+  <link rel="stylesheet" href="css/auth.css?v=124">
+  <link rel="stylesheet" href="css/pages.css?v=124">
+  <link rel="stylesheet" href="css/admin.css?v=124">
+  <link rel="stylesheet" href="css/onboarding.css?v=124">
+  <link rel="stylesheet" href="css/dashboard.css?v=124">
+  <link rel="stylesheet" href="css/finance.css?v=124">
+  <link rel="stylesheet" href="css/lavaina.css?v=124">
+  <link rel="stylesheet" href="css/behavior.css?v=124">
+  <link rel="stylesheet" href="css/command-center.css?v=124">
+  <link rel="stylesheet" href="css/business-dashboard.css?v=124">
+  <link rel="stylesheet" href="css/linatour-slides.css?v=124">
+  <link rel="stylesheet" href="css/notifications.css?v=124">
+  <link rel="stylesheet" href="css/collaborators.css?v=124">
 
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
 
-  <script type="module" src="js/app.js?v=93"></script>
+  <!-- Redirect www to non-www (www subdomain has no SSL cert) -->
+  <script>
+  if (location.hostname === 'www.accioscore.com') {
+    location.replace('https://accioscore.com' + location.pathname + location.search + location.hash);
+  }
+  </script>
+
+  <script type="module" src="js/app.js?v=124"></script>
+
+  <!-- PWA version check — fetches version.json from server bypassing all caches -->
+  <script>
+  (function(){
+    var LOCAL_VERSION = 124;
+    var KEY = 'accios_version';
+    var PURGE_KEY = 'accios_purging';
+
+    // If we just purged, skip checks — we're on the fresh reload
+    if (sessionStorage.getItem(PURGE_KEY)) {
+      sessionStorage.removeItem(PURGE_KEY);
+      localStorage.setItem(KEY, String(LOCAL_VERSION));
+      return;
+    }
+
+    // Step 1: localStorage-based check (instant)
+    try {
+      var stored = parseInt(localStorage.getItem(KEY) || '0');
+      localStorage.setItem(KEY, LOCAL_VERSION);
+      if (stored > 0 && stored < LOCAL_VERSION && navigator.onLine) {
+        purgeAndReload();
+        return;
+      }
+    } catch(e) {}
+
+    // Step 2: Fetch version.json from server (bypasses SW + HTTP cache)
+    if (navigator.onLine) {
+      fetch('/version.json?_=' + Date.now(), { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.v && data.v > LOCAL_VERSION) {
+            purgeAndReload();
+          }
+        })
+        .catch(function() {});
+    }
+
+    function purgeAndReload() {
+      // Mark that we're purging so next load skips checks
+      sessionStorage.setItem(PURGE_KEY, '1');
+      // Hide loading screen to avoid showing it twice
+      var ls = document.getElementById('loading-screen');
+      if (ls) ls.style.display = 'none';
+      // Purge SW + caches
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+        });
+        caches.keys().then(function(keys) {
+          keys.forEach(function(k) { caches.delete(k); });
+        });
+      }
+      setTimeout(function() { location.reload(true); }, 300);
+    }
+  })();
+  </script>
 </head>
 <body>
-  <!-- Loading Screen -->
+  <!-- Loading Screen — Apple-style cinematic reveal -->
   <div id="loading-screen" class="loading-screen">
-    <div class="loading-content">
-      <div class="loading-logo">
-        <div class="loading-ring"></div>
-        <div class="loading-ring loading-ring--2"></div>
-        <div class="loading-ring loading-ring--3"></div>
-        <img class="loading-icon-img" src="assets/images/Accios.001.png" alt="ACCIOS CORE">
+    <div class="loading-reveal">
+      <div class="loading-reveal__logo" id="loading-reveal-logo">
+        <img src="assets/images/Accios.001.png" alt="ACCIOS CORE" draggable="false" />
       </div>
-      <div class="loading-text">
-        <span class="loading-label">Inicializando Ecosistema</span>
-        <div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>
-      </div>
-      <div class="loading-bar">
-        <div class="loading-bar-fill"></div>
-      </div>
+      <h1 class="loading-reveal__title" id="loading-reveal-title">
+        <span class="loading-reveal__word">ACCIOS</span>
+        <span class="loading-reveal__word loading-reveal__word--light">CORE</span>
+      </h1>
+      <p class="loading-reveal__sub" id="loading-reveal-sub">Digital Ecosystem</p>
+      <div class="loading-reveal__line" id="loading-reveal-line"></div>
+      <p class="loading-reveal__status" id="loading-reveal-status">Inicializando</p>
     </div>
   </div>
 
@@ -75,5 +136,8 @@
 
   <!-- Modal Root -->
   <div id="modal-root" class="modal-root"></div>
+
+  <!-- Notification System Root -->
+  <div id="notification-root"></div>
 </body>
 </html>

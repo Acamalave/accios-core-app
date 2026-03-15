@@ -705,7 +705,7 @@
 .dash-loading-spinner {
   width: 28px;
   height: 28px;
-  border: 2px solid var(--border-glass);
+  border: 2px solid var(--glass-border);
   border-top-color: var(--purple-500);
   border-radius: 50%;
   animation: dashSpin 0.8s linear infinite;
@@ -743,7 +743,7 @@
   height: 36px;
   border-radius: var(--radius-sm);
   background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -877,7 +877,7 @@
   left: 20%;
   right: 20%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-glass), transparent);
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
 }
 
 .ep-hero-top {
@@ -970,7 +970,7 @@
 .ep-section {
   margin-bottom: var(--space-6);
   background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
@@ -1542,7 +1542,7 @@
   padding: var(--space-5);
   margin-bottom: var(--space-5);
   background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
 }
 
@@ -1634,7 +1634,7 @@
 .exp-section {
   margin-bottom: var(--space-4);
   background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }

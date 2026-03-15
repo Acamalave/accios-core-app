@@ -3,6 +3,8 @@
   "short_name": "ACCIOS",
   "description": "Premium Digital Ecosystem",
   "start_url": "/",
+  "scope": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#0A0A0F",
   "theme_color": "#0A0A0F",
@@ -20,5 +22,6 @@
       "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "gcm_sender_id": "103953800507"
 }

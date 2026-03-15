@@ -251,12 +251,18 @@ REGLAS:
 
   // ─── UI HELPERS ────────────────────────────────────────
 
+  _esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
   _addBubble(role, text) {
     const bubble = document.createElement('div');
     bubble.className = `admin-chat__bubble admin-chat__bubble--${role}`;
 
-    const formatted = text
+    const formatted = this._esc(text)
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
 
     bubble.innerHTML = `<div>${formatted}</div>`;

@@ -6,6 +6,7 @@
 .cc-page {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: var(--space-4);
   max-width: 1400px;
   margin: 0 auto;
@@ -74,6 +75,7 @@
   font-size: var(--text-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 .cc-back-btn:hover {
@@ -208,6 +210,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   padding: 2px;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -295,6 +298,7 @@
   position: relative;
   padding: var(--space-4) var(--space-5);
   background: rgba(10, 10, 15, 0.7);
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   backdrop-filter: blur(var(--blur-glass));
   border: 1px solid rgba(57, 255, 20, 0.12);
   border-radius: var(--radius-lg);
@@ -400,6 +404,7 @@
 
 .cc-chart-card {
   background: rgba(10, 10, 15, 0.7);
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   backdrop-filter: blur(var(--blur-glass));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
@@ -498,6 +503,7 @@
 /* ─── Activity Feed ──────────────────────────────────────────────── */
 .cc-activity {
   background: rgba(10, 10, 15, 0.7);
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   backdrop-filter: blur(var(--blur-glass));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
@@ -576,7 +582,7 @@
 }
 .cc-biz-badge--accios { background: rgba(124, 58, 237, 0.15); color: #A78BFA; border: 1px solid rgba(124, 58, 237, 0.25); }
 .cc-biz-badge--rush { background: rgba(57, 255, 20, 0.1); color: #39FF14; border: 1px solid rgba(57, 255, 20, 0.2); }
-.cc-biz-badge--xazai { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+.cc-biz-badge--xazai { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; border: 1px solid rgba(139, 92, 246, 0.2); }
 .cc-biz-badge--colson { background: rgba(236, 72, 153, 0.1); color: #EC4899; border: 1px solid rgba(236, 72, 153, 0.2); }
 .cc-biz-badge--resultados { background: rgba(6, 182, 212, 0.1); color: #06B6D4; border: 1px solid rgba(6, 182, 212, 0.2); }
 .cc-biz-badge--cristian { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; border: 1px solid rgba(139, 92, 246, 0.2); }
@@ -608,6 +614,7 @@
   color: var(--text-primary);
   font-size: var(--text-sm);
   font-family: var(--font-sans);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   transition: all var(--transition-fast);
 }
@@ -659,6 +666,7 @@
 
 .cc-table-wrap {
   background: rgba(10, 10, 15, 0.7);
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   backdrop-filter: blur(var(--blur-glass));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
@@ -770,6 +778,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   z-index: 1;
   animation: cc-overlay-in 0.3s ease;
@@ -1020,7 +1029,6 @@
   padding: var(--space-4);
   animation: cc-fade-in 0.2s ease;
 }
-@keyframes cc-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .cc-merge-header {
   display: flex;
   justify-content: space-between;
@@ -1178,7 +1186,7 @@
 }
 .cc-profile-section__title--accios { color: #A78BFA; }
 .cc-profile-section__title--rush { color: #39FF14; }
-.cc-profile-section__title--xazai { color: #F59E0B; }
+.cc-profile-section__title--xazai { color: #8B5CF6; }
 .cc-profile-section__title--colson { color: #EC4899; }
 .cc-profile-section__title--resultados { color: #06B6D4; }
 .cc-profile-section__title--cristian { color: #8B5CF6; }
@@ -1256,7 +1264,7 @@
 }
 .cc-dossier-src--accios { background: rgba(124, 58, 237, 0.15); color: #A78BFA; }
 .cc-dossier-src--rush { background: rgba(57, 255, 20, 0.1); color: #39FF14; }
-.cc-dossier-src--xazai { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.cc-dossier-src--xazai { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
 .cc-dossier-src--colson { background: rgba(236, 72, 153, 0.1); color: #EC4899; }
 .cc-dossier-src--resultados { background: rgba(6, 182, 212, 0.1); color: #06B6D4; }
 .cc-dossier-src--cristian { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
@@ -1324,7 +1332,7 @@
   border: 2px solid var(--glass-border);
 }
 .cc-timeline__item[data-biz="rush-ride"]::before { border-color: #39FF14; box-shadow: 0 0 6px rgba(57, 255, 20, 0.4); }
-.cc-timeline__item[data-biz="xazai"]::before { border-color: #F59E0B; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+.cc-timeline__item[data-biz="xazai"]::before { border-color: #8B5CF6; box-shadow: 0 0 6px rgba(139, 92, 246, 0.4); }
 .cc-timeline__item[data-biz="accios-core"]::before { border-color: #A78BFA; box-shadow: 0 0 6px rgba(167, 139, 250, 0.4); }
 
 .cc-timeline__date {
@@ -1409,6 +1417,8 @@
   .cc-search-wrap { width: 100%; }
   .cc-filters { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
   .cc-table th:nth-child(4), .cc-table td:nth-child(4) { display: none; }
+  .cc-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .cc-table { min-width: 580px; }
   .cc-profile-panel { width: 100vw; }
   .cc-dossier-grid { grid-template-columns: 1fr; }
 

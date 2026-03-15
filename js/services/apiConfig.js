@@ -1,47 +1,38 @@
 /**
  * API Configuration for Capacitor native / web hybrid
  *
- * When running inside Capacitor (native Android), fetch('/api/...') would
- * hit https://localhost which has no backend. We prefix with the
- * Vercel production URL so API calls reach the serverless functions.
- *
- * On web (Vercel), the prefix is empty so relative URLs work as usual.
+ * API serverless functions live on Vercel (accios-core-acamalave.vercel.app).
+ * accioscore.com currently points to Firebase Hosting (not Vercel),
+ * so we always use the Vercel subdomain for API calls unless we're
+ * already ON a Vercel domain where relative URLs work.
  */
+
+const VERCEL_API = 'https://accios-core-acamalave.vercel.app';
 
 function detectNative() {
   try {
-    // Capacitor bridge sets isNativePlatform as a function that returns true
     if (window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function') {
       return window.Capacitor.isNativePlatform();
     }
-    // Fallback: check if Capacitor object exists with getPlatform
     if (window.Capacitor && typeof window.Capacitor.getPlatform === 'function') {
       return window.Capacitor.getPlatform() !== 'web';
-    }
-    // Last resort: check if we're on https://localhost (Capacitor's default)
-    if (window.location.protocol === 'https:' && window.location.hostname === 'localhost') {
-      return true;
     }
   } catch (_) {}
   return false;
 }
 
 const isNative = detectNative();
-const API_BASE = isNative ? 'https://accioscore.com' : '';
 
-// Debug logging for native app troubleshooting
-if (isNative) {
-  console.log('[ACCIOS] Running in native mode, API_BASE:', API_BASE);
-} else {
-  console.log('[ACCIOS] Running in web mode');
-}
+// Detect if we're on a Vercel domain (where relative API URLs work)
+const isVercel = !isNative && (
+  window.location.hostname.includes('vercel.app')
+);
+
+// On Vercel: relative URLs. Everywhere else: full Vercel URL
+const API_BASE = isVercel ? '' : VERCEL_API;
 
 export function apiUrl(path) {
-  const url = API_BASE + path;
-  if (isNative) {
-    console.log('[ACCIOS] API call:', url);
-  }
-  return url;
+  return API_BASE + path;
 }
 
 export { isNative };

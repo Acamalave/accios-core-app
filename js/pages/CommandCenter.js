@@ -302,7 +302,9 @@ export class CommandCenter {
       { key: 'hechizos', label: 'Hechizos Salón', color: '#D946EF' },
       { key: 'resultados', label: 'Resultados', color: '#06B6D4' },
       { key: 'salon507', label: 'Salón 507', color: '#F43F5E' },
-      { key: 'tabares', label: 'J. Tabares', color: '#EF4444' }
+      { key: 'tabares', label: 'J. Tabares', color: '#EF4444' },
+      { key: 'rush-ride', label: 'Rush Ride', color: '#39FF14' },
+      { key: 'xazai', label: 'Xazai', color: '#8B5CF6' }
     ];
 
     // Only include businesses that have activity in at least 1 month
@@ -837,7 +839,7 @@ export class CommandCenter {
         items += data.recentOrders.slice(0, 5).map(o => `
           <div class="cc-profile-item">
             <span>Pedido #${(o.id || '').slice(-4) || '?'}${o.items ? ` (${o.items} items)` : ''}</span>
-            <span class="cc-profile-item__amount" style="color:#F59E0B;">$${(o.total || o.amount || 0).toFixed(2)}</span>
+            <span class="cc-profile-item__amount" style="color:#8B5CF6;">$${(o.total || o.amount || 0).toFixed(2)}</span>
             <span class="cc-profile-item__date">${this._formatDate(o.createdAt || o.date)}</span>
           </div>`).join('');
       }
@@ -1020,7 +1022,7 @@ export class CommandCenter {
     const acciosSpent = (profile.accios?.transactions || []).reduce((s, t) => s + (t.totalAmount || t.amount || 0), 0);
     if (acciosSpent > 0) items.push({ name: 'ACCIOS Core', amount: acciosSpent, color: '#A78BFA' });
     const bizMap = [
-      ['rushRide', 'Rush Ride', '#39FF14'], ['xazai', 'Xazai', '#F59E0B'], ['laColson', 'La Colson', '#EC4899'],
+      ['rushRide', 'Rush Ride', '#39FF14'], ['xazai', 'Xazai', '#8B5CF6'], ['laColson', 'La Colson', '#EC4899'],
       ['resultados', 'Resultados', '#06B6D4'], ['cristian', 'Cristian Studio', '#8B5CF6'],
       ['tabares', 'Jesus Tabares', '#EF4444'], ['cakefit', 'Cake Fit', '#F97316'],
       ['glowin', 'Glowin Strong', '#10B981'], ['hechizos', 'Hechizos', '#D946EF'],

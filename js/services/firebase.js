@@ -24,6 +24,11 @@ import {
   uploadBytes,
   getDownloadURL
 } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js';
+import {
+  getMessaging,
+  getToken,
+  onMessage
+} from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBn6C812V1sK_lykCOBCtj9JiDzVOS273E",
@@ -39,12 +44,23 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+// Firebase Messaging — may fail in contexts without service worker (e.g., incognito)
+let messaging = null;
+try {
+  messaging = getMessaging(app);
+} catch (e) {
+  console.warn('[Firebase] Messaging init skipped:', e.message);
+}
+
 export {
   db,
   storage,
   storageRef,
   uploadBytes,
   getDownloadURL,
+  messaging,
+  getToken,
+  onMessage,
   collection,
   doc,
   getDoc,

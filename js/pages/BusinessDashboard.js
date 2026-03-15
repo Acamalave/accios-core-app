@@ -1,5 +1,8 @@
 import { apiUrl } from '../services/apiConfig.js';
 import userAuth from '../services/userAuth.js';
+import {
+  db, collection, getDocs, query, where
+} from '../services/firebase.js';
 
 /* ── Lucide-style SVG Icons (24x24 stroke-based) ─────────────────── */
 const ICONS = {
@@ -25,6 +28,50 @@ const ICONS = {
   trash: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
 };
 
+/* ── Business Overview Configuration ─── */
+const BIZ_CONFIG = {
+  'xazai': {
+    name: 'Xazai',
+    tagline: 'Açai Bar & Smoothies',
+    color: '#8B5CF6',
+    colorRgb: '139,92,246',
+    colorDark: '#6D28D9',
+    gradient: 'linear-gradient(135deg, #8B5CF6, #D946EF)',
+    icon: '🍽️',
+    photo: 'assets/images/Xazai.jpeg',
+    logo: 'assets/images/logo-xazai.png',
+    hasProposal: true,
+    trendLabel: 'Evolución de Ventas',
+    trendSub: 'Cómo van tus ingresos mes a mes',
+    trendKey: 'revenue',
+    shareLabel: 'Tu Participación',
+    shareSub: 'Tu peso dentro del ecosistema',
+    staffTitle: 'Equipo Xazai',
+    staffType: 'restaurant',
+    staffColumns: ['Colaborador', 'Cargo', 'Asistencia', 'Puntualidad', 'Rating'],
+  },
+  'rush-ride': {
+    name: 'Rush Ride Studio',
+    tagline: 'Donde el fitness se transforma',
+    color: '#39FF14',
+    colorRgb: '57,255,20',
+    colorDark: '#15803D',
+    gradient: 'linear-gradient(135deg, #39FF14, #22C55E)',
+    icon: '🏋️',
+    photo: null,
+    logo: null,
+    hasProposal: false,
+    trendLabel: 'Tu Progreso Mensual',
+    trendSub: 'Crecimiento de ingresos y check-ins',
+    trendKey: 'revenue',
+    shareLabel: 'Tu Presencia',
+    shareSub: 'Tu impacto dentro del ecosistema',
+    staffTitle: 'Equipo Rush Ride',
+    staffType: 'fitness',
+    staffColumns: ['Colaborador', 'Rol', 'Clases', 'Puntualidad', 'Rating'],
+  }
+};
+
 export class BusinessDashboard {
   constructor(container, currentUser, businessId) {
     this.container = container;
@@ -32,6 +79,9 @@ export class BusinessDashboard {
     this.businessId = businessId || 'ml-parts';
     this.data = null;
     this._bizMeta = null;
+    // Default to current month (e.g. "2026-03")
+    const _now = new Date();
+    this._currentRange = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}`;
   }
 
   async render() {
@@ -57,15 +107,17 @@ export class BusinessDashboard {
       </section>`;
 
     // Fetch data
-    try {
-      const res = await fetch(apiUrl('/api/command-data?range=30d'));
-      if (res.ok) this.data = await res.json();
-    } catch (e) {
-      console.warn('[BizDash] Fetch error:', e);
-    }
+    await this._fetchData(this._currentRange);
 
     // Resolve business metadata
     this._resolveBizMeta();
+
+    // ─── Overview mode for Xazai / Rush Ride ───
+    if (BIZ_CONFIG[this.businessId]) {
+      this.container.innerHTML = this._buildBusinessOverview();
+      this._attachOverviewListeners();
+      return;
+    }
 
     // Roadmap de servicios compartido por todos los negocios
     const sharedServices = [
@@ -211,7 +263,7 @@ export class BusinessDashboard {
       'ml-parts': { name: 'ML Parts', icon: '⚙️', color: '#39FF14' },
       'accios-core': { name: 'ACCIOS CORE', icon: '🔮', color: '#7C3AED' },
       'rush-ride': { name: 'Rush Ride Studio', icon: '🏋️', color: '#39FF14' },
-      'xazai': { name: 'Xazai', icon: '🍽️', color: '#F59E0B' }
+      'xazai': { name: 'Xazai', icon: '🍽️', color: '#8B5CF6' }
     };
 
     const fallback = defaults[bizId] || { name: bizId, icon: '📊', color: '#8B5CF6' };
@@ -228,6 +280,40 @@ export class BusinessDashboard {
     };
   }
 
+  async _fetchData(range) {
+    try {
+      let startDate, endDate;
+      if (/^\d{4}-\d{2}$/.test(range)) {
+        // Month format (e.g. "2026-03")
+        const [y, m] = range.split('-').map(Number);
+        startDate = new Date(y, m - 1, 1).toISOString();
+        endDate = new Date(y, m, 0, 23, 59, 59).toISOString();
+      } else {
+        // Pill format: 7d, 30d, 90d, 365d
+        const days = parseInt(range) || 30;
+        endDate = new Date().toISOString();
+        startDate = new Date(Date.now() - days * 86400000).toISOString();
+      }
+
+      const params = new URLSearchParams({ range, startDate, endDate });
+      const res = await fetch(apiUrl(`/api/command-data?${params}`));
+      if (res.ok) this.data = await res.json();
+    } catch (e) {
+      console.warn('[BizDash] Fetch error:', e);
+    }
+  }
+
+  async _refreshOverview(range) {
+    this._currentRange = range;
+    // Show subtle loading indicator
+    const grid = this.container.querySelector('.biz-overview__kpi-grid');
+    if (grid) grid.style.opacity = '0.5';
+    await this._fetchData(range);
+    this._resolveBizMeta();
+    this.container.innerHTML = this._buildBusinessOverview();
+    this._attachOverviewListeners();
+  }
+
   _buildHTML() {
     const m = this._bizMeta;
     const kpis = this.data?.kpis || {};
@@ -236,14 +322,17 @@ export class BusinessDashboard {
       ? (m.revenue / m.users).toFixed(2)
       : '--';
 
+    const cfg = BIZ_CONFIG[this.businessId] || {};
+    const rgb = cfg.colorRgb || '139,92,246';
+
     return `
-    <section class="biz-dash biz-dash--clients">
+    <section class="biz-dash biz-dash--clients" style="--biz-color:${cfg.color}; --biz-rgb:${rgb}; --biz-color-dark:${cfg.colorDark || cfg.color};">
       <!-- Dust particle canvas (full dashboard background) -->
       <canvas class="biz-dash__dust-canvas" aria-hidden="true"></canvas>
 
-      <!-- Directional light from top-right (matches logo highlight) -->
-      <div class="biz-dash__toplight"></div>
-      <div class="biz-dash__toplight-flare"></div>
+      <!-- Directional light from top-right (dynamic brand color) -->
+      <div class="biz-dash__toplight" style="background: radial-gradient(ellipse at 80% 15%, rgba(${rgb}, 0.07) 0%, rgba(${rgb}, 0.04) 25%, rgba(${rgb}, 0.015) 50%, transparent 75%);"></div>
+      <div class="biz-dash__toplight-flare" style="background: radial-gradient(ellipse at 70% 10%, rgba(255, 255, 255, 0.035) 0%, rgba(${rgb}, 0.02) 30%, transparent 60%);"></div>
 
       <!-- Sidebar -->
       ${this._buildSidebar()}
@@ -1118,6 +1207,511 @@ export class BusinessDashboard {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     Business Overview — Xazai & Rush Ride dashboard
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* ── Business KPI Computation ──────────────────────────────────── */
+  _computeKPIs(biz) {
+    const fmt = (n) => typeof n === 'number' ? n.toLocaleString('es-PA') : '--';
+    const fmtMoney = (n) => '$' + (typeof n === 'number' ? n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00');
+    const fmtPct = (n) => Math.round(n) + '%';
+    const rangeDays = this._currentRange === '7d' ? 7 : this._currentRange === '90d' ? 90 : this._currentRange === '365d' ? 365 : 30;
+
+    if (this.businessId === 'xazai') {
+      const revenue = biz.revenue || 0;
+      const customers = biz.collections?.customers || biz.users || 0;
+      const orders = biz.collections?.orders || 0;
+      const sales = biz.collections?.sales || 0;
+      const inventory = biz.collections?.inventory || 0;
+      const staff = biz.collections?.rrhh_collaborators || 0;
+      const avgOrder = orders > 0 ? revenue / orders : 0;
+      const revenuePerDay = revenue / rangeDays;
+      const ordersPerClient = customers > 0 ? (orders / customers) : 0;
+
+      return [
+        { label: 'Ventas del Período', sub: 'Ingresos generados', value: fmtMoney(revenue), icon: ICONS.dollarSign, accent: true },
+        { label: 'Clientes', sub: 'Personas registradas', value: fmt(customers), icon: ICONS.users },
+        { label: 'Pedidos', sub: `Órdenes en ${rangeDays} días`, value: fmt(orders), icon: ICONS.activity },
+        { label: 'Ticket Promedio', sub: 'Gasto promedio por pedido', value: fmtMoney(avgOrder), icon: ICONS.zap },
+        { label: 'Inventario', sub: 'Productos en stock', value: fmt(inventory), icon: ICONS.package },
+        { label: 'Colaboradores', sub: 'Tu equipo de trabajo', value: fmt(staff), icon: ICONS.users },
+        { label: 'Ventas/Día', sub: 'Promedio diario', value: fmtMoney(revenuePerDay), icon: ICONS.barChart },
+        { label: 'Frecuencia', sub: 'Pedidos por cliente', value: ordersPerClient.toFixed(1) + 'x', icon: ICONS.trendingUp },
+      ];
+    }
+
+    if (this.businessId === 'rush-ride') {
+      const revenue = biz.revenue || 0;
+      const users = biz.users || 0;
+      const activeMembers = biz.activeMembers || biz.collections?.userMemberships || 0;
+      const checkIns = biz.collections?.checkIns || 0;
+      const reservations = biz.collections?.reservations || 0;
+      const transactions = biz.collections?.transactions || 0;
+      const revenuePerMember = activeMembers > 0 ? revenue / activeMembers : 0;
+      const retention = users > 0 ? (activeMembers / users) * 100 : 0;
+      const checkInsPerDay = checkIns / rangeDays;
+
+      return [
+        { label: 'Ingresos del Período', sub: 'Membresías + servicios', value: fmtMoney(revenue), icon: ICONS.dollarSign, accent: true },
+        { label: 'Miembros Totales', sub: 'Personas registradas', value: fmt(users), icon: ICONS.users },
+        { label: 'Check-ins', sub: `Visitas en ${rangeDays} días`, value: fmt(checkIns), icon: ICONS.activity },
+        { label: 'Ingreso/Miembro', sub: 'Revenue por miembro activo', value: fmtMoney(revenuePerMember), icon: ICONS.zap },
+        { label: 'Miembros Activos', sub: 'Membresías vigentes', value: fmt(activeMembers), icon: ICONS.users },
+        { label: 'Reservaciones', sub: 'Clases reservadas', value: fmt(reservations), icon: ICONS.barChart },
+        { label: 'Retención', sub: 'Activos vs total', value: fmtPct(retention), icon: ICONS.trendingUp },
+        { label: 'Check-ins/Día', sub: 'Promedio diario', value: fmt(Math.round(checkInsPerDay)), icon: ICONS.activity },
+      ];
+    }
+
+    return [];
+  }
+
+  _buildBusinessOverview() {
+    const cfg = BIZ_CONFIG[this.businessId];
+    const biz = this.data?.byBusiness?.[this.businessId] || {};
+    const allActivity = this.data?.recentActivity || [];
+    const activity = allActivity.filter(a => a.business === this.businessId).slice(0, 8);
+    const totalRevAll = this.data?.kpis?.totalRevenue || 1;
+
+    const revenue = biz.revenue ?? 0;
+    const sharePercent = totalRevAll > 0 ? Math.round((revenue / totalRevAll) * 100) : 0;
+
+    // KPIs
+    const kpis = this._computeKPIs(biz);
+
+    // Trend data from bizMonthlyTrend
+    const bizTrend = this.data?.bizMonthlyTrend || [];
+    const last6 = bizTrend.slice(-6);
+    const trendData = last6.map(m => m[this.businessId]?.[cfg.trendKey] || 0);
+    const trendLabels = last6.map(m => {
+      if (!m.month) return '';
+      const [y, mo] = m.month.split('-');
+      return new Date(+y, +mo - 1).toLocaleDateString('es', { month: 'short' });
+    });
+
+    // Brand avatar — use photo if available, otherwise show business icon emoji
+    const brandImg = cfg.photo
+      ? `<img class="biz-overview__brand-img" src="${cfg.photo}" alt="${cfg.name}" />`
+      : `<div class="biz-overview__brand-initials" style="background:${cfg.gradient};"><span style="font-size:26px;line-height:1;">${cfg.icon}</span></div>`;
+
+    const logoHTML = cfg.logo
+      ? `<img class="biz-overview__logo" src="${cfg.logo}" alt="${cfg.name}" />`
+      : '';
+
+    // Range labels — support both month format and pill format
+    const rangeLabel = /^\d{4}-\d{2}$/.test(this._currentRange)
+      ? new Date(this._currentRange + '-15').toLocaleDateString('es-PA', { month: 'long', year: 'numeric' })
+      : { '7d': 'Últimos 7 días', '30d': 'Últimos 30 días', '90d': 'Últimos 90 días', '365d': 'Último año' }[this._currentRange] || 'Últimos 30 días';
+
+    // Month picker value (only set when range is a month)
+    const monthPickerValue = /^\d{4}-\d{2}$/.test(this._currentRange) ? this._currentRange : '';
+
+    // Activity feed
+    const actIcons = { order: '🛒', checkin: '🏋️', transaction: '💳', reservation: '📅', sale: '🧾', membership: '⭐', quote: '📄', expense: '📦', payment: '💰' };
+    const actHTML = activity.length > 0
+      ? activity.map(a => `
+        <div class="biz-overview__act-item">
+          <span class="biz-overview__act-icon">${actIcons[a.type] || '📌'}</span>
+          <span class="biz-overview__act-text">${a.description || a.type}</span>
+          <span class="biz-overview__act-time">${this._timeAgo(a.date)}</span>
+        </div>`).join('')
+      : '<div class="biz-overview__act-empty">Sin actividad reciente</div>';
+
+    // Staff section
+    const staff = biz.staff || [];
+    const staffHTML = this._buildStaffSection(staff, cfg);
+
+    // Proposal card (Xazai only)
+    const proposalHTML = cfg.hasProposal ? `
+      <div class="biz-overview__proposal biz-overview__card--assemble" style="--i:10">
+        <div class="biz-overview__proposal-icon">${ICONS.info}</div>
+        <div class="biz-overview__proposal-info">
+          <div class="biz-overview__proposal-title">Propuesta de Marketing 2026</div>
+          <div class="biz-overview__proposal-sub">Ver presentación completa →</div>
+        </div>
+      </div>` : '';
+
+    // KPI grid HTML
+    const kpiHTML = kpis.map((k, i) => `
+      <div class="biz-overview__kpi${k.accent ? ' biz-overview__kpi--accent' : ''} biz-overview__card--assemble" style="--i:${i < 4 ? i + 1 : i + 1}">
+        <div class="biz-overview__kpi-icon">${k.icon}</div>
+        <div class="biz-overview__kpi-value">${k.value}</div>
+        <div class="biz-overview__kpi-label">${k.label}</div>
+        <div class="biz-overview__kpi-sub">${k.sub}</div>
+      </div>`).join('');
+
+    return `
+    <section class="biz-overview" style="--biz-color:${cfg.color}; --biz-rgb:${cfg.colorRgb};">
+
+      <!-- Header -->
+      <div class="biz-overview__header biz-overview__card--assemble" style="--i:0">
+        <div class="biz-overview__header-top">
+          <button class="biz-overview__back" id="biz-ov-back">
+            ${ICONS.arrowLeft}
+            <span>Volver</span>
+          </button>
+          <div class="biz-overview__range-selector">
+            <input type="month" class="biz-overview__month-picker" id="biz-month-picker" value="${monthPickerValue}" title="Seleccionar mes" />
+            <div class="biz-overview__range-pills">
+              ${['7d', '30d', '90d', '365d'].map(r => `
+                <button class="biz-overview__range-btn${r === this._currentRange ? ' biz-overview__range-btn--active' : ''}" data-range="${r}">
+                  ${r === '365d' ? '1A' : r.toUpperCase()}
+                </button>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="biz-overview__brand">
+          <div class="biz-overview__brand-avatar">${brandImg}</div>
+          <div class="biz-overview__brand-text">
+            ${logoHTML}
+            <h1 class="biz-overview__name">${cfg.name}</h1>
+            <p class="biz-overview__tagline">${cfg.tagline}</p>
+            <span class="biz-overview__range-label">${rangeLabel}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Grid (8 cards) -->
+      <div class="biz-overview__kpi-grid biz-overview__kpi-grid--8">
+        ${kpiHTML}
+      </div>
+
+      <!-- Charts Row -->
+      <div class="biz-overview__charts">
+        <div class="biz-overview__chart-card biz-overview__card--assemble" style="--i:5">
+          <div class="biz-overview__chart-title">${cfg.trendLabel}</div>
+          <div class="biz-overview__chart-sub">${cfg.trendSub}</div>
+          <div class="biz-overview__bar-chart">
+            ${this._buildBarChart(trendData, trendLabels)}
+          </div>
+        </div>
+        <div class="biz-overview__chart-card biz-overview__chart-card--donut biz-overview__card--assemble" style="--i:5">
+          <div class="biz-overview__chart-title">${cfg.shareLabel}</div>
+          <div class="biz-overview__chart-sub">${cfg.shareSub}</div>
+          <div class="biz-overview__donut-wrap">
+            ${this._buildMiniDonut(sharePercent)}
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff / Colaboradores -->
+      ${staffHTML}
+
+      <!-- Activity Feed -->
+      <div class="biz-overview__activity biz-overview__card--assemble" style="--i:8">
+        <div class="biz-overview__section-title">Actividad Reciente</div>
+        <div class="biz-overview__act-list">${actHTML}</div>
+      </div>
+
+      <!-- Evidence Inbox -->
+      <div class="biz-overview__inbox biz-overview__card--assemble" style="--i:9">
+        <div class="biz-overview__section-title">📬 Bandeja de Evidencias</div>
+        <div class="biz-overview__inbox-list" id="biz-inbox-list">
+          <div class="biz-overview__inbox-loading">Cargando evidencias...</div>
+        </div>
+      </div>
+
+      ${proposalHTML}
+    </section>`;
+  }
+
+  _buildStaffSection(staff, cfg) {
+    if (!staff || staff.length === 0) {
+      return `
+        <div class="biz-overview__staff biz-overview__card--assemble" style="--i:7">
+          <div class="biz-overview__section-header">
+            <div class="biz-overview__section-title">👥 ${cfg.staffTitle}</div>
+          </div>
+          <div class="biz-overview__act-empty">Sin datos de equipo disponibles</div>
+        </div>`;
+    }
+
+    const activeCount = staff.filter(s => s.status === 'active').length;
+    const avgPunctuality = Math.round(staff.reduce((s, m) => s + (m.punctuality || 0), 0) / staff.length);
+    const avgRating = (staff.reduce((s, m) => s + (m.rating || 0), 0) / staff.length).toFixed(1);
+
+    // Summary row
+    const summaryHTML = `
+      <div class="biz-overview__staff-summary">
+        <div class="biz-overview__staff-stat">
+          <div class="biz-overview__staff-stat-value">${activeCount}</div>
+          <div class="biz-overview__staff-stat-label">Activos</div>
+        </div>
+        <div class="biz-overview__staff-stat">
+          <div class="biz-overview__staff-stat-value">${avgPunctuality}%</div>
+          <div class="biz-overview__staff-stat-label">Puntualidad Prom.</div>
+        </div>
+        <div class="biz-overview__staff-stat">
+          <div class="biz-overview__staff-stat-value">⭐ ${avgRating}</div>
+          <div class="biz-overview__staff-stat-label">Rating Prom.</div>
+        </div>
+      </div>`;
+
+    // Staff rows
+    const isRestaurant = cfg.staffType === 'restaurant';
+    const rowsHTML = staff.map(s => {
+      const initials = s.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const punctColor = s.punctuality >= 90 ? '#22c55e' : s.punctuality >= 80 ? '#F59E0B' : '#ef4444';
+      const statusDot = s.status === 'active' ? '#22c55e' : '#6b7280';
+      const attendance = isRestaurant
+        ? `${s.daysWorked || 0}/${s.totalDays || 28}`
+        : `${s.classesGiven || 0}/${s.totalClasses || 0}`;
+      const ratingStars = '⭐'.repeat(Math.min(Math.round(s.rating || 0), 5));
+
+      return `
+        <div class="biz-overview__staff-row">
+          <div class="biz-overview__staff-person">
+            <div class="biz-overview__staff-avatar">${initials}</div>
+            <div class="biz-overview__staff-info">
+              <div class="biz-overview__staff-name">
+                <span class="biz-overview__staff-dot" style="background:${statusDot}"></span>
+                ${this._esc(s.name)}
+              </div>
+              <div class="biz-overview__staff-role">${this._esc(s.role)}</div>
+            </div>
+          </div>
+          <div class="biz-overview__staff-attendance">${attendance}</div>
+          <div class="biz-overview__staff-punct">
+            <div class="biz-overview__staff-bar-track">
+              <div class="biz-overview__staff-bar-fill" style="width:${s.punctuality || 0}%; background:${punctColor}"></div>
+            </div>
+            <span style="color:${punctColor}">${s.punctuality || 0}%</span>
+          </div>
+          <div class="biz-overview__staff-rating">${s.rating ? s.rating.toFixed(1) : '--'}</div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="biz-overview__staff biz-overview__card--assemble" style="--i:7">
+        <div class="biz-overview__section-header">
+          <div class="biz-overview__section-title">👥 ${cfg.staffTitle}</div>
+          <div class="biz-overview__staff-badge">${staff.length} ${isRestaurant ? 'colaboradores' : 'miembros'}</div>
+        </div>
+        ${summaryHTML}
+        <div class="biz-overview__staff-table">
+          <div class="biz-overview__staff-head">
+            <span class="biz-overview__staff-head-cell biz-overview__staff-head-cell--name">${cfg.staffColumns[0]}</span>
+            <span class="biz-overview__staff-head-cell">${isRestaurant ? 'Asistencia' : 'Clases'}</span>
+            <span class="biz-overview__staff-head-cell">${cfg.staffColumns[3]}</span>
+            <span class="biz-overview__staff-head-cell">${cfg.staffColumns[4]}</span>
+          </div>
+          ${rowsHTML}
+        </div>
+      </div>`;
+  }
+
+  _buildBarChart(data, labels) {
+    if (!data || data.length === 0) return '<div class="biz-overview__act-empty">Sin datos de tendencia</div>';
+    const max = Math.max(...data, 1);
+    const fmtVal = (v) => v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v.toLocaleString();
+    return `
+      <div class="biz-overview__bars">
+        ${data.map((v, i) => {
+          const pct = Math.round((v / max) * 100);
+          return `
+          <div class="biz-overview__bar-col">
+            <div class="biz-overview__bar-value">${fmtVal(v)}</div>
+            <div class="biz-overview__bar-track">
+              <div class="biz-overview__bar-fill" style="height:${Math.max(pct, 4)}%"></div>
+            </div>
+            <div class="biz-overview__bar-label">${labels[i] || ''}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+
+  _buildMiniDonut(percent) {
+    const size = 120;
+    const r = 48;
+    const circ = 2 * Math.PI * r;
+    const offset = circ - (percent / 100) * circ;
+    return `
+      <svg class="biz-overview__donut-svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+        <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+        <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none"
+          stroke="var(--biz-color)" stroke-width="10"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+          stroke-linecap="round" transform="rotate(-90 ${size / 2} ${size / 2})"
+          class="biz-overview__donut-arc"/>
+      </svg>
+      <div class="biz-overview__donut-center">
+        <span class="biz-overview__donut-pct">${percent}%</span>
+        <span class="biz-overview__donut-label">del total</span>
+      </div>`;
+  }
+
+  _attachOverviewListeners() {
+    // Back button
+    const backBtn = this.container.querySelector('#biz-ov-back');
+    if (backBtn) backBtn.addEventListener('click', () => { window.location.hash = '#home'; });
+
+    // Range pill buttons
+    this.container.querySelectorAll('.biz-overview__range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const range = btn.dataset.range;
+        if (range && range !== this._currentRange) {
+          this._refreshOverview(range);
+        }
+      });
+    });
+
+    // Month picker
+    const monthPicker = this.container.querySelector('#biz-month-picker');
+    if (monthPicker) {
+      monthPicker.addEventListener('change', () => {
+        if (monthPicker.value && monthPicker.value !== this._currentRange) {
+          this._refreshOverview(monthPicker.value);
+        }
+      });
+    }
+
+    // Proposal card click (Xazai only)
+    const proposal = this.container.querySelector('.biz-overview__proposal');
+    if (proposal) {
+      proposal.addEventListener('click', () => {
+        window.location.href = 'Propuesta-Xazai-2026.html';
+      });
+    }
+
+    // Load evidence inbox
+    this._loadEvidenceInbox();
+  }
+
+  async _loadEvidenceInbox() {
+    const listEl = this.container.querySelector('#biz-inbox-list');
+    if (!listEl) return;
+
+    try {
+      // Simple query (no composite index needed) — sort client-side
+      const q = query(
+        collection(db, 'call-transcripts'),
+        where('businessId', '==', this.businessId)
+      );
+      const snap = await getDocs(q);
+      const transcripts = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+        .slice(0, 20);
+
+      if (transcripts.length === 0) {
+        listEl.innerHTML = '<div class="biz-overview__inbox-empty">No hay evidencias de reuniones aún</div>';
+        return;
+      }
+
+      listEl.innerHTML = transcripts.map(t => {
+        const otherName = Object.values(t.participantNames || {}).find(n => n !== 'SuperAdmin') || 'Participante';
+        const date = new Date(t.createdAt).toLocaleDateString('es-PA', {
+          day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const preview = t.summary
+          ? t.summary.replace(/\*\*/g, '').slice(0, 100) + '...'
+          : (t.lines?.length ? `${t.lines.length} líneas transcritas` : 'Sin contenido');
+
+        return `
+          <div class="biz-overview__inbox-item" data-tid="${t.id}">
+            <div class="biz-overview__inbox-icon">📋</div>
+            <div class="biz-overview__inbox-content">
+              <div class="biz-overview__inbox-subject">Minuta — Reunión con ${this._esc(otherName)}</div>
+              <div class="biz-overview__inbox-preview">${this._esc(preview)}</div>
+              <div class="biz-overview__inbox-date">${date}</div>
+            </div>
+            <div class="biz-overview__inbox-arrow">→</div>
+          </div>`;
+      }).join('');
+
+      // Attach click handlers
+      listEl.querySelectorAll('.biz-overview__inbox-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const tid = item.dataset.tid;
+          const transcript = transcripts.find(t => t.id === tid);
+          if (transcript) this._showTranscriptDetail(transcript);
+        });
+      });
+    } catch (err) {
+      console.error('[BizDash] Load evidence inbox error:', err);
+      listEl.innerHTML = '<div class="biz-overview__inbox-empty">Error al cargar evidencias</div>';
+    }
+  }
+
+  _showTranscriptDetail(t) {
+    // Remove existing modal
+    document.querySelector('.biz-transcript-modal-overlay')?.remove();
+
+    const otherName = Object.values(t.participantNames || {}).find(n => n !== 'SuperAdmin') || 'Participante';
+    const date = new Date(t.createdAt).toLocaleDateString('es-PA', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const duration = t.startedAt && t.endedAt
+      ? Math.round((new Date(t.endedAt) - new Date(t.startedAt)) / 60000)
+      : 0;
+
+    const summaryHTML = t.summary
+      ? t.summary.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n- /g, '\n• ').replace(/\n/g, '<br>')
+      : '<em style="color:var(--text-muted);">Resumen en proceso...</em>';
+
+    const linesHTML = (t.lines || []).map(l =>
+      `<div class="biz-transcript-line">
+        <span class="biz-transcript-time">${new Date(l.timestamp).toLocaleTimeString('es-PA')}</span>
+        <span>${this._esc(l.text)}</span>
+      </div>`
+    ).join('');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'biz-transcript-modal-overlay';
+    overlay.innerHTML = `
+      <div class="biz-transcript-modal" style="--biz-color:var(--biz-color, #7C3AED); --biz-rgb:var(--biz-rgb, 124,58,237);">
+        <div class="biz-transcript-modal__header">
+          <div>
+            <h3>📋 Minuta de Reunión</h3>
+            <span class="biz-transcript-modal__meta">${date}${duration ? ` · ${duration} min` : ''} · con ${this._esc(otherName)}</span>
+          </div>
+          <button class="biz-transcript-modal__close" id="biz-tm-close">✕</button>
+        </div>
+        <div class="biz-transcript-modal__tabs">
+          <button class="biz-transcript-modal__tab biz-transcript-modal__tab--active" data-tab="summary">Resumen IA</button>
+          <button class="biz-transcript-modal__tab" data-tab="full">Transcripción Completa</button>
+        </div>
+        <div class="biz-transcript-modal__body" id="biz-tm-body">
+          <div class="biz-transcript-modal__summary">${summaryHTML}</div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('biz-transcript-modal-overlay--show'));
+
+    // Close
+    const closeModal = () => {
+      overlay.classList.remove('biz-transcript-modal-overlay--show');
+      setTimeout(() => overlay.remove(), 300);
+    };
+    overlay.querySelector('#biz-tm-close').addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+    // Tabs
+    overlay.querySelectorAll('.biz-transcript-modal__tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        overlay.querySelectorAll('.biz-transcript-modal__tab').forEach(t => t.classList.remove('biz-transcript-modal__tab--active'));
+        tab.classList.add('biz-transcript-modal__tab--active');
+        const body = overlay.querySelector('#biz-tm-body');
+        if (tab.dataset.tab === 'summary') {
+          body.innerHTML = `<div class="biz-transcript-modal__summary">${summaryHTML}</div>`;
+        } else {
+          body.innerHTML = `<div class="biz-transcript-modal__lines">${linesHTML || '<em>Sin transcripción</em>'}</div>`;
+        }
+      });
+    });
+  }
+
+  _esc(str) {
+    const el = document.createElement('span');
+    el.textContent = str || '';
+    return el.innerHTML;
   }
 
   unmount() {

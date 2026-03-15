@@ -1,22 +1,7 @@
-import { ParticleCanvas } from './components/ParticleCanvas.js';
 import { Toast } from './components/Toast.js';
 import router from './router.js';
 import userAuth from './services/userAuth.js';
-
-// Pages
-import { Login } from './pages/Login.js';
-import { Home } from './pages/Home.js';
-import { SuperAdmin } from './pages/SuperAdmin.js';
-import { Onboarding } from './pages/Onboarding.js';
-import { Dashboard } from './pages/Dashboard.js';
-import { PodcastWorld } from './pages/PodcastWorld.js';
-import { Finance } from './pages/Finance.js';
-import { ClientPortal } from './pages/ClientPortal.js';
-import { LaVainaPresentation } from './pages/LaVainaPresentation.js';
-import { LinaTourSlides } from './pages/LinaTourSlides.js';
-import { CommandCenter } from './pages/CommandCenter.js';
-import { CommCenter } from './pages/CommCenter.js';
-// BusinessDashboard loaded dynamically to avoid module cache issues
+import notificationSystem from './components/NotificationSystem.js?v=124';
 import behaviorService from './services/behaviorService.js';
 
 class App {
@@ -28,51 +13,78 @@ class App {
   }
 
   async init() {
-    // Start loading bar
-    const loadingBar = document.querySelector('.loading-bar-fill');
-    if (loadingBar) {
-      requestAnimationFrame(() => { loadingBar.style.width = '100%'; });
-    }
+    // DON'T init ParticleCanvas yet — it's invisible behind loading screen (z-index 10000)
+    // We'll start it after the loading screen fades out
 
-    // Init particle canvas
-    const canvas = document.getElementById('particle-canvas');
-    if (canvas) {
-      this.particles = new ParticleCanvas(canvas);
-    }
+    // Let the Apple-style reveal animation play (visuals finish by ~1.3s)
+    await this.wait(1400);
 
-    await this.wait(1200);
-
-    // Hide loading screen
+    // Start fading loading screen CONTENT (background stays solid — no crossfade bleed)
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) loadingScreen.classList.add('hide');
 
     this.appShell = document.getElementById('app');
     this.content = document.getElementById('page-content');
 
-    if (this.appShell) {
-      this.appShell.style.opacity = '1';
-      this.appShell.style.transition = 'opacity 0.5s ease';
+    // DON'T show app yet — it stays at opacity: 0 until loading screen is fully removed
+    // This prevents the flash of "ACCIOS CORE" bleeding through the fading loading screen
+
+    // Init ParticleCanvas while content fades (runs in parallel)
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas) {
+      const { ParticleCanvas } = await import('./components/ParticleCanvas.js');
+      this.particles = new ParticleCanvas(canvas);
     }
 
     // Check session
     const session = userAuth.getSession();
     if (session) {
       this.currentUser = session;
+      notificationSystem.init(this.currentUser);
+
+      // Background: re-check role from Firestore (fixes stale sessions)
+      if (session.phone) {
+        userAuth.lookupPhone(session.phone).then(result => {
+          if (result.exists && result.data.role !== session.role) {
+            userAuth.saveSession(result.data);
+            this.currentUser = userAuth.getSession();
+            // If role changed to collaborator, redirect now
+            if (result.data.role === 'collaborator' && window.location.hash !== '#collaborators') {
+              window.location.hash = '#collaborators';
+            }
+          }
+        }).catch(() => {});
+      }
     }
+
+    // Listen for logout to destroy notification system
+    document.addEventListener('accios-logout', () => {
+      notificationSystem.destroy();
+    });
 
     // Router setup
     router.onNavigate = (route) => this.handleRoute(route);
     router.init(this.content);
 
-    // If not logged in, redirect to login
+    // Redirect based on auth state
     if (!this.currentUser) {
       window.location.hash = '#login';
+    } else if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#login') {
+      // Authenticated user stuck on login hash → send to home
+      window.location.hash = '#home';
     }
 
     router.resolve();
 
-    await this.wait(600);
-    loadingScreen?.remove();
+    // Clean handoff: remove loading screen THEN reveal app (no crossfade = no bleed-through)
+    // Loading content fades in 0.45s → wait 500ms → clean cut → app fades in
+    setTimeout(() => {
+      loadingScreen?.remove();
+      if (this.appShell) {
+        this.appShell.style.transition = 'opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)';
+        this.appShell.style.opacity = '1';
+      }
+    }, 500);
 
     // Global toast event listener (used by Finance, ClientPortal, etc.)
     document.addEventListener('toast', (e) => {
@@ -80,11 +92,40 @@ class App {
       if (message) Toast.show(message, type || 'info');
     });
 
-    // Register service worker for PWA (skip on native Capacitor — SW is unnecessary there)
+    // Register service worker for PWA (skip on native Capacitor)
     const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
     if ('serviceWorker' in navigator && !isNative) {
       try {
-        await navigator.serviceWorker.register('sw.js');
+        const reg = await navigator.serviceWorker.register('sw.js');
+        let reloading = false;
+
+        const doReload = () => {
+          if (reloading) return;
+          reloading = true;
+          window.location.reload();
+        };
+
+        // SW tells us it updated → reload once
+        navigator.serviceWorker.addEventListener('message', (e) => {
+          if (e.data?.type === 'SW_UPDATED') doReload();
+        });
+
+        // New SW activated → reload once
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'activated' && navigator.serviceWorker.controller) doReload();
+          });
+        });
+
+        // Check for SW updates on launch + every 60s + on resume
+        reg.update().catch(() => {});
+        this._swUpdateInterval = setInterval(() => reg.update().catch(() => {}), 60000);
+        this._swVisHandler = () => {
+          if (document.visibilityState === 'visible') reg.update().catch(() => {});
+        };
+        document.addEventListener('visibilitychange', this._swVisHandler);
       } catch (e) {
         // SW registration is optional
       }
@@ -106,64 +147,89 @@ class App {
     let pageInstance;
 
     switch (page) {
-      case 'login':
+      case 'login': {
+        const { Login } = await import('./pages/Login.js');
         pageInstance = new Login(this.content, (userData) => this._onLogin(userData));
         break;
+      }
 
-      case 'home':
+      case 'home': {
+        const { Home } = await import('./pages/Home.js?v=124');
         pageInstance = new Home(this.content, this.currentUser);
         break;
+      }
 
-      case 'superadmin':
+      case 'superadmin': {
+        const { SuperAdmin } = await import('./pages/SuperAdmin.js');
         pageInstance = new SuperAdmin(this.content);
         break;
+      }
 
-      case 'onboarding':
+      case 'onboarding': {
+        const { Onboarding } = await import('./pages/Onboarding.js');
         pageInstance = new Onboarding(this.content, this.currentUser, route.sub);
         break;
+      }
 
-      case 'podcast':
+      case 'podcast': {
+        const { PodcastWorld } = await import('./pages/PodcastWorld.js');
         pageInstance = new PodcastWorld(this.content, this.currentUser, route.sub);
         break;
+      }
 
-      case 'dashboard':
+      case 'dashboard': {
+        const { Dashboard } = await import('./pages/Dashboard.js');
         pageInstance = new Dashboard(this.content, this.currentUser, route.sub, route.extra);
         break;
+      }
 
-      case 'finance':
+      case 'finance': {
+        const { Finance } = await import('./pages/Finance.js');
         pageInstance = new Finance(this.content, this.currentUser, route.sub);
         break;
+      }
 
-      case 'portal':
+      case 'portal': {
+        const { ClientPortal } = await import('./pages/ClientPortal.js');
         pageInstance = new ClientPortal(this.content, this.currentUser, route.sub);
         break;
+      }
 
-      case 'lavaina':
+      case 'lavaina': {
+        const { LaVainaPresentation } = await import('./pages/LaVainaPresentation.js');
         pageInstance = new LaVainaPresentation(this.content, this.currentUser);
         break;
+      }
 
-      case 'linatour':
+      case 'linatour': {
+        const { LinaTourSlides } = await import('./pages/LinaTourSlides.js');
         pageInstance = new LinaTourSlides(this.content, this.currentUser);
         break;
+      }
 
-      case 'comms':
-        pageInstance = new CommCenter(this.content, this.currentUser, route.sub);
+      case 'collaborators': {
+        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=124');
+        pageInstance = new CollaboratorPanel(this.content, this.currentUser, route.sub);
         break;
+      }
 
-      case 'command-center':
+      case 'command-center': {
+        const { CommandCenter } = await import('./pages/CommandCenter.js?v=124');
         pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
+      }
 
       case 'biz-dashboard': {
-        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=98');
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=124');
         pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
         break;
       }
 
-      default:
-        // Default to home
+      default: {
+        const { Home } = await import('./pages/Home.js?v=124');
         pageInstance = new Home(this.content, this.currentUser);
         break;
+      }
     }
 
     if (pageInstance) {
@@ -174,6 +240,9 @@ class App {
 
   _onLogin(userData) {
     this.currentUser = userAuth.getSession();
+
+    // Init notification system for the logged-in user
+    notificationSystem.init(this.currentUser);
 
     // SuperAdmin goes to home (can navigate to admin via shield button)
     router.navigate('home');

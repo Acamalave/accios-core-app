@@ -32,7 +32,30 @@ class UserAuth {
       const docRef = doc(db, 'users', formatted);
       const snap = await getDoc(docRef);
       if (snap.exists()) {
-        return { exists: true, data: { id: snap.id, ...snap.data() } };
+        const data = { id: snap.id, ...snap.data() };
+
+        // Auto-detect collaborator role: if user has role 'client' but exists
+        // in the collaborators collection, update their role automatically
+        if (data.role !== 'superadmin' && data.role !== 'collaborator') {
+          try {
+            const last8 = formatted.replace(/\D/g, '').slice(-8);
+            const collabSnap = await getDocs(collection(db, 'collaborators'));
+            const match = collabSnap.docs.find(d => {
+              const cPhone = (d.data().phone || '').replace(/\D/g, '').slice(-8);
+              return cPhone === last8;
+            });
+            if (match) {
+              data.role = 'collaborator';
+              data.name = match.data().name || data.name;
+              // Persist the role fix
+              await updateDoc(docRef, { role: 'collaborator', name: data.name, updatedAt: new Date().toISOString() });
+            }
+          } catch (e) {
+            console.warn('Collaborator auto-detect failed:', e);
+          }
+        }
+
+        return { exists: true, data };
       }
       return { exists: false, data: null };
     } catch (e) {

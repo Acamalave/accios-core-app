@@ -162,6 +162,7 @@ export class LaVainaPresentation {
         const heroClient = this.container.querySelector('.lv-hero-client');
         if (heroClient) {
           heroClient.innerHTML = `<img src="${biz.logo}" alt="${biz.nombre || 'La Vaina'}" class="lv-hero-logo">`;
+          heroClient.classList.add('lv-hero-client--has-logo');
         }
       }
     } catch (e) { /* fallback to text */ }

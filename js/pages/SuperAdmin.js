@@ -41,6 +41,11 @@ export class SuperAdmin {
     };
   }
 
+  _esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
   async render() {
     const user = userAuth.getCurrentUser();
     if (user?.role !== 'superadmin') {
@@ -260,15 +265,15 @@ export class SuperAdmin {
       if (!linked.length) return '<span style="color: var(--text-muted); font-size: 0.8rem;">Sin negocio</span>';
       return linked.map(b => {
         const biz = this.businesses.find(x => x.id === b);
-        return `<span class="sa-biz-tag">${biz?.nombre || b} <button class="sa-unlink-btn" data-unlink-user="${user.phone || user.id}" data-unlink-biz="${b}" title="Desvincular">&times;</button></span>`;
+        return `<span class="sa-biz-tag">${this._esc(biz?.nombre || b)} <button class="sa-unlink-btn" data-unlink-user="${this._esc(user.phone || user.id)}" data-unlink-biz="${this._esc(b)}" title="Desvincular">&times;</button></span>`;
       }).join('');
     };
 
     // Desktop table rows
     const rows = this.users.map(user => `
       <tr>
-        <td><strong>${user.name || '-'}</strong></td>
-        <td>${user.phone || user.id}</td>
+        <td><strong>${this._esc(user.name) || '-'}</strong></td>
+        <td>${this._esc(user.phone || user.id)}</td>
         <td><span class="sa-badge sa-badge--${user.role || 'client'}">${user.role || 'client'}</span></td>
         <td class="sa-status-cell">${pinBadge(user)}<span class="sa-access-text">Acceso: ${lastLogin(user)}</span></td>
         <td>
@@ -296,8 +301,8 @@ export class SuperAdmin {
       <div class="sa-user-card glass-card">
         <div class="sa-user-card-header">
           <div class="sa-user-card-info">
-            <div class="sa-user-card-name">${user.name || '-'}</div>
-            <div class="sa-user-card-phone">${user.phone || user.id}</div>
+            <div class="sa-user-card-name">${this._esc(user.name) || '-'}</div>
+            <div class="sa-user-card-phone">${this._esc(user.phone || user.id)}</div>
           </div>
           <span class="sa-badge sa-badge--${user.role || 'client'}">${user.role || 'client'}</span>
         </div>
@@ -460,11 +465,11 @@ export class SuperAdmin {
       <div class="sa-modal" id="sa-modal">
         <div class="sa-modal-content" style="max-width: 400px;">
           <h3 class="sa-modal-title">Vincular Negocio</h3>
-          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-4);">${user.name || phone}</p>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-4);">${this._esc(user.name || phone)}</p>
           <div class="sa-form-group">
             <label class="sa-form-label">Seleccionar negocio</label>
             <select class="sa-form-select" id="sa-link-biz">
-              ${available.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('')}
+              ${available.map(b => `<option value="${this._esc(b.id)}">${this._esc(b.nombre)}</option>`).join('')}
             </select>
           </div>
           <div class="sa-form-actions">
@@ -554,7 +559,7 @@ export class SuperAdmin {
         <div class="sa-charge-row">
           <div class="sa-charge-info">
             <span class="sa-charge-type">${TYPE_LABELS[charge.type] || charge.type}</span>
-            <span class="sa-charge-desc">${charge.description}</span>
+            <span class="sa-charge-desc">${this._esc(charge.description)}</span>
           </div>
           <div class="sa-charge-amount">$${charge.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
           ${hasAbonos ? `<div class="sa-charge-abono-info">Abonado: $${paid.toFixed(2)} · Resta: $${remaining.toFixed(2)}</div>` : ''}
@@ -578,8 +583,8 @@ export class SuperAdmin {
         <div class="sa-biz-card-header">
           ${biz.logo ? `<img src="${biz.logo}" alt="" class="sa-biz-card-logo">` : '<div class="sa-biz-card-logo sa-biz-card-logo--placeholder">🏢</div>'}
           <div class="sa-biz-card-info">
-            <div class="sa-biz-card-name">${biz.nombre}</div>
-            <div class="sa-biz-card-id">${biz.id} · ${linkedUsers(biz.id)} usuario${linkedUsers(biz.id) !== 1 ? 's' : ''}</div>
+            <div class="sa-biz-card-name">${this._esc(biz.nombre)}</div>
+            <div class="sa-biz-card-id">${this._esc(biz.id)} · ${linkedUsers(biz.id)} usuario${linkedUsers(biz.id) !== 1 ? 's' : ''}</div>
           </div>
         </div>
 
@@ -618,7 +623,7 @@ export class SuperAdmin {
           <div style="display: flex; align-items: center; gap: var(--space-3);">
             ${biz.logo ? `<img src="${biz.logo}" alt="" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;">` : '<div style="width:32px;height:32px;border-radius:6px;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1rem;">🏢</div>'}
             <div>
-              <strong>${biz.nombre}</strong>
+              <strong>${this._esc(biz.nombre)}</strong>
               <div style="font-size:0.75rem;color:var(--text-muted);">${biz.acuerdo_recurrente ? `$${biz.acuerdo_recurrente}/mes` : 'Sin membresía'}</div>
             </div>
           </div>
@@ -754,15 +759,15 @@ export class SuperAdmin {
       <div class="sa-quote-card glass-card">
         <div class="sa-quote-card-header">
           <div>
-            <div class="sa-quote-card-client">${q.clientName || q.clientPhone}</div>
-            <div class="sa-quote-card-biz">${q.businessName || '-'} · ${date}</div>
+            <div class="sa-quote-card-client">${this._esc(q.clientName || q.clientPhone)}</div>
+            <div class="sa-quote-card-biz">${this._esc(q.businessName) || '-'} · ${date}</div>
           </div>
           <span class="sa-badge sa-badge--${statusCls}" ${!statusCls ? 'style="background:rgba(239,68,68,0.12);color:#ef4444;"' : ''}>${QSTATUS[q.status] || q.status}</span>
         </div>
         <div class="sa-quote-card-items">
           ${(q.items || []).map(i => `
             <div class="sa-quote-item-row">
-              <span>${i.description}</span>
+              <span>${this._esc(i.description)}</span>
               <span>$${(i.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
             </div>
           `).join('')}
@@ -772,7 +777,7 @@ export class SuperAdmin {
           ${q.fee > 0 ? `<span style="color:var(--text-muted);font-size:0.8rem;">Fee 3.5%: $${q.fee.toFixed(2)}</span>` : ''}
           ${q.status === 'pagada' ? `<span style="color:var(--neon-green);font-weight:600;">Total: $${(q.total || 0).toFixed(2)}</span>` : ''}
         </div>
-        ${q.notes ? `<div class="sa-quote-card-notes">${q.notes}</div>` : ''}
+        ${q.notes ? `<div class="sa-quote-card-notes">${this._esc(q.notes)}</div>` : ''}
         <div class="sa-card-actions">
           ${q.status === 'pendiente' ? `<button class="sa-btn sa-btn--outline" data-edit-quote="${q.id}">Editar</button>` : ''}
           <button class="sa-btn" data-view-quote="${q.id}">Ver</button>
@@ -833,10 +838,10 @@ export class SuperAdmin {
 
   _showQuoteModal(existing = null) {
     const userOptions = this.users.filter(u => u.role === 'client').map(u =>
-      `<option value="${u.phone || u.id}" ${existing?.clientPhone === (u.phone || u.id) ? 'selected' : ''}>${u.name || u.phone || u.id}</option>`
+      `<option value="${this._esc(u.phone || u.id)}" ${existing?.clientPhone === (u.phone || u.id) ? 'selected' : ''}>${this._esc(u.name || u.phone || u.id)}</option>`
     ).join('');
     const bizOptions = this.businesses.map(b =>
-      `<option value="${b.id}" ${existing?.businessId === b.id ? 'selected' : ''}>${b.nombre}</option>`
+      `<option value="${this._esc(b.id)}" ${existing?.businessId === b.id ? 'selected' : ''}>${this._esc(b.nombre)}</option>`
     ).join('');
 
     const existingItems = existing?.items || [{ description: '', amount: '' }];
@@ -862,7 +867,7 @@ export class SuperAdmin {
             <div id="sa-q-items">
               ${existingItems.map((item, i) => `
                 <div class="sa-quote-item-input" data-item="${i}">
-                  <input class="sa-form-input" placeholder="Descripción" value="${item.description || ''}" data-field="desc">
+                  <input class="sa-form-input" placeholder="Descripción" value="${this._esc(item.description) || ''}" data-field="desc">
                   <input class="sa-form-input" type="number" min="0" step="0.01" placeholder="$0.00" value="${item.amount || ''}" data-field="amount" inputmode="decimal" style="max-width:120px;">
                   <button class="sa-btn sa-btn--danger" style="padding:4px 8px;font-size:0.8rem;" data-remove-item="${i}">×</button>
                 </div>
@@ -872,7 +877,7 @@ export class SuperAdmin {
           </div>
           <div class="sa-form-group">
             <label class="sa-form-label">Notas (opcional)</label>
-            <textarea class="sa-form-input" id="sa-q-notes" rows="2" style="resize:vertical;min-height:48px;">${existing?.notes || ''}</textarea>
+            <textarea class="sa-form-input" id="sa-q-notes" rows="2" style="resize:vertical;min-height:48px;">${this._esc(existing?.notes) || ''}</textarea>
           </div>
           <div class="sa-form-actions">
             <button class="sa-btn" id="sa-modal-cancel">Cancelar</button>
@@ -950,7 +955,7 @@ export class SuperAdmin {
 
     const itemRows = (q.items || []).map(i => `
       <tr>
-        <td style="font-size:0.85rem;">${i.description}</td>
+        <td style="font-size:0.85rem;">${this._esc(i.description)}</td>
         <td style="font-size:0.85rem;text-align:right;white-space:nowrap;">$${(i.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
       </tr>
     `).join('');
@@ -968,8 +973,8 @@ export class SuperAdmin {
             <span class="sa-badge sa-badge--${q.status === 'pagada' ? 'superadmin' : q.status === 'aceptada' ? 'admin' : 'client'}">${QSTATUS[q.status]}</span>
           </div>
           <div style="display:flex;gap:var(--space-4);margin-bottom:var(--space-4);font-size:0.85rem;">
-            <div><span style="color:var(--text-muted);">Cliente:</span> <strong>${q.clientName || q.clientPhone}</strong></div>
-            <div><span style="color:var(--text-muted);">Negocio:</span> <strong>${q.businessName || '-'}</strong></div>
+            <div><span style="color:var(--text-muted);">Cliente:</span> <strong>${this._esc(q.clientName || q.clientPhone)}</strong></div>
+            <div><span style="color:var(--text-muted);">Negocio:</span> <strong>${this._esc(q.businessName) || '-'}</strong></div>
           </div>
           <table class="superadmin-table" style="margin-bottom:var(--space-4);">
             <thead><tr><th>Descripción</th><th style="text-align:right;">Monto</th></tr></thead>
@@ -983,9 +988,9 @@ export class SuperAdmin {
               ${q.status === 'pagada' ? `<tr style="color:var(--neon-green);"><td style="font-weight:700;">Total Pagado</td><td style="font-weight:700;text-align:right;">$${(q.total || 0).toFixed(2)}</td></tr>` : ''}
             </tbody>
           </table>
-          ${q.notes ? `<div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:var(--space-4);"><strong>Notas:</strong> ${q.notes}</div>` : ''}
+          ${q.notes ? `<div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:var(--space-4);"><strong>Notas:</strong> ${this._esc(q.notes)}</div>` : ''}
           ${acceptDate ? `<div style="font-size:0.8rem;color:var(--text-muted);">Aceptada: ${acceptDate}</div>` : ''}
-          ${paidDate ? `<div style="font-size:0.8rem;color:var(--neon-green);">Pagada: ${paidDate} · Método: ${q.paymentMethod || '-'}</div>` : ''}
+          ${paidDate ? `<div style="font-size:0.8rem;color:var(--neon-green);">Pagada: ${paidDate} · Método: ${this._esc(q.paymentMethod) || '-'}</div>` : ''}
           <div class="sa-form-actions">
             <button class="sa-btn" id="sa-modal-cancel">Cerrar</button>
           </div>
@@ -1012,8 +1017,8 @@ export class SuperAdmin {
 
       return `
         <tr>
-          <td><strong>${resp.userName || resp.userId}</strong></td>
-          <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">${resp.businessId}</td>
+          <td><strong>${this._esc(resp.userName || resp.userId)}</strong></td>
+          <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">${this._esc(resp.businessId)}</td>
           <td>${status}</td>
           <td style="color: var(--text-muted); font-size: 0.85rem;">${date}</td>
           <td>
@@ -1067,7 +1072,7 @@ export class SuperAdmin {
           <div style="margin-bottom: var(--space-3);">
             <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 2px;">${Q_TITLES[key]}</div>
             <div style="font-size: 0.85rem; color: ${answer ? 'var(--text-muted)' : 'var(--text-dim)'}; line-height: 1.6; font-style: ${answer ? 'italic' : 'normal'};">
-              ${answer ? `"${answer}"` : 'Sin respuesta'}
+              ${answer ? `"${this._esc(answer)}"` : 'Sin respuesta'}
             </div>
           </div>`;
       }
@@ -1079,7 +1084,7 @@ export class SuperAdmin {
     root.innerHTML = `
       <div class="sa-modal" id="sa-modal">
         <div class="sa-modal-content" style="max-width: 560px; max-height: 80vh; overflow-y: auto;">
-          <h3 class="sa-modal-title">Expediente: ${resp.userName || resp.userId}</h3>
+          <h3 class="sa-modal-title">Expediente: ${this._esc(resp.userName || resp.userId)}</h3>
           <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: var(--space-5);">
             ${resp.completedAt ? 'Completado el ' + new Date(resp.completedAt).toLocaleDateString('es-PA') : 'En progreso'}
           </div>
@@ -1107,11 +1112,11 @@ export class SuperAdmin {
           <h3 class="sa-modal-title">${existing ? 'Editar' : 'Nuevo'} Usuario</h3>
           <div class="sa-form-group">
             <label class="sa-form-label">Telefono (+507)</label>
-            <input class="sa-form-input" id="sa-user-phone" value="${existing?.phone?.replace('+507', '') || ''}" ${existing ? 'readonly style="opacity:0.6"' : ''} placeholder="6XXXXXXX" inputmode="tel">
+            <input class="sa-form-input" id="sa-user-phone" value="${this._esc(existing?.phone?.replace('+507', '')) || ''}" ${existing ? 'readonly style="opacity:0.6"' : ''} placeholder="6XXXXXXX" inputmode="tel">
           </div>
           <div class="sa-form-group">
             <label class="sa-form-label">Nombre</label>
-            <input class="sa-form-input" id="sa-user-name" value="${existing?.name || ''}" placeholder="Maria Garcia">
+            <input class="sa-form-input" id="sa-user-name" value="${this._esc(existing?.name) || ''}" placeholder="Maria Garcia">
           </div>
           <div class="sa-form-group">
             <label class="sa-form-label">Rol</label>
@@ -1169,7 +1174,7 @@ export class SuperAdmin {
           <h3 class="sa-modal-title">${existing ? 'Editar' : 'Nuevo'} Negocio</h3>
           <div class="sa-form-group">
             <label class="sa-form-label">ID (unico, sin espacios)</label>
-            <input class="sa-form-input" id="sa-biz-id" value="${existing?.id || ''}" ${existing ? 'readonly style="opacity:0.6"' : ''} placeholder="ej: restaurante-luna">
+            <input class="sa-form-input" id="sa-biz-id" value="${this._esc(existing?.id) || ''}" ${existing ? 'readonly style="opacity:0.6"' : ''} placeholder="ej: restaurante-luna">
           </div>
           <div class="sa-form-group">
             <label class="sa-form-label">Nombre del negocio</label>

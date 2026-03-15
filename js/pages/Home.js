@@ -1,5 +1,9 @@
 import userAuth from '../services/userAuth.js';
 import { apiUrl } from '../services/apiConfig.js';
+import {
+  db, collection, doc, getDocs, updateDoc, onSnapshot,
+  query, where, orderBy, Timestamp
+} from '../services/firebase.js';
 
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -15,15 +19,26 @@ export class Home {
     this.businesses = [];
     this._animId = null;
     this._orbitals = [];
-    this._centerGlow = null;
-    this._pointLights = null;
     this._paused = false;        // orbit paused when a planet is clicked
     this._activeWorld = null;    // which world is currently emitting waves
+  }
+
+  /** Escape HTML entities to prevent XSS */
+  _esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
   async render() {
     const user = this.currentUser;
     const isSuperAdmin = user?.role === 'superadmin';
+    const isCollaborator = user?.role === 'collaborator';
+
+    // Collaborators go directly to the solicitudes board
+    if (isCollaborator) {
+      window.location.hash = '#collaborators';
+      return;
+    }
 
     this.container.innerHTML = `
       <section class="home-page">
@@ -39,51 +54,48 @@ export class Home {
       </section>
     `;
 
-    try {
-      if (isSuperAdmin) {
-        this.businesses = await userAuth.getAllBusinesses();
-      } else {
-        this.businesses = await userAuth.getUserBusinesses(user?.phone);
-      }
-    } catch (e) {
-      console.error('Failed to load businesses:', e);
-      this.businesses = [];
-    }
-
-    // Fetch KPI data for superadmin panels
+    // Fetch businesses + KPI data in PARALLEL (not sequentially)
     this._kpiData = null;
-    if (isSuperAdmin) {
-      try {
-        const res = await fetch(apiUrl('/api/command-data?range=30d'));
-        if (res.ok) this._kpiData = await res.json();
-      } catch (e) {
-        console.error('Failed to load KPI data:', e);
-      }
-    }
+    const bizPromise = (isSuperAdmin
+      ? userAuth.getAllBusinesses()
+      : userAuth.getUserBusinesses(user?.phone)
+    ).catch(e => { console.error('Failed to load businesses:', e); return []; });
+
+    const kpiPromise = isSuperAdmin
+      ? fetch(apiUrl('/api/command-data?range=30d'))
+          .then(res => res.ok ? res.json() : null)
+          .catch(e => { console.error('Failed to load KPI data:', e); return null; })
+      : Promise.resolve(null);
+
+    const [businesses, kpiData] = await Promise.all([bizPromise, kpiPromise]);
+    this.businesses = businesses || [];
+    this._kpiData = kpiData;
 
     const firstName = (user?.name || '').split(' ')[0] || '';
 
     this.container.innerHTML = `
       <section class="home-page">
-        ${firstName ? `<div class="home-greeting">Hola, ${firstName}</div>` : ''}
+        ${firstName ? `<div class="home-greeting">Hola, ${this._esc(firstName)}</div>` : ''}
         <div class="home-content">
           ${this.businesses.length > 0 ? this._buildOrbitalSystem() : this._buildEmptyState()}
         </div>
 
         <div class="home-actions">
           ${isSuperAdmin ? `
-            <button class="home-admin" id="home-superadmin-btn" title="Super Admin" style="position: fixed; top: var(--space-5); right: var(--space-5);">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </button>
-            <button class="home-admin" id="home-finance-btn" title="Finanzas" style="position: fixed; top: var(--space-5); right: calc(var(--space-5) + 52px);">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </button>
-            <button class="home-admin" id="home-command-btn" title="Command Center" style="position: fixed; top: var(--space-5); right: calc(var(--space-5) + 104px);">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            </button>
-            <button class="home-admin" id="home-comms-btn" title="Comm Center" style="position: fixed; top: var(--space-5); right: calc(var(--space-5) + 156px);">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>
-            </button>
+            <div class="home-admin-bar">
+              <button class="home-admin" id="home-collab-btn" title="Panel de Equipo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </button>
+              <button class="home-admin" id="home-command-btn" title="Command Center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              </button>
+              <button class="home-admin" id="home-finance-btn" title="Finanzas">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </button>
+              <button class="home-admin" id="home-superadmin-btn" title="Super Admin">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </button>
+            </div>
           ` : ''}
           <button class="home-action-btn" id="home-logout" title="Cerrar sesion">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -92,6 +104,7 @@ export class Home {
         </div>
 
         ${this.businesses.length > 0 && isSuperAdmin ? this._buildSidePanels(firstName, user) : ''}
+        ${this.businesses.length > 0 && isSuperAdmin ? this._buildMobileKpiStrip() : ''}
 
         <div class="home-ecosystem-label">Digital Ecosystem</div>
         <footer class="home-footer">Desarrollado por Acacio Malave</footer>
@@ -239,6 +252,57 @@ export class Home {
     `;
   }
 
+  _buildMobileKpiStrip() {
+    const k = this._kpiData?.kpis;
+    const fmt = (n) => (n || 0).toLocaleString('es-PA');
+    const fmtMoney = (n) => '$' + (n || 0).toLocaleString('es-PA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const activeCount = this.businesses.filter(b => !/estephano/i.test(b.nombre)).length;
+    const total = this.businesses.length;
+
+    return `
+      <div class="mobile-kpi-strip" id="mobile-kpi-strip">
+        <div class="mobile-kpi-scroll">
+          <div class="mobile-kpi-card">
+            <div class="mobile-kpi-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="mobile-kpi-data">
+              <span class="mobile-kpi-value">${k ? fmt(k.totalUsers) : '--'}</span>
+              <span class="mobile-kpi-label">Usuarios</span>
+            </div>
+          </div>
+          <div class="mobile-kpi-card">
+            <div class="mobile-kpi-icon mobile-kpi-icon--revenue">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="mobile-kpi-data">
+              <span class="mobile-kpi-value">${k ? fmtMoney(k.totalRevenue) : '--'}</span>
+              <span class="mobile-kpi-label">Revenue</span>
+            </div>
+          </div>
+          <div class="mobile-kpi-card">
+            <div class="mobile-kpi-icon mobile-kpi-icon--txn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="mobile-kpi-data">
+              <span class="mobile-kpi-value">${k ? fmt(k.totalTransactions) : '--'}</span>
+              <span class="mobile-kpi-label">Transacciones</span>
+            </div>
+          </div>
+          <div class="mobile-kpi-card">
+            <div class="mobile-kpi-icon mobile-kpi-icon--biz">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="mobile-kpi-data">
+              <span class="mobile-kpi-value">${activeCount}/${total}</span>
+              <span class="mobile-kpi-label">Negocios</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   _buildOrbitalSystem() {
     // Businesses that need a white/light background in their hexagon
     const lightBgNames = ['lina tour'];
@@ -255,7 +319,7 @@ export class Home {
             <div class="orbit-world-holo-shimmer"></div>
             <div class="orbit-world-img">
               ${biz.logo
-                ? `<img src="${biz.logo}" alt="${biz.nombre}" draggable="false" />`
+                ? `<img src="${this._esc(biz.logo)}" alt="${this._esc(biz.nombre)}" draggable="false" />`
                 : `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                      <rect x="2" y="3" width="20" height="14" rx="2"/>
                      <line x1="8" y1="21" x2="16" y2="21"/>
@@ -264,8 +328,8 @@ export class Home {
               }
             </div>
           </div>
-          <span class="orbit-world-name">${biz.nombre}</span>
-          <span class="orbit-world-readout">${biz.tipo || 'SISTEMA'}</span>
+          <span class="orbit-world-name">${this._esc(biz.nombre)}</span>
+          <span class="orbit-world-readout">${this._esc(biz.tipo) || 'SISTEMA'}</span>
           ${isStandby ? '<span class="orbit-world-standby-badge">Stand by</span>' : ''}
         </div>
       `;
@@ -312,9 +376,6 @@ export class Home {
               stroke-linecap="round"
               class="orbital-energy-segments" filter="url(#neonGlow)" />
           </svg>
-          <div class="orbital-ring-indicator">
-            <span class="orbital-ring-pct">5%</span>
-          </div>
           <div class="orbital-energy-trail" id="orbital-energy-trail"></div>
         </div>
 
@@ -326,7 +387,6 @@ export class Home {
         <div class="core-geometric" id="core-geometric">
           <div class="core-volumetric-rays"></div>
           <div class="core-ambient-glow"></div>
-          <div class="core-assembly-particles" id="core-assembly-particles"></div>
           <div class="core-3d-scene">
             <div class="core-3d-floater">
               <img src="assets/images/Accios.001.png" alt="ACCIOS CORE" class="core-hero-img" draggable="false" />
@@ -345,103 +405,88 @@ export class Home {
     `;
   }
 
-  // ─── Core Assembly Animation ──────────────────────────
+  // ─── Apple-style Entrance Animation ──────────────────────────
 
   _runCoreAssembly() {
     const core = this.container.querySelector('#core-geometric');
-    const particleContainer = this.container.querySelector('#core-assembly-particles');
-    if (!core || !particleContainer) return;
+    if (!core) return;
 
     const scene3d = core.querySelector('.core-3d-scene');
     const rings = core.querySelectorAll('.core-orbit-ring');
     const rays = core.querySelector('.core-volumetric-rays');
+    const energyRing = this.container.querySelector('#orbital-energy-ring');
+    const centerGlow = this.container.querySelector('#orbital-center-glow');
 
-    // Hide core elements initially
-    if (scene3d) { scene3d.style.opacity = '0'; scene3d.style.transform = 'scale(0.3)'; }
-    rings.forEach(el => { el.style.opacity = '0'; });
-    if (rays) { rays.style.opacity = '0'; }
+    // Apple curve
+    const appleCurve = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-    // Spawn assembly particles
-    const PARTICLE_COUNT = 50;
-    const assemblyParticles = [];
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const el = document.createElement('div');
-      el.className = 'assembly-particle';
-      particleContainer.appendChild(el);
-
-      const angle = (Math.PI * 2 / PARTICLE_COUNT) * i + (Math.random() - 0.5) * 0.5;
-      const dist = 180 + Math.random() * 250;
-
-      assemblyParticles.push({
-        el,
-        x: Math.cos(angle) * dist,
-        y: Math.sin(angle) * dist,
-        vx: 0, vy: 0,
-        delay: i * 25,
-        arrived: false,
-        size: 2 + Math.random() * 4,
-      });
+    // Start everything hidden
+    if (scene3d) {
+      scene3d.style.opacity = '0';
+      scene3d.style.transform = 'scale(0.6)';
+      scene3d.style.filter = 'blur(12px)';
     }
+    rings.forEach(el => { el.style.opacity = '0'; el.style.transform = 'scale(0.5)'; });
+    if (rays) { rays.style.opacity = '0'; rays.style.transform = 'translate(-50%, -50%) scale(0.3)'; }
+    if (energyRing) { energyRing.style.opacity = '0'; energyRing.style.transform = 'translate(-50%, -50%) scale(0.4)'; }
+    if (centerGlow) { centerGlow.style.opacity = '0'; centerGlow.style.transform = 'scale(0.2)'; }
 
-    const K = 140, D = 18;
-    let startTime = null;
-    let allArrived = false;
-
-    const tick = (now) => {
-      if (!startTime) startTime = now;
-      const elapsed = now - startTime;
-      const dt = Math.min(1 / 60, 0.025);
-      let arrivedCount = 0;
-
-      for (const p of assemblyParticles) {
-        if (elapsed < p.delay) { p.el.style.opacity = '0'; continue; }
-        if (p.arrived) { arrivedCount++; continue; }
-
-        p.vx += (-K * p.x - D * p.vx) * dt;
-        p.vy += (-K * p.y - D * p.vy) * dt;
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-
-        const dist = Math.sqrt(p.x * p.x + p.y * p.y);
-        const opacity = Math.min(1, (elapsed - p.delay) / 300);
-
-        p.el.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`;
-        p.el.style.opacity = opacity.toFixed(2);
-        p.el.style.width = p.el.style.height = `${p.size}px`;
-
-        if (dist < 2 && Math.abs(p.vx) < 1 && Math.abs(p.vy) < 1) {
-          p.arrived = true;
-          p.el.style.opacity = '0';
-          arrivedCount++;
-        }
-      }
-
-      const progress = arrivedCount / assemblyParticles.length;
-
-      // Progressively reveal 3D scene
+    // Phase 1 (50ms): Logo materializes from blur
+    setTimeout(() => {
       if (scene3d) {
-        const sceneP = Math.min(1, progress * 1.2);
-        scene3d.style.opacity = sceneP.toFixed(3);
-        scene3d.style.transform = `scale(${0.3 + sceneP * 0.7})`;
+        scene3d.style.transition = `opacity 0.9s ${appleCurve}, transform 0.9s ${appleCurve}, filter 0.9s ${appleCurve}`;
+        scene3d.style.opacity = '1';
+        scene3d.style.transform = 'scale(1)';
+        scene3d.style.filter = 'blur(0)';
       }
+    }, 50);
 
-      if (progress >= 1 && !allArrived) {
-        allArrived = true;
-        requestAnimationFrame(() => {
-          if (scene3d) { scene3d.style.transition = 'all 0.8s cubic-bezier(0.22, 1, 0.36, 1)'; scene3d.style.opacity = '1'; scene3d.style.transform = 'scale(1)'; }
-          rings.forEach(r => { r.style.transition = 'opacity 0.8s ease'; r.style.opacity = '1'; });
-          if (rays) { rays.style.transition = 'opacity 1.2s ease'; rays.style.opacity = String(getComputedStyle(document.documentElement).getPropertyValue('--vol-light-intensity').trim() || '0.9'); }
-          setTimeout(() => { particleContainer.innerHTML = ''; }, 600);
-          core.classList.add('core-geometric--assembled');
-        });
-        return;
+    // Phase 2 (200ms): Center glow expands outward
+    setTimeout(() => {
+      if (centerGlow) {
+        centerGlow.style.transition = `opacity 1s ${appleCurve}, transform 1s ${appleCurve}`;
+        centerGlow.style.opacity = '0.5';
+        centerGlow.style.transform = 'scale(1)';
       }
+    }, 200);
 
-      requestAnimationFrame(tick);
-    };
+    // Phase 3 (350ms): Volumetric light rays bloom
+    setTimeout(() => {
+      if (rays) {
+        rays.style.transition = `opacity 1.2s ${appleCurve}, transform 1.2s ${appleCurve}`;
+        rays.style.opacity = String(getComputedStyle(document.documentElement).getPropertyValue('--vol-light-intensity').trim() || '0.9');
+        rays.style.transform = 'translate(-50%, -50%) scale(1)';
+      }
+    }, 350);
 
-    requestAnimationFrame(tick);
+    // Phase 4 (500ms): Orbit rings appear with scale
+    setTimeout(() => {
+      rings.forEach((r, i) => {
+        r.style.transition = `opacity 0.8s ${appleCurve} ${i * 0.1}s, transform 0.8s ${appleCurve} ${i * 0.1}s`;
+        r.style.opacity = '1';
+        r.style.transform = 'scale(1)';
+      });
+    }, 500);
+
+    // Phase 5 (600ms): Energy ring scales up
+    setTimeout(() => {
+      if (energyRing) {
+        energyRing.style.transition = `opacity 1s ${appleCurve}, transform 1s ${appleCurve}`;
+        energyRing.style.opacity = '1';
+        energyRing.style.transform = 'translate(-50%, -50%) scale(1)';
+      }
+    }, 600);
+
+    // Clean up inline transitions after everything settles
+    setTimeout(() => {
+      if (scene3d) scene3d.style.transition = '';
+      if (scene3d) scene3d.style.filter = '';
+      rings.forEach(r => { r.style.transition = ''; r.style.transform = ''; });
+      if (rays) rays.style.transition = '';
+      if (energyRing) { energyRing.style.transition = ''; energyRing.style.transform = 'translate(-50%, -50%)'; }
+      if (centerGlow) centerGlow.style.transition = '';
+      core.classList.add('core-geometric--assembled');
+    }, 2000);
   }
 
   // ─── Particle Stream System ──────────────────────────────
@@ -469,7 +514,7 @@ export class Home {
         radiusX: 80 + Math.random() * 180 + clusterBase * 20,
         radiusY: 60 + Math.random() * 140 + clusterBase * 15,
         tilt: (Math.random() - 0.5) * 0.6,
-        size: 1 + Math.random() * 2.5,
+        size: 0.4 + Math.random() * 1.0,
         color: hex,
         alpha: 0.4 + Math.random() * 0.5,
         trail: [],
@@ -592,11 +637,25 @@ export class Home {
     const systemEl = this.container.querySelector('#orbital-system-3d');
     if (!systemEl) return;
 
-    const getRect = () => systemEl.getBoundingClientRect();
+    // Mobile detection + perf optimizations
+    const isMobile = window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // Cache rect — only recalculate on resize, not every frame
+    let cachedRect = systemEl.getBoundingClientRect();
+    const onResize = () => { cachedRect = systemEl.getBoundingClientRect(); };
+    window.addEventListener('resize', onResize);
+    this._cleanupResize = () => window.removeEventListener('resize', onResize);
+
+    // Frame skipping for mobile: render every other frame
+    let frameCount = 0;
+
     const animate = () => {
       this._animId = requestAnimationFrame(animate);
 
-      const r = getRect();
+      // On mobile, skip every other frame to halve GPU load
+      if (isMobile && ++frameCount % 2 !== 0) return;
+
+      const r = cachedRect;
       const cx = r.width / 2;
       const cy = r.height / 2;
       const orbitRadius = Math.min(cx, cy) * 0.78;
@@ -684,9 +743,9 @@ export class Home {
         this._centerGlow.style.transform = `scale(${glowScale.toFixed(3)})`;
       }
 
-      // ─── Particle streams + faint node beams ───
+      // ─── Particle streams + faint node beams (skip on mobile) ───
       const now = performance.now();
-      if (this._beamCtx && this._beamCanvas && this._particles) {
+      if (!isMobile && this._beamCtx && this._beamCanvas && this._particles) {
         const dpr = this._beamDpr || 1;
         const bctx = this._beamCtx;
         bctx.clearRect(0, 0, this._beamCanvas.width, this._beamCanvas.height);
@@ -735,7 +794,7 @@ export class Home {
           bctx.fill();
 
           // Glow pass for larger particles
-          if (p.size > 2) {
+          if (p.size > 1) {
             bctx.beginPath();
             bctx.arc(px * dpr, py * dpr, p.size * 2.5 * dpr, 0, Math.PI * 2);
             bctx.fillStyle = hexToRgba(p.color, p.alpha * 0.12);
@@ -744,8 +803,8 @@ export class Home {
         }
       }
 
-      // ─── Orbit trail dots ───
-      if (this._trailDots) {
+      // ─── Orbit trail dots (skip on mobile) ───
+      if (!isMobile && this._trailDots) {
         for (const trail of this._trailDots) {
           trail.theta += trail.speed;
           const tx = cx + orbitRadius * Math.cos(trail.theta);
@@ -757,18 +816,22 @@ export class Home {
       }
     };
 
-    // Entrance animation
+    // Apple-style entrance: planets emerge from blur with stagger
     const worldEls = this.container.querySelectorAll('.orbit-world');
+    const appleCurve = 'cubic-bezier(0.22, 1, 0.36, 1)';
     worldEls.forEach((el, i) => {
       el.style.opacity = '0';
-      el.style.transform = 'translate(-50%, -50%) scale(0.3)';
+      el.style.transform = 'translate(-50%, -50%) scale(0.4)';
+      el.style.filter = 'blur(8px)';
       setTimeout(() => {
-        el.style.transition = 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.transition = `opacity 0.9s ${appleCurve}, transform 0.9s ${appleCurve}, filter 0.9s ${appleCurve}`;
         el.style.opacity = '1';
+        el.style.filter = 'blur(0)';
         setTimeout(() => {
           el.style.transition = 'none';
-        }, 1100);
-      }, 500 + i * 250);
+          el.style.filter = '';
+        }, 1000);
+      }, 800 + i * 120);
     });
 
     this._animId = requestAnimationFrame(animate);
@@ -793,6 +856,263 @@ export class Home {
       ripple.addEventListener('animationend', () => {
         ripple.remove();
       }, { once: true });
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     COLLABORATOR HOME — Task-focused dashboard
+     ═══════════════════════════════════════════════ */
+
+  async _renderCollaboratorHome(user) {
+    const firstName = (user?.name || '').split(' ')[0] || 'Colaborador';
+
+    this.container.innerHTML = `
+      <section class="collab-home">
+        <div class="collab-home__loading">
+          <div class="collab-spinner"></div>
+          <p>Cargando tus tareas...</p>
+        </div>
+      </section>`;
+
+    // Load tasks assigned to this collaborator
+    let tasks = [];
+    let collabDoc = null;
+    try {
+      // Find collaborator by phone
+      const collabSnap = await getDocs(
+        query(collection(db, 'collaborators'), where('phone', '==', user.phone?.replace('+507', '') || ''))
+      );
+      if (!collabSnap.empty) {
+        collabDoc = { id: collabSnap.docs[0].id, ...collabSnap.docs[0].data() };
+      }
+      // Also try with formatted phone
+      if (!collabDoc) {
+        const collabSnap2 = await getDocs(
+          query(collection(db, 'collaborators'), where('phone', '==', user.phone || ''))
+        );
+        if (!collabSnap2.empty) {
+          collabDoc = { id: collabSnap2.docs[0].id, ...collabSnap2.docs[0].data() };
+        }
+      }
+
+      if (collabDoc) {
+        const taskSnap = await getDocs(
+          query(collection(db, 'solicitudes'), where('assignedTo', '==', collabDoc.id), orderBy('createdAt', 'desc'))
+        );
+        tasks = taskSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } else {
+        // Fallback: load all tasks
+        const taskSnap = await getDocs(
+          query(collection(db, 'solicitudes'), orderBy('createdAt', 'desc'))
+        );
+        tasks = taskSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+    } catch (e) {
+      console.warn('[Home] Collaborator load error:', e);
+    }
+
+    this._collabTasks = tasks;
+    this._collabDoc = collabDoc;
+
+    const STATUSES = {
+      inbox: { label: 'Bandeja', color: '#8B5CF6' },
+      in_progress: { label: 'En Proceso', color: '#3B82F6' },
+      review: { label: 'Revision', color: '#F59E0B' },
+      done: { label: 'Completado', color: '#22C55E' },
+    };
+
+    const activeTasks = tasks.filter(t => t.status !== 'done');
+    const doneTasks = tasks.filter(t => t.status === 'done');
+    const urgentCount = tasks.filter(t => t.priority === 'urgent' || t.priority === 'high').length;
+
+    this.container.innerHTML = `
+      <section class="collab-home">
+        <header class="collab-home__header">
+          <div class="collab-home__greeting">
+            <h1 class="collab-home__title">Hola, ${firstName}</h1>
+            <p class="collab-home__subtitle">Tienes ${activeTasks.length} tarea${activeTasks.length !== 1 ? 's' : ''} activa${activeTasks.length !== 1 ? 's' : ''}</p>
+          </div>
+          <div class="collab-home__stats">
+            <div class="collab-home__stat">
+              <span class="collab-home__stat-val">${activeTasks.length}</span>
+              <span class="collab-home__stat-label">Activas</span>
+            </div>
+            <div class="collab-home__stat">
+              <span class="collab-home__stat-val" style="color:#22C55E;">${doneTasks.length}</span>
+              <span class="collab-home__stat-label">Completadas</span>
+            </div>
+            ${urgentCount > 0 ? `
+            <div class="collab-home__stat collab-home__stat--urgent">
+              <span class="collab-home__stat-val" style="color:#EF4444;">${urgentCount}</span>
+              <span class="collab-home__stat-label">Urgentes</span>
+            </div>` : ''}
+          </div>
+          <button class="home-action-btn" id="collab-home-logout" title="Cerrar sesion">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Salir</span>
+          </button>
+        </header>
+
+        <div class="collab-home__grid" id="collab-home-grid">
+          ${activeTasks.length === 0 && doneTasks.length === 0 ? `
+            <div class="collab-home__empty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              <h3>Sin tareas asignadas</h3>
+              <p>Cuando te asignen solicitudes apareceran aqui.</p>
+            </div>
+          ` : `
+            ${activeTasks.map((task, i) => this._buildCollabTaskCard(task, STATUSES, i)).join('')}
+            ${doneTasks.length > 0 ? `
+              <div class="collab-home__divider">
+                <span>Completadas</span>
+              </div>
+              ${doneTasks.slice(0, 5).map((task, i) => this._buildCollabTaskCard(task, STATUSES, activeTasks.length + i)).join('')}
+            ` : ''}
+          `}
+        </div>
+
+        <footer class="collab-home__footer">ACCIOS CORE</footer>
+        <div class="collab-modal-overlay" id="collab-modal-overlay"></div>
+      </section>
+    `;
+
+    this._attachCollabHomeListeners(STATUSES);
+    this._startCollabRealtimeSync(collabDoc, STATUSES);
+  }
+
+  _buildCollabTaskCard(task, STATUSES, index) {
+    const pri = task.priority || 'medium';
+    const status = STATUSES[task.status || 'inbox'] || STATUSES.inbox;
+    const PCOLORS = { low: '#6B7280', medium: '#3B82F6', high: '#F59E0B', urgent: '#EF4444' };
+    const priColor = PCOLORS[pri] || PCOLORS.medium;
+    const dateStr = this._formatCollabDate(task.createdAt);
+    const tags = task.tags || [];
+    const isDone = task.status === 'done';
+
+    return `
+    <div class="collab-home__card collab-home__card--${pri} ${isDone ? 'collab-home__card--done' : ''}"
+         data-task-id="${task.id}" style="--card-index:${index}; --pri-color:${priColor}; --status-color:${status.color};">
+      <div class="collab-home__card-accent"></div>
+      <div class="collab-home__card-body">
+        <div class="collab-home__card-top">
+          <span class="collab-home__card-priority" style="background:${priColor};"></span>
+          <span class="collab-home__card-status" style="color:${status.color};">${status.label}</span>
+        </div>
+        <h3 class="collab-home__card-title">${this._esc(task.title) || 'Sin titulo'}</h3>
+        ${task.description ? `<p class="collab-home__card-desc">${this._esc(task.description.slice(0, 140))}${task.description.length > 140 ? '...' : ''}</p>` : ''}
+        ${tags.length ? `<div class="collab-home__card-tags">${tags.map(t => `<span class="collab-home__card-tag">${this._esc(t)}</span>`).join('')}</div>` : ''}
+        <div class="collab-home__card-bottom">
+          <span class="collab-home__card-date">${dateStr}</span>
+          <div class="collab-home__card-actions">
+            ${!isDone ? `
+              <button class="collab-home__card-btn" data-move="${task.id}" data-to="${task.status === 'inbox' ? 'in_progress' : task.status === 'in_progress' ? 'review' : 'done'}" title="Avanzar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <button class="collab-home__card-btn collab-home__card-btn--done" data-complete="${task.id}" title="Completar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  _formatCollabDate(ts) {
+    if (!ts) return '';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const now = new Date();
+    const diff = now - d;
+    if (diff < 60000) return 'ahora';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}m`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`;
+    if (diff < 604800000) return `${Math.floor(diff / 86400000)}d`;
+    return d.toLocaleDateString('es', { day: 'numeric', month: 'short' });
+  }
+
+  _attachCollabHomeListeners(STATUSES) {
+    // Logout
+    this.container.querySelector('#collab-home-logout')?.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('accios-logout'));
+      userAuth.clearSession();
+      window.location.hash = '#login';
+      window.location.reload();
+    });
+
+    // Move task forward
+    this.container.querySelectorAll('[data-move]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const taskId = btn.dataset.move;
+        const newStatus = btn.dataset.to;
+        try {
+          await updateDoc(doc(db, 'solicitudes', taskId), { status: newStatus, updatedAt: Timestamp.now() });
+          const label = STATUSES[newStatus]?.label || newStatus;
+          document.dispatchEvent(new CustomEvent('toast', { detail: { message: `Movido a ${label}`, type: 'info' } }));
+        } catch (err) {
+          console.error('[Home] Move task error:', err);
+        }
+      });
+    });
+
+    // Complete task
+    this.container.querySelectorAll('[data-complete]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const taskId = btn.dataset.complete;
+        try {
+          await updateDoc(doc(db, 'solicitudes', taskId), { status: 'done', updatedAt: Timestamp.now() });
+          document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Tarea completada', type: 'success' } }));
+        } catch (err) {
+          console.error('[Home] Complete task error:', err);
+        }
+      });
+    });
+  }
+
+  _startCollabRealtimeSync(collabDoc, STATUSES) {
+    if (!collabDoc) return;
+    try {
+      this._unsubCollabTasks = onSnapshot(
+        query(collection(db, 'solicitudes'), where('assignedTo', '==', collabDoc.id), orderBy('createdAt', 'desc')),
+        (snap) => {
+          this._collabTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          const grid = this.container.querySelector('#collab-home-grid');
+          if (!grid) return;
+
+          const activeTasks = this._collabTasks.filter(t => t.status !== 'done');
+          const doneTasks = this._collabTasks.filter(t => t.status === 'done');
+
+          // Update stat counts
+          const statVals = this.container.querySelectorAll('.collab-home__stat-val');
+          if (statVals[0]) statVals[0].textContent = activeTasks.length;
+          if (statVals[1]) statVals[1].textContent = doneTasks.length;
+
+          // Update subtitle
+          const sub = this.container.querySelector('.collab-home__subtitle');
+          if (sub) sub.textContent = `Tienes ${activeTasks.length} tarea${activeTasks.length !== 1 ? 's' : ''} activa${activeTasks.length !== 1 ? 's' : ''}`;
+
+          grid.innerHTML = activeTasks.length === 0 && doneTasks.length === 0
+            ? `<div class="collab-home__empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                  <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                <h3>Sin tareas asignadas</h3>
+                <p>Cuando te asignen solicitudes apareceran aqui.</p>
+              </div>`
+            : `${activeTasks.map((t, i) => this._buildCollabTaskCard(t, STATUSES, i)).join('')}
+               ${doneTasks.length > 0 ? `
+                 <div class="collab-home__divider"><span>Completadas</span></div>
+                 ${doneTasks.slice(0, 5).map((t, i) => this._buildCollabTaskCard(t, STATUSES, activeTasks.length + i)).join('')}
+               ` : ''}`;
+
+          this._attachCollabHomeListeners(STATUSES);
+        }
+      );
+    } catch (e) {
+      console.warn('[Home] Collab realtime sync error:', e);
     }
   }
 
@@ -828,11 +1148,12 @@ export class Home {
       window.location.hash = '#command-center';
     });
 
-    this.container.querySelector('#home-comms-btn')?.addEventListener('click', () => {
-      window.location.hash = '#comms';
+    this.container.querySelector('#home-collab-btn')?.addEventListener('click', () => {
+      window.location.hash = '#collaborators';
     });
 
     this.container.querySelector('#home-logout')?.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('accios-logout'));
       userAuth.clearSession();
       window.location.hash = '#login';
       window.location.reload();
@@ -905,9 +1226,16 @@ export class Home {
           return;
         }
 
-        // Xazai → proposal page
+        // Xazai → business dashboard
         if (bizId === 'xazai') {
-          window.location.href = 'Propuesta-Xazai-2026.html';
+          window.location.hash = '#biz-dashboard/xazai';
+          return;
+        }
+
+        // Rush Ride → business dashboard
+        const bizNameRR = world.querySelector('.orbit-world-name')?.textContent || '';
+        if (/rush.?ride/i.test(bizNameRR) || bizId === 'rush-ride') {
+          window.location.hash = '#biz-dashboard/rush-ride';
           return;
         }
 
@@ -1018,7 +1346,7 @@ export class Home {
       <div class="cosmos-bubble-row">
         <div class="cosmos-bubble-pulse"></div>
         <div class="cosmos-bubble-info">
-          <span class="cosmos-bubble-name">${businessName}</span>
+          <span class="cosmos-bubble-name">${this._esc(businessName)}</span>
           <span class="cosmos-bubble-msg">Construyendo este ecosistema — Proximamente</span>
         </div>
       </div>
@@ -1546,12 +1874,17 @@ export class Home {
       cancelAnimationFrame(this._animId);
       this._animId = null;
     }
+    if (this._cleanupResize) this._cleanupResize();
     if (this._rippleInterval) {
       clearInterval(this._rippleInterval);
     }
     if (this._visHandler) {
       document.removeEventListener('visibilitychange', this._visHandler);
       this._visHandler = null;
+    }
+    if (this._unsubCollabTasks) {
+      this._unsubCollabTasks();
+      this._unsubCollabTasks = null;
     }
     this._beamCtx = null;
     this._beamCanvas = null;

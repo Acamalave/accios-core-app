@@ -17,12 +17,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(124, 58, 237, 0.3);
+  background: var(--glass-bg, rgba(124, 58, 237, 0.3));
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 58, 237, 0.5);
+  background: var(--glass-border, rgba(124, 58, 237, 0.5));
 }
 
 /* Selection */
@@ -43,122 +43,188 @@ body {
 }
 
 /* Loading Screen */
+/* ═══════════════════════════════════════════════════════
+   Loading Screen — Apple-style cinematic reveal
+   ═══════════════════════════════════════════════════════ */
+
 .loading-screen {
   position: fixed;
   inset: 0;
-  background: var(--bg-primary);
+  background: var(--bg-primary, #0A0A0F);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
+  overflow: hidden;
+  /* NO opacity transition on the container — background stays solid to prevent bleed-through */
+}
+
+.loading-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 55%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
 }
 
 .loading-screen.hide {
-  opacity: 0;
-  visibility: hidden;
   pointer-events: none;
+  /* Background stays opaque! Only inner content fades → clean cut, no crossfade bleed */
 }
 
-.loading-content {
+.loading-screen.hide::before {
+  opacity: 0;
+}
+
+/* Content inside fades out elegantly while background stays solid */
+.loading-screen.hide .loading-reveal {
+  opacity: 0;
+  transform: scale(0.96) translateY(-6px);
+  filter: blur(8px);
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Reveal container ── */
+.loading-reveal {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
-}
-
-.loading-logo {
+  gap: 0;
+  text-align: center;
   position: relative;
-  width: 100px;
-  height: 100px;
+  z-index: 1;
+}
+
+/* ── Logo ── */
+.loading-reveal__logo {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 28px;
+  opacity: 0;
+  transform: scale(0.6) translateY(10px);
+  filter: blur(12px);
+  animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+}
+
+.loading-reveal__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.5))
+          drop-shadow(0 0 40px rgba(167, 139, 250, 0.2));
+}
+
+/* ── Title: ACCIOS CORE ── */
+.loading-reveal__title {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  margin: 0 0 12px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 0.35em;
 }
 
-.loading-ring {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border: 2px solid transparent;
-  border-top-color: var(--purple-500);
-  border-radius: 50%;
-  animation: spin 1.2s linear infinite;
-}
-
-.loading-ring--2 {
-  width: 76px;
-  height: 76px;
-  border-top-color: var(--purple-400);
-  animation-duration: 1.8s;
-  animation-direction: reverse;
-}
-
-.loading-ring--3 {
-  width: 52px;
-  height: 52px;
-  border-top-color: var(--purple-300);
-  animation-duration: 0.9s;
-}
-
-.loading-icon {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-bold);
-  background: linear-gradient(135deg, var(--purple-300), var(--purple-500));
+.loading-reveal__word {
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(10px);
+  display: inline-block;
+  background: linear-gradient(135deg, #e2d6ff 0%, #a78bfa 40%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  z-index: 1;
 }
 
-.loading-icon-img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  z-index: 1;
-  filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.6)) drop-shadow(0 0 24px rgba(167, 139, 250, 0.3));
-  animation: loadingLogoPulse 2s ease-in-out infinite;
+.loading-reveal__word:nth-child(1) {
+  animation: revealWord 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
 }
 
-@keyframes loadingLogoPulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.6)) drop-shadow(0 0 24px rgba(167, 139, 250, 0.3)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 18px rgba(124, 58, 237, 0.8)) drop-shadow(0 0 32px rgba(167, 139, 250, 0.5)); }
+.loading-reveal__word:nth-child(2) {
+  animation: revealWord 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
 }
 
-.loading-text {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  color: var(--text-secondary);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.05em;
+.loading-reveal__word--light {
+  font-weight: 300;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Subtitle: Digital Ecosystem ── */
+.loading-reveal__sub {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
+  font-weight: 400;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.6);
+  margin: 0 0 24px;
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(8px);
+  animation: revealWord 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
 }
 
-.loading-dots span {
-  animation: blink 1.4s infinite;
-  font-size: var(--text-lg);
+/* ── Accent line ── */
+.loading-reveal__line {
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), rgba(167, 139, 250, 0.3), transparent);
+  margin-bottom: 18px;
+  animation: revealLine 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
 }
 
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-.loading-bar {
-  width: 200px;
-  height: 2px;
-  background: rgba(124, 58, 237, 0.15);
-  border-radius: 1px;
-  overflow: hidden;
+/* ── Status text: "Inicializando" ── */
+.loading-reveal__status {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  filter: blur(6px);
+  animation: revealWord 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards,
+             statusPulse 2s ease-in-out 1.4s infinite;
 }
 
-.loading-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--purple-700), var(--purple-400));
-  border-radius: 1px;
-  box-shadow: 0 0 10px var(--purple-500);
-  transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+/* ═══ Keyframes ═══ */
+
+@keyframes revealUp {
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes revealWord {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes revealLine {
+  to {
+    width: min(220px, 60vw);
+  }
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 /* Gradient Text */
@@ -196,7 +262,7 @@ body {
   padding: var(--space-3) var(--space-5);
   background: rgba(18, 18, 26, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   color: var(--text-primary);
   font-size: var(--text-sm);
@@ -249,4 +315,13 @@ body {
   0%, 20% { opacity: 0; }
   50% { opacity: 1; }
   80%, 100% { opacity: 0; }
+}
+
+/* ── Mobile fixes ── */
+@media (max-width: 480px) {
+  .toast-container {
+    right: var(--space-3);
+    left: var(--space-3);
+    max-width: none;
+  }
 }

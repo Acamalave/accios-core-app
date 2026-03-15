@@ -3,7 +3,7 @@
   background: var(--bg-glass);
   backdrop-filter: blur(var(--blur-glass));
   -webkit-backdrop-filter: blur(var(--blur-glass));
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   position: relative;
@@ -107,7 +107,7 @@
 .glass-input {
   width: 100%;
   background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   color: var(--text-primary);
@@ -128,7 +128,7 @@
 .glass-select {
   width: 100%;
   background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   color: var(--text-primary);

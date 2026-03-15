@@ -81,7 +81,7 @@
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(76, 29, 149, 0.2));
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: center;

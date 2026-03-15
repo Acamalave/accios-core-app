@@ -19,19 +19,6 @@
   overflow-x: hidden;
 }
 
-/* Full-screen mode (no sidebar) — default for this app */
-.app-shell.no-sidebar {
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: "content";
-}
-
-.app-shell.no-sidebar .content {
-  padding: 0;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
 /* === Page Sections === */
 .page {
   max-width: var(--max-content);

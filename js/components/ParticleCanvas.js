@@ -16,15 +16,20 @@ export class ParticleCanvas {
     this.createParticles();
     this.animate();
 
-    window.addEventListener('resize', () => this.resize());
-    window.addEventListener('mousemove', (e) => {
+    // Store bound handlers for proper cleanup
+    this._onResize = () => this.resize();
+    this._onMouseMove = (e) => {
       this.mouse.x = e.clientX * this.dpr;
       this.mouse.y = e.clientY * this.dpr;
-    });
-    window.addEventListener('mouseleave', () => {
+    };
+    this._onMouseLeave = () => {
       this.mouse.x = -1000;
       this.mouse.y = -1000;
-    });
+    };
+
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('mousemove', this._onMouseMove);
+    window.addEventListener('mouseleave', this._onMouseLeave);
   }
 
   resize() {
@@ -191,5 +196,8 @@ export class ParticleCanvas {
 
   destroy() {
     this.running = false;
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('mousemove', this._onMouseMove);
+    window.removeEventListener('mouseleave', this._onMouseLeave);
   }
 }
