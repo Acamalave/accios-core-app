@@ -1096,12 +1096,12 @@
 .biz-dash__clients-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  flex: 0 0 auto;
+  gap: 12px;
+  flex: 1 1 auto;
   overflow-y: auto;
-  max-height: 80vh;
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--biz-rgb),0.2) transparent;
+  padding-bottom: 20px;
 }
 
 /* Center with credential folder at top */
