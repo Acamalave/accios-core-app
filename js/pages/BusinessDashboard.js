@@ -407,14 +407,15 @@ export class BusinessDashboard {
           <div class="biz-cred__folder-shield">${ICONS.shield}</div>
         </div>
 
-        <button class="biz-form__launcher" id="biz-form-launcher">
-          <div class="biz-form__launcher-glow"></div>
-          <span class="biz-form__launcher-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <button class="biz-onb__launcher" id="biz-onb-launcher">
+          <div class="biz-onb__launcher-glow"></div>
+          <div class="biz-onb__launcher-pulse"></div>
+          <span class="biz-onb__launcher-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </span>
-          <span class="biz-form__launcher-text">
-            <span class="biz-form__launcher-label">Formulario Interactivo</span>
-            <span class="biz-form__launcher-sub">Crear nueva solicitud</span>
+          <span class="biz-onb__launcher-text">
+            <span class="biz-onb__launcher-label">${sessionStorage.getItem('onb_returning') ? 'Retomar Configuración' : 'Comenzar Onboarding'}</span>
+            <span class="biz-onb__launcher-sub">${sessionStorage.getItem('onb_returning') ? 'Continúa donde lo dejaste' : 'Configura tu ecosistema · ~15 min'}</span>
           </span>
         </button>
       </div>
@@ -457,7 +458,7 @@ export class BusinessDashboard {
       <div class="biz-cred__vault-overlay" id="cred-vault-overlay"></div>
 
       <!-- Interactive Form Overlay -->
-      ${this._buildFormOverlay()}
+      ${this._buildOnboardingOverlay()}
 
     </section>`;
   }
@@ -1002,7 +1003,7 @@ export class BusinessDashboard {
     this._attachKpiListeners();
 
     // ── Interactive Form ──────────────────────────────────────────
-    this._attachFormListeners();
+    this._attachOnboardingListeners();
 
     // ── Dust Particle System ─────────────────────────────────────
     this._initDustParticles();
@@ -2340,736 +2341,712 @@ export class BusinessDashboard {
     if (sendBtn) sendBtn.disabled = false;
   }
 
+
   /* ══════════════════════════════════════════════════════════════════
-     INTERACTIVE FORM SYSTEM — Apple-inspired multi-step wizard
+     ONBOARDING SYSTEM — Apple-inspired intelligent credential wizard
      ══════════════════════════════════════════════════════════════════ */
 
-  _buildFormOverlay() {
+  _buildOnboardingOverlay() {
     return `
-    <div class="biz-form__overlay" id="biz-form-overlay">
-      <div class="biz-form__backdrop" id="biz-form-backdrop"></div>
-      <div class="biz-form__container">
-        <button class="biz-form__close" id="biz-form-close">${ICONS.xClose}</button>
-
-        <!-- Progress -->
-        <div class="biz-form__progress">
-          <div class="biz-form__progress-track">
-            <div class="biz-form__progress-fill" id="biz-form-progress-fill"></div>
-          </div>
-          <div class="biz-form__steps">
-            <span class="biz-form__step-dot biz-form__step-dot--active" data-step="0">1</span>
-            <span class="biz-form__step-dot" data-step="1">2</span>
-            <span class="biz-form__step-dot" data-step="2">3</span>
-            <span class="biz-form__step-dot" data-step="3">4</span>
-          </div>
-        </div>
-
-        <!-- Slides -->
-        <div class="biz-form__slides" id="biz-form-slides">
-
-          <!-- Step 0: Info -->
-          <div class="biz-form__slide biz-form__slide--active" data-slide="0">
-            <div class="biz-form__slide-header">
-              <h3 class="biz-form__slide-title">Información del Cliente</h3>
-              <p class="biz-form__slide-sub">Completa los datos básicos de la solicitud</p>
-            </div>
-            <div class="biz-form__fields">
-              <div class="biz-form__field">
-                <label class="biz-form__label">Nombre del cliente</label>
-                <input class="biz-form__input" id="biz-form-clientName" type="text" placeholder="Juan Pérez" autocomplete="off" />
-              </div>
-              <div class="biz-form__field">
-                <label class="biz-form__label">Empresa</label>
-                <input class="biz-form__input" id="biz-form-companyName" type="text" placeholder="Empresa S.A." autocomplete="off" />
-              </div>
-              <div class="biz-form__row">
-                <div class="biz-form__field">
-                  <label class="biz-form__label">Email</label>
-                  <input class="biz-form__input" id="biz-form-email" type="email" placeholder="email@ejemplo.com" autocomplete="off" />
-                </div>
-                <div class="biz-form__field">
-                  <label class="biz-form__label">Teléfono</label>
-                  <input class="biz-form__input" id="biz-form-phone" type="tel" placeholder="+507 6000-0000" autocomplete="off" />
-                </div>
-              </div>
-              <div class="biz-form__field">
-                <label class="biz-form__label">Categoría</label>
-                <div class="biz-form__select-wrap">
-                  <select class="biz-form__select" id="biz-form-category">
-                    <option value="">Seleccionar...</option>
-                    <option value="parts-request">Solicitud de Partes</option>
-                    <option value="quote">Cotización</option>
-                    <option value="service">Servicio Técnico</option>
-                    <option value="consulting">Consultoría</option>
-                    <option value="other">Otro</option>
-                  </select>
-                </div>
-              </div>
-              <div class="biz-form__field">
-                <label class="biz-form__label">Descripción</label>
-                <textarea class="biz-form__textarea" id="biz-form-description" rows="3" placeholder="Describe brevemente la solicitud..."></textarea>
-              </div>
-              <div class="biz-form__field">
-                <label class="biz-form__label">Urgencia</label>
-                <div class="biz-form__pills" id="biz-form-urgency">
-                  <button class="biz-form__pill" data-value="low" type="button">
-                    <span class="biz-form__pill-dot" style="background:#3B82F6"></span> Baja
-                  </button>
-                  <button class="biz-form__pill biz-form__pill--active" data-value="medium" type="button">
-                    <span class="biz-form__pill-dot" style="background:#F59E0B"></span> Media
-                  </button>
-                  <button class="biz-form__pill" data-value="high" type="button">
-                    <span class="biz-form__pill-dot" style="background:#EF4444"></span> Alta
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 1: Files -->
-          <div class="biz-form__slide" data-slide="1">
-            <div class="biz-form__slide-header">
-              <h3 class="biz-form__slide-title">Archivos Adjuntos</h3>
-              <p class="biz-form__slide-sub">Arrastra archivos o toca para seleccionar</p>
-            </div>
-            <div class="biz-form__dropzone" id="biz-form-dropzone">
-              <input type="file" multiple class="biz-form__file-hidden" id="biz-form-file-input" />
-              <div class="biz-form__dropzone-content">
-                <div class="biz-form__dropzone-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                </div>
-                <div class="biz-form__dropzone-text">Suelta archivos aquí</div>
-                <div class="biz-form__dropzone-hint">PDF, imágenes, documentos · Max 10MB c/u</div>
-              </div>
-            </div>
-            <div class="biz-form__file-list" id="biz-form-file-list"></div>
-          </div>
-
-          <!-- Step 2: Signature -->
-          <div class="biz-form__slide" data-slide="2">
-            <div class="biz-form__slide-header">
-              <h3 class="biz-form__slide-title">Firma Digital</h3>
-              <p class="biz-form__slide-sub">Dibuja tu firma abajo o solicita firma remota</p>
-            </div>
-            <div class="biz-form__sig-wrapper" id="biz-form-sig-wrapper">
-              <canvas class="biz-form__sig-canvas" id="biz-form-sig-canvas"></canvas>
-              <div class="biz-form__sig-placeholder" id="biz-form-sig-placeholder">
-                <span>Firma aquí</span>
-              </div>
-              <button class="biz-form__sig-clear" id="biz-form-sig-clear" type="button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
-                Limpiar
-              </button>
-            </div>
-            <div class="biz-form__sig-divider">
-              <span>ó</span>
-            </div>
-            <button class="biz-form__btn biz-form__btn--outline" id="biz-form-sig-remote" type="button">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-              Enviar a dispositivo móvil
-            </button>
-            <div class="biz-form__sig-remote-status" id="biz-form-sig-remote-status"></div>
-          </div>
-
-          <!-- Step 3: Review -->
-          <div class="biz-form__slide" data-slide="3">
-            <div class="biz-form__slide-header">
-              <h3 class="biz-form__slide-title">Revisar y Enviar</h3>
-              <p class="biz-form__slide-sub">Confirma que toda la información sea correcta</p>
-            </div>
-            <div class="biz-form__review" id="biz-form-review"></div>
-          </div>
-
-        </div>
-
-        <!-- Navigation -->
-        <div class="biz-form__nav">
-          <button class="biz-form__btn biz-form__btn--ghost" id="biz-form-prev" type="button">Atrás</button>
-          <button class="biz-form__btn biz-form__btn--primary" id="biz-form-next" type="button">Siguiente</button>
-        </div>
+    <div class="biz-onb__overlay" id="biz-onb-overlay">
+      <div class="biz-onb__backdrop" id="biz-onb-backdrop"></div>
+      <div class="biz-onb__shell">
+        <canvas class="biz-onb__particles" id="biz-onb-particles"></canvas>
+        <div class="biz-onb__content" id="biz-onb-content"></div>
       </div>
     </div>`;
   }
 
-  _attachFormListeners() {
-    const launcher = this.container.querySelector('#biz-form-launcher');
-    if (launcher) launcher.addEventListener('click', () => this._openForm());
+  _attachOnboardingListeners() {
+    const launcher = this.container.querySelector('#biz-onb-launcher');
+    if (launcher) launcher.addEventListener('click', () => this._onbOpen());
 
-    const overlay = this.container.querySelector('#biz-form-overlay');
+    const overlay = this.container.querySelector('#biz-onb-overlay');
     if (!overlay) return;
 
-    overlay.querySelector('#biz-form-close')?.addEventListener('click', () => this._closeForm());
-    overlay.querySelector('#biz-form-backdrop')?.addEventListener('click', () => this._closeForm());
-    overlay.querySelector('#biz-form-next')?.addEventListener('click', () => this._formNext());
-    overlay.querySelector('#biz-form-prev')?.addEventListener('click', () => this._formPrev());
-    overlay.querySelector('#biz-form-sig-clear')?.addEventListener('click', () => this._clearSignature());
-    overlay.querySelector('#biz-form-sig-remote')?.addEventListener('click', () => this._sendSignatureToMobile());
-
-    // Urgency pills
-    overlay.querySelectorAll('#biz-form-urgency .biz-form__pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        overlay.querySelectorAll('#biz-form-urgency .biz-form__pill').forEach(p => p.classList.remove('biz-form__pill--active'));
-        pill.classList.add('biz-form__pill--active');
-      });
-    });
-
-    // Dropzone
-    this._initDropzone();
-  }
-
-  _openForm() {
-    this._formStep = 0;
-    this._formFiles = [];
-    this._sigHasContent = false;
-    this._sigRemoteUnsub = null;
-
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return;
-
-    // Reset slides
-    overlay.querySelectorAll('.biz-form__slide').forEach(s => s.classList.remove('biz-form__slide--active'));
-    overlay.querySelector('[data-slide="0"]')?.classList.add('biz-form__slide--active');
-
-    // Reset progress
-    this._updateFormProgress(0);
-
-    // Reset fields
-    overlay.querySelectorAll('.biz-form__input, .biz-form__textarea').forEach(el => el.value = '');
-    overlay.querySelector('.biz-form__select').value = '';
-    overlay.querySelectorAll('#biz-form-urgency .biz-form__pill').forEach(p => p.classList.remove('biz-form__pill--active'));
-    overlay.querySelector('[data-value="medium"]')?.classList.add('biz-form__pill--active');
-    const fileList = overlay.querySelector('#biz-form-file-list');
-    if (fileList) fileList.innerHTML = '';
-
-    // Reset nav
-    const prevBtn = overlay.querySelector('#biz-form-prev');
-    const nextBtn = overlay.querySelector('#biz-form-next');
-    if (prevBtn) prevBtn.style.display = 'none';
-    if (nextBtn) { nextBtn.textContent = 'Siguiente'; nextBtn.disabled = false; }
-
-    // Show overlay
-    requestAnimationFrame(() => {
-      overlay.classList.add('biz-form__overlay--show');
-      // Init signature canvas after transition
-      setTimeout(() => this._initSignatureCanvas(), 350);
-    });
-  }
-
-  _closeForm() {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return;
-    overlay.classList.remove('biz-form__overlay--show');
-    if (this._sigRemoteUnsub) { this._sigRemoteUnsub(); this._sigRemoteUnsub = null; }
-  }
-
-  _formNext() {
-    if (this._formStep === 3) {
-      this._submitForm();
-      return;
-    }
-    if (!this._validateFormStep(this._formStep)) return;
-
-    if (this._formStep === 2) {
-      // Build review before showing step 3
-      this._buildFormReview();
-    }
-
-    this._formStep++;
-    this._formGoTo(this._formStep);
-  }
-
-  _formPrev() {
-    if (this._formStep <= 0) return;
-    this._formStep--;
-    this._formGoTo(this._formStep);
-  }
-
-  _formGoTo(step) {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return;
-
-    // Update slides
-    overlay.querySelectorAll('.biz-form__slide').forEach(s => {
-      s.classList.remove('biz-form__slide--active', 'biz-form__slide--exit-left', 'biz-form__slide--exit-right');
-    });
-    const target = overlay.querySelector(`[data-slide="${step}"]`);
-    if (target) target.classList.add('biz-form__slide--active');
-
-    // Update progress
-    this._updateFormProgress(step);
-
-    // Update nav buttons
-    const prevBtn = overlay.querySelector('#biz-form-prev');
-    const nextBtn = overlay.querySelector('#biz-form-next');
-    if (prevBtn) prevBtn.style.display = step === 0 ? 'none' : '';
-    if (nextBtn) {
-      nextBtn.textContent = step === 3 ? 'Enviar' : 'Siguiente';
-      nextBtn.disabled = false;
-      if (step === 3) nextBtn.classList.add('biz-form__btn--submit');
-      else nextBtn.classList.remove('biz-form__btn--submit');
-    }
-
-    // Re-init signature canvas when entering step 2
-    if (step === 2) setTimeout(() => this._initSignatureCanvas(), 100);
-  }
-
-  _updateFormProgress(step) {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return;
-    const fill = overlay.querySelector('#biz-form-progress-fill');
-    if (fill) fill.style.width = `${((step + 1) / 4) * 100}%`;
-    overlay.querySelectorAll('.biz-form__step-dot').forEach(dot => {
-      const s = parseInt(dot.dataset.step);
-      dot.classList.toggle('biz-form__step-dot--active', s <= step);
-      dot.classList.toggle('biz-form__step-dot--current', s === step);
-    });
-  }
-
-  _validateFormStep(step) {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return false;
-
-    if (step === 0) {
-      const name = overlay.querySelector('#biz-form-clientName')?.value?.trim();
-      const category = overlay.querySelector('#biz-form-category')?.value;
-      if (!name) {
-        this._shakeField(overlay.querySelector('#biz-form-clientName'));
-        return false;
+    // Single delegated click handler for ALL overlay interactions
+    overlay.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-onb]');
+      if (!btn) {
+        // Close if clicking backdrop
+        if (e.target.id === 'biz-onb-backdrop') this._onbClose();
+        return;
       }
-      if (!category) {
-        this._shakeField(overlay.querySelector('.biz-form__select-wrap'));
-        return false;
-      }
-      return true;
-    }
-    // Steps 1, 2 are optional (files, signature)
-    return true;
-  }
-
-  _shakeField(el) {
-    if (!el) return;
-    el.classList.add('biz-form__shake');
-    el.addEventListener('animationend', () => el.classList.remove('biz-form__shake'), { once: true });
-  }
-
-  _collectFormInfo() {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return {};
-    const urgencyPill = overlay.querySelector('#biz-form-urgency .biz-form__pill--active');
-    return {
-      clientName: overlay.querySelector('#biz-form-clientName')?.value?.trim() || '',
-      companyName: overlay.querySelector('#biz-form-companyName')?.value?.trim() || '',
-      email: overlay.querySelector('#biz-form-email')?.value?.trim() || '',
-      phone: overlay.querySelector('#biz-form-phone')?.value?.trim() || '',
-      category: overlay.querySelector('#biz-form-category')?.value || '',
-      description: overlay.querySelector('#biz-form-description')?.value?.trim() || '',
-      urgency: urgencyPill?.dataset?.value || 'medium',
-    };
-  }
-
-  // ── File Upload ─────────────────────────────────────────────────
-
-  _initDropzone() {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    if (!overlay) return;
-    const dropzone = overlay.querySelector('#biz-form-dropzone');
-    const fileInput = overlay.querySelector('#biz-form-file-input');
-    if (!dropzone || !fileInput) return;
-
-    dropzone.addEventListener('click', () => fileInput.click());
-    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('biz-form__dropzone--dragover'); });
-    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('biz-form__dropzone--dragover'));
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('biz-form__dropzone--dragover');
-      this._handleFilesSelected(e.dataTransfer.files);
+      const action = btn.dataset.onb;
+      const value = btn.dataset.onbVal || '';
+      this._onbAction(action, value);
     });
-    fileInput.addEventListener('change', () => {
-      this._handleFilesSelected(fileInput.files);
-      fileInput.value = '';
+
+    // Delegated input handler (live-save every keystroke)
+    overlay.addEventListener('input', (e) => {
+      const el = e.target.closest('.biz-onb__input, .biz-onb__textarea');
+      if (el) this._onbSaveField(el);
     });
   }
 
-  _handleFilesSelected(fileList) {
-    if (!this._formFiles) this._formFiles = [];
-    for (const file of fileList) {
-      if (file.size > 10 * 1024 * 1024) {
-        document.dispatchEvent(new CustomEvent('toast', { detail: { message: `${file.name} excede 10MB`, type: 'error' } }));
-        continue;
-      }
-      if (this._formFiles.length >= 8) {
-        document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Máximo 8 archivos', type: 'error' } }));
+  _onbAction(action, value) {
+    switch (action) {
+      case 'close': this._onbClose(); break;
+      case 'yes': this._onbGo('folders'); break;
+      case 'no': this._onbGo('no-time'); break;
+      case 'folder': this._onbCurrentFolder = value; this._onbGo('biz-select'); break;
+      case 'biz': this._onbCurrentBiz = value; this._onbGo('folder-form'); break;
+      case 'back-folders': this._onbGo('folders'); break;
+      case 'back-biz': this._onbGo('biz-select'); break;
+      case 'save-fields': this._onbGo('biz-select'); break;
+      case 'review': this._onbGo('review'); break;
+      case 'confirm': this._onbGo('confirm'); break;
+      case 'submit': this._onbSubmitToVault(); break;
+      case 'go-missing': {
+        const [f, b] = value.split('|');
+        this._onbCurrentFolder = f;
+        this._onbCurrentBiz = b;
+        this._onbGo('folder-form');
         break;
       }
-      this._formFiles.push(file);
-    }
-    this._renderFileList();
-  }
-
-  _renderFileList() {
-    const list = this.container.querySelector('#biz-form-file-list');
-    if (!list) return;
-    if (!this._formFiles.length) { list.innerHTML = ''; return; }
-
-    list.innerHTML = this._formFiles.map((file, i) => {
-      const isImg = file.type.startsWith('image/');
-      const sizeKB = (file.size / 1024).toFixed(0);
-      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      const size = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
-      const icon = isImg
-        ? `<div class="biz-form__file-thumb" data-file-idx="${i}"></div>`
-        : `<div class="biz-form__file-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>`;
-      return `
-        <div class="biz-form__file-card" style="animation-delay:${i * 0.05}s">
-          ${icon}
-          <div class="biz-form__file-info">
-            <span class="biz-form__file-name">${file.name}</span>
-            <span class="biz-form__file-size">${size}</span>
-          </div>
-          <button class="biz-form__file-remove" data-rm="${i}" type="button">${ICONS.xClose}</button>
-        </div>`;
-    }).join('');
-
-    // Render image thumbnails
-    this._formFiles.forEach((file, i) => {
-      if (!file.type.startsWith('image/')) return;
-      const thumb = list.querySelector(`[data-file-idx="${i}"]`);
-      if (!thumb) return;
-      const reader = new FileReader();
-      reader.onload = (e) => { thumb.style.backgroundImage = `url(${e.target.result})`; };
-      reader.readAsDataURL(file);
-    });
-
-    // Remove buttons
-    list.querySelectorAll('.biz-form__file-remove').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = parseInt(btn.dataset.rm);
-        this._formFiles.splice(idx, 1);
-        this._renderFileList();
-      });
-    });
-  }
-
-  async _uploadFormFiles(docId) {
-    const urls = [];
-    for (const file of this._formFiles) {
-      try {
-        const ext = file.name.split('.').pop() || 'bin';
-        const path = `form-submissions/${docId}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const ref = storageRef(storage, path);
-        await uploadBytes(ref, file);
-        const url = await getDownloadURL(ref);
-        urls.push({ name: file.name, url, type: file.type, size: file.size });
-      } catch (err) {
-        console.error('[Form] Upload failed:', file.name, err);
+      case 'toggle-pw': {
+        const inp = this.container.querySelector(`#biz-onb-overlay [data-field="${value}"]`);
+        if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+        break;
       }
     }
-    return urls;
   }
 
-  // ── Signature Canvas ────────────────────────────────────────────
-
-  _initSignatureCanvas() {
-    const canvas = this.container.querySelector('#biz-form-sig-canvas');
-    const wrapper = this.container.querySelector('#biz-form-sig-wrapper');
-    if (!canvas || !wrapper) return;
-
-    const rect = wrapper.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = 200 * dpr;
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = '200px';
-
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    this._sigCtx = ctx;
-    this._sigCanvas = canvas;
-
-    // Remove old listeners by cloning
-    const clone = canvas.cloneNode(true);
-    canvas.parentNode.replaceChild(clone, canvas);
-    this._sigCanvas = clone;
-    const newCtx = clone.getContext('2d');
-    newCtx.scale(dpr, dpr);
-    newCtx.strokeStyle = '#FFFFFF';
-    newCtx.lineWidth = 2.5;
-    newCtx.lineCap = 'round';
-    newCtx.lineJoin = 'round';
-    this._sigCtx = newCtx;
-
-    let drawing = false;
-    const getPos = (e) => {
-      const r = clone.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return { x: clientX - r.left, y: clientY - r.top };
-    };
-
-    const start = (e) => {
-      e.preventDefault();
-      drawing = true;
-      const p = getPos(e);
-      newCtx.beginPath();
-      newCtx.moveTo(p.x, p.y);
-      // Hide placeholder
-      const ph = this.container.querySelector('#biz-form-sig-placeholder');
-      if (ph) ph.style.opacity = '0';
-    };
-    const move = (e) => {
-      if (!drawing) return;
-      e.preventDefault();
-      const p = getPos(e);
-      newCtx.lineTo(p.x, p.y);
-      newCtx.stroke();
-      this._sigHasContent = true;
-    };
-    const end = () => { drawing = false; };
-
-    clone.addEventListener('pointerdown', start);
-    clone.addEventListener('pointermove', move);
-    clone.addEventListener('pointerup', end);
-    clone.addEventListener('pointerleave', end);
-  }
-
-  _clearSignature() {
-    if (!this._sigCtx || !this._sigCanvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    this._sigCtx.clearRect(0, 0, this._sigCanvas.width / dpr, this._sigCanvas.height / dpr);
-    this._sigHasContent = false;
-    const ph = this.container.querySelector('#biz-form-sig-placeholder');
-    if (ph) ph.style.opacity = '1';
-  }
-
-  _getSignatureDataUrl() {
-    if (!this._sigCanvas || !this._sigHasContent) return null;
-    return this._sigCanvas.toDataURL('image/png');
-  }
-
-  async _uploadSignature(docId) {
-    const dataUrl = this._getSignatureDataUrl();
-    if (!dataUrl) return null;
+  _onbOpen() {
+    // Load saved progress
     try {
-      const blob = await (await fetch(dataUrl)).blob();
-      const path = `form-submissions/${docId}/signature_${Date.now()}.png`;
-      const ref = storageRef(storage, path);
-      await uploadBytes(ref, blob);
-      return await getDownloadURL(ref);
-    } catch (err) {
-      console.error('[Form] Signature upload failed:', err);
-      return null;
-    }
+      const saved = sessionStorage.getItem('onb_data');
+      this._onbData = saved ? JSON.parse(saved) : {};
+    } catch (_) { this._onbData = {}; }
+
+    this._onbCurrentFolder = null;
+    this._onbCurrentBiz = null;
+
+    const overlay = this.container.querySelector('#biz-onb-overlay');
+    if (!overlay) return;
+
+    overlay.classList.add('biz-onb__overlay--show');
+    this._onbInitParticles();
+    this._onbGo('precheck');
   }
 
-  // ── Remote Signature (Send to Mobile) ───────────────────────────
-
-  async _sendSignatureToMobile() {
-    const statusEl = this.container.querySelector('#biz-form-sig-remote-status');
-    const btn = this.container.querySelector('#biz-form-sig-remote');
-    if (!statusEl || !btn) return;
-
-    btn.disabled = true;
-    statusEl.innerHTML = `<div class="biz-form__sig-pending"><div class="biz-form__spinner"></div> Preparando solicitud de firma...</div>`;
-
-    try {
-      // Create a signature request doc
-      const info = this._collectFormInfo();
-      const sigReqRef = await addDoc(collection(db, 'signature-requests'), {
-        formTitle: info.clientName || 'Solicitud sin nombre',
-        requestedBy: this.currentUser?.phone || 'unknown',
-        requestedByName: this.currentUser?.name || 'SuperAdmin',
-        status: 'pending',
-        createdAt: Timestamp.now(),
-        signatureUrl: null,
-      });
-
-      // Listen for signature completion
-      this._sigRemoteUnsub = onSnapshot(doc(db, 'signature-requests', sigReqRef.id), (snap) => {
-        const data = snap.data();
-        if (data?.status === 'signed' && data?.signatureUrl) {
-          statusEl.innerHTML = `<div class="biz-form__sig-done">✓ Firma recibida desde dispositivo móvil</div>`;
-          this._remoteSignatureUrl = data.signatureUrl;
-          this._sigHasContent = true; // Mark as having signature
-          btn.disabled = true;
-          if (this._sigRemoteUnsub) { this._sigRemoteUnsub(); this._sigRemoteUnsub = null; }
-        }
-      });
-
-      statusEl.innerHTML = `
-        <div class="biz-form__sig-pending">
-          <div class="biz-form__spinner"></div>
-          <span>Esperando firma del dispositivo...</span>
-          <span class="biz-form__sig-id">ID: ${sigReqRef.id.slice(0, 8)}</span>
-        </div>`;
-
-      // Send push notification to all registered collaborators
-      try {
-        const usersSnap = await getDocs(collection(db, 'users'));
-        const tokens = [];
-        usersSnap.forEach(u => {
-          const d = u.data();
-          if (d.fcmToken && d.phone !== this.currentUser?.phone) tokens.push(d.fcmToken);
-        });
-        if (tokens.length) {
-          await fetch(apiUrl('/api/send-push'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              tokens,
-              title: '✍️ Firma Requerida',
-              body: `${this.currentUser?.name || 'SuperAdmin'} solicita tu firma`,
-              url: `/#sign/${sigReqRef.id}`,
-            }),
-          }).catch(() => {});
-        }
-      } catch (_) { /* push is best-effort */ }
-
-      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Solicitud de firma enviada', type: 'success' } }));
-    } catch (err) {
-      console.error('[Form] Remote signature failed:', err);
-      statusEl.innerHTML = `<div class="biz-form__sig-error">Error al enviar solicitud</div>`;
-      btn.disabled = false;
-    }
+  _onbClose() {
+    const overlay = this.container.querySelector('#biz-onb-overlay');
+    if (overlay) overlay.classList.remove('biz-onb__overlay--show');
+    this._onbStopParticles();
   }
 
-  // ── Review & Submit ─────────────────────────────────────────────
+  _onbGo(state) {
+    this._onbState = state;
+    const box = this.container.querySelector('#biz-onb-content');
+    if (!box) return;
 
-  _buildFormReview() {
-    const review = this.container.querySelector('#biz-form-review');
-    if (!review) return;
-    const info = this._collectFormInfo();
-    const urgencyLabels = { low: 'Baja', medium: 'Media', high: 'Alta' };
-    const urgencyColors = { low: '#3B82F6', medium: '#F59E0B', high: '#EF4444' };
-    const categoryLabels = {
-      'parts-request': 'Solicitud de Partes', 'quote': 'Cotización',
-      'service': 'Servicio Técnico', 'consulting': 'Consultoría', 'other': 'Otro'
-    };
+    box.style.opacity = '0';
+    box.style.transform = 'translateY(12px)';
 
-    const sigPreview = this._sigHasContent
-      ? (this._remoteSignatureUrl
-          ? `<img src="${this._remoteSignatureUrl}" class="biz-form__review-sig" alt="Firma" />`
-          : `<img src="${this._getSignatureDataUrl()}" class="biz-form__review-sig" alt="Firma" />`)
-      : '<span class="biz-form__review-empty">Sin firma</span>';
+    setTimeout(() => {
+      switch (state) {
+        case 'precheck': box.innerHTML = this._onbPrecheck(); break;
+        case 'no-time': box.innerHTML = this._onbNoTime(); break;
+        case 'folders': box.innerHTML = this._onbFolders(); break;
+        case 'biz-select': box.innerHTML = this._onbBizSelect(); break;
+        case 'folder-form': box.innerHTML = this._onbForm(); break;
+        case 'review': box.innerHTML = this._onbReview(); break;
+        case 'confirm': box.innerHTML = this._onbConfirm(); break;
+        case 'success': box.innerHTML = this._onbSuccess(); break;
+      }
+      requestAnimationFrame(() => {
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      });
+    }, 200);
+  }
 
-    const filesPreview = this._formFiles?.length
-      ? this._formFiles.map(f => `<span class="biz-form__review-file">${f.name}</span>`).join('')
-      : '<span class="biz-form__review-empty">Sin archivos</span>';
+  /* ── Onboarding Folder Definitions ──────────────────────────────── */
 
-    review.innerHTML = `
-      <div class="biz-form__review-section">
-        <div class="biz-form__review-title">Información</div>
-        <div class="biz-form__review-grid">
-          <div class="biz-form__review-item">
-            <span class="biz-form__review-label">Cliente</span>
-            <span class="biz-form__review-value">${info.clientName || '—'}</span>
+  get _onbFolderDefs() {
+    return [
+      {
+        id: 'social', name: 'Social Media',
+        desc: 'Redes sociales, páginas web y presencia digital',
+        color: '#E1306C', time: '~4 min',
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
+        fields: [
+          ['ig_user', 'Instagram — Usuario', 'text'],
+          ['ig_pass', 'Instagram — Contraseña', 'password'],
+          ['ig_2fa', 'Instagram — Código 2FA', 'text'],
+          ['fb_user', 'Facebook — Email / Usuario', 'text'],
+          ['fb_pass', 'Facebook — Contraseña', 'password'],
+          ['fb_page', 'Facebook — URL de la Página', 'url'],
+          ['google_email', 'Google — Email', 'email'],
+          ['google_pass', 'Google — Contraseña', 'password'],
+          ['wa_num', 'WhatsApp Business — Número', 'tel'],
+          ['li_user', 'LinkedIn — Usuario', 'text'],
+          ['li_pass', 'LinkedIn — Contraseña', 'password'],
+          ['web_url', 'Sitio Web — URL', 'url'],
+          ['web_admin', 'Sitio Web — Panel Admin URL', 'url'],
+          ['web_user', 'Sitio Web — Usuario Admin', 'text'],
+          ['web_pass', 'Sitio Web — Contraseña Admin', 'password'],
+        ]
+      },
+      {
+        id: 'erp', name: 'ERP · Odoo',
+        desc: 'Sistema de gestión empresarial, módulos y accesos',
+        color: '#714B67', time: '~2 min',
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+        fields: [
+          ['odoo_url', 'URL de Odoo', 'url'],
+          ['odoo_db', 'Nombre de Base de Datos', 'text'],
+          ['odoo_user', 'Usuario', 'text'],
+          ['odoo_pass', 'Contraseña', 'password'],
+          ['odoo_api', 'API Key (opcional)', 'password'],
+          ['odoo_modules', 'Módulos activos', 'text'],
+        ]
+      },
+      {
+        id: 'shipping', name: 'Envíos · Logística',
+        desc: 'DHL, FedEx, courier y seguimiento de paquetes',
+        color: '#FFCC00', time: '~2 min',
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+        fields: [
+          ['dhl_acct', 'Número de Cuenta DHL', 'text'],
+          ['dhl_user', 'Usuario Portal DHL', 'text'],
+          ['dhl_pass', 'Contraseña DHL', 'password'],
+          ['dhl_api', 'API Key DHL (opcional)', 'password'],
+          ['other_courier', 'Otro Courier (nombre)', 'text'],
+          ['other_user', 'Usuario Otro Courier', 'text'],
+          ['other_pass', 'Contraseña Otro Courier', 'password'],
+        ]
+      },
+      {
+        id: 'domains', name: 'Dominios & Hosting',
+        desc: 'Registradores de dominio, servidores, DNS y SSL',
+        color: '#3B82F6', time: '~3 min',
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+        fields: [
+          ['registrar', 'Registrador de Dominio', 'text'],
+          ['reg_user', 'Usuario Registrador', 'text'],
+          ['reg_pass', 'Contraseña Registrador', 'password'],
+          ['hosting', 'Proveedor de Hosting', 'text'],
+          ['host_user', 'Usuario Hosting', 'text'],
+          ['host_pass', 'Contraseña Hosting', 'password'],
+          ['cpanel', 'URL Panel de Control', 'url'],
+          ['dns', 'Proveedor DNS', 'text'],
+          ['dns_user', 'Usuario DNS', 'text'],
+          ['dns_pass', 'Contraseña DNS', 'password'],
+          ['ssl', 'Proveedor SSL', 'text'],
+        ]
+      },
+      {
+        id: 'brand', name: 'Marca & Identidad',
+        desc: 'Colores, tipografías, slogan y brand board',
+        color: '#8B5CF6', time: '~2 min',
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+        fields: [
+          ['color1', 'Color Primario (HEX)', 'text'],
+          ['color2', 'Color Secundario (HEX)', 'text'],
+          ['color3', 'Color Acento (HEX)', 'text'],
+          ['fonts', 'Tipografías Principales', 'text'],
+          ['slogan', 'Slogan / Tagline', 'text'],
+          ['style_notes', 'Notas de Estilo y Tono', 'textarea'],
+          ['brand_url', 'URL Brand Board (Drive, Figma...)', 'url'],
+        ]
+      },
+      {
+        id: 'team', name: 'Equipo & Contactos',
+        desc: 'Colaboradores clave, roles y datos de contacto',
+        color: '#10B981', time: '~2 min',
+        icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+        fields: [
+          ['c1_name', 'Contacto Principal — Nombre', 'text'],
+          ['c1_role', 'Cargo / Rol', 'text'],
+          ['c1_phone', 'Teléfono', 'tel'],
+          ['c1_email', 'Email', 'email'],
+          ['c2_name', 'Contacto Secundario — Nombre', 'text'],
+          ['c2_role', 'Cargo / Rol', 'text'],
+          ['c2_phone', 'Teléfono', 'tel'],
+          ['c2_email', 'Email', 'email'],
+        ]
+      },
+    ];
+  }
+
+  /* ── State Renderers ────────────────────────────────────────────── */
+
+  _onbPrecheck() {
+    const isReturn = sessionStorage.getItem('onb_returning');
+    const greetings = [
+      '¡Qué bueno que estás aquí de nuevo!',
+      '¡Bienvenido de vuelta! Continuemos donde lo dejamos.',
+      '¡Perfecto timing! Retomemos tu configuración.',
+      '¡Genial que regresaste! Tu ecosistema te espera.',
+      '¡Aquí estamos de nuevo! Terminemos la tarea juntos.',
+    ];
+    const title = isReturn
+      ? greetings[Math.floor(Math.random() * greetings.length)]
+      : 'Antes de comenzar...';
+
+    return `
+      <div class="biz-onb__precheck">
+        <div class="biz-onb__precheck-orb">
+          <div class="biz-onb__precheck-orb-inner"></div>
+        </div>
+        <h2 class="biz-onb__precheck-title">${title}</h2>
+        <p class="biz-onb__precheck-q">¿Tienes al menos <strong>15 minutos</strong> para completar tu configuración?</p>
+
+        <div class="biz-onb__precheck-reqs">
+          <div class="biz-onb__precheck-reqs-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            En esta sección necesitarás
           </div>
-          <div class="biz-form__review-item">
-            <span class="biz-form__review-label">Empresa</span>
-            <span class="biz-form__review-value">${info.companyName || '—'}</span>
-          </div>
-          <div class="biz-form__review-item">
-            <span class="biz-form__review-label">Email</span>
-            <span class="biz-form__review-value">${info.email || '—'}</span>
-          </div>
-          <div class="biz-form__review-item">
-            <span class="biz-form__review-label">Teléfono</span>
-            <span class="biz-form__review-value">${info.phone || '—'}</span>
-          </div>
-          <div class="biz-form__review-item">
-            <span class="biz-form__review-label">Categoría</span>
-            <span class="biz-form__review-value">${categoryLabels[info.category] || '—'}</span>
-          </div>
-          <div class="biz-form__review-item">
-            <span class="biz-form__review-label">Urgencia</span>
-            <span class="biz-form__review-value" style="color:${urgencyColors[info.urgency]}">${urgencyLabels[info.urgency]}</span>
+          <ul class="biz-onb__precheck-list">
+            <li>Claves de tus <strong>redes sociales</strong> (Instagram, Facebook, Google, LinkedIn)</li>
+            <li>Usuarios y contraseñas de <strong>Odoo</strong>, <strong>DHL</strong> y otros servicios</li>
+            <li>Credenciales de tus <strong>dominios y hosting</strong></li>
+            <li>Información de <strong>brand board</strong> y marca</li>
+            <li>Datos de contacto de <strong>colaboradores clave</strong></li>
+          </ul>
+        </div>
+
+        <div class="biz-onb__precheck-time">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div>
+            <span class="biz-onb__precheck-time-val">~15 minutos</span>
+            <span class="biz-onb__precheck-time-hint">6 carpetas · 5 negocios · Progreso guardado automáticamente</span>
           </div>
         </div>
-        ${info.description ? `<div class="biz-form__review-desc">${info.description}</div>` : ''}
-      </div>
-      <div class="biz-form__review-section">
-        <div class="biz-form__review-title">Archivos (${this._formFiles?.length || 0})</div>
-        <div class="biz-form__review-files">${filesPreview}</div>
-      </div>
-      <div class="biz-form__review-section">
-        <div class="biz-form__review-title">Firma</div>
-        ${sigPreview}
+
+        <div class="biz-onb__precheck-actions">
+          <button class="biz-onb__btn biz-onb__btn--glow" data-onb="yes">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Sí, estoy listo
+          </button>
+          <button class="biz-onb__btn biz-onb__btn--ghost" data-onb="no">
+            No tengo tiempo ahora
+          </button>
+        </div>
       </div>`;
   }
 
-  async _submitForm() {
-    const overlay = this.container.querySelector('#biz-form-overlay');
-    const nextBtn = overlay?.querySelector('#biz-form-next');
-    if (nextBtn) { nextBtn.disabled = true; nextBtn.innerHTML = '<div class="biz-form__spinner"></div> Enviando...'; }
+  _onbNoTime() {
+    sessionStorage.setItem('onb_returning', '1');
+    return `
+      <div class="biz-onb__notime">
+        <div class="biz-onb__notime-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.6)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h2 class="biz-onb__notime-title">¡Sin problema!</h2>
+        <p class="biz-onb__notime-text">
+          Vuelve cuando tengas unos minutos libres.<br/>
+          Tu progreso se guardará automáticamente y podrás retomar exactamente donde lo dejaste.
+        </p>
+        <p class="biz-onb__notime-hint">
+          El botón de onboarding estará esperándote en el centro del ecosistema.
+        </p>
+        <button class="biz-onb__btn biz-onb__btn--primary" data-onb="close">Entendido</button>
+      </div>`;
+  }
 
-    try {
-      const info = this._collectFormInfo();
-
-      // 1. Create Firestore doc
-      const docRef = await addDoc(collection(db, 'form-submissions'), {
-        businessId: 'ml-parts',
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-        status: 'submitted',
-        submittedBy: {
-          phone: this.currentUser?.phone || '',
-          name: this.currentUser?.name || '',
-          role: this.currentUser?.role || '',
-        },
-        info,
-        files: [],
-        signature: { dataUrl: null, storageUrl: null, signedBy: this.currentUser?.phone || '', method: 'direct' },
-      });
-
-      // 2. Upload files
-      const fileUrls = await this._uploadFormFiles(docRef.id);
-
-      // 3. Upload signature
-      let sigUrl = this._remoteSignatureUrl || null;
-      if (!sigUrl && this._sigHasContent) {
-        sigUrl = await this._uploadSignature(docRef.id);
+  _onbFolders() {
+    const folders = this._onbFolderDefs;
+    const bizCount = this._clientBusinesses.length;
+    const totalFields = folders.reduce((s, f) => s + f.fields.length * bizCount, 0);
+    let filledFields = 0;
+    for (const f of folders) {
+      for (const b of this._clientBusinesses) {
+        const d = this._onbData?.[f.id]?.[b.id];
+        if (d) filledFields += Object.values(d).filter(v => v?.trim()).length;
       }
+    }
+    const pct = totalFields ? Math.round(filledFields / totalFields * 100) : 0;
 
-      // 4. Update doc with file URLs and signature
-      await updateDoc(doc(db, 'form-submissions', docRef.id), {
-        files: fileUrls,
-        signature: {
-          storageUrl: sigUrl,
-          signedBy: this.currentUser?.phone || '',
-          signedAt: Timestamp.now(),
-          method: this._remoteSignatureUrl ? 'remote' : 'direct',
-        },
-        updatedAt: Timestamp.now(),
-      });
+    const cards = folders.map((f, i) => {
+      const fp = this._onbFolderPct(f.id);
+      return `
+        <button class="biz-onb__fcard" data-onb="folder" data-onb-val="${f.id}" style="animation-delay:${i * 0.06}s">
+          <div class="biz-onb__fcard-icon" style="color:${f.color};background:${f.color}15">${f.icon}</div>
+          <div class="biz-onb__fcard-body">
+            <div class="biz-onb__fcard-name">${f.name}</div>
+            <div class="biz-onb__fcard-desc">${f.desc}</div>
+          </div>
+          <div class="biz-onb__fcard-right">
+            <span class="biz-onb__fcard-time">${f.time}</span>
+            <div class="biz-onb__fcard-bar"><div class="biz-onb__fcard-bar-fill" style="width:${fp}%;background:${f.color}"></div></div>
+            <span class="biz-onb__fcard-pct" style="color:${fp > 0 ? f.color : 'rgba(255,255,255,0.2)'}">${fp}%</span>
+          </div>
+          ${fp === 100 ? '<div class="biz-onb__fcard-check">✓</div>' : ''}
+        </button>`;
+    }).join('');
 
-      // Success animation
-      if (overlay) {
-        const container = overlay.querySelector('.biz-form__container');
-        if (container) {
-          container.innerHTML = `
-            <div class="biz-form__success">
-              <div class="biz-form__success-check">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              </div>
-              <h3 class="biz-form__success-title">¡Enviado con Éxito!</h3>
-              <p class="biz-form__success-sub">La solicitud ha sido registrada correctamente</p>
-              <button class="biz-form__btn biz-form__btn--primary" onclick="this.closest('.biz-form__overlay').classList.remove('biz-form__overlay--show')" type="button">Cerrar</button>
-            </div>`;
+    return `
+      <div class="biz-onb__folders">
+        <button class="biz-onb__x" data-onb="close">${ICONS.xClose}</button>
+
+        <div class="biz-onb__folders-head">
+          <h2 class="biz-onb__folders-title">Tu Ecosistema</h2>
+          <p class="biz-onb__folders-sub">Selecciona una carpeta para configurar la información de cada negocio</p>
+          <div class="biz-onb__progress">
+            <div class="biz-onb__progress-track">
+              <div class="biz-onb__progress-fill" style="width:${pct}%"></div>
+            </div>
+            <span class="biz-onb__progress-label">${pct}% completado · ${filledFields} de ${totalFields} campos</span>
+          </div>
+        </div>
+
+        <div class="biz-onb__fgrid">${cards}</div>
+
+        <button class="biz-onb__btn biz-onb__btn--vault ${pct === 0 ? 'biz-onb__btn--disabled' : ''}" data-onb="review">
+          ${ICONS.shield} Enviar a la Bóveda
+        </button>
+      </div>`;
+  }
+
+  _onbBizSelect() {
+    const folder = this._onbFolderDefs.find(f => f.id === this._onbCurrentFolder);
+    if (!folder) return '';
+
+    const cards = this._clientBusinesses.map((biz, i) => {
+      const bd = this._onbData?.[folder.id]?.[biz.id];
+      const filled = bd ? Object.values(bd).filter(v => v?.trim()).length : 0;
+      const total = folder.fields.length;
+      const done = filled === total && total > 0;
+      return `
+        <button class="biz-onb__bizcard ${done ? 'biz-onb__bizcard--done' : ''}" data-onb="biz" data-onb-val="${biz.id}" style="animation-delay:${i * 0.06}s">
+          <div class="biz-onb__bizcard-img" style="background-image:url('${biz.photo}')"></div>
+          <span class="biz-onb__bizcard-name">${biz.name}</span>
+          ${filled ? `<span class="biz-onb__bizcard-badge" style="background:${folder.color}20;color:${folder.color}">${filled}/${total}</span>` : ''}
+          ${done ? '<span class="biz-onb__bizcard-done">✓</span>' : ''}
+        </button>`;
+    }).join('');
+
+    return `
+      <div class="biz-onb__bizsel">
+        <button class="biz-onb__back" data-onb="back-folders">${ICONS.arrowLeft} <span>Carpetas</span></button>
+        <div class="biz-onb__bizsel-head">
+          <div class="biz-onb__bizsel-icon" style="color:${folder.color}">${folder.icon}</div>
+          <h2 class="biz-onb__bizsel-title">${folder.name}</h2>
+          <p class="biz-onb__bizsel-sub">Selecciona el negocio para ingresar sus credenciales</p>
+        </div>
+        <div class="biz-onb__bizgrid">${cards}</div>
+      </div>`;
+  }
+
+  _onbForm() {
+    const folder = this._onbFolderDefs.find(f => f.id === this._onbCurrentFolder);
+    const biz = this._clientBusinesses.find(b => b.id === this._onbCurrentBiz);
+    if (!folder || !biz) return '';
+
+    const data = this._onbData?.[folder.id]?.[biz.id] || {};
+    const fields = folder.fields.map(([id, label, type]) => {
+      const val = data[id] || '';
+      const isPass = type === 'password';
+      if (type === 'textarea') {
+        return `
+          <div class="biz-onb__field">
+            <label class="biz-onb__label">${label}</label>
+            <textarea class="biz-onb__textarea" data-field="${id}" rows="3">${val}</textarea>
+          </div>`;
+      }
+      return `
+        <div class="biz-onb__field">
+          <label class="biz-onb__label">${label}</label>
+          <div class="biz-onb__input-row">
+            <input class="biz-onb__input" data-field="${id}" type="${type}" value="${this._onbEsc(val)}" autocomplete="off" />
+            ${isPass ? `<button class="biz-onb__eye" data-onb="toggle-pw" data-onb-val="${id}" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    const filled = Object.values(data).filter(v => v?.trim()).length;
+    const total = folder.fields.length;
+
+    return `
+      <div class="biz-onb__form">
+        <button class="biz-onb__back" data-onb="back-biz">${ICONS.arrowLeft} <span>${folder.name}</span></button>
+        <div class="biz-onb__form-head">
+          <div class="biz-onb__form-logo" style="background-image:url('${biz.photo}')"></div>
+          <div>
+            <h2 class="biz-onb__form-title">${biz.name}</h2>
+            <p class="biz-onb__form-sub">${folder.name} · ${filled}/${total} campos</p>
+          </div>
+        </div>
+        <div class="biz-onb__fields">${fields}</div>
+        <button class="biz-onb__btn biz-onb__btn--primary biz-onb__btn--full" data-onb="save-fields">
+          Guardar y continuar
+        </button>
+      </div>`;
+  }
+
+  _onbReview() {
+    const folders = this._onbFolderDefs;
+    const missing = this._onbMissing();
+    let sections = '';
+
+    for (const folder of folders) {
+      for (const biz of this._clientBusinesses) {
+        const bd = this._onbData?.[folder.id]?.[biz.id];
+        if (!bd) continue;
+        const entries = Object.entries(bd).filter(([, v]) => v?.trim());
+        if (!entries.length) continue;
+
+        const items = entries.map(([k, v]) => {
+          const fDef = folder.fields.find(f => f[0] === k);
+          const label = fDef?.[1] || k;
+          const isPass = fDef?.[2] === 'password';
+          return `<div class="biz-onb__rv-item">
+            <span class="biz-onb__rv-label">${label}</span>
+            <span class="biz-onb__rv-value">${isPass ? '••••••••' : this._onbEsc(v)}</span>
+          </div>`;
+        }).join('');
+
+        sections += `
+          <div class="biz-onb__rv-section">
+            <div class="biz-onb__rv-section-head">
+              <span style="color:${folder.color}">${folder.icon}</span>
+              <strong>${folder.name}</strong> <span class="biz-onb__rv-sep">·</span> ${biz.name}
+            </div>
+            ${items}
+          </div>`;
+      }
+    }
+
+    const missingHTML = missing.length ? `
+      <div class="biz-onb__rv-missing">
+        <div class="biz-onb__rv-missing-head">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>${missing.length} campo${missing.length > 1 ? 's' : ''} sin completar</span>
+        </div>
+        <p class="biz-onb__rv-missing-hint">Puedes enviar sin completarlos todos. También podrás editarlos después en la Bóveda.</p>
+        <div class="biz-onb__rv-missing-list">
+          ${missing.slice(0, 8).map(m => `
+            <button class="biz-onb__rv-missing-btn" data-onb="go-missing" data-onb-val="${m.fid}|${m.bid}">
+              ${m.fname} · ${m.bname} · <em>${m.label}</em>
+            </button>`).join('')}
+          ${missing.length > 8 ? `<span class="biz-onb__rv-missing-more">y ${missing.length - 8} campos más...</span>` : ''}
+        </div>
+      </div>` : '';
+
+    return `
+      <div class="biz-onb__review">
+        <button class="biz-onb__back" data-onb="back-folders">${ICONS.arrowLeft} <span>Carpetas</span></button>
+        <h2 class="biz-onb__review-title">Revisión Final</h2>
+        <p class="biz-onb__review-sub">Verifica que toda la información sea correcta antes de enviarla a la Bóveda</p>
+        ${sections || '<div class="biz-onb__rv-empty">No has ingresado ningún dato aún. Vuelve a las carpetas para completar la información.</div>'}
+        ${missingHTML}
+        <div class="biz-onb__review-actions">
+          <button class="biz-onb__btn biz-onb__btn--ghost" data-onb="back-folders">Volver a editar</button>
+          <button class="biz-onb__btn biz-onb__btn--vault" data-onb="confirm" ${!sections ? 'disabled' : ''}>
+            ${missing.length ? 'Continuar de todas formas' : 'Todo correcto · Continuar'}
+          </button>
+        </div>
+      </div>`;
+  }
+
+  _onbConfirm() {
+    return `
+      <div class="biz-onb__confirm">
+        <div class="biz-onb__confirm-shield">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.7)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h2 class="biz-onb__confirm-title">Confirmación de Seguridad</h2>
+        <p class="biz-onb__confirm-text">Al confirmar, declaras que:</p>
+        <ul class="biz-onb__confirm-list">
+          <li><strong>Toda la información suministrada es real</strong> y correcta al mejor de tu conocimiento</li>
+          <li>Autorizas su <strong>almacenamiento seguro</strong> en la Bóveda de Credenciales</li>
+          <li>Entiendes que los datos estarán <strong>encriptados y protegidos</strong> con acceso exclusivo del SuperAdmin</li>
+        </ul>
+        <div class="biz-onb__confirm-badge">
+          ${ICONS.lock}
+          <span>Cifrado de extremo a extremo · Acceso exclusivo SuperAdmin</span>
+        </div>
+        <div class="biz-onb__confirm-actions">
+          <button class="biz-onb__btn biz-onb__btn--ghost" data-onb="back-folders">Volver a editar</button>
+          <button class="biz-onb__btn biz-onb__btn--vault biz-onb__btn--pulse" data-onb="submit">
+            ${ICONS.shield} Confirmar y enviar a la Bóveda
+          </button>
+        </div>
+      </div>`;
+  }
+
+  _onbSuccess() {
+    return `
+      <div class="biz-onb__success">
+        <div class="biz-onb__success-ring">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2 class="biz-onb__success-title">¡Bóveda Actualizada!</h2>
+        <p class="biz-onb__success-text">Toda la información ha sido almacenada de forma segura y encriptada en tu Bóveda de Credenciales.</p>
+        <p class="biz-onb__success-hint">Puedes acceder y editar estos datos en cualquier momento desde la carpeta de Credenciales.</p>
+        <button class="biz-onb__btn biz-onb__btn--primary" data-onb="close">Cerrar</button>
+      </div>`;
+  }
+
+  /* ── Helpers ─────────────────────────────────────────────────────── */
+
+  _onbEsc(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  _onbFolderPct(folderId) {
+    const folder = this._onbFolderDefs.find(f => f.id === folderId);
+    if (!folder) return 0;
+    const total = folder.fields.length * this._clientBusinesses.length;
+    if (!total) return 0;
+    let filled = 0;
+    for (const b of this._clientBusinesses) {
+      const d = this._onbData?.[folderId]?.[b.id];
+      if (d) filled += Object.values(d).filter(v => v?.trim()).length;
+    }
+    return Math.round(filled / total * 100);
+  }
+
+  _onbMissing() {
+    const result = [];
+    for (const f of this._onbFolderDefs) {
+      for (const b of this._clientBusinesses) {
+        for (const [fieldId, label] of f.fields) {
+          const val = this._onbData?.[f.id]?.[b.id]?.[fieldId];
+          if (!val?.trim()) {
+            result.push({ fid: f.id, fname: f.name, bid: b.id, bname: b.name, field: fieldId, label });
+          }
         }
       }
+    }
+    return result;
+  }
 
-      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Formulario enviado exitosamente', type: 'success' } }));
-      this._remoteSignatureUrl = null;
+  _onbSaveField(el) {
+    const fieldId = el.dataset.field;
+    if (!fieldId || !this._onbCurrentFolder || !this._onbCurrentBiz) return;
+    if (!this._onbData) this._onbData = {};
+    if (!this._onbData[this._onbCurrentFolder]) this._onbData[this._onbCurrentFolder] = {};
+    if (!this._onbData[this._onbCurrentFolder][this._onbCurrentBiz]) this._onbData[this._onbCurrentFolder][this._onbCurrentBiz] = {};
+    this._onbData[this._onbCurrentFolder][this._onbCurrentBiz][fieldId] = el.value;
+    try { sessionStorage.setItem('onb_data', JSON.stringify(this._onbData)); } catch (_) {}
+  }
+
+  async _onbSubmitToVault() {
+    const content = this.container.querySelector('#biz-onb-content');
+    const submitBtn = content?.querySelector('[data-onb="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<div class="biz-onb__spinner"></div> Guardando...'; }
+
+    try {
+      // Save to localStorage vault
+      const stored = this._getStoredCredentials();
+      for (const folder of this._onbFolderDefs) {
+        const fd = this._onbData?.[folder.id];
+        if (!fd) continue;
+        for (const biz of this._clientBusinesses) {
+          const bd = fd[biz.id];
+          if (!bd) continue;
+          const entries = Object.entries(bd).filter(([, v]) => v?.trim());
+          if (!entries.length) continue;
+          const text = entries.map(([k, v]) => {
+            const fDef = folder.fields.find(f => f[0] === k);
+            return `${fDef?.[1] || k}: ${v}`;
+          }).join('\n');
+          const credText = `📁 ${folder.name}\n${text}`;
+          if (!stored[biz.id]) stored[biz.id] = [];
+          stored[biz.id].push({ text: credText, date: new Date().toISOString() });
+        }
+      }
+      localStorage.setItem('biz_credentials', JSON.stringify(stored));
+
+      // Save to Firestore
+      try {
+        await setDoc(doc(db, 'onboarding-data', this.currentUser?.phone || 'anonymous'), {
+          data: this._onbData,
+          submittedAt: Timestamp.now(),
+          submittedBy: { phone: this.currentUser?.phone || '', name: this.currentUser?.name || '' },
+        }, { merge: true });
+      } catch (e) { console.error('[Onboarding] Firestore save:', e); }
+
+      // Cleanup session
+      sessionStorage.removeItem('onb_data');
+      sessionStorage.removeItem('onb_returning');
+
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Credenciales almacenadas en la Bóveda', type: 'success' } }));
+      this._onbGo('success');
     } catch (err) {
-      console.error('[Form] Submit failed:', err);
-      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Error al enviar formulario', type: 'error' } }));
-      if (nextBtn) { nextBtn.disabled = false; nextBtn.textContent = 'Reintentar'; }
+      console.error('[Onboarding] Submit failed:', err);
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Error al guardar', type: 'error' } }));
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Reintentar'; }
     }
   }
+
+  /* ── Particle Animation ─────────────────────────────────────────── */
+
+  _onbInitParticles() {
+    const canvas = this.container.querySelector('#biz-onb-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const shell = canvas.parentElement;
+
+    const resize = () => {
+      const r = shell.getBoundingClientRect();
+      canvas.width = r.width * dpr;
+      canvas.height = r.height * dpr;
+      canvas.style.width = r.width + 'px';
+      canvas.style.height = r.height + 'px';
+    };
+    resize();
+    this._onbResizeHandler = resize;
+    window.addEventListener('resize', resize);
+
+    const w = () => canvas.width / dpr;
+    const h = () => canvas.height / dpr;
+    const particles = Array.from({ length: 35 }, () => ({
+      x: Math.random() * (canvas.width / dpr),
+      y: Math.random() * (canvas.height / dpr),
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2 + 0.5,
+      a: Math.random() * 0.25 + 0.05,
+    }));
+
+    const draw = () => {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w(), h());
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > w()) p.vx *= -1;
+        if (p.y < 0 || p.y > h()) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139,92,246,${p.a})`;
+        ctx.fill();
+      }
+      // Draw faint connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(139,92,246,${0.04 * (1 - dist / 120)})`;
+            ctx.stroke();
+          }
+        }
+      }
+      this._onbParticleRAF = requestAnimationFrame(draw);
+    };
+    draw();
+  }
+
+  _onbStopParticles() {
+    if (this._onbParticleRAF) cancelAnimationFrame(this._onbParticleRAF);
+    if (this._onbResizeHandler) window.removeEventListener('resize', this._onbResizeHandler);
+  }
+
 
   unmount() {
     // Cleanup dust particles
@@ -3082,8 +3059,8 @@ export class BusinessDashboard {
     // Cleanup broadcast
     if (this._broadcastUnsub) { this._broadcastUnsub(); this._broadcastUnsub = null; }
     document.querySelector('.eco-broadcast-overlay')?.remove();
-    // Cleanup form
-    if (this._sigRemoteUnsub) { this._sigRemoteUnsub(); this._sigRemoteUnsub = null; }
+    // Cleanup onboarding
+    this._onbStopParticles();
     // Cleanup modals (now inline in dashboard, removed with container)
     document.getElementById('cred-pin-overlay')?.remove();
     document.getElementById('cred-vault-overlay')?.remove();
