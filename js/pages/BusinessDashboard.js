@@ -396,9 +396,9 @@ export class BusinessDashboard {
       <!-- Concrete Floor — spans full width -->
       <div class="biz-dash__floor"></div>
 
-      <!-- Center: Credential Folder + Form Launcher -->
+      <!-- Center: Epic Onboarding Launcher -->
       <div class="biz-dash__center">
-        <div class="biz-cred__folder" id="cred-folder-btn">
+        <div class="biz-cred__folder" id="cred-folder-btn" style="display:none;">
           <div class="biz-cred__folder-icon">${ICONS.folderLock}</div>
           <div class="biz-cred__folder-info">
             <div class="biz-cred__folder-name">Credenciales</div>
@@ -407,17 +407,43 @@ export class BusinessDashboard {
           <div class="biz-cred__folder-shield">${ICONS.shield}</div>
         </div>
 
-        <button class="biz-onb__launcher" id="biz-onb-launcher">
-          <div class="biz-onb__launcher-glow"></div>
-          <div class="biz-onb__launcher-pulse"></div>
-          <span class="biz-onb__launcher-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </span>
-          <span class="biz-onb__launcher-text">
-            <span class="biz-onb__launcher-label">${sessionStorage.getItem('onb_returning') ? 'Retomar Configuración' : 'Comenzar Onboarding'}</span>
-            <span class="biz-onb__launcher-sub">${sessionStorage.getItem('onb_returning') ? 'Continúa donde lo dejaste' : 'Configura tu ecosistema · ~15 min'}</span>
-          </span>
-        </button>
+        <div class="biz-onb__hero" id="biz-onb-launcher">
+          <!-- Ambient glow layers -->
+          <div class="biz-onb__hero-glow"></div>
+          <div class="biz-onb__hero-glow2"></div>
+
+          <!-- Animated ring -->
+          <div class="biz-onb__hero-ring"></div>
+
+          <!-- Central orb with logo -->
+          <div class="biz-onb__hero-orb">
+            <img src="assets/images/Negocios Estephano/Ml Parts.001.jpeg" alt="ML Parts" class="biz-onb__hero-logo" />
+          </div>
+
+          <!-- Text content -->
+          <h2 class="biz-onb__hero-title">${sessionStorage.getItem('onb_returning') ? 'Bienvenido de vuelta' : 'Configura tu ecosistema'}</h2>
+          <p class="biz-onb__hero-sub">${sessionStorage.getItem('onb_returning') ? 'Tu progreso está guardado. Continúa donde lo dejaste.' : 'Todo lo que necesitas para operar ML Parts, en un solo lugar.'}</p>
+
+          <!-- CTA Button -->
+          <button class="biz-onb__hero-cta">
+            <span class="biz-onb__hero-cta-text">${sessionStorage.getItem('onb_returning') ? 'Continuar' : 'Comenzar'}</span>
+            <span class="biz-onb__hero-cta-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </button>
+
+          <!-- Floating particles -->
+          <div class="biz-onb__hero-dots">
+            <span style="--x:15%;--y:20%;--s:3px;--d:0s"></span>
+            <span style="--x:80%;--y:15%;--s:2px;--d:1.2s"></span>
+            <span style="--x:10%;--y:70%;--s:2.5px;--d:0.8s"></span>
+            <span style="--x:85%;--y:65%;--s:2px;--d:2s"></span>
+            <span style="--x:50%;--y:85%;--s:3px;--d:0.4s"></span>
+            <span style="--x:25%;--y:45%;--s:1.5px;--d:1.6s"></span>
+            <span style="--x:70%;--y:40%;--s:2px;--d:0.6s"></span>
+            <span style="--x:40%;--y:10%;--s:2.5px;--d:1s"></span>
+          </div>
+        </div>
       </div>
 
       <!-- Right Panel: Client Business Cards (stacked) -->

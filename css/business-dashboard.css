@@ -749,8 +749,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 28px 24px 40px;
+  justify-content: center;
+  padding: 0;
   gap: 12px;
   position: relative;
   z-index: 5;
@@ -4581,64 +4581,205 @@
    ONBOARDING SYSTEM — Apple-inspired Intelligent Credential Wizard
    ══════════════════════════════════════════════════════════════════════ */
 
-/* ── Launcher ────────────────────────────────────────────────────── */
-.biz-onb__launcher {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  max-width: 320px;
-  width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(139,92,246,0.18);
-  border-radius: 16px;
-  cursor: pointer;
+/* ── Epic Hero Launcher ──────────────────────────────────────────── */
+.biz-onb__hero {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  cursor: pointer;
+  text-align: center;
+  padding: 40px 24px;
+  animation: heroFadeIn 1.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Ambient glow */
+.biz-onb__hero-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 320px; height: 320px;
+  transform: translate(-50%, -55%);
+  background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.04) 40%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: heroGlowPulse 4s ease-in-out infinite;
+}
+.biz-onb__hero-glow2 {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 500px; height: 500px;
+  transform: translate(-50%, -55%);
+  background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 60%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: heroGlowPulse 6s ease-in-out infinite reverse;
+}
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -55%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%, -55%) scale(1.15); }
+}
+
+/* Animated ring */
+.biz-onb__hero-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140px; height: 140px;
+  transform: translate(-50%, -85%);
+  border-radius: 50%;
+  border: 1px solid rgba(139,92,246,0.15);
+  pointer-events: none;
+  animation: heroRingSpin 12s linear infinite;
+}
+.biz-onb__hero-ring::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: 50%;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #A78BFA;
+  box-shadow: 0 0 8px rgba(139,92,246,0.6);
+  transform: translateX(-50%);
+}
+@keyframes heroRingSpin { to { transform: translate(-50%, -85%) rotate(360deg); } }
+
+/* Central orb with logo */
+.biz-onb__hero-orb {
+  position: relative;
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(139,92,246,0.2), rgba(30,30,40,0.9));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(139,92,246,0.2),
+    0 0 40px rgba(139,92,246,0.15),
+    0 0 80px rgba(139,92,246,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  margin-bottom: 32px;
+  z-index: 2;
+  animation: heroOrbFloat 5s ease-in-out infinite;
+}
+@keyframes heroOrbFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.biz-onb__hero-logo {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: brightness(1.1) saturate(1.1);
+}
+
+/* Title */
+.biz-onb__hero-title {
+  font-family: var(--dash-font);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 10px;
+  z-index: 2;
+  animation: heroFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+}
+
+/* Subtitle */
+.biz-onb__hero-sub {
+  font-family: var(--dash-font);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+  max-width: 280px;
+  margin: 0 0 36px;
+  z-index: 2;
+  animation: heroFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.5s both;
+}
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* CTA button */
+.biz-onb__hero-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px 14px 28px;
+  border: none;
+  border-radius: 980px;
+  background: linear-gradient(135deg, #7C3AED, #6D28D9);
+  color: #fff;
+  font-family: var(--dash-font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  z-index: 2;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-  text-align: left;
-  margin-top: 12px;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  animation: heroFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.7s both;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.2),
+    0 8px 24px rgba(124,58,237,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.15);
 }
-.biz-onb__launcher:hover {
-  background: rgba(139,92,246,0.06);
-  border-color: rgba(139,92,246,0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139,92,246,0.15);
-}
-.biz-onb__launcher:active { transform: scale(0.97); }
-.biz-onb__launcher-glow {
+.biz-onb__hero-cta::before {
+  content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(139,92,246,0.08), transparent 70%);
+  border-radius: 980px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%);
   pointer-events: none;
 }
-.biz-onb__launcher-pulse {
+.biz-onb__hero-cta:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.2),
+    0 12px 32px rgba(124,58,237,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.biz-onb__hero-cta:active {
+  transform: scale(0.97);
+}
+.biz-onb__hero-cta-arrow {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.biz-onb__hero-cta:hover .biz-onb__hero-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* Floating particles */
+.biz-onb__hero-dots {
   position: absolute;
-  top: 12px; right: 12px;
-  width: 8px; height: 8px;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.biz-onb__hero-dots span {
+  position: absolute;
+  left: var(--x); top: var(--y);
+  width: var(--s); height: var(--s);
   border-radius: 50%;
-  background: #8B5CF6;
-  animation: onbPulse 2s ease-in-out infinite;
+  background: rgba(139,92,246,0.5);
+  animation: heroDotFloat 6s ease-in-out var(--d) infinite;
 }
-@keyframes onbPulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(139,92,246,0.4); }
-  50% { opacity: 0.6; box-shadow: 0 0 0 8px rgba(139,92,246,0); }
-}
-.biz-onb__launcher-icon {
-  width: 40px; height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05));
-  display: flex; align-items: center; justify-content: center;
-  color: #A78BFA; flex-shrink: 0;
-}
-.biz-onb__launcher-text { display: flex; flex-direction: column; gap: 2px; }
-.biz-onb__launcher-label {
-  font-family: var(--dash-font); font-size: 0.78rem; font-weight: 600;
-  color: var(--kpi-text-bright); letter-spacing: 0.01em;
-}
-.biz-onb__launcher-sub {
-  font-family: var(--dash-font); font-size: 0.6rem;
-  color: var(--kpi-text-muted); letter-spacing: 0.02em;
+@keyframes heroDotFloat {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50%      { opacity: 0.8; transform: translateY(-12px); }
 }
 
 /* ── Overlay ─────────────────────────────────────────────────────── */
@@ -5341,7 +5482,7 @@
   .biz-onb__rv-value { text-align: left; }
   .biz-onb__confirm-actions { flex-direction: column; }
   .biz-onb__review-actions { flex-direction: column; }
-  .biz-onb__launcher { max-width: 100%; }
+  .biz-onb__hero { min-height: 320px; padding: 24px 16px; }
 }
 @media (max-width: 480px) {
   .biz-onb__content { padding: 22px 16px 18px; }
