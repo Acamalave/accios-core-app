@@ -3056,9 +3056,6 @@ export class BusinessDashboard {
           Guardado automático activo${savedCount ? ` · ${savedCount} campos guardados` : ''}
         </div>
         <div class="biz-onb__fields">${fieldsHTML}</div>
-        <button class="biz-onb__btn biz-onb__btn--primary biz-onb__btn--full" data-onb="save-fields">
-          Guardar y continuar
-        </button>
       </div>`;
   }
 
