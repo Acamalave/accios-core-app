@@ -523,33 +523,12 @@ export class BusinessDashboard {
   }
 
   _buildLeftPanel(m, avgRev) {
-    const rev = typeof m.revenue === 'number' ? `$${m.revenue.toLocaleString()}` : '--';
-    const users = typeof m.users === 'number' ? m.users.toLocaleString() : '--';
-    const members = m.activeMembers !== null ? m.activeMembers.toLocaleString() : null;
-    const collCount = Object.keys(m.collections).length;
-
-    // Derive sparkline data from consumption trend if available
-    const trend = this.data?.consumptionTrend || [];
-    const last12 = trend.slice(-12);
-    const bizKeys = last12.length ? Object.keys(last12[0]).filter(k => k !== 'month') : [];
-    const revTrend = last12.map(e => bizKeys.reduce((s, k) => s + (e[k] || 0), 0));
-    const userTrend = last12.map((_, i) => Math.round(20 + Math.sin(i * 0.5) * 8 + i * 2));
-
-    // Progress percentages (derived from data or sensible fallbacks)
-    const usersNum = typeof m.users === 'number' ? m.users : 0;
-    const totalUsers = this.data?.kpis?.totalUsers || 1;
-    const userShare = Math.min((usersNum / totalUsers) * 100, 100);
-    const revenueTarget = 50000;
-    const revNum = typeof m.revenue === 'number' ? m.revenue : 0;
-    const revPercent = Math.min((revNum / revenueTarget) * 100, 100);
-    const uptime = 99.2;
-    const efficiency = collCount > 0 ? Math.min(collCount * 16, 95) : 42;
-
-    // Trend indicator
-    const lastTwo = revTrend.slice(-2);
-    const isUp = lastTwo.length === 2 ? lastTwo[1] >= lastTwo[0] : true;
-    const trendIcon = isUp ? ICONS.trendingUp : ICONS.trendingDown;
-    const trendClass = isUp ? 'biz-dash__trend--up' : 'biz-dash__trend--down';
+    // ── 5 companies for billing breakdown
+    const companies = this._clientBusinesses.map(b => ({
+      name: b.name,
+      photo: b.photo,
+      id: b.id,
+    }));
 
     return `
       <div class="biz-dash__panel-header">
@@ -557,83 +536,125 @@ export class BusinessDashboard {
         <div class="biz-dash__panel-name">${m.name}</div>
       </div>
 
-      <!-- Revenue Card -->
-      <div class="biz-dash__metric biz-dash__metric--chart">
-        <div class="biz-dash__metric-top">
-          <div class="biz-dash__metric-icon biz-dash__metric-icon--copper">${ICONS.dollarSign}</div>
-          <div class="biz-dash__metric-info">
-            <div class="biz-dash__metric-label">Revenue Total</div>
-            <div class="biz-dash__metric-row">
-              <div class="biz-dash__metric-value">${rev}</div>
-              <span class="biz-dash__trend ${trendClass}">${trendIcon}</span>
+      <!-- 1. Facturación Global -->
+      <div class="biz-kpi" data-kpi="billing">
+        <div class="biz-kpi__top">
+          <div class="biz-kpi__icon">${ICONS.dollarSign}</div>
+          <div class="biz-kpi__info">
+            <div class="biz-kpi__label">Facturación Global</div>
+            <div class="biz-kpi__value">$0<span class="biz-kpi__unit">.00</span></div>
+          </div>
+          <button class="biz-kpi__help" data-tooltip="billing">?</button>
+        </div>
+        ${this._buildMiniSparkline([0,0,0,0,0,0], 'bill')}
+        <div class="biz-kpi__sub">Total facturado en todas las empresas</div>
+      </div>
+
+      <!-- 2. Marketing ROI -->
+      <div class="biz-kpi" data-kpi="marketing">
+        <div class="biz-kpi__top">
+          <div class="biz-kpi__icon">${ICONS.trendingUp}</div>
+          <div class="biz-kpi__info">
+            <div class="biz-kpi__label">Marketing ROI</div>
+            <div class="biz-kpi__value">0<span class="biz-kpi__unit">%</span></div>
+          </div>
+          <button class="biz-kpi__help" data-tooltip="marketing">?</button>
+        </div>
+        <div class="biz-kpi__bar-row">
+          <div class="biz-kpi__bar-item">
+            <span class="biz-kpi__bar-label">Invertido</span>
+            <div class="biz-kpi__bar-track"><div class="biz-kpi__bar-fill" style="width:0%"></div></div>
+            <span class="biz-kpi__bar-val">$0</span>
+          </div>
+          <div class="biz-kpi__bar-item">
+            <span class="biz-kpi__bar-label">Retorno</span>
+            <div class="biz-kpi__bar-track"><div class="biz-kpi__bar-fill biz-kpi__bar-fill--return" style="width:0%"></div></div>
+            <span class="biz-kpi__bar-val">$0</span>
+          </div>
+        </div>
+        <div class="biz-kpi__sub">Retorno sobre inversión publicitaria</div>
+      </div>
+
+      <!-- 3. Cotizaciones -->
+      <div class="biz-kpi" data-kpi="quotes">
+        <div class="biz-kpi__top">
+          <div class="biz-kpi__icon">${ICONS.package}</div>
+          <div class="biz-kpi__info">
+            <div class="biz-kpi__label">Cotizaciones</div>
+            <div class="biz-kpi__value">0<span class="biz-kpi__unit"> / 0</span></div>
+          </div>
+          <button class="biz-kpi__help" data-tooltip="quotes">?</button>
+        </div>
+        <div class="biz-kpi__dual">
+          <div class="biz-kpi__dual-item">
+            <div class="biz-kpi__dual-ring">
+              <svg width="44" height="44" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+                <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(var(--biz-rgb),0.3)" stroke-width="3"
+                  stroke-dasharray="${2*Math.PI*18}" stroke-dashoffset="${2*Math.PI*18}"
+                  stroke-linecap="round" transform="rotate(-90 22 22)"/>
+              </svg>
+              <span class="biz-kpi__dual-num">0</span>
             </div>
+            <span class="biz-kpi__dual-label">Enviadas</span>
           </div>
-        </div>
-        ${this._buildSparkline(revTrend, 'revenue')}
-        <div class="biz-dash__metric-sub">Ultimos 30 dias</div>
-      </div>
-
-      <!-- Users Card -->
-      <div class="biz-dash__metric biz-dash__metric--chart">
-        <div class="biz-dash__metric-top">
-          <div class="biz-dash__metric-icon biz-dash__metric-icon--copper">${ICONS.users}</div>
-          <div class="biz-dash__metric-info">
-            <div class="biz-dash__metric-label">Usuarios</div>
-            <div class="biz-dash__metric-row">
-              <div class="biz-dash__metric-value">${users}</div>
-              ${members ? `<span class="biz-dash__metric-badge">${members} activos</span>` : ''}
+          <div class="biz-kpi__dual-sep"></div>
+          <div class="biz-kpi__dual-item">
+            <div class="biz-kpi__dual-ring">
+              <svg width="44" height="44" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+                <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(34,197,94,0.4)" stroke-width="3"
+                  stroke-dasharray="${2*Math.PI*18}" stroke-dashoffset="${2*Math.PI*18}"
+                  stroke-linecap="round" transform="rotate(-90 22 22)"/>
+              </svg>
+              <span class="biz-kpi__dual-num">0</span>
             </div>
+            <span class="biz-kpi__dual-label">Cerradas</span>
           </div>
         </div>
-        ${this._buildSparkline(userTrend, 'users')}
+        <div class="biz-kpi__sub">Enviadas vs cerradas este mes</div>
       </div>
 
-      <div class="biz-dash__divider"></div>
-
-      <!-- Performance Card with Circular + Linear Progress -->
-      <div class="biz-dash__metric biz-dash__metric--progress">
-        <div class="biz-dash__metric-top">
-          <div class="biz-dash__metric-icon biz-dash__metric-icon--copper">${ICONS.activity}</div>
-          <div class="biz-dash__metric-info">
-            <div class="biz-dash__metric-label">Rendimiento</div>
+      <!-- 4. Top Vendedores -->
+      <div class="biz-kpi" data-kpi="sellers">
+        <div class="biz-kpi__top">
+          <div class="biz-kpi__icon">${ICONS.users}</div>
+          <div class="biz-kpi__info">
+            <div class="biz-kpi__label">Top Vendedor</div>
+            <div class="biz-kpi__value biz-kpi__value--text">Sin datos</div>
+          </div>
+          <button class="biz-kpi__help" data-tooltip="sellers">?</button>
+        </div>
+        <div class="biz-kpi__sellers-preview">
+          <div class="biz-kpi__sellers-empty">
+            <div class="biz-kpi__sellers-avatars">
+              <div class="biz-kpi__sellers-av">1</div>
+              <div class="biz-kpi__sellers-av">2</div>
+              <div class="biz-kpi__sellers-av">3</div>
+            </div>
+            <span>Top 5 por empresa</span>
           </div>
         </div>
-        <div class="biz-dash__progress-grid">
-          ${this._buildCircularProgress(revPercent, 'rev')}
-          ${this._buildCircularProgress(uptime, 'up')}
-        </div>
-        <div class="biz-dash__progress-labels">
-          <span>Revenue</span>
-          <span>Uptime</span>
-        </div>
-        ${this._buildLinearProgress(userShare, 'Usuarios (cuota ecosistema)')}
-        ${this._buildLinearProgress(efficiency, 'Eficiencia operativa')}
+        <div class="biz-kpi__sub">Ejecutivo con más cierres por compañía</div>
       </div>
 
-      <!-- Server/Collections Card -->
-      <div class="biz-dash__metric">
-        <div class="biz-dash__metric-top">
-          <div class="biz-dash__metric-icon biz-dash__metric-icon--copper">${ICONS.database}</div>
-          <div class="biz-dash__metric-info">
-            <div class="biz-dash__metric-label">Collections</div>
-            <div class="biz-dash__metric-value biz-dash__metric-value--purple">${collCount}</div>
+      <!-- 5. Inventario -->
+      <div class="biz-kpi" data-kpi="inventory">
+        <div class="biz-kpi__top">
+          <div class="biz-kpi__icon">${ICONS.server}</div>
+          <div class="biz-kpi__info">
+            <div class="biz-kpi__label">Inventario</div>
+            <div class="biz-kpi__value">0<span class="biz-kpi__unit"> alertas</span></div>
           </div>
+          <button class="biz-kpi__help" data-tooltip="inventory">?</button>
         </div>
-        <div class="biz-dash__metric-sub">Colecciones activas</div>
+        <div class="biz-kpi__inv-rows">
+          <div class="biz-kpi__inv-empty">Sin productos en alerta</div>
+        </div>
+        <div class="biz-kpi__sub">Productos que requieren revisión</div>
       </div>
 
-      <!-- Avg Revenue Card -->
-      <div class="biz-dash__metric">
-        <div class="biz-dash__metric-top">
-          <div class="biz-dash__metric-icon biz-dash__metric-icon--copper">${ICONS.zap}</div>
-          <div class="biz-dash__metric-info">
-            <div class="biz-dash__metric-label">Avg Revenue / User</div>
-            <div class="biz-dash__metric-value biz-dash__metric-value--purple">${avgRev !== '--' ? '$' + avgRev : '--'}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Credential Folder -->
+      <!-- Credential Folder (se mantiene) -->
       <div class="biz-cred__folder" id="cred-folder-btn">
         <div class="biz-cred__folder-icon">${ICONS.folderLock}</div>
         <div class="biz-cred__folder-info">
@@ -641,7 +662,36 @@ export class BusinessDashboard {
           <div class="biz-cred__folder-sub">Bóveda segura</div>
         </div>
         <div class="biz-cred__folder-shield">${ICONS.shield}</div>
-      </div>`;
+      </div>
+
+      <!-- KPI Detail Panel (rendered dynamically) -->
+      <div class="biz-kpi-detail" id="biz-kpi-detail" style="display:none;"></div>`;
+  }
+
+  /* ── Mini Sparkline (simpler, for KPI cards) ── */
+  _buildMiniSparkline(data, id) {
+    const w = 180, h = 32, pad = 2;
+    const max = Math.max(...data, 1);
+    const min = Math.min(...data, 0);
+    const range = max - min || 1;
+    const stepX = (w - pad*2) / Math.max(data.length - 1, 1);
+    const pts = data.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / range) * (h - pad*2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const lastX = pts[pts.length-1]?.split(',')[0] || pad;
+    const area = `M${pts[0]} ${pts.slice(1).map(p=>`L${p}`).join(' ')} L${lastX},${h} L${pad},${h} Z`;
+    return `<svg class="biz-kpi__spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="ks-${id}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(var(--biz-rgb),0.2)"/>
+          <stop offset="100%" stop-color="rgba(var(--biz-rgb),0)"/>
+        </linearGradient>
+      </defs>
+      <path d="${area}" fill="url(#ks-${id})"/>
+      <polyline points="${pts.join(' ')}" fill="none" stroke="rgba(var(--biz-rgb),0.5)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`;
   }
 
   _buildClientCard(biz, index) {
@@ -903,8 +953,243 @@ export class BusinessDashboard {
       });
     }
 
+    // ── KPI Card Click → Detail Panels ─────────────────────────
+    this._attachKpiListeners();
+
     // ── Dust Particle System ─────────────────────────────────────
     this._initDustParticles();
+  }
+
+  _attachKpiListeners() {
+    const TOOLTIPS = {
+      billing: 'Muestra el total facturado por todas las empresas del ecosistema. Incluye todas las formas de pago: transferencias bancarias, pagos con tarjeta en línea, efectivo y otros métodos.',
+      marketing: 'ROI (Retorno sobre Inversión) mide cuánto dinero generas por cada dólar invertido en publicidad. Un ROI de 300% significa que por cada $1 invertido, generaste $3 en ventas.',
+      quotes: 'Compara las cotizaciones enviadas a clientes contra las que se convirtieron en ventas reales. La tasa de cierre indica qué tan efectivo es el equipo comercial.',
+      sellers: 'Muestra el ejecutivo o vendedor con mejor desempeño por cada empresa. Se mide por cantidad de negocios cerrados y monto total vendido.',
+      inventory: 'Productos del inventario cuyo stock está por debajo del mínimo recomendado. Requieren reposición para evitar quiebres de stock.',
+    };
+
+    // Help tooltips (? buttons)
+    this.container.querySelectorAll('.biz-kpi__help').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const key = btn.dataset.tooltip;
+        this._showKpiTooltip(btn, TOOLTIPS[key] || '');
+      });
+    });
+
+    // KPI card clicks → detail panels
+    this.container.querySelectorAll('.biz-kpi').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.biz-kpi__help')) return;
+        const kpi = card.dataset.kpi;
+        this._openKpiDetail(kpi);
+      });
+    });
+  }
+
+  _showKpiTooltip(anchor, text) {
+    // Remove existing
+    document.querySelector('.biz-kpi-tooltip')?.remove();
+
+    const tip = document.createElement('div');
+    tip.className = 'biz-kpi-tooltip';
+    tip.innerHTML = `<div class="biz-kpi-tooltip__text">${this._esc(text)}</div>`;
+
+    // Position near the anchor
+    const rect = anchor.getBoundingClientRect();
+    tip.style.top = `${rect.bottom + 8}px`;
+    tip.style.left = `${Math.max(12, rect.left - 120)}px`;
+    document.body.appendChild(tip);
+
+    // Auto-dismiss
+    const dismiss = () => { tip.remove(); document.removeEventListener('click', dismiss); };
+    setTimeout(() => document.addEventListener('click', dismiss), 50);
+    setTimeout(() => tip.remove(), 5000);
+  }
+
+  _openKpiDetail(kpi) {
+    const detail = this.container.querySelector('#biz-kpi-detail');
+    if (!detail) return;
+
+    const companies = this._clientBusinesses;
+
+    let content = '';
+    switch (kpi) {
+      case 'billing':
+        content = this._buildBillingDetail(companies);
+        break;
+      case 'marketing':
+        content = this._buildMarketingDetail();
+        break;
+      case 'quotes':
+        content = this._buildQuotesDetail(companies);
+        break;
+      case 'sellers':
+        content = this._buildSellersDetail(companies);
+        break;
+      case 'inventory':
+        content = this._buildInventoryDetail(companies);
+        break;
+      default:
+        return;
+    }
+
+    detail.innerHTML = `
+      <div class="biz-kpi-detail__inner">
+        <button class="biz-kpi-detail__close">&times;</button>
+        ${content}
+      </div>`;
+    detail.style.display = 'flex';
+
+    detail.querySelector('.biz-kpi-detail__close').addEventListener('click', () => {
+      detail.style.display = 'none';
+      detail.innerHTML = '';
+    });
+    detail.addEventListener('click', (e) => {
+      if (e.target === detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
+    });
+  }
+
+  _buildBillingDetail(companies) {
+    const methods = ['Transferencia', 'Pago en Línea', 'Efectivo', 'Crédito'];
+    const rows = companies.map(c => {
+      const photo = c.photo ? `<img src="${c.photo}" class="biz-kpi-detail__logo" alt="${c.name}"/>` :
+        `<div class="biz-kpi-detail__logo-ph">${c.name[0]}</div>`;
+      return `
+        <div class="biz-kpi-detail__biz">
+          ${photo}
+          <div class="biz-kpi-detail__biz-info">
+            <div class="biz-kpi-detail__biz-name">${this._esc(c.name)}</div>
+            <div class="biz-kpi-detail__biz-total">$0.00</div>
+          </div>
+        </div>
+        <div class="biz-kpi-detail__methods">
+          ${methods.map(m => `
+            <div class="biz-kpi-detail__method">
+              <span class="biz-kpi-detail__method-name">${m}</span>
+              <span class="biz-kpi-detail__method-val">$0</span>
+            </div>`).join('')}
+        </div>`;
+    }).join('<div class="biz-kpi-detail__sep"></div>');
+
+    return `
+      <h3 class="biz-kpi-detail__title">${ICONS.dollarSign} Facturación por Empresa</h3>
+      <p class="biz-kpi-detail__desc">Desglose de ingresos por método de pago para cada empresa del ecosistema.</p>
+      <div class="biz-kpi-detail__total-row">
+        <span>Total Ecosistema</span>
+        <span class="biz-kpi-detail__total-val">$0.00</span>
+      </div>
+      <div class="biz-kpi-detail__list">${rows}</div>`;
+  }
+
+  _buildMarketingDetail() {
+    const terms = [
+      { term: 'ROI', def: 'Retorno sobre Inversión. Mide cuánto ganas por cada dólar invertido en publicidad. Si inviertes $100 y generas $400 en ventas, tu ROI es 300%.' },
+      { term: 'CPC', def: 'Costo por Click. Lo que pagas cada vez que alguien hace click en tu anuncio. Un CPC bajo significa que tu publicidad es eficiente.' },
+      { term: 'CPM', def: 'Costo por Mil impresiones. Lo que cuesta que 1,000 personas vean tu anuncio. Útil para medir el alcance de campañas de marca.' },
+      { term: 'CTR', def: 'Click-Through Rate (Tasa de clicks). El porcentaje de personas que ven tu anuncio y hacen click. Un CTR alto indica que tu anuncio es atractivo.' },
+      { term: 'ROAS', def: 'Retorno sobre gasto publicitario. Similar al ROI pero específico para publicidad. Un ROAS de 4x significa $4 en ventas por cada $1 en ads.' },
+      { term: 'Leads', def: 'Personas que mostraron interés real en tu producto o servicio. Por ejemplo, llenaron un formulario, llamaron o enviaron un mensaje.' },
+    ];
+
+    return `
+      <h3 class="biz-kpi-detail__title">${ICONS.trendingUp} Resultados de Marketing</h3>
+      <p class="biz-kpi-detail__desc">Rendimiento de la inversión publicitaria. Aquí verás cuánto se ha invertido y cuánto ha retornado en ventas.</p>
+      <div class="biz-kpi-detail__mkt-summary">
+        <div class="biz-kpi-detail__mkt-card">
+          <span class="biz-kpi-detail__mkt-label">Invertido</span>
+          <span class="biz-kpi-detail__mkt-val">$0</span>
+        </div>
+        <div class="biz-kpi-detail__mkt-card">
+          <span class="biz-kpi-detail__mkt-label">Retorno</span>
+          <span class="biz-kpi-detail__mkt-val biz-kpi-detail__mkt-val--green">$0</span>
+        </div>
+        <div class="biz-kpi-detail__mkt-card">
+          <span class="biz-kpi-detail__mkt-label">ROI</span>
+          <span class="biz-kpi-detail__mkt-val">0%</span>
+        </div>
+        <div class="biz-kpi-detail__mkt-card">
+          <span class="biz-kpi-detail__mkt-label">Leads</span>
+          <span class="biz-kpi-detail__mkt-val">0</span>
+        </div>
+      </div>
+      <h4 class="biz-kpi-detail__subtitle">Glosario de Términos</h4>
+      <div class="biz-kpi-detail__glossary">
+        ${terms.map(t => `
+          <div class="biz-kpi-detail__term">
+            <span class="biz-kpi-detail__term-name">${t.term}</span>
+            <span class="biz-kpi-detail__term-def">${t.def}</span>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  _buildQuotesDetail(companies) {
+    const rows = companies.map(c => `
+      <div class="biz-kpi-detail__quote-row">
+        <span class="biz-kpi-detail__quote-biz">${this._esc(c.name)}</span>
+        <div class="biz-kpi-detail__quote-bars">
+          <div class="biz-kpi-detail__quote-bar">
+            <div class="biz-kpi-detail__quote-fill biz-kpi-detail__quote-fill--sent" style="width:0%"></div>
+          </div>
+          <div class="biz-kpi-detail__quote-bar">
+            <div class="biz-kpi-detail__quote-fill biz-kpi-detail__quote-fill--closed" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="biz-kpi-detail__quote-nums">
+          <span>0 env.</span>
+          <span>0 cerr.</span>
+        </div>
+      </div>`).join('');
+
+    return `
+      <h3 class="biz-kpi-detail__title">${ICONS.package} Cotizaciones por Empresa</h3>
+      <p class="biz-kpi-detail__desc">Cantidad de cotizaciones enviadas a clientes vs las que se convirtieron en ventas cerradas. La tasa de conversión indica la efectividad del proceso comercial.</p>
+      <div class="biz-kpi-detail__quote-legend">
+        <span><span class="biz-kpi-detail__legend-dot biz-kpi-detail__legend-dot--sent"></span>Enviadas</span>
+        <span><span class="biz-kpi-detail__legend-dot biz-kpi-detail__legend-dot--closed"></span>Cerradas</span>
+      </div>
+      <div class="biz-kpi-detail__quote-list">${rows}</div>
+      <div class="biz-kpi-detail__total-row">
+        <span>Tasa de cierre global</span>
+        <span class="biz-kpi-detail__total-val">0%</span>
+      </div>`;
+  }
+
+  _buildSellersDetail(companies) {
+    const rows = companies.map(c => `
+      <div class="biz-kpi-detail__seller-company">
+        <div class="biz-kpi-detail__seller-header">${this._esc(c.name)}</div>
+        <div class="biz-kpi-detail__seller-list">
+          ${[1,2,3,4,5].map(i => `
+            <div class="biz-kpi-detail__seller-row biz-kpi-detail__seller-row--empty">
+              <span class="biz-kpi-detail__seller-rank">#${i}</span>
+              <span class="biz-kpi-detail__seller-name">—</span>
+              <span class="biz-kpi-detail__seller-deals">0 cierres</span>
+              <span class="biz-kpi-detail__seller-amount">$0</span>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+
+    return `
+      <h3 class="biz-kpi-detail__title">${ICONS.users} Top Vendedores por Empresa</h3>
+      <p class="biz-kpi-detail__desc">Ranking de los 5 ejecutivos o vendedores con mejor desempeño por cada compañía. Se mide por negocios cerrados y monto vendido. Haz click en un vendedor para ver sus transacciones.</p>
+      <div class="biz-kpi-detail__sellers">${rows}</div>`;
+  }
+
+  _buildInventoryDetail(companies) {
+    const rows = companies.map(c => `
+      <div class="biz-kpi-detail__inv-company">
+        <div class="biz-kpi-detail__inv-header">${this._esc(c.name)}</div>
+        <div class="biz-kpi-detail__inv-items">
+          <div class="biz-kpi-detail__inv-empty">Sin alertas de inventario</div>
+        </div>
+      </div>`).join('');
+
+    return `
+      <h3 class="biz-kpi-detail__title">${ICONS.server} Inventario — Alertas de Stock</h3>
+      <p class="biz-kpi-detail__desc">Productos cuyo inventario está por debajo del mínimo recomendado. Estos artículos requieren reposición para evitar quedarse sin stock y perder ventas.</p>
+      <div class="biz-kpi-detail__inv-list">${rows}</div>`;
   }
 
   /* ── Floating Dust Particles with Mouse Interaction ─────────── */
