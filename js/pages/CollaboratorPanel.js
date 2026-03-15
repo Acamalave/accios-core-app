@@ -204,28 +204,28 @@ export class CollaboratorPanel {
     const bizTags = this._getUniqueBizTags();
     return `
     <div class="collab-quick">
-      <div class="collab-quick__row">
-        <input class="collab-quick__input" id="collab-quick-input" placeholder="Título de la solicitud..." maxlength="500" />
-        <button class="collab-quick__attach" id="collab-quick-attach" title="Adjuntar imagen">${IC.image}</button>
-        <button class="collab-quick__send" id="collab-quick-send">${IC.send}</button>
-        <input type="file" id="collab-file-input" accept="image/*" multiple hidden />
-      </div>
-      <textarea class="collab-quick__desc" id="collab-quick-desc" placeholder="Descripción o detalles adicionales..." rows="2" maxlength="2000"></textarea>
-      <div class="collab-quick__previews" id="collab-quick-previews"></div>
-      <div class="collab-quick__options">
+      ${bizTags.length ? `
+      <div class="collab-quick__biz-selector">
+        <span class="collab-quick__label">Negocio</span>
+        <div class="collab-quick__biz-pills">
+          ${bizTags.map(b => `<button class="collab-quick__biz-pill" data-biz="${b}">${this._esc(b)}</button>`).join('')}
+        </div>
+      </div>` : ''}
+      <textarea class="collab-quick__desc" id="collab-quick-desc" placeholder="Escribe tu solicitud..." rows="2" maxlength="2000"></textarea>
+      <div class="collab-quick__bottom-row">
         <div class="collab-quick__tags">
-          <span class="collab-quick__label">Prioridad</span>
           <button class="collab-quick__tag collab-quick__tag--priority" data-priority="low">Baja</button>
           <button class="collab-quick__tag collab-quick__tag--priority collab-quick__tag--active" data-priority="medium">Media</button>
           <button class="collab-quick__tag collab-quick__tag--priority" data-priority="high">Alta</button>
           <button class="collab-quick__tag collab-quick__tag--priority" data-priority="urgent">Urgente</button>
         </div>
-        ${bizTags.length ? `
-        <div class="collab-quick__tags">
-          <span class="collab-quick__label">Negocio</span>
-          ${bizTags.map(b => `<button class="collab-quick__tag collab-quick__tag--biz" data-biz="${b}">${b}</button>`).join('')}
-        </div>` : ''}
+        <div class="collab-quick__actions">
+          <button class="collab-quick__attach" id="collab-quick-attach" title="Adjuntar imagen">${IC.image}</button>
+          <button class="collab-quick__send" id="collab-quick-send">${IC.send}</button>
+          <input type="file" id="collab-file-input" accept="image/*" multiple hidden />
+        </div>
       </div>
+      <div class="collab-quick__previews" id="collab-quick-previews"></div>
     </div>`;
   }
 
@@ -750,21 +750,22 @@ export class CollaboratorPanel {
   }
 
   async _handleQuickCreate() {
-    const input = this.container.querySelector('#collab-quick-input');
     const descInput = this.container.querySelector('#collab-quick-desc');
-    if (!input) return;
-
-    const title = input.value.trim();
     const description = descInput ? descInput.value.trim() : '';
-    if (!title && !description && this._pendingImages.length === 0) return;
+    if (!description && this._pendingImages.length === 0) return;
+
+    // Get selected business (single-select, required)
+    const activeBiz = this.container.querySelector('.collab-quick__biz-pill--active');
+    const bizTag = activeBiz ? activeBiz.dataset.biz : '';
+    const tags = bizTag ? [bizTag] : [];
+
+    // Auto-generate title from business + first words of description
+    const shortDesc = description.split(' ').slice(0, 6).join(' ');
+    const title = bizTag ? `[${bizTag.toUpperCase()}] ${shortDesc || 'Solicitud'}` : (shortDesc || 'Solicitud');
 
     // Get selected priority
     const activePri = this.container.querySelector('.collab-quick__tag--priority.collab-quick__tag--active');
     const priority = activePri ? activePri.dataset.priority : 'medium';
-
-    // Get selected business tags (multi-select)
-    const activeBiz = this.container.querySelectorAll('.collab-quick__tag--biz.collab-quick__tag--active');
-    const tags = Array.from(activeBiz).map(b => b.dataset.biz);
 
     // Disable send button while creating
     const sendBtn = this.container.querySelector('#collab-quick-send');
@@ -797,8 +798,9 @@ export class CollaboratorPanel {
         this._renderPendingPreviews();
       }
 
-      input.value = '';
       if (descInput) descInput.value = '';
+      // Deselect business pill after sending
+      this.container.querySelectorAll('.collab-quick__biz-pill').forEach(p => p.classList.remove('collab-quick__biz-pill--active'));
       document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Solicitud creada', type: 'success' } }));
     } catch (err) {
       console.error('[CollabPanel] Quick create error:', err);
@@ -823,21 +825,21 @@ export class CollaboratorPanel {
   }
 
   _attachSolicitudesListeners() {
-    // Quick input: Enter key
-    const quickInput = this.container.querySelector('#collab-quick-input');
-    if (quickInput) {
-      quickInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          this._handleQuickCreate();
-        }
-      });
-    }
-
     // Send button
     const sendBtn = this.container.querySelector('#collab-quick-send');
     if (sendBtn) {
       sendBtn.addEventListener('click', () => this._handleQuickCreate());
+    }
+
+    // Ctrl+Enter in textarea to send
+    const descArea = this.container.querySelector('#collab-quick-desc');
+    if (descArea) {
+      descArea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          this._handleQuickCreate();
+        }
+      });
     }
 
     // Attach image button + file input
@@ -856,18 +858,20 @@ export class CollaboratorPanel {
       });
     }
 
+    // Business pills: single-select (tap to select, tap again to deselect)
+    this.container.querySelectorAll('.collab-quick__biz-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const wasActive = pill.classList.contains('collab-quick__biz-pill--active');
+        this.container.querySelectorAll('.collab-quick__biz-pill').forEach(p => p.classList.remove('collab-quick__biz-pill--active'));
+        if (!wasActive) pill.classList.add('collab-quick__biz-pill--active');
+      });
+    });
+
     // Priority tags: single-select (always one active)
     this.container.querySelectorAll('.collab-quick__tag--priority').forEach(tag => {
       tag.addEventListener('click', () => {
         this.container.querySelectorAll('.collab-quick__tag--priority').forEach(t => t.classList.remove('collab-quick__tag--active'));
         tag.classList.add('collab-quick__tag--active');
-      });
-    });
-
-    // Business tags: multi-select toggle
-    this.container.querySelectorAll('.collab-quick__tag--biz').forEach(tag => {
-      tag.addEventListener('click', () => {
-        tag.classList.toggle('collab-quick__tag--active');
       });
     });
 
