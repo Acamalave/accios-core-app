@@ -1,8 +1,8 @@
-// ACCIOS CORE — Service Worker v146
+// ACCIOS CORE — Service Worker v147
 // Strategy: Network-first with offline cache fallback
 // Aggressive cache invalidation for all platforms (iOS, Android PWA, desktop)
 
-const CACHE_NAME = 'accios-v146';
+const CACHE_NAME = 'accios-v147';
 const APP_VERSION = 123;
 const SHELL_ASSETS = [
   '/',
