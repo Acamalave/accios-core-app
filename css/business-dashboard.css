@@ -323,34 +323,65 @@
   border-radius: 4px;
 }
 
-/* ── Panel Header ────────────────────────────────────── */
+/* ── Panel Header — Neon Brand Identity ────────────── */
 .biz-dash__panel-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding: 0 2px;
 }
 
 .biz-dash__panel-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--biz-color, var(--biz-color));
-  box-shadow: 0 0 8px rgba(var(--biz-rgb, 249, 115, 22), 0.5);
-  animation: copperDotPulse 3s ease-in-out infinite;
+  background: var(--kpi-accent, var(--biz-color));
+  box-shadow:
+    0 0 8px rgba(var(--kpi-accent-rgb, 249,115,22), 0.6),
+    0 0 20px rgba(var(--kpi-accent-rgb, 249,115,22), 0.3);
+  animation: neonDotBreathe 3s ease-in-out infinite;
 }
-@keyframes copperDotPulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(var(--biz-rgb, 249, 115, 22), 0.3); }
-  50%      { box-shadow: 0 0 12px rgba(var(--biz-rgb, 249, 115, 22), 0.7); }
+@keyframes neonDotBreathe {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(var(--kpi-accent-rgb, 249,115,22), 0.5),
+      0 0 14px rgba(var(--kpi-accent-rgb, 249,115,22), 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(var(--kpi-accent-rgb, 249,115,22), 0.8),
+      0 0 28px rgba(var(--kpi-accent-rgb, 249,115,22), 0.4),
+      0 0 50px rgba(var(--kpi-accent-rgb, 249,115,22), 0.15);
+    transform: scale(1.15);
+  }
 }
 
 .biz-dash__panel-name {
   font-family: var(--dash-font);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  letter-spacing: 0.5px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--kpi-accent, var(--biz-color));
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow:
+    0 0 12px rgba(var(--kpi-accent-rgb, 249,115,22), 0.4),
+    0 0 30px rgba(var(--kpi-accent-rgb, 249,115,22), 0.15);
+  animation: neonTextBreathe 4s ease-in-out infinite;
+}
+@keyframes neonTextBreathe {
+  0%, 100% {
+    text-shadow:
+      0 0 10px rgba(var(--kpi-accent-rgb, 249,115,22), 0.3),
+      0 0 24px rgba(var(--kpi-accent-rgb, 249,115,22), 0.1);
+  }
+  50% {
+    text-shadow:
+      0 0 14px rgba(var(--kpi-accent-rgb, 249,115,22), 0.5),
+      0 0 40px rgba(var(--kpi-accent-rgb, 249,115,22), 0.2),
+      0 0 60px rgba(var(--kpi-accent-rgb, 249,115,22), 0.08);
+  }
 }
 
 /* ── Metric Cards — semi-transparent, bg shows through ── */
@@ -3497,42 +3528,135 @@
    ═══════════════════════════════════════════════════════ */
 
 .biz-kpi {
-  background: var(--kpi-card-bg);
-  border: 1px solid var(--kpi-card-border);
-  border-radius: 18px;
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(255, 255, 255, 0.01) 50%,
+      rgba(var(--kpi-accent-rgb), 0.025) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
   padding: 18px 20px 16px;
   margin-bottom: 10px;
   cursor: pointer;
   position: relative;
   transition: all 400ms cubic-bezier(0.22, 1, 0.36, 1);
-  overflow: hidden;
+  overflow: visible;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
+/* Top accent line */
 .biz-kpi::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  background: linear-gradient(135deg,
-    rgba(var(--kpi-accent-rgb), 0.04) 0%,
-    rgba(var(--kpi-purple-rgb), 0.02) 50%,
-    transparent 80%);
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--kpi-accent-rgb), 0.4),
+    rgba(var(--kpi-purple-rgb), 0.25),
+    transparent);
+  opacity: 0.7;
+  border-radius: 0;
+  transition: opacity 300ms;
+  pointer-events: none;
+}
+/* Corner glow dot */
+.biz-kpi::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 18px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--kpi-accent-rgb), 0.6), transparent 70%);
+  box-shadow: 0 0 8px rgba(var(--kpi-accent-rgb), 0.3);
   opacity: 0;
-  transition: opacity 400ms;
+  transition: opacity 300ms ease;
   pointer-events: none;
 }
 .biz-kpi:hover {
-  border-color: rgba(var(--kpi-accent-rgb), 0.2);
-  transform: translateY(-1px);
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(var(--kpi-accent-rgb), 0.04) 50%,
+      rgba(var(--kpi-accent-rgb), 0.06) 100%);
+  border-color: rgba(var(--kpi-accent-rgb), 0.22);
+  transform: translateY(-2px);
   box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(var(--kpi-accent-rgb), 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(var(--kpi-accent-rgb), 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .biz-kpi:hover::before {
   opacity: 1;
 }
+.biz-kpi:hover::after {
+  opacity: 1;
+}
 .biz-kpi:active {
   transform: scale(0.985);
+}
+
+/* ── First KPI card (Facturación) — Living Breathing Neon Glow ── */
+.biz-kpi:first-of-type {
+  border-color: rgba(var(--kpi-accent-rgb), 0.25);
+  background:
+    linear-gradient(145deg,
+      rgba(var(--kpi-accent-rgb), 0.06) 0%,
+      rgba(var(--kpi-accent-rgb), 0.02) 40%,
+      rgba(var(--kpi-purple-rgb), 0.04) 100%);
+  animation: kpiBreathe 4s ease-in-out infinite;
+}
+.biz-kpi:first-of-type::before {
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--kpi-accent-rgb), 0.6),
+    rgba(var(--kpi-accent-rgb), 0.35),
+    transparent);
+  opacity: 1;
+}
+.biz-kpi:first-of-type::after {
+  opacity: 1;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, rgba(var(--kpi-accent-rgb), 0.8), transparent 70%);
+  box-shadow: 0 0 12px rgba(var(--kpi-accent-rgb), 0.5);
+  animation: kpiDotPulse 4s ease-in-out infinite;
+}
+
+@keyframes kpiBreathe {
+  0%, 100% {
+    border-color: rgba(var(--kpi-accent-rgb), 0.2);
+    box-shadow:
+      0 0 0 0 transparent,
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(var(--kpi-accent-rgb), 0.03),
+      inset 0 0 20px rgba(var(--kpi-accent-rgb), 0.01);
+  }
+  50% {
+    border-color: rgba(var(--kpi-accent-rgb), 0.4);
+    box-shadow:
+      0 0 0 4px rgba(var(--kpi-accent-rgb), 0.04),
+      0 8px 40px rgba(0, 0, 0, 0.35),
+      0 0 50px rgba(var(--kpi-accent-rgb), 0.08),
+      inset 0 0 30px rgba(var(--kpi-accent-rgb), 0.03);
+  }
+}
+@keyframes kpiDotPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(var(--kpi-accent-rgb), 0.4);
+    opacity: 0.7;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(var(--kpi-accent-rgb), 0.8), 0 0 30px rgba(var(--kpi-accent-rgb), 0.25);
+    opacity: 1;
+  }
 }
 
 .biz-kpi__top {
