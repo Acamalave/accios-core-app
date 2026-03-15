@@ -166,7 +166,7 @@ export class BusinessDashboard {
         name: 'IRON PROTOCOL',
         subtitle: 'Protocolo interno de ML Parts',
         website: 'ml.parts/iron',
-        photo: 'assets/images/logo-ml-parts-metal.jpeg',
+        photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
         progress: 0,
         emphasis: true,
         iron: true, // special flag for epic styling
@@ -1062,7 +1062,8 @@ export class BusinessDashboard {
     // Remove any existing detail overlay
     document.querySelector('.biz-kpi-detail')?.remove();
 
-    const companies = this._clientBusinesses;
+    // Solo mostrar ML Parts — filtrar negocios externos
+    const companies = this._clientBusinesses.filter(c => c.iron);
 
     let content = '';
     switch (kpi) {
@@ -1130,10 +1131,10 @@ export class BusinessDashboard {
     }).join('<div class="biz-kpi-detail__sep"></div>');
 
     return `
-      <h3 class="biz-kpi-detail__title">${ICONS.dollarSign} Facturación por Empresa</h3>
-      <p class="biz-kpi-detail__desc">Desglose de ingresos por método de pago para cada empresa del ecosistema.</p>
+      <h3 class="biz-kpi-detail__title">${ICONS.dollarSign} Facturación ML Parts</h3>
+      <p class="biz-kpi-detail__desc">Desglose de ingresos por método de pago de ML Parts.</p>
       <div class="biz-kpi-detail__total-row">
-        <span>Total Ecosistema</span>
+        <span>Total ML Parts</span>
         <span class="biz-kpi-detail__total-val">$0.00</span>
       </div>
       <div class="biz-kpi-detail__list">${rows}</div>`;
@@ -1199,8 +1200,8 @@ export class BusinessDashboard {
       </div>`).join('');
 
     return `
-      <h3 class="biz-kpi-detail__title">${ICONS.package} Cotizaciones por Empresa</h3>
-      <p class="biz-kpi-detail__desc">Cantidad de cotizaciones enviadas a clientes vs las que se convirtieron en ventas cerradas. La tasa de conversión indica la efectividad del proceso comercial.</p>
+      <h3 class="biz-kpi-detail__title">${ICONS.package} Cotizaciones ML Parts</h3>
+      <p class="biz-kpi-detail__desc">Cotizaciones enviadas vs cerradas. La tasa de conversión indica la efectividad del proceso comercial de ML Parts.</p>
       <div class="biz-kpi-detail__quote-legend">
         <span><span class="biz-kpi-detail__legend-dot biz-kpi-detail__legend-dot--sent"></span>Enviadas</span>
         <span><span class="biz-kpi-detail__legend-dot biz-kpi-detail__legend-dot--closed"></span>Cerradas</span>
@@ -1228,8 +1229,8 @@ export class BusinessDashboard {
       </div>`).join('');
 
     return `
-      <h3 class="biz-kpi-detail__title">${ICONS.users} Top Vendedores por Empresa</h3>
-      <p class="biz-kpi-detail__desc">Ranking de los 5 ejecutivos o vendedores con mejor desempeño por cada compañía. Se mide por negocios cerrados y monto vendido. Haz click en un vendedor para ver sus transacciones.</p>
+      <h3 class="biz-kpi-detail__title">${ICONS.users} Top Vendedores ML Parts</h3>
+      <p class="biz-kpi-detail__desc">Ranking de los 5 ejecutivos con mejor desempeño en ML Parts. Se mide por negocios cerrados y monto vendido.</p>
       <div class="biz-kpi-detail__sellers">${rows}</div>`;
   }
 
@@ -1243,8 +1244,8 @@ export class BusinessDashboard {
       </div>`).join('');
 
     return `
-      <h3 class="biz-kpi-detail__title">${ICONS.server} Inventario — Alertas de Stock</h3>
-      <p class="biz-kpi-detail__desc">Productos cuyo inventario está por debajo del mínimo recomendado. Estos artículos requieren reposición para evitar quedarse sin stock y perder ventas.</p>
+      <h3 class="biz-kpi-detail__title">${ICONS.server} Inventario ML Parts — Alertas de Stock</h3>
+      <p class="biz-kpi-detail__desc">Productos de ML Parts cuyo inventario está por debajo del mínimo recomendado. Requieren reposición para evitar quedarse sin stock.</p>
       <div class="biz-kpi-detail__inv-list">${rows}</div>`;
   }
 
