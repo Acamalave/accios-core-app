@@ -88,7 +88,10 @@ export class BusinessDashboard {
     // Auth guard — superadmin OR user with this business linked
     const isSuperAdmin = this.currentUser?.role === 'superadmin';
     const userBiz = this.currentUser?.businesses || [];
-    const hasAccess = isSuperAdmin || userBiz.includes(this.businessId);
+    // Normalize comparison: strip dashes/spaces and lowercase for flexible matching
+    const normalize = (s) => (s || '').toLowerCase().replace(/[-_\s]/g, '');
+    const targetNorm = normalize(this.businessId);
+    const hasAccess = isSuperAdmin || userBiz.some(b => normalize(b) === targetNorm);
 
     if (!this.currentUser || !hasAccess) {
       this.container.innerHTML = `
