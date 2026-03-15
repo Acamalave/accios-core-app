@@ -164,7 +164,7 @@ export class BusinessDashboard {
         name: 'IRON PROTOCOL',
         subtitle: 'Protocolo interno de ML Parts',
         website: 'ml.parts/iron',
-        photo: null,
+        photo: 'assets/images/logo-ml-parts-metal.jpeg',
         progress: 0,
         emphasis: true,
         iron: true, // special flag for epic styling
