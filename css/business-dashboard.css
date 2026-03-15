@@ -1051,20 +1051,21 @@
 /* Clients area sits inside the right panel */
 .biz-dash__clients-area {
   gap: 8px;
-  padding: 12px 12px;
+  padding: 24px 12px 20px;
   overflow-y: auto;
   justify-content: center;
 }
 
 .biz-dash__clients-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  margin-bottom: 4px;
 }
 
 .biz-dash__clients-title-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
 }
 
