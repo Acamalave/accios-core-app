@@ -951,7 +951,7 @@
 .biz-dash__clients-stack {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   flex: 0 0 auto;
   overflow-y: auto;
   max-height: 80vh;
@@ -1049,26 +1049,29 @@
   pointer-events: none;
 }
 
-/* ── Individual Client Card — Premium Design ──────────────── */
+/* ── Individual Client Card — Matches KPI card style exactly ── */
 .biz-client__card {
   background:
-    linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 50%, rgba(var(--biz-rgb),0.03) 100%);
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(255, 255, 255, 0.01) 50%,
+      rgba(var(--kpi-accent-rgb), 0.025) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-  padding: 12px 14px;
+  border-radius: 16px;
+  padding: 18px 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 10px;
+  transition: all 400ms cubic-bezier(0.22, 1, 0.36, 1);
   animation: clientCardIn 0.5s ease both;
   position: relative;
   overflow: visible;
   flex: 0 0 auto;
   box-shadow:
-    0 2px 8px rgba(0,0,0,0.2),
-    inset 0 1px 0 rgba(255,255,255,0.04);
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 @keyframes clientCardIn {
@@ -1076,61 +1079,74 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Top accent line */
+/* Top accent line — same as KPI */
 .biz-client__card::before {
   content: '';
   position: absolute;
-  top: 0; left: 12px; right: 12px;
+  top: 0;
+  left: 14px;
+  right: 14px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--biz-rgb),0.35), rgba(var(--biz-rgb),0.2), transparent);
-  opacity: 0.6;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--kpi-accent-rgb), 0.4),
+    rgba(var(--kpi-purple-rgb), 0.25),
+    transparent);
+  opacity: 0.7;
+  transition: opacity 300ms;
 }
 
-/* Corner glow dot */
+/* Corner glow dot — same as KPI */
 .biz-client__card::after {
   content: '';
   position: absolute;
-  top: -1px; right: 16px;
-  width: 6px; height: 6px;
+  top: -1px;
+  right: 18px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--biz-rgb),0.5), transparent 70%);
-  box-shadow: 0 0 8px rgba(var(--biz-rgb),0.3);
+  background: radial-gradient(circle, rgba(var(--kpi-accent-rgb), 0.6), transparent 70%);
+  box-shadow: 0 0 8px rgba(var(--kpi-accent-rgb), 0.3);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 300ms ease;
+  pointer-events: none;
 }
 
 .biz-client__card:hover {
   background:
-    linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(var(--biz-rgb),0.04) 50%, rgba(var(--biz-rgb),0.06) 100%);
-  border-color: rgba(var(--biz-rgb), 0.2);
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(var(--kpi-accent-rgb), 0.04) 50%,
+      rgba(var(--kpi-accent-rgb), 0.06) 100%);
+  border-color: rgba(var(--kpi-accent-rgb), 0.22);
+  transform: translateY(-2px);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(var(--biz-rgb), 0.06),
+    0 0 24px rgba(var(--kpi-accent-rgb), 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transform: translateY(-2px);
 }
 
+.biz-client__card:hover::before { opacity: 1; }
 .biz-client__card:hover::after { opacity: 1; }
+.biz-client__card:active { transform: scale(0.985); }
 
-/* ── Emphasis Card — Living Breathing Glow ── */
+/* ── Emphasis Card (ML Parts) — Living Breathing Glow ── */
 .biz-client__card--emphasis {
-  border-color: rgba(var(--biz-rgb), 0.25);
+  border-color: rgba(var(--kpi-accent-rgb), 0.25);
   background:
     linear-gradient(145deg,
-      rgba(var(--biz-rgb), 0.06) 0%,
-      rgba(var(--biz-rgb), 0.03) 40%,
-      rgba(var(--biz-rgb), 0.05) 100%
-    );
-  animation: clientCardIn 0.5s ease both, emphasisBreathe 4s ease-in-out infinite 0.6s;
+      rgba(var(--kpi-accent-rgb), 0.06) 0%,
+      rgba(var(--kpi-accent-rgb), 0.02) 40%,
+      rgba(var(--kpi-purple-rgb), 0.04) 100%);
+  animation: clientCardIn 0.5s ease both, kpiBreathe 4s ease-in-out infinite 0.6s;
 }
 
 .biz-client__card--emphasis::before {
   background: linear-gradient(90deg,
     transparent,
-    rgba(var(--biz-rgb), 0.55),
-    rgba(var(--biz-rgb), 0.35),
-    transparent
-  );
+    rgba(var(--kpi-accent-rgb), 0.6),
+    rgba(var(--kpi-accent-rgb), 0.35),
+    transparent);
   opacity: 1;
 }
 
@@ -1138,48 +1154,18 @@
   opacity: 1;
   width: 8px;
   height: 8px;
-  background: radial-gradient(circle, rgba(var(--biz-rgb), 0.7), transparent 70%);
-  box-shadow: 0 0 12px rgba(var(--biz-rgb), 0.5);
-  animation: emphasisDotPulse 4s ease-in-out infinite;
-}
-
-@keyframes emphasisBreathe {
-  0%, 100% {
-    border-color: rgba(var(--biz-rgb), 0.2);
-    box-shadow:
-      0 0 0 0 transparent,
-      0 4px 20px rgba(0, 0, 0, 0.3),
-      0 0 30px rgba(var(--biz-rgb), 0.03),
-      inset 0 0 20px rgba(var(--biz-rgb), 0.01);
-  }
-  50% {
-    border-color: rgba(var(--biz-rgb), 0.4);
-    box-shadow:
-      0 0 0 4px rgba(var(--biz-rgb), 0.04),
-      0 8px 40px rgba(0, 0, 0, 0.35),
-      0 0 50px rgba(var(--biz-rgb), 0.08),
-      inset 0 0 30px rgba(var(--biz-rgb), 0.03);
-  }
-}
-
-@keyframes emphasisDotPulse {
-  0%, 100% {
-    box-shadow: 0 0 8px rgba(var(--biz-rgb), 0.3);
-    opacity: 0.7;
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(var(--biz-rgb), 0.7), 0 0 30px rgba(var(--biz-rgb), 0.2);
-    opacity: 1;
-  }
+  background: radial-gradient(circle, rgba(var(--kpi-accent-rgb), 0.8), transparent 70%);
+  box-shadow: 0 0 12px rgba(var(--kpi-accent-rgb), 0.5);
+  animation: kpiDotPulse 4s ease-in-out infinite;
 }
 
 .biz-client__card--emphasis .biz-client__name {
   color: var(--kpi-accent);
-  text-shadow: 0 0 20px rgba(var(--kpi-accent-rgb), 0.2);
+  text-shadow: 0 0 20px rgba(var(--kpi-accent-rgb), 0.25);
 }
 
 .biz-client__card--emphasis .biz-client__progress-fill {
-  box-shadow: 0 0 12px rgba(var(--biz-rgb), 0.4);
+  box-shadow: 0 0 12px rgba(var(--kpi-accent-rgb), 0.4);
 }
 
 /* Card Header: Avatar + Info */
@@ -1302,8 +1288,8 @@
 
 .biz-client__progress-track {
   width: 100%;
-  height: 3px;
-  border-radius: 3px;
+  height: 4px;
+  border-radius: 4px;
   background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
@@ -1311,12 +1297,12 @@
 
 .biz-client__progress-fill {
   height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--biz-color), var(--biz-color-dark), var(--biz-color));
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--kpi-accent), rgba(var(--kpi-purple-rgb), 0.7), var(--kpi-accent));
   background-size: 200% 100%;
   animation: progressShimmer 3s ease infinite;
   transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 8px rgba(var(--biz-rgb), 0.3);
+  box-shadow: 0 0 8px rgba(var(--kpi-accent-rgb), 0.3);
 }
 
 @keyframes progressShimmer {
