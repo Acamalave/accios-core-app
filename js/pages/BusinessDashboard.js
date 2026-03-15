@@ -139,16 +139,37 @@ export class BusinessDashboard {
     // Resolve business metadata
     this._resolveBizMeta();
 
-    // ─── Onboarding gate: block dashboard until onboarding is complete ───
-    const onbKey = `onb_completed_${this.businessId}`;
-    if (!isSuperAdmin && !localStorage.getItem(onbKey)) {
-      // Show full-screen onboarding — no dashboard behind
+    // ─── Onboarding gate: block dashboard until approved ───
+    const onbSubmittedKey = `onb_submitted_${this.businessId}`;
+    const onbApprovedKey = `onb_approved_${this.businessId}`;
+    if (!isSuperAdmin && !localStorage.getItem(onbApprovedKey)) {
+      this._initClientBusinesses();
+      // Already submitted? Show waiting screen
+      if (localStorage.getItem(onbSubmittedKey)) {
+        this.container.innerHTML = `
+          <section class="biz-dash biz-onb__gate" style="--biz-color:#F97316; --biz-rgb:249,115,22; --biz-color-dark:#EA580C;">
+            <div class="biz-onb__gate-shell">
+              <div class="biz-onb__content" style="padding:48px 32px;text-align:center;">
+                <div class="biz-onb__success-orb" style="margin:0 auto 28px;">
+                  <div class="biz-onb__success-orb-glow"></div>
+                  <div class="biz-onb__success-orb-ring"></div>
+                  <div class="biz-onb__success-orb-core">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                </div>
+                <h2 style="font-family:var(--dash-font);font-size:1.4rem;font-weight:700;background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px;">Tu información está en revisión</h2>
+                <p style="font-family:var(--dash-font);font-size:0.8rem;color:rgba(255,255,255,0.4);line-height:1.6;margin:0 0 8px;">Nuestro equipo está evaluando los documentos que enviaste. Pronto recibirás noticias nuestras.</p>
+                <p style="font-family:var(--dash-font);font-size:0.65rem;color:rgba(255,255,255,0.2);margin:0 0 32px;">Mientras tanto, puedes cerrar esta ventana. Te notificaremos cuando tu ecosistema esté habilitado.</p>
+                <button class="biz-onb__btn biz-onb__btn--ghost" onclick="window.location.hash='#home'">Volver al inicio</button>
+              </div>
+            </div>
+          </section>`;
+        return;
+      }
+      // Not submitted yet: show full onboarding
       this.container.innerHTML = `
         <section class="biz-dash biz-onb__gate" style="--biz-color:#F97316; --biz-rgb:249,115,22; --biz-color-dark:#EA580C;">
         </section>`;
-      // Initialize client businesses (needed for onboarding)
-      this._initClientBusinesses();
-      // Launch onboarding directly (full screen, no overlay needed)
       this._onbGateLaunch();
       return;
     }
@@ -2610,6 +2631,7 @@ export class BusinessDashboard {
         case 'folder-form': box.innerHTML = this._onbForm(); break;
         case 'review': box.innerHTML = this._onbReview(); break;
         case 'confirm': box.innerHTML = this._onbConfirm(); break;
+        case 'processing': box.innerHTML = this._onbProcessing(); this._onbRunProcessing(); break;
         case 'success': box.innerHTML = this._onbSuccess(); break;
       }
       requestAnimationFrame(() => {
@@ -2852,8 +2874,8 @@ export class BusinessDashboard {
 
         <div class="biz-onb__dgrid">${cards}</div>
 
-        <button class="biz-onb__btn biz-onb__btn--vault ${pct === 0 ? 'biz-onb__btn--disabled' : ''}" data-onb="review">
-          ${ICONS.shield} Enviar a la Bóveda
+        <button class="biz-onb__btn biz-onb__btn--vault ${pct < 75 ? 'biz-onb__btn--disabled' : ''}" data-onb="review">
+          ${ICONS.shield} ${pct < 75 ? `Completa al menos 75% para enviar (${pct}%)` : 'Enviar a Revisión'}
         </button>
       </div>`;
   }
@@ -3222,7 +3244,75 @@ export class BusinessDashboard {
       </div>`;
   }
 
+  _onbProcessing() {
+    // Count what was submitted
+    const folders = this._onbFolderDefs;
+    let totalFields = 0, filledFields = 0, fileCount = 0;
+    for (const f of folders) {
+      const af = this._onbGetAllFields(f);
+      const bk = this._onbGetBizKeys(f);
+      for (const k of bk) {
+        const d = this._onbData?.[f.id]?.[k];
+        if (d) {
+          for (const [fid] of af) { totalFields++; if (d[fid]?.trim()) filledFields++; }
+          if (d._brand_files) { try { fileCount += JSON.parse(d._brand_files).length; } catch (_) {} }
+        }
+      }
+    }
+    this._onbProcessingStats = { filledFields, totalFields, fileCount };
+
+    const steps = [
+      'Recibiendo documentos...',
+      'Verificando credenciales...',
+      'Analizando archivos de marca...',
+      'Evaluando equipo registrado...',
+      'Preparando resumen ejecutivo...',
+      'Finalizando revisión...',
+    ];
+
+    return `
+      <div class="biz-onb__processing">
+        <div class="biz-onb__proc-orb">
+          <div class="biz-onb__proc-orb-ring biz-onb__proc-orb-ring--1"></div>
+          <div class="biz-onb__proc-orb-ring biz-onb__proc-orb-ring--2"></div>
+          <div class="biz-onb__proc-orb-core">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+        </div>
+        <h2 class="biz-onb__proc-title">Evaluando tu información</h2>
+        <div class="biz-onb__proc-steps" id="biz-onb-proc-steps">
+          ${steps.map((s, i) => `<div class="biz-onb__proc-step" id="proc-step-${i}"><span class="biz-onb__proc-dot"></span>${s}</div>`).join('')}
+        </div>
+        <div class="biz-onb__proc-bar"><div class="biz-onb__proc-bar-fill" id="biz-onb-proc-fill"></div></div>
+      </div>`;
+  }
+
+  _onbRunProcessing() {
+    const steps = document.querySelectorAll('.biz-onb__proc-step');
+    const fill = document.getElementById('biz-onb-proc-fill');
+    let i = 0;
+    const total = steps.length;
+    const interval = setInterval(() => {
+      if (i < total) {
+        steps[i].classList.add('biz-onb__proc-step--active');
+        if (fill) fill.style.width = `${((i + 1) / total) * 100}%`;
+        i++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => this._onbGo('success'), 800);
+      }
+    }, 900);
+  }
+
   _onbSuccess() {
+    const stats = this._onbProcessingStats || { filledFields: 0, totalFields: 0, fileCount: 0 };
+    const pct = stats.totalFields ? Math.round(stats.filledFields / stats.totalFields * 100) : 0;
+
     return `
       <div class="biz-onb__success">
         <div class="biz-onb__success-ambient"></div>
@@ -3236,16 +3326,34 @@ export class BusinessDashboard {
             </svg>
           </div>
         </div>
-        <h2 class="biz-onb__success-title">${this._onbGateMode ? '¡Ecosistema Desbloqueado!' : '¡Bóveda Actualizada!'}</h2>
-        <p class="biz-onb__success-text">${this._onbGateMode
-          ? 'Toda la información ha sido almacenada de forma segura. Tu ecosistema ML Parts está listo.'
-          : 'Toda la información ha sido almacenada de forma segura y encriptada en tu Bóveda de Credenciales.'}</p>
-        <p class="biz-onb__success-hint">${this._onbGateMode
-          ? 'Ahora tienes acceso completo al panel de control de ML Parts.'
-          : 'Puedes acceder y editar estos datos en cualquier momento desde la carpeta de Credenciales.'}</p>
-        <button class="biz-onb__btn biz-onb__btn--primary" data-onb="${this._onbGateMode ? 'enter-ecosystem' : 'close'}">
-          ${this._onbGateMode ? 'Ingresar al Ecosistema →' : 'Cerrar'}
-        </button>
+        <h2 class="biz-onb__success-title">¡Información Recibida!</h2>
+        <p class="biz-onb__success-text">Hemos registrado toda tu información de manera segura y encriptada.</p>
+
+        <div class="biz-onb__success-stats">
+          <div class="biz-onb__success-stat">
+            <span class="biz-onb__success-stat-val">${stats.filledFields}</span>
+            <span class="biz-onb__success-stat-label">Campos completados</span>
+          </div>
+          <div class="biz-onb__success-stat">
+            <span class="biz-onb__success-stat-val">${pct}%</span>
+            <span class="biz-onb__success-stat-label">Completado</span>
+          </div>
+          ${stats.fileCount ? `<div class="biz-onb__success-stat">
+            <span class="biz-onb__success-stat-val">${stats.fileCount}</span>
+            <span class="biz-onb__success-stat-label">Archivos subidos</span>
+          </div>` : ''}
+        </div>
+
+        <div class="biz-onb__success-notice">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div>
+            <strong>¿Qué sigue?</strong><br/>
+            Nuestro equipo revisará la información que proporcionaste. Pronto recibirás noticias de nosotros con los próximos pasos para activar tu ecosistema ML Parts.
+          </div>
+        </div>
+
+        <p class="biz-onb__success-hint">Por ahora es todo. Gracias por confiar en ACCIOS CORE.</p>
+        <button class="biz-onb__btn biz-onb__btn--ghost" onclick="window.location.hash='#home'">Volver al inicio</button>
       </div>`;
   }
 
@@ -3347,12 +3455,33 @@ export class BusinessDashboard {
       }
       localStorage.setItem('biz_credentials', JSON.stringify(stored));
 
-      // Save to Firestore
+      // Save comprehensive data to Firestore (all fields, all files)
       try {
+        // Build a flat readable summary for admin
+        const summary = {};
+        for (const folder of this._onbFolderDefs) {
+          const fd = this._onbData?.[folder.id];
+          if (!fd) continue;
+          summary[folder.name] = {};
+          for (const [bizKey, bizData] of Object.entries(fd)) {
+            const bizObj = this._clientBusinesses.find(b => b.id === bizKey);
+            const bizName = bizObj?.name || (bizKey === '_global' ? 'Global' : bizKey);
+            summary[folder.name][bizName] = { ...bizData };
+          }
+        }
+
         await setDoc(doc(db, 'onboarding-data', this.currentUser?.phone || 'anonymous'), {
-          data: this._onbData,
+          rawData: this._onbData,
+          summary,
+          businessId: this.businessId,
+          status: 'pending_review',
           submittedAt: Timestamp.now(),
-          submittedBy: { phone: this.currentUser?.phone || '', name: this.currentUser?.name || '' },
+          submittedBy: {
+            phone: this.currentUser?.phone || '',
+            name: this.currentUser?.name || '',
+            email: this.currentUser?.email || '',
+            role: this.currentUser?.role || '',
+          },
         }, { merge: true });
       } catch (e) { console.error('[Onboarding] Firestore save:', e); }
 
@@ -3360,11 +3489,11 @@ export class BusinessDashboard {
       sessionStorage.removeItem('onb_data');
       sessionStorage.removeItem('onb_returning');
 
-      // Mark onboarding as completed
-      localStorage.setItem(`onb_completed_${this.businessId}`, '1');
+      // Mark as submitted (not approved — admin must review)
+      localStorage.setItem(`onb_submitted_${this.businessId}`, '1');
 
-      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Credenciales almacenadas en la Bóveda', type: 'success' } }));
-      this._onbGo('success');
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Información enviada para revisión', type: 'success' } }));
+      this._onbGo('processing');
     } catch (err) {
       console.error('[Onboarding] Submit failed:', err);
       document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Error al guardar', type: 'error' } }));
