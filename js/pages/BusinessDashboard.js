@@ -2,7 +2,9 @@ import { apiUrl } from '../services/apiConfig.js';
 import userAuth from '../services/userAuth.js';
 import { bizIncludes, bizMatch, normBiz } from '../services/bizUtils.js';
 import {
-  db, collection, getDocs, query, where, onSnapshot, Timestamp, doc, setDoc
+  db, collection, getDocs, query, where, onSnapshot, Timestamp, doc, setDoc,
+  addDoc, updateDoc, getDoc,
+  storage, storageRef, uploadBytes, getDownloadURL
 } from '../services/firebase.js';
 
 /* ── Lucide-style SVG Icons (24x24 stroke-based) ─────────────────── */
@@ -394,7 +396,7 @@ export class BusinessDashboard {
       <!-- Concrete Floor — spans full width -->
       <div class="biz-dash__floor"></div>
 
-      <!-- Center: Credential Folder + Free space -->
+      <!-- Center: Credential Folder + Form Launcher -->
       <div class="biz-dash__center">
         <div class="biz-cred__folder" id="cred-folder-btn">
           <div class="biz-cred__folder-icon">${ICONS.folderLock}</div>
@@ -404,6 +406,17 @@ export class BusinessDashboard {
           </div>
           <div class="biz-cred__folder-shield">${ICONS.shield}</div>
         </div>
+
+        <button class="biz-form__launcher" id="biz-form-launcher">
+          <div class="biz-form__launcher-glow"></div>
+          <span class="biz-form__launcher-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </span>
+          <span class="biz-form__launcher-text">
+            <span class="biz-form__launcher-label">Formulario Interactivo</span>
+            <span class="biz-form__launcher-sub">Crear nueva solicitud</span>
+          </span>
+        </button>
       </div>
 
       <!-- Right Panel: Client Business Cards (stacked) -->
@@ -442,6 +455,9 @@ export class BusinessDashboard {
 
       <!-- Credential Vault Overlay (content rendered dynamically) -->
       <div class="biz-cred__vault-overlay" id="cred-vault-overlay"></div>
+
+      <!-- Interactive Form Overlay -->
+      ${this._buildFormOverlay()}
 
     </section>`;
   }
@@ -984,6 +1000,9 @@ export class BusinessDashboard {
 
     // ── KPI Card Click → Detail Panels ─────────────────────────
     this._attachKpiListeners();
+
+    // ── Interactive Form ──────────────────────────────────────────
+    this._attachFormListeners();
 
     // ── Dust Particle System ─────────────────────────────────────
     this._initDustParticles();
@@ -2321,6 +2340,737 @@ export class BusinessDashboard {
     if (sendBtn) sendBtn.disabled = false;
   }
 
+  /* ══════════════════════════════════════════════════════════════════
+     INTERACTIVE FORM SYSTEM — Apple-inspired multi-step wizard
+     ══════════════════════════════════════════════════════════════════ */
+
+  _buildFormOverlay() {
+    return `
+    <div class="biz-form__overlay" id="biz-form-overlay">
+      <div class="biz-form__backdrop" id="biz-form-backdrop"></div>
+      <div class="biz-form__container">
+        <button class="biz-form__close" id="biz-form-close">${ICONS.xClose}</button>
+
+        <!-- Progress -->
+        <div class="biz-form__progress">
+          <div class="biz-form__progress-track">
+            <div class="biz-form__progress-fill" id="biz-form-progress-fill"></div>
+          </div>
+          <div class="biz-form__steps">
+            <span class="biz-form__step-dot biz-form__step-dot--active" data-step="0">1</span>
+            <span class="biz-form__step-dot" data-step="1">2</span>
+            <span class="biz-form__step-dot" data-step="2">3</span>
+            <span class="biz-form__step-dot" data-step="3">4</span>
+          </div>
+        </div>
+
+        <!-- Slides -->
+        <div class="biz-form__slides" id="biz-form-slides">
+
+          <!-- Step 0: Info -->
+          <div class="biz-form__slide biz-form__slide--active" data-slide="0">
+            <div class="biz-form__slide-header">
+              <h3 class="biz-form__slide-title">Información del Cliente</h3>
+              <p class="biz-form__slide-sub">Completa los datos básicos de la solicitud</p>
+            </div>
+            <div class="biz-form__fields">
+              <div class="biz-form__field">
+                <label class="biz-form__label">Nombre del cliente</label>
+                <input class="biz-form__input" id="biz-form-clientName" type="text" placeholder="Juan Pérez" autocomplete="off" />
+              </div>
+              <div class="biz-form__field">
+                <label class="biz-form__label">Empresa</label>
+                <input class="biz-form__input" id="biz-form-companyName" type="text" placeholder="Empresa S.A." autocomplete="off" />
+              </div>
+              <div class="biz-form__row">
+                <div class="biz-form__field">
+                  <label class="biz-form__label">Email</label>
+                  <input class="biz-form__input" id="biz-form-email" type="email" placeholder="email@ejemplo.com" autocomplete="off" />
+                </div>
+                <div class="biz-form__field">
+                  <label class="biz-form__label">Teléfono</label>
+                  <input class="biz-form__input" id="biz-form-phone" type="tel" placeholder="+507 6000-0000" autocomplete="off" />
+                </div>
+              </div>
+              <div class="biz-form__field">
+                <label class="biz-form__label">Categoría</label>
+                <div class="biz-form__select-wrap">
+                  <select class="biz-form__select" id="biz-form-category">
+                    <option value="">Seleccionar...</option>
+                    <option value="parts-request">Solicitud de Partes</option>
+                    <option value="quote">Cotización</option>
+                    <option value="service">Servicio Técnico</option>
+                    <option value="consulting">Consultoría</option>
+                    <option value="other">Otro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="biz-form__field">
+                <label class="biz-form__label">Descripción</label>
+                <textarea class="biz-form__textarea" id="biz-form-description" rows="3" placeholder="Describe brevemente la solicitud..."></textarea>
+              </div>
+              <div class="biz-form__field">
+                <label class="biz-form__label">Urgencia</label>
+                <div class="biz-form__pills" id="biz-form-urgency">
+                  <button class="biz-form__pill" data-value="low" type="button">
+                    <span class="biz-form__pill-dot" style="background:#3B82F6"></span> Baja
+                  </button>
+                  <button class="biz-form__pill biz-form__pill--active" data-value="medium" type="button">
+                    <span class="biz-form__pill-dot" style="background:#F59E0B"></span> Media
+                  </button>
+                  <button class="biz-form__pill" data-value="high" type="button">
+                    <span class="biz-form__pill-dot" style="background:#EF4444"></span> Alta
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 1: Files -->
+          <div class="biz-form__slide" data-slide="1">
+            <div class="biz-form__slide-header">
+              <h3 class="biz-form__slide-title">Archivos Adjuntos</h3>
+              <p class="biz-form__slide-sub">Arrastra archivos o toca para seleccionar</p>
+            </div>
+            <div class="biz-form__dropzone" id="biz-form-dropzone">
+              <input type="file" multiple class="biz-form__file-hidden" id="biz-form-file-input" />
+              <div class="biz-form__dropzone-content">
+                <div class="biz-form__dropzone-icon">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="biz-form__dropzone-text">Suelta archivos aquí</div>
+                <div class="biz-form__dropzone-hint">PDF, imágenes, documentos · Max 10MB c/u</div>
+              </div>
+            </div>
+            <div class="biz-form__file-list" id="biz-form-file-list"></div>
+          </div>
+
+          <!-- Step 2: Signature -->
+          <div class="biz-form__slide" data-slide="2">
+            <div class="biz-form__slide-header">
+              <h3 class="biz-form__slide-title">Firma Digital</h3>
+              <p class="biz-form__slide-sub">Dibuja tu firma abajo o solicita firma remota</p>
+            </div>
+            <div class="biz-form__sig-wrapper" id="biz-form-sig-wrapper">
+              <canvas class="biz-form__sig-canvas" id="biz-form-sig-canvas"></canvas>
+              <div class="biz-form__sig-placeholder" id="biz-form-sig-placeholder">
+                <span>Firma aquí</span>
+              </div>
+              <button class="biz-form__sig-clear" id="biz-form-sig-clear" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                Limpiar
+              </button>
+            </div>
+            <div class="biz-form__sig-divider">
+              <span>ó</span>
+            </div>
+            <button class="biz-form__btn biz-form__btn--outline" id="biz-form-sig-remote" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              Enviar a dispositivo móvil
+            </button>
+            <div class="biz-form__sig-remote-status" id="biz-form-sig-remote-status"></div>
+          </div>
+
+          <!-- Step 3: Review -->
+          <div class="biz-form__slide" data-slide="3">
+            <div class="biz-form__slide-header">
+              <h3 class="biz-form__slide-title">Revisar y Enviar</h3>
+              <p class="biz-form__slide-sub">Confirma que toda la información sea correcta</p>
+            </div>
+            <div class="biz-form__review" id="biz-form-review"></div>
+          </div>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="biz-form__nav">
+          <button class="biz-form__btn biz-form__btn--ghost" id="biz-form-prev" type="button">Atrás</button>
+          <button class="biz-form__btn biz-form__btn--primary" id="biz-form-next" type="button">Siguiente</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  _attachFormListeners() {
+    const launcher = this.container.querySelector('#biz-form-launcher');
+    if (launcher) launcher.addEventListener('click', () => this._openForm());
+
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return;
+
+    overlay.querySelector('#biz-form-close')?.addEventListener('click', () => this._closeForm());
+    overlay.querySelector('#biz-form-backdrop')?.addEventListener('click', () => this._closeForm());
+    overlay.querySelector('#biz-form-next')?.addEventListener('click', () => this._formNext());
+    overlay.querySelector('#biz-form-prev')?.addEventListener('click', () => this._formPrev());
+    overlay.querySelector('#biz-form-sig-clear')?.addEventListener('click', () => this._clearSignature());
+    overlay.querySelector('#biz-form-sig-remote')?.addEventListener('click', () => this._sendSignatureToMobile());
+
+    // Urgency pills
+    overlay.querySelectorAll('#biz-form-urgency .biz-form__pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        overlay.querySelectorAll('#biz-form-urgency .biz-form__pill').forEach(p => p.classList.remove('biz-form__pill--active'));
+        pill.classList.add('biz-form__pill--active');
+      });
+    });
+
+    // Dropzone
+    this._initDropzone();
+  }
+
+  _openForm() {
+    this._formStep = 0;
+    this._formFiles = [];
+    this._sigHasContent = false;
+    this._sigRemoteUnsub = null;
+
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return;
+
+    // Reset slides
+    overlay.querySelectorAll('.biz-form__slide').forEach(s => s.classList.remove('biz-form__slide--active'));
+    overlay.querySelector('[data-slide="0"]')?.classList.add('biz-form__slide--active');
+
+    // Reset progress
+    this._updateFormProgress(0);
+
+    // Reset fields
+    overlay.querySelectorAll('.biz-form__input, .biz-form__textarea').forEach(el => el.value = '');
+    overlay.querySelector('.biz-form__select').value = '';
+    overlay.querySelectorAll('#biz-form-urgency .biz-form__pill').forEach(p => p.classList.remove('biz-form__pill--active'));
+    overlay.querySelector('[data-value="medium"]')?.classList.add('biz-form__pill--active');
+    const fileList = overlay.querySelector('#biz-form-file-list');
+    if (fileList) fileList.innerHTML = '';
+
+    // Reset nav
+    const prevBtn = overlay.querySelector('#biz-form-prev');
+    const nextBtn = overlay.querySelector('#biz-form-next');
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) { nextBtn.textContent = 'Siguiente'; nextBtn.disabled = false; }
+
+    // Show overlay
+    requestAnimationFrame(() => {
+      overlay.classList.add('biz-form__overlay--show');
+      // Init signature canvas after transition
+      setTimeout(() => this._initSignatureCanvas(), 350);
+    });
+  }
+
+  _closeForm() {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return;
+    overlay.classList.remove('biz-form__overlay--show');
+    if (this._sigRemoteUnsub) { this._sigRemoteUnsub(); this._sigRemoteUnsub = null; }
+  }
+
+  _formNext() {
+    if (this._formStep === 3) {
+      this._submitForm();
+      return;
+    }
+    if (!this._validateFormStep(this._formStep)) return;
+
+    if (this._formStep === 2) {
+      // Build review before showing step 3
+      this._buildFormReview();
+    }
+
+    this._formStep++;
+    this._formGoTo(this._formStep);
+  }
+
+  _formPrev() {
+    if (this._formStep <= 0) return;
+    this._formStep--;
+    this._formGoTo(this._formStep);
+  }
+
+  _formGoTo(step) {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return;
+
+    // Update slides
+    overlay.querySelectorAll('.biz-form__slide').forEach(s => {
+      s.classList.remove('biz-form__slide--active', 'biz-form__slide--exit-left', 'biz-form__slide--exit-right');
+    });
+    const target = overlay.querySelector(`[data-slide="${step}"]`);
+    if (target) target.classList.add('biz-form__slide--active');
+
+    // Update progress
+    this._updateFormProgress(step);
+
+    // Update nav buttons
+    const prevBtn = overlay.querySelector('#biz-form-prev');
+    const nextBtn = overlay.querySelector('#biz-form-next');
+    if (prevBtn) prevBtn.style.display = step === 0 ? 'none' : '';
+    if (nextBtn) {
+      nextBtn.textContent = step === 3 ? 'Enviar' : 'Siguiente';
+      nextBtn.disabled = false;
+      if (step === 3) nextBtn.classList.add('biz-form__btn--submit');
+      else nextBtn.classList.remove('biz-form__btn--submit');
+    }
+
+    // Re-init signature canvas when entering step 2
+    if (step === 2) setTimeout(() => this._initSignatureCanvas(), 100);
+  }
+
+  _updateFormProgress(step) {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return;
+    const fill = overlay.querySelector('#biz-form-progress-fill');
+    if (fill) fill.style.width = `${((step + 1) / 4) * 100}%`;
+    overlay.querySelectorAll('.biz-form__step-dot').forEach(dot => {
+      const s = parseInt(dot.dataset.step);
+      dot.classList.toggle('biz-form__step-dot--active', s <= step);
+      dot.classList.toggle('biz-form__step-dot--current', s === step);
+    });
+  }
+
+  _validateFormStep(step) {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return false;
+
+    if (step === 0) {
+      const name = overlay.querySelector('#biz-form-clientName')?.value?.trim();
+      const category = overlay.querySelector('#biz-form-category')?.value;
+      if (!name) {
+        this._shakeField(overlay.querySelector('#biz-form-clientName'));
+        return false;
+      }
+      if (!category) {
+        this._shakeField(overlay.querySelector('.biz-form__select-wrap'));
+        return false;
+      }
+      return true;
+    }
+    // Steps 1, 2 are optional (files, signature)
+    return true;
+  }
+
+  _shakeField(el) {
+    if (!el) return;
+    el.classList.add('biz-form__shake');
+    el.addEventListener('animationend', () => el.classList.remove('biz-form__shake'), { once: true });
+  }
+
+  _collectFormInfo() {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return {};
+    const urgencyPill = overlay.querySelector('#biz-form-urgency .biz-form__pill--active');
+    return {
+      clientName: overlay.querySelector('#biz-form-clientName')?.value?.trim() || '',
+      companyName: overlay.querySelector('#biz-form-companyName')?.value?.trim() || '',
+      email: overlay.querySelector('#biz-form-email')?.value?.trim() || '',
+      phone: overlay.querySelector('#biz-form-phone')?.value?.trim() || '',
+      category: overlay.querySelector('#biz-form-category')?.value || '',
+      description: overlay.querySelector('#biz-form-description')?.value?.trim() || '',
+      urgency: urgencyPill?.dataset?.value || 'medium',
+    };
+  }
+
+  // ── File Upload ─────────────────────────────────────────────────
+
+  _initDropzone() {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    if (!overlay) return;
+    const dropzone = overlay.querySelector('#biz-form-dropzone');
+    const fileInput = overlay.querySelector('#biz-form-file-input');
+    if (!dropzone || !fileInput) return;
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('biz-form__dropzone--dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('biz-form__dropzone--dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('biz-form__dropzone--dragover');
+      this._handleFilesSelected(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', () => {
+      this._handleFilesSelected(fileInput.files);
+      fileInput.value = '';
+    });
+  }
+
+  _handleFilesSelected(fileList) {
+    if (!this._formFiles) this._formFiles = [];
+    for (const file of fileList) {
+      if (file.size > 10 * 1024 * 1024) {
+        document.dispatchEvent(new CustomEvent('toast', { detail: { message: `${file.name} excede 10MB`, type: 'error' } }));
+        continue;
+      }
+      if (this._formFiles.length >= 8) {
+        document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Máximo 8 archivos', type: 'error' } }));
+        break;
+      }
+      this._formFiles.push(file);
+    }
+    this._renderFileList();
+  }
+
+  _renderFileList() {
+    const list = this.container.querySelector('#biz-form-file-list');
+    if (!list) return;
+    if (!this._formFiles.length) { list.innerHTML = ''; return; }
+
+    list.innerHTML = this._formFiles.map((file, i) => {
+      const isImg = file.type.startsWith('image/');
+      const sizeKB = (file.size / 1024).toFixed(0);
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      const size = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+      const icon = isImg
+        ? `<div class="biz-form__file-thumb" data-file-idx="${i}"></div>`
+        : `<div class="biz-form__file-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>`;
+      return `
+        <div class="biz-form__file-card" style="animation-delay:${i * 0.05}s">
+          ${icon}
+          <div class="biz-form__file-info">
+            <span class="biz-form__file-name">${file.name}</span>
+            <span class="biz-form__file-size">${size}</span>
+          </div>
+          <button class="biz-form__file-remove" data-rm="${i}" type="button">${ICONS.xClose}</button>
+        </div>`;
+    }).join('');
+
+    // Render image thumbnails
+    this._formFiles.forEach((file, i) => {
+      if (!file.type.startsWith('image/')) return;
+      const thumb = list.querySelector(`[data-file-idx="${i}"]`);
+      if (!thumb) return;
+      const reader = new FileReader();
+      reader.onload = (e) => { thumb.style.backgroundImage = `url(${e.target.result})`; };
+      reader.readAsDataURL(file);
+    });
+
+    // Remove buttons
+    list.querySelectorAll('.biz-form__file-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.rm);
+        this._formFiles.splice(idx, 1);
+        this._renderFileList();
+      });
+    });
+  }
+
+  async _uploadFormFiles(docId) {
+    const urls = [];
+    for (const file of this._formFiles) {
+      try {
+        const ext = file.name.split('.').pop() || 'bin';
+        const path = `form-submissions/${docId}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const ref = storageRef(storage, path);
+        await uploadBytes(ref, file);
+        const url = await getDownloadURL(ref);
+        urls.push({ name: file.name, url, type: file.type, size: file.size });
+      } catch (err) {
+        console.error('[Form] Upload failed:', file.name, err);
+      }
+    }
+    return urls;
+  }
+
+  // ── Signature Canvas ────────────────────────────────────────────
+
+  _initSignatureCanvas() {
+    const canvas = this.container.querySelector('#biz-form-sig-canvas');
+    const wrapper = this.container.querySelector('#biz-form-sig-wrapper');
+    if (!canvas || !wrapper) return;
+
+    const rect = wrapper.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = 200 * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = '200px';
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    this._sigCtx = ctx;
+    this._sigCanvas = canvas;
+
+    // Remove old listeners by cloning
+    const clone = canvas.cloneNode(true);
+    canvas.parentNode.replaceChild(clone, canvas);
+    this._sigCanvas = clone;
+    const newCtx = clone.getContext('2d');
+    newCtx.scale(dpr, dpr);
+    newCtx.strokeStyle = '#FFFFFF';
+    newCtx.lineWidth = 2.5;
+    newCtx.lineCap = 'round';
+    newCtx.lineJoin = 'round';
+    this._sigCtx = newCtx;
+
+    let drawing = false;
+    const getPos = (e) => {
+      const r = clone.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - r.left, y: clientY - r.top };
+    };
+
+    const start = (e) => {
+      e.preventDefault();
+      drawing = true;
+      const p = getPos(e);
+      newCtx.beginPath();
+      newCtx.moveTo(p.x, p.y);
+      // Hide placeholder
+      const ph = this.container.querySelector('#biz-form-sig-placeholder');
+      if (ph) ph.style.opacity = '0';
+    };
+    const move = (e) => {
+      if (!drawing) return;
+      e.preventDefault();
+      const p = getPos(e);
+      newCtx.lineTo(p.x, p.y);
+      newCtx.stroke();
+      this._sigHasContent = true;
+    };
+    const end = () => { drawing = false; };
+
+    clone.addEventListener('pointerdown', start);
+    clone.addEventListener('pointermove', move);
+    clone.addEventListener('pointerup', end);
+    clone.addEventListener('pointerleave', end);
+  }
+
+  _clearSignature() {
+    if (!this._sigCtx || !this._sigCanvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    this._sigCtx.clearRect(0, 0, this._sigCanvas.width / dpr, this._sigCanvas.height / dpr);
+    this._sigHasContent = false;
+    const ph = this.container.querySelector('#biz-form-sig-placeholder');
+    if (ph) ph.style.opacity = '1';
+  }
+
+  _getSignatureDataUrl() {
+    if (!this._sigCanvas || !this._sigHasContent) return null;
+    return this._sigCanvas.toDataURL('image/png');
+  }
+
+  async _uploadSignature(docId) {
+    const dataUrl = this._getSignatureDataUrl();
+    if (!dataUrl) return null;
+    try {
+      const blob = await (await fetch(dataUrl)).blob();
+      const path = `form-submissions/${docId}/signature_${Date.now()}.png`;
+      const ref = storageRef(storage, path);
+      await uploadBytes(ref, blob);
+      return await getDownloadURL(ref);
+    } catch (err) {
+      console.error('[Form] Signature upload failed:', err);
+      return null;
+    }
+  }
+
+  // ── Remote Signature (Send to Mobile) ───────────────────────────
+
+  async _sendSignatureToMobile() {
+    const statusEl = this.container.querySelector('#biz-form-sig-remote-status');
+    const btn = this.container.querySelector('#biz-form-sig-remote');
+    if (!statusEl || !btn) return;
+
+    btn.disabled = true;
+    statusEl.innerHTML = `<div class="biz-form__sig-pending"><div class="biz-form__spinner"></div> Preparando solicitud de firma...</div>`;
+
+    try {
+      // Create a signature request doc
+      const info = this._collectFormInfo();
+      const sigReqRef = await addDoc(collection(db, 'signature-requests'), {
+        formTitle: info.clientName || 'Solicitud sin nombre',
+        requestedBy: this.currentUser?.phone || 'unknown',
+        requestedByName: this.currentUser?.name || 'SuperAdmin',
+        status: 'pending',
+        createdAt: Timestamp.now(),
+        signatureUrl: null,
+      });
+
+      // Listen for signature completion
+      this._sigRemoteUnsub = onSnapshot(doc(db, 'signature-requests', sigReqRef.id), (snap) => {
+        const data = snap.data();
+        if (data?.status === 'signed' && data?.signatureUrl) {
+          statusEl.innerHTML = `<div class="biz-form__sig-done">✓ Firma recibida desde dispositivo móvil</div>`;
+          this._remoteSignatureUrl = data.signatureUrl;
+          this._sigHasContent = true; // Mark as having signature
+          btn.disabled = true;
+          if (this._sigRemoteUnsub) { this._sigRemoteUnsub(); this._sigRemoteUnsub = null; }
+        }
+      });
+
+      statusEl.innerHTML = `
+        <div class="biz-form__sig-pending">
+          <div class="biz-form__spinner"></div>
+          <span>Esperando firma del dispositivo...</span>
+          <span class="biz-form__sig-id">ID: ${sigReqRef.id.slice(0, 8)}</span>
+        </div>`;
+
+      // Send push notification to all registered collaborators
+      try {
+        const usersSnap = await getDocs(collection(db, 'users'));
+        const tokens = [];
+        usersSnap.forEach(u => {
+          const d = u.data();
+          if (d.fcmToken && d.phone !== this.currentUser?.phone) tokens.push(d.fcmToken);
+        });
+        if (tokens.length) {
+          await fetch(apiUrl('/api/send-push'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              tokens,
+              title: '✍️ Firma Requerida',
+              body: `${this.currentUser?.name || 'SuperAdmin'} solicita tu firma`,
+              url: `/#sign/${sigReqRef.id}`,
+            }),
+          }).catch(() => {});
+        }
+      } catch (_) { /* push is best-effort */ }
+
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Solicitud de firma enviada', type: 'success' } }));
+    } catch (err) {
+      console.error('[Form] Remote signature failed:', err);
+      statusEl.innerHTML = `<div class="biz-form__sig-error">Error al enviar solicitud</div>`;
+      btn.disabled = false;
+    }
+  }
+
+  // ── Review & Submit ─────────────────────────────────────────────
+
+  _buildFormReview() {
+    const review = this.container.querySelector('#biz-form-review');
+    if (!review) return;
+    const info = this._collectFormInfo();
+    const urgencyLabels = { low: 'Baja', medium: 'Media', high: 'Alta' };
+    const urgencyColors = { low: '#3B82F6', medium: '#F59E0B', high: '#EF4444' };
+    const categoryLabels = {
+      'parts-request': 'Solicitud de Partes', 'quote': 'Cotización',
+      'service': 'Servicio Técnico', 'consulting': 'Consultoría', 'other': 'Otro'
+    };
+
+    const sigPreview = this._sigHasContent
+      ? (this._remoteSignatureUrl
+          ? `<img src="${this._remoteSignatureUrl}" class="biz-form__review-sig" alt="Firma" />`
+          : `<img src="${this._getSignatureDataUrl()}" class="biz-form__review-sig" alt="Firma" />`)
+      : '<span class="biz-form__review-empty">Sin firma</span>';
+
+    const filesPreview = this._formFiles?.length
+      ? this._formFiles.map(f => `<span class="biz-form__review-file">${f.name}</span>`).join('')
+      : '<span class="biz-form__review-empty">Sin archivos</span>';
+
+    review.innerHTML = `
+      <div class="biz-form__review-section">
+        <div class="biz-form__review-title">Información</div>
+        <div class="biz-form__review-grid">
+          <div class="biz-form__review-item">
+            <span class="biz-form__review-label">Cliente</span>
+            <span class="biz-form__review-value">${info.clientName || '—'}</span>
+          </div>
+          <div class="biz-form__review-item">
+            <span class="biz-form__review-label">Empresa</span>
+            <span class="biz-form__review-value">${info.companyName || '—'}</span>
+          </div>
+          <div class="biz-form__review-item">
+            <span class="biz-form__review-label">Email</span>
+            <span class="biz-form__review-value">${info.email || '—'}</span>
+          </div>
+          <div class="biz-form__review-item">
+            <span class="biz-form__review-label">Teléfono</span>
+            <span class="biz-form__review-value">${info.phone || '—'}</span>
+          </div>
+          <div class="biz-form__review-item">
+            <span class="biz-form__review-label">Categoría</span>
+            <span class="biz-form__review-value">${categoryLabels[info.category] || '—'}</span>
+          </div>
+          <div class="biz-form__review-item">
+            <span class="biz-form__review-label">Urgencia</span>
+            <span class="biz-form__review-value" style="color:${urgencyColors[info.urgency]}">${urgencyLabels[info.urgency]}</span>
+          </div>
+        </div>
+        ${info.description ? `<div class="biz-form__review-desc">${info.description}</div>` : ''}
+      </div>
+      <div class="biz-form__review-section">
+        <div class="biz-form__review-title">Archivos (${this._formFiles?.length || 0})</div>
+        <div class="biz-form__review-files">${filesPreview}</div>
+      </div>
+      <div class="biz-form__review-section">
+        <div class="biz-form__review-title">Firma</div>
+        ${sigPreview}
+      </div>`;
+  }
+
+  async _submitForm() {
+    const overlay = this.container.querySelector('#biz-form-overlay');
+    const nextBtn = overlay?.querySelector('#biz-form-next');
+    if (nextBtn) { nextBtn.disabled = true; nextBtn.innerHTML = '<div class="biz-form__spinner"></div> Enviando...'; }
+
+    try {
+      const info = this._collectFormInfo();
+
+      // 1. Create Firestore doc
+      const docRef = await addDoc(collection(db, 'form-submissions'), {
+        businessId: 'ml-parts',
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+        status: 'submitted',
+        submittedBy: {
+          phone: this.currentUser?.phone || '',
+          name: this.currentUser?.name || '',
+          role: this.currentUser?.role || '',
+        },
+        info,
+        files: [],
+        signature: { dataUrl: null, storageUrl: null, signedBy: this.currentUser?.phone || '', method: 'direct' },
+      });
+
+      // 2. Upload files
+      const fileUrls = await this._uploadFormFiles(docRef.id);
+
+      // 3. Upload signature
+      let sigUrl = this._remoteSignatureUrl || null;
+      if (!sigUrl && this._sigHasContent) {
+        sigUrl = await this._uploadSignature(docRef.id);
+      }
+
+      // 4. Update doc with file URLs and signature
+      await updateDoc(doc(db, 'form-submissions', docRef.id), {
+        files: fileUrls,
+        signature: {
+          storageUrl: sigUrl,
+          signedBy: this.currentUser?.phone || '',
+          signedAt: Timestamp.now(),
+          method: this._remoteSignatureUrl ? 'remote' : 'direct',
+        },
+        updatedAt: Timestamp.now(),
+      });
+
+      // Success animation
+      if (overlay) {
+        const container = overlay.querySelector('.biz-form__container');
+        if (container) {
+          container.innerHTML = `
+            <div class="biz-form__success">
+              <div class="biz-form__success-check">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <h3 class="biz-form__success-title">¡Enviado con Éxito!</h3>
+              <p class="biz-form__success-sub">La solicitud ha sido registrada correctamente</p>
+              <button class="biz-form__btn biz-form__btn--primary" onclick="this.closest('.biz-form__overlay').classList.remove('biz-form__overlay--show')" type="button">Cerrar</button>
+            </div>`;
+        }
+      }
+
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Formulario enviado exitosamente', type: 'success' } }));
+      this._remoteSignatureUrl = null;
+    } catch (err) {
+      console.error('[Form] Submit failed:', err);
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Error al enviar formulario', type: 'error' } }));
+      if (nextBtn) { nextBtn.disabled = false; nextBtn.textContent = 'Reintentar'; }
+    }
+  }
+
   unmount() {
     // Cleanup dust particles
     if (this._dustRAF) cancelAnimationFrame(this._dustRAF);
@@ -2332,8 +3082,9 @@ export class BusinessDashboard {
     // Cleanup broadcast
     if (this._broadcastUnsub) { this._broadcastUnsub(); this._broadcastUnsub = null; }
     document.querySelector('.eco-broadcast-overlay')?.remove();
+    // Cleanup form
+    if (this._sigRemoteUnsub) { this._sigRemoteUnsub(); this._sigRemoteUnsub = null; }
     // Cleanup modals (now inline in dashboard, removed with container)
-    // Also cleanup any old modal-root leftovers
     document.getElementById('cred-pin-overlay')?.remove();
     document.getElementById('cred-vault-overlay')?.remove();
   }
