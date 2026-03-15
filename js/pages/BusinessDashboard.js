@@ -1,8 +1,8 @@
 import { apiUrl } from '../services/apiConfig.js';
 import userAuth from '../services/userAuth.js';
-import { bizIncludes, bizMatch } from '../services/bizUtils.js';
+import { bizIncludes, bizMatch, normBiz } from '../services/bizUtils.js';
 import {
-  db, collection, getDocs, query, where
+  db, collection, getDocs, query, where, addDoc, onSnapshot, orderBy, limit, Timestamp, doc, deleteDoc
 } from '../services/firebase.js';
 
 /* ── Lucide-style SVG Icons (24x24 stroke-based) ─────────────────── */
@@ -80,6 +80,8 @@ export class BusinessDashboard {
     this.businessId = businessId || 'ml-parts';
     this.data = null;
     this._bizMeta = null;
+    this._broadcastUnsub = null;
+    this._lastBroadcastId = null; // prevent replaying old messages
     // Default to current month (e.g. "2026-03")
     const _now = new Date();
     this._currentRange = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}`;
@@ -139,6 +141,8 @@ export class BusinessDashboard {
     if (BIZ_CONFIG[this.businessId]) {
       this.container.innerHTML = this._buildBusinessOverview();
       this._attachOverviewListeners();
+      this._initBroadcastListener();
+      if (isSuperAdmin) this._initBroadcastSender();
       return;
     }
 
@@ -273,6 +277,10 @@ export class BusinessDashboard {
 
     // Staggered card assembly — each section animates independently
     this._runAssemblySequence();
+
+    // ─── Ecosystem Broadcast System ───
+    this._initBroadcastListener();
+    if (isSuperAdmin) this._initBroadcastSender();
   }
 
   _resolveBizMeta() {
@@ -1803,6 +1811,183 @@ export class BusinessDashboard {
     });
   }
 
+  /* ── Ecosystem Broadcast — Real-time floating messages ──────── */
+
+  _initBroadcastListener() {
+    if (this._broadcastUnsub) { this._broadcastUnsub(); this._broadcastUnsub = null; }
+
+    const bizNorm = normBiz(this.businessId);
+    // Listen to latest broadcast for this ecosystem
+    const q = query(
+      collection(db, 'ecosystem_broadcasts'),
+      where('bizNorm', '==', bizNorm),
+      orderBy('sentAt', 'desc'),
+      limit(1)
+    );
+
+    this._broadcastFirstSnapshot = true;
+    this._broadcastUnsub = onSnapshot(q, (snap) => {
+      // Skip the first snapshot (old data on page load)
+      if (this._broadcastFirstSnapshot) {
+        this._broadcastFirstSnapshot = false;
+        // Store current latest ID to avoid replaying
+        snap.forEach(d => { this._lastBroadcastId = d.id; });
+        return;
+      }
+
+      snap.docChanges().forEach(change => {
+        if (change.type === 'added' && change.doc.id !== this._lastBroadcastId) {
+          const data = change.doc.data();
+          this._lastBroadcastId = change.doc.id;
+          // Don't show to the sender themselves
+          const myPhone = this.currentUser?.phone;
+          if (data.sentByPhone === myPhone) return;
+          this._displayBroadcast(data.message, data.sentByName || 'Sistema');
+        }
+      });
+    });
+  }
+
+  _displayBroadcast(message, senderName) {
+    // Remove any existing broadcast
+    document.querySelector('.eco-broadcast-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'eco-broadcast-overlay';
+    overlay.innerHTML = `
+      <div class="eco-broadcast">
+        <div class="eco-broadcast__glow"></div>
+        <div class="eco-broadcast__content">
+          <div class="eco-broadcast__sender">${this._esc(senderName)}</div>
+          <div class="eco-broadcast__message">${this._esc(message)}</div>
+        </div>
+        <div class="eco-broadcast__shimmer"></div>
+      </div>`;
+
+    document.body.appendChild(overlay);
+
+    // Auto-dismiss after 6s
+    setTimeout(() => {
+      overlay.classList.add('eco-broadcast--exit');
+      setTimeout(() => overlay.remove(), 1000);
+    }, 6000);
+
+    // Click to dismiss early
+    overlay.addEventListener('click', () => {
+      overlay.classList.add('eco-broadcast--exit');
+      setTimeout(() => overlay.remove(), 1000);
+    });
+  }
+
+  _initBroadcastSender() {
+    // Floating send button (SuperAdmin only)
+    const fab = document.createElement('button');
+    fab.className = 'eco-broadcast-fab';
+    fab.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+    fab.title = 'Enviar mensaje al ecosistema';
+    this.container.appendChild(fab);
+    this._broadcastFab = fab;
+
+    // Composer panel
+    const composer = document.createElement('div');
+    composer.className = 'eco-broadcast-composer';
+    composer.style.display = 'none';
+    composer.innerHTML = `
+      <div class="eco-broadcast-composer__inner">
+        <div class="eco-broadcast-composer__header">
+          <span class="eco-broadcast-composer__title">Mensaje al Ecosistema</span>
+          <button class="eco-broadcast-composer__close">&times;</button>
+        </div>
+        <textarea class="eco-broadcast-composer__input" placeholder="Escribe un mensaje para los usuarios conectados..." maxlength="280" rows="3"></textarea>
+        <div class="eco-broadcast-composer__footer">
+          <span class="eco-broadcast-composer__count">0/280</span>
+          <button class="eco-broadcast-composer__send" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Enviar
+          </button>
+        </div>
+      </div>`;
+    this.container.appendChild(composer);
+    this._broadcastComposer = composer;
+
+    // Events
+    fab.addEventListener('click', () => {
+      const isOpen = composer.style.display !== 'none';
+      composer.style.display = isOpen ? 'none' : 'flex';
+      if (!isOpen) {
+        composer.querySelector('.eco-broadcast-composer__input').focus();
+        fab.classList.add('eco-broadcast-fab--active');
+      } else {
+        fab.classList.remove('eco-broadcast-fab--active');
+      }
+    });
+
+    composer.querySelector('.eco-broadcast-composer__close').addEventListener('click', () => {
+      composer.style.display = 'none';
+      fab.classList.remove('eco-broadcast-fab--active');
+    });
+
+    const input = composer.querySelector('.eco-broadcast-composer__input');
+    const sendBtn = composer.querySelector('.eco-broadcast-composer__send');
+    const countEl = composer.querySelector('.eco-broadcast-composer__count');
+
+    input.addEventListener('input', () => {
+      const len = input.value.trim().length;
+      countEl.textContent = `${len}/280`;
+      sendBtn.disabled = len === 0;
+    });
+
+    // Send on Enter (no shift)
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (input.value.trim()) this._sendBroadcast(input.value.trim());
+      }
+    });
+
+    sendBtn.addEventListener('click', () => {
+      if (input.value.trim()) this._sendBroadcast(input.value.trim());
+    });
+  }
+
+  async _sendBroadcast(message) {
+    const input = this._broadcastComposer?.querySelector('.eco-broadcast-composer__input');
+    const sendBtn = this._broadcastComposer?.querySelector('.eco-broadcast-composer__send');
+    if (sendBtn) sendBtn.disabled = true;
+
+    try {
+      await addDoc(collection(db, 'ecosystem_broadcasts'), {
+        businessId: this.businessId,
+        bizNorm: normBiz(this.businessId),
+        message,
+        sentByPhone: this.currentUser?.phone || '',
+        sentByName: this.currentUser?.name || 'Super Admin',
+        sentAt: Timestamp.now(),
+      });
+
+      // Clear input + show confirmation
+      if (input) { input.value = ''; }
+      const countEl = this._broadcastComposer?.querySelector('.eco-broadcast-composer__count');
+      if (countEl) countEl.textContent = '0/280';
+
+      // Brief success feedback
+      if (sendBtn) {
+        sendBtn.innerHTML = '✓ Enviado';
+        setTimeout(() => {
+          sendBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar`;
+        }, 1500);
+      }
+
+      // Show the broadcast locally to superadmin too (so they see what users see)
+      this._displayBroadcast(message, 'Tú');
+
+    } catch (err) {
+      console.error('[Broadcast] Send failed:', err);
+      document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Error al enviar mensaje', type: 'error' } }));
+    }
+    if (sendBtn) sendBtn.disabled = false;
+  }
+
   unmount() {
     // Cleanup dust particles
     if (this._dustRAF) cancelAnimationFrame(this._dustRAF);
@@ -1811,6 +1996,9 @@ export class BusinessDashboard {
     if (section && this._dustMouseHandler) {
       section.removeEventListener('mousemove', this._dustMouseHandler);
     }
+    // Cleanup broadcast
+    if (this._broadcastUnsub) { this._broadcastUnsub(); this._broadcastUnsub = null; }
+    document.querySelector('.eco-broadcast-overlay')?.remove();
     // Cleanup modals (now inline in dashboard, removed with container)
     // Also cleanup any old modal-root leftovers
     document.getElementById('cred-pin-overlay')?.remove();
