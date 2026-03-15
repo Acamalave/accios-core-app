@@ -1,8 +1,8 @@
-// ACCIOS CORE — Service Worker v147
+// ACCIOS CORE — Service Worker v148
 // Strategy: Network-first with offline cache fallback
 // Aggressive cache invalidation for all platforms (iOS, Android PWA, desktop)
 
-const CACHE_NAME = 'accios-v147';
+const CACHE_NAME = 'accios-v148';
 const APP_VERSION = 123;
 const SHELL_ASSETS = [
   '/',
@@ -30,7 +30,7 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// Activate: purge ALL old caches, claim clients, notify them to reload
+// Activate: purge ALL old caches, claim clients
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -38,12 +38,6 @@ self.addEventListener('activate', (e) => {
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
-     .then(() => {
-       // Notify all open tabs to reload for fresh content
-       self.clients.matchAll({ type: 'window' }).then(clients => {
-         clients.forEach(client => client.postMessage({ type: 'SW_UPDATED', version: APP_VERSION }));
-       });
-     })
   );
 });
 
