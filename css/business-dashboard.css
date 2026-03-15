@@ -5214,3 +5214,167 @@
   .biz-onb__bizcard { padding: 14px 10px; }
   .biz-onb__bizcard-img { width: 44px; height: 44px; }
 }
+
+/* ═══ FORM LAYOUT IMPROVEMENTS ═══ */
+
+/* Auto-save indicator */
+.biz-onb__autosave {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--dash-font); font-size: 0.58rem;
+  color: rgba(74,222,128,0.6); margin-bottom: 18px;
+  padding: 8px 12px; border-radius: 8px;
+  background: rgba(74,222,128,0.04);
+}
+.biz-onb__autosave-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #4ADE80;
+  animation: onbPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* Form icon (for global layouts) */
+.biz-onb__form-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Paired Groups (Social Media) ──────────────────────────────── */
+.biz-onb__group {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 14px; padding: 14px 16px;
+  margin-bottom: 6px;
+}
+.biz-onb__group-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.biz-onb__group-icon {
+  font-size: 1rem; line-height: 1;
+}
+.biz-onb__group-name {
+  font-family: var(--dash-font); font-size: 0.72rem; font-weight: 700;
+  color: rgba(255,255,255,0.7);
+}
+.biz-onb__group-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.biz-onb__field--inline {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.biz-onb__field--inline .biz-onb__label {
+  font-size: 0.55rem;
+}
+.biz-onb__field--inline .biz-onb__input {
+  padding: 9px 12px;
+  font-size: 0.75rem;
+}
+
+/* ── Global Note (ERP) ─────────────────────────────────────────── */
+.biz-onb__global-note {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 10px;
+  background: rgba(139,92,246,0.04);
+  border: 1px solid rgba(139,92,246,0.08);
+  font-family: var(--dash-font); font-size: 0.62rem;
+  color: rgba(139,92,246,0.7);
+  margin-bottom: 16px;
+}
+
+/* ── Extra Credentials (ERP per-business) ──────────────────────── */
+.biz-onb__extra-section {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.biz-onb__extra-title {
+  font-family: var(--dash-font); font-size: 0.68rem; font-weight: 600;
+  color: rgba(255,255,255,0.35); margin-bottom: 12px;
+}
+.biz-onb__extra-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+}
+.biz-onb__extra-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.biz-onb__btn-add {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 10px;
+  font-family: var(--dash-font); font-size: 0.68rem; font-weight: 600;
+  color: rgba(139,92,246,0.6);
+  background: rgba(139,92,246,0.03);
+  border: 1px dashed rgba(139,92,246,0.15);
+  border-radius: 10px; cursor: pointer;
+  transition: all 0.2s;
+}
+.biz-onb__btn-add:hover {
+  background: rgba(139,92,246,0.06);
+  border-color: rgba(139,92,246,0.3);
+  color: #A78BFA;
+}
+
+/* ── Team Contact Cards ────────────────────────────────────────── */
+.biz-onb__team-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 14px; padding: 16px; margin-bottom: 10px;
+}
+.biz-onb__team-head {
+  font-family: var(--dash-font); font-size: 0.72rem; font-weight: 700;
+  color: rgba(255,255,255,0.6); margin-bottom: 12px;
+}
+.biz-onb__team-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 12px;
+}
+.biz-onb__team-tags-label {
+  font-family: var(--dash-font); font-size: 0.55rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.25); margin-bottom: 8px;
+}
+.biz-onb__team-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.biz-onb__tag {
+  padding: 6px 14px; border-radius: 20px;
+  font-family: var(--dash-font); font-size: 0.62rem; font-weight: 600;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  cursor: pointer; transition: all 0.2s;
+}
+.biz-onb__tag:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.15);
+}
+.biz-onb__tag--active {
+  background: rgba(16,185,129,0.12);
+  border-color: rgba(16,185,129,0.35);
+  color: #34D399;
+  box-shadow: 0 0 10px rgba(16,185,129,0.1);
+}
+
+/* ── Responsive adjustments for new layouts ──────────────────────── */
+@media (max-width: 768px) {
+  .biz-onb__group-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .biz-onb__extra-row {
+    grid-template-columns: 1fr;
+  }
+  .biz-onb__team-row {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .biz-onb__group-fields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2347,41 +2347,44 @@ export class BusinessDashboard {
      ══════════════════════════════════════════════════════════════════ */
 
   _buildOnboardingOverlay() {
-    return `
-    <div class="biz-onb__overlay" id="biz-onb-overlay">
+    // Overlay is appended to document.body for true centering (avoids stacking context issues)
+    return ''; // rendered dynamically via _onbOpen
+  }
+
+  _onbEnsureOverlay() {
+    let overlay = document.getElementById('biz-onb-overlay');
+    if (overlay) return overlay;
+    overlay = document.createElement('div');
+    overlay.id = 'biz-onb-overlay';
+    overlay.className = 'biz-onb__overlay';
+    overlay.innerHTML = `
       <div class="biz-onb__backdrop" id="biz-onb-backdrop"></div>
       <div class="biz-onb__shell">
         <canvas class="biz-onb__particles" id="biz-onb-particles"></canvas>
         <div class="biz-onb__content" id="biz-onb-content"></div>
-      </div>
-    </div>`;
+      </div>`;
+    document.body.appendChild(overlay);
+
+    // Event delegation on body-level overlay
+    overlay.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-onb]');
+      if (!btn) {
+        if (e.target.id === 'biz-onb-backdrop') this._onbClose();
+        return;
+      }
+      this._onbAction(btn.dataset.onb, btn.dataset.onbVal || '');
+    });
+    overlay.addEventListener('input', (e) => {
+      const el = e.target.closest('.biz-onb__input, .biz-onb__textarea');
+      if (el) this._onbSaveField(el);
+    });
+
+    return overlay;
   }
 
   _attachOnboardingListeners() {
     const launcher = this.container.querySelector('#biz-onb-launcher');
     if (launcher) launcher.addEventListener('click', () => this._onbOpen());
-
-    const overlay = this.container.querySelector('#biz-onb-overlay');
-    if (!overlay) return;
-
-    // Single delegated click handler for ALL overlay interactions
-    overlay.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-onb]');
-      if (!btn) {
-        // Close if clicking backdrop
-        if (e.target.id === 'biz-onb-backdrop') this._onbClose();
-        return;
-      }
-      const action = btn.dataset.onb;
-      const value = btn.dataset.onbVal || '';
-      this._onbAction(action, value);
-    });
-
-    // Delegated input handler (live-save every keystroke)
-    overlay.addEventListener('input', (e) => {
-      const el = e.target.closest('.biz-onb__input, .biz-onb__textarea');
-      if (el) this._onbSaveField(el);
-    });
   }
 
   _onbAction(action, value) {
@@ -2389,7 +2392,17 @@ export class BusinessDashboard {
       case 'close': this._onbClose(); break;
       case 'yes': this._onbGo('folders'); break;
       case 'no': this._onbGo('no-time'); break;
-      case 'folder': this._onbCurrentFolder = value; this._onbGo('biz-select'); break;
+      case 'folder': {
+        this._onbCurrentFolder = value;
+        const fDef = this._onbFolderDefs.find(f => f.id === value);
+        if (fDef?.layout === 'global' || fDef?.layout === 'team') {
+          this._onbCurrentBiz = '_global';
+          this._onbGo('folder-form');
+        } else {
+          this._onbGo('biz-select');
+        }
+        break;
+      }
       case 'biz': this._onbCurrentBiz = value; this._onbGo('folder-form'); break;
       case 'back-folders': this._onbGo('folders'); break;
       case 'back-biz': this._onbGo('biz-select'); break;
@@ -2405,8 +2418,36 @@ export class BusinessDashboard {
         break;
       }
       case 'toggle-pw': {
-        const inp = this.container.querySelector(`#biz-onb-overlay [data-field="${value}"]`);
+        const inp = document.querySelector(`#biz-onb-overlay [data-field="${value}"]`);
         if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+        break;
+      }
+      case 'toggle-tag': {
+        // value = "c1_biz|megalift"
+        const [tagField, tagBiz] = value.split('|');
+        if (!this._onbData) this._onbData = {};
+        if (!this._onbData[this._onbCurrentFolder]) this._onbData[this._onbCurrentFolder] = {};
+        if (!this._onbData[this._onbCurrentFolder][this._onbCurrentBiz]) this._onbData[this._onbCurrentFolder][this._onbCurrentBiz] = {};
+        const cur = this._onbData[this._onbCurrentFolder][this._onbCurrentBiz][tagField] || '';
+        const arr = cur ? cur.split(',') : [];
+        const idx = arr.indexOf(tagBiz);
+        if (idx >= 0) arr.splice(idx, 1); else arr.push(tagBiz);
+        this._onbData[this._onbCurrentFolder][this._onbCurrentBiz][tagField] = arr.join(',');
+        try { sessionStorage.setItem('onb_data', JSON.stringify(this._onbData)); } catch (_) {}
+        // Toggle visual
+        const tagBtn = document.querySelector(`#biz-onb-overlay [data-onb-val="${value}"]`);
+        if (tagBtn) tagBtn.classList.toggle('biz-onb__tag--active');
+        break;
+      }
+      case 'add-extra': {
+        if (!this._onbData) this._onbData = {};
+        if (!this._onbData[this._onbCurrentFolder]) this._onbData[this._onbCurrentFolder] = {};
+        if (!this._onbData[this._onbCurrentFolder][this._onbCurrentBiz]) this._onbData[this._onbCurrentFolder][this._onbCurrentBiz] = {};
+        const d = this._onbData[this._onbCurrentFolder][this._onbCurrentBiz];
+        const count = parseInt(d._extra_count || '0') + 1;
+        d._extra_count = String(count);
+        try { sessionStorage.setItem('onb_data', JSON.stringify(this._onbData)); } catch (_) {}
+        this._onbGo('folder-form'); // re-render
         break;
       }
     }
@@ -2422,23 +2463,21 @@ export class BusinessDashboard {
     this._onbCurrentFolder = null;
     this._onbCurrentBiz = null;
 
-    const overlay = this.container.querySelector('#biz-onb-overlay');
-    if (!overlay) return;
-
+    const overlay = this._onbEnsureOverlay();
     overlay.classList.add('biz-onb__overlay--show');
     this._onbInitParticles();
     this._onbGo('precheck');
   }
 
   _onbClose() {
-    const overlay = this.container.querySelector('#biz-onb-overlay');
+    const overlay = document.getElementById('biz-onb-overlay');
     if (overlay) overlay.classList.remove('biz-onb__overlay--show');
     this._onbStopParticles();
   }
 
   _onbGo(state) {
     this._onbState = state;
-    const box = this.container.querySelector('#biz-onb-content');
+    const box = document.querySelector('#biz-onb-content');
     if (!box) return;
 
     box.style.opacity = '0';
@@ -2469,38 +2508,30 @@ export class BusinessDashboard {
       {
         id: 'social', name: 'Social Media',
         desc: 'Redes sociales, páginas web y presencia digital',
-        color: '#E1306C', time: '~4 min',
+        color: '#E1306C', time: '~3 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
-        fields: [
-          ['ig_user', 'Instagram — Usuario', 'text'],
-          ['ig_pass', 'Instagram — Contraseña', 'password'],
-          ['ig_2fa', 'Instagram — Código 2FA', 'text'],
-          ['fb_user', 'Facebook — Email / Usuario', 'text'],
-          ['fb_pass', 'Facebook — Contraseña', 'password'],
-          ['fb_page', 'Facebook — URL de la Página', 'url'],
-          ['google_email', 'Google — Email', 'email'],
-          ['google_pass', 'Google — Contraseña', 'password'],
-          ['wa_num', 'WhatsApp Business — Número', 'tel'],
-          ['li_user', 'LinkedIn — Usuario', 'text'],
-          ['li_pass', 'LinkedIn — Contraseña', 'password'],
-          ['web_url', 'Sitio Web — URL', 'url'],
-          ['web_admin', 'Sitio Web — Panel Admin URL', 'url'],
-          ['web_user', 'Sitio Web — Usuario Admin', 'text'],
-          ['web_pass', 'Sitio Web — Contraseña Admin', 'password'],
-        ]
+        // Paired layout: user + password side by side per platform
+        layout: 'paired',
+        groups: [
+          { name: 'Instagram', icon: '📷', fields: [['ig_user','Usuario','text'],['ig_pass','Contraseña','text']] },
+          { name: 'Facebook', icon: '👤', fields: [['fb_user','Email / Usuario','text'],['fb_pass','Contraseña','text']] },
+          { name: 'Google', icon: '📧', fields: [['google_email','Email','email'],['google_pass','Contraseña','text']] },
+          { name: 'WhatsApp', icon: '💬', fields: [['wa_num','Número Business','tel']] },
+          { name: 'LinkedIn', icon: '💼', fields: [['li_user','Usuario','text'],['li_pass','Contraseña','text']] },
+          { name: 'Sitio Web', icon: '🌐', fields: [['web_url','URL','url'],['web_user','Usuario Admin','text'],['web_pass','Contraseña Admin','text']] },
+        ],
+        fields: [] // computed from groups
       },
       {
         id: 'erp', name: 'ERP · Odoo',
-        desc: 'Sistema de gestión empresarial, módulos y accesos',
-        color: '#714B67', time: '~2 min',
+        desc: 'Sistema de gestión empresarial — acceso global',
+        color: '#714B67', time: '~1 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+        layout: 'global', // single credential for all businesses
         fields: [
           ['odoo_url', 'URL de Odoo', 'url'],
-          ['odoo_db', 'Nombre de Base de Datos', 'text'],
           ['odoo_user', 'Usuario', 'text'],
-          ['odoo_pass', 'Contraseña', 'password'],
-          ['odoo_api', 'API Key (opcional)', 'password'],
-          ['odoo_modules', 'Módulos activos', 'text'],
+          ['odoo_pass', 'Contraseña', 'text'],
         ]
       },
       {
@@ -2509,32 +2540,22 @@ export class BusinessDashboard {
         color: '#FFCC00', time: '~2 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
         fields: [
-          ['dhl_acct', 'Número de Cuenta DHL', 'text'],
-          ['dhl_user', 'Usuario Portal DHL', 'text'],
-          ['dhl_pass', 'Contraseña DHL', 'password'],
-          ['dhl_api', 'API Key DHL (opcional)', 'password'],
-          ['other_courier', 'Otro Courier (nombre)', 'text'],
-          ['other_user', 'Usuario Otro Courier', 'text'],
-          ['other_pass', 'Contraseña Otro Courier', 'password'],
+          ['dhl_user', 'Usuario DHL', 'text'],
+          ['dhl_pass', 'Contraseña DHL', 'text'],
+          ['other_courier', 'Otro Courier', 'text'],
+          ['other_user', 'Usuario', 'text'],
+          ['other_pass', 'Contraseña', 'text'],
         ]
       },
       {
         id: 'domains', name: 'Dominios & Hosting',
-        desc: 'Registradores de dominio, servidores, DNS y SSL',
-        color: '#3B82F6', time: '~3 min',
+        desc: 'Proveedor, usuario y contraseña',
+        color: '#3B82F6', time: '~1 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
         fields: [
-          ['registrar', 'Registrador de Dominio', 'text'],
-          ['reg_user', 'Usuario Registrador', 'text'],
-          ['reg_pass', 'Contraseña Registrador', 'password'],
-          ['hosting', 'Proveedor de Hosting', 'text'],
-          ['host_user', 'Usuario Hosting', 'text'],
-          ['host_pass', 'Contraseña Hosting', 'password'],
-          ['cpanel', 'URL Panel de Control', 'url'],
-          ['dns', 'Proveedor DNS', 'text'],
-          ['dns_user', 'Usuario DNS', 'text'],
-          ['dns_pass', 'Contraseña DNS', 'password'],
-          ['ssl', 'Proveedor SSL', 'text'],
+          ['provider', 'Proveedor', 'text'],
+          ['dom_user', 'Usuario', 'text'],
+          ['dom_pass', 'Contraseña', 'text'],
         ]
       },
       {
@@ -2545,27 +2566,30 @@ export class BusinessDashboard {
         fields: [
           ['color1', 'Color Primario (HEX)', 'text'],
           ['color2', 'Color Secundario (HEX)', 'text'],
-          ['color3', 'Color Acento (HEX)', 'text'],
-          ['fonts', 'Tipografías Principales', 'text'],
+          ['fonts', 'Tipografías', 'text'],
           ['slogan', 'Slogan / Tagline', 'text'],
-          ['style_notes', 'Notas de Estilo y Tono', 'textarea'],
-          ['brand_url', 'URL Brand Board (Drive, Figma...)', 'url'],
+          ['brand_url', 'URL Brand Board', 'url'],
         ]
       },
       {
         id: 'team', name: 'Equipo & Contactos',
-        desc: 'Colaboradores clave, roles y datos de contacto',
+        desc: 'Colaboradores, roles y negocios vinculados',
         color: '#10B981', time: '~2 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+        layout: 'team', // special layout: name, email, phone + biz tags
         fields: [
-          ['c1_name', 'Contacto Principal — Nombre', 'text'],
-          ['c1_role', 'Cargo / Rol', 'text'],
-          ['c1_phone', 'Teléfono', 'tel'],
+          ['c1_name', 'Nombre', 'text'],
           ['c1_email', 'Email', 'email'],
-          ['c2_name', 'Contacto Secundario — Nombre', 'text'],
-          ['c2_role', 'Cargo / Rol', 'text'],
-          ['c2_phone', 'Teléfono', 'tel'],
+          ['c1_phone', 'Teléfono', 'tel'],
+          ['c1_biz', 'Negocios', 'tags'],
+          ['c2_name', 'Nombre', 'text'],
           ['c2_email', 'Email', 'email'],
+          ['c2_phone', 'Teléfono', 'tel'],
+          ['c2_biz', 'Negocios', 'tags'],
+          ['c3_name', 'Nombre', 'text'],
+          ['c3_email', 'Email', 'email'],
+          ['c3_phone', 'Teléfono', 'tel'],
+          ['c3_biz', 'Negocios', 'tags'],
         ]
       },
     ];
@@ -2649,13 +2673,14 @@ export class BusinessDashboard {
 
   _onbFolders() {
     const folders = this._onbFolderDefs;
-    const bizCount = this._clientBusinesses.length;
-    const totalFields = folders.reduce((s, f) => s + f.fields.length * bizCount, 0);
-    let filledFields = 0;
+    let totalFields = 0, filledFields = 0;
     for (const f of folders) {
-      for (const b of this._clientBusinesses) {
-        const d = this._onbData?.[f.id]?.[b.id];
-        if (d) filledFields += Object.values(d).filter(v => v?.trim()).length;
+      const af = this._onbGetAllFields(f);
+      const bk = this._onbGetBizKeys(f);
+      totalFields += af.length * bk.length;
+      for (const k of bk) {
+        const d = this._onbData?.[f.id]?.[k];
+        if (d) { for (const [fid] of af) { if (d[fid]?.trim()) filledFields++; } }
       }
     }
     const pct = totalFields ? Math.round(filledFields / totalFields * 100) : 0;
@@ -2705,10 +2730,12 @@ export class BusinessDashboard {
     const folder = this._onbFolderDefs.find(f => f.id === this._onbCurrentFolder);
     if (!folder) return '';
 
+    const allFields = this._onbGetAllFields(folder);
     const cards = this._clientBusinesses.map((biz, i) => {
       const bd = this._onbData?.[folder.id]?.[biz.id];
-      const filled = bd ? Object.values(bd).filter(v => v?.trim()).length : 0;
-      const total = folder.fields.length;
+      let filled = 0;
+      if (bd) { for (const [fid] of allFields) { if (bd[fid]?.trim()) filled++; } }
+      const total = allFields.length;
       const done = filled === total && total > 0;
       return `
         <button class="biz-onb__bizcard ${done ? 'biz-onb__bizcard--done' : ''}" data-onb="biz" data-onb-val="${biz.id}" style="animation-delay:${i * 0.06}s">
@@ -2734,45 +2761,165 @@ export class BusinessDashboard {
   _onbForm() {
     const folder = this._onbFolderDefs.find(f => f.id === this._onbCurrentFolder);
     const biz = this._clientBusinesses.find(b => b.id === this._onbCurrentBiz);
-    if (!folder || !biz) return '';
+    const isGlobal = folder?.layout === 'global' || folder?.layout === 'team';
+    if (!folder || (!biz && !isGlobal)) return '';
 
-    const data = this._onbData?.[folder.id]?.[biz.id] || {};
-    const fields = folder.fields.map(([id, label, type]) => {
-      const val = data[id] || '';
-      const isPass = type === 'password';
-      if (type === 'textarea') {
-        return `
-          <div class="biz-onb__field">
+    const bizKey = isGlobal ? '_global' : biz.id;
+    const data = this._onbData?.[folder.id]?.[bizKey] || {};
+    const backAction = isGlobal ? 'back-folders' : 'back-biz';
+    const backLabel = isGlobal ? 'Carpetas' : folder.name;
+
+    // Header
+    const headerHTML = isGlobal ? `
+      <div class="biz-onb__form-head">
+        <div class="biz-onb__form-icon" style="color:${folder.color};background:${folder.color}15">${folder.icon}</div>
+        <div>
+          <h2 class="biz-onb__form-title">${folder.name}</h2>
+          <p class="biz-onb__form-sub">${folder.desc}</p>
+        </div>
+      </div>` : `
+      <div class="biz-onb__form-head">
+        <div class="biz-onb__form-logo" style="background-image:url('${biz.photo}')"></div>
+        <div>
+          <h2 class="biz-onb__form-title">${biz.name}</h2>
+          <p class="biz-onb__form-sub">${folder.name}</p>
+        </div>
+      </div>`;
+
+    let fieldsHTML = '';
+
+    // ── SOCIAL MEDIA: paired groups ──
+    if (folder.layout === 'paired' && folder.groups) {
+      fieldsHTML = folder.groups.map(group => {
+        const groupFields = group.fields.map(([id, label, type]) => {
+          const val = data[id] || '';
+          return `<div class="biz-onb__field biz-onb__field--inline">
             <label class="biz-onb__label">${label}</label>
-            <textarea class="biz-onb__textarea" data-field="${id}" rows="3">${val}</textarea>
+            <input class="biz-onb__input" data-field="${id}" type="${type === 'text' ? 'text' : type}" value="${this._onbEsc(val)}" autocomplete="off" />
+          </div>`;
+        }).join('');
+        return `
+          <div class="biz-onb__group">
+            <div class="biz-onb__group-head">
+              <span class="biz-onb__group-icon">${group.icon}</span>
+              <span class="biz-onb__group-name">${group.name}</span>
+            </div>
+            <div class="biz-onb__group-fields">${groupFields}</div>
+          </div>`;
+      }).join('');
+
+    // ── TEAM: contact cards with business tags ──
+    } else if (folder.layout === 'team') {
+      const contacts = [
+        { prefix: 'c1', label: 'Colaborador 1' },
+        { prefix: 'c2', label: 'Colaborador 2' },
+        { prefix: 'c3', label: 'Colaborador 3' },
+      ];
+      const bizTags = this._clientBusinesses.map(b => {
+        return { id: b.id, name: b.name, photo: b.photo };
+      });
+      fieldsHTML = contacts.map(c => {
+        const nameVal = data[c.prefix + '_name'] || '';
+        const emailVal = data[c.prefix + '_email'] || '';
+        const phoneVal = data[c.prefix + '_phone'] || '';
+        const tagsVal = data[c.prefix + '_biz'] || '';
+        const selectedBiz = tagsVal ? tagsVal.split(',') : [];
+        return `
+          <div class="biz-onb__team-card">
+            <div class="biz-onb__team-head">${c.label}</div>
+            <div class="biz-onb__team-row">
+              <div class="biz-onb__field biz-onb__field--inline">
+                <label class="biz-onb__label">Nombre</label>
+                <input class="biz-onb__input" data-field="${c.prefix}_name" type="text" value="${this._onbEsc(nameVal)}" autocomplete="off" />
+              </div>
+              <div class="biz-onb__field biz-onb__field--inline">
+                <label class="biz-onb__label">Email</label>
+                <input class="biz-onb__input" data-field="${c.prefix}_email" type="email" value="${this._onbEsc(emailVal)}" autocomplete="off" />
+              </div>
+              <div class="biz-onb__field biz-onb__field--inline">
+                <label class="biz-onb__label">Teléfono</label>
+                <input class="biz-onb__input" data-field="${c.prefix}_phone" type="tel" value="${this._onbEsc(phoneVal)}" autocomplete="off" />
+              </div>
+            </div>
+            <div class="biz-onb__team-tags-label">Vincular a negocios:</div>
+            <div class="biz-onb__team-tags">
+              ${bizTags.map(bt => `
+                <button class="biz-onb__tag ${selectedBiz.includes(bt.id) ? 'biz-onb__tag--active' : ''}"
+                  data-onb="toggle-tag" data-onb-val="${c.prefix}_biz|${bt.id}" type="button">
+                  ${bt.name}
+                </button>`).join('')}
+            </div>
+          </div>`;
+      }).join('');
+
+    // ── ERP GLOBAL + expandable per-business ──
+    } else if (folder.layout === 'global') {
+      const globalFields = folder.fields.map(([id, label, type]) => {
+        const val = data[id] || '';
+        return `<div class="biz-onb__field">
+          <label class="biz-onb__label">${label}</label>
+          <input class="biz-onb__input" data-field="${id}" type="${type === 'text' ? 'text' : type}" value="${this._onbEsc(val)}" autocomplete="off" />
+        </div>`;
+      }).join('');
+
+      const extraCount = parseInt(data._extra_count || '0');
+      let extraHTML = '';
+      for (let i = 0; i < extraCount; i++) {
+        const exBiz = data[`extra_${i}_biz`] || '';
+        const exUser = data[`extra_${i}_user`] || '';
+        const exPass = data[`extra_${i}_pass`] || '';
+        extraHTML += `
+          <div class="biz-onb__extra-card">
+            <div class="biz-onb__extra-row">
+              <div class="biz-onb__field biz-onb__field--inline"><label class="biz-onb__label">Negocio</label>
+                <input class="biz-onb__input" data-field="extra_${i}_biz" type="text" value="${this._onbEsc(exBiz)}" placeholder="Nombre del negocio" autocomplete="off" /></div>
+              <div class="biz-onb__field biz-onb__field--inline"><label class="biz-onb__label">Usuario</label>
+                <input class="biz-onb__input" data-field="extra_${i}_user" type="text" value="${this._onbEsc(exUser)}" autocomplete="off" /></div>
+              <div class="biz-onb__field biz-onb__field--inline"><label class="biz-onb__label">Contraseña</label>
+                <input class="biz-onb__input" data-field="extra_${i}_pass" type="text" value="${this._onbEsc(exPass)}" autocomplete="off" /></div>
+            </div>
           </div>`;
       }
-      return `
-        <div class="biz-onb__field">
-          <label class="biz-onb__label">${label}</label>
-          <div class="biz-onb__input-row">
-            <input class="biz-onb__input" data-field="${id}" type="${type}" value="${this._onbEsc(val)}" autocomplete="off" />
-            ${isPass ? `<button class="biz-onb__eye" data-onb="toggle-pw" data-onb-val="${id}" type="button">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>` : ''}
-          </div>
-        </div>`;
-    }).join('');
 
-    const filled = Object.values(data).filter(v => v?.trim()).length;
-    const total = folder.fields.length;
+      fieldsHTML = `
+        <div class="biz-onb__global-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Estas credenciales son globales — aplican para todos los negocios
+        </div>
+        ${globalFields}
+        <div class="biz-onb__extra-section">
+          <div class="biz-onb__extra-title">¿Algún negocio tiene credenciales diferentes?</div>
+          ${extraHTML}
+          <button class="biz-onb__btn-add" data-onb="add-extra" type="button">
+            ${ICONS.plus} Agregar acceso adicional
+          </button>
+        </div>`;
+
+    // ── DEFAULT: simple vertical fields ──
+    } else {
+      fieldsHTML = folder.fields.map(([id, label, type]) => {
+        const val = data[id] || '';
+        if (type === 'textarea') {
+          return `<div class="biz-onb__field"><label class="biz-onb__label">${label}</label>
+            <textarea class="biz-onb__textarea" data-field="${id}" rows="3">${val}</textarea></div>`;
+        }
+        return `<div class="biz-onb__field"><label class="biz-onb__label">${label}</label>
+          <input class="biz-onb__input" data-field="${id}" type="${type}" value="${this._onbEsc(val)}" autocomplete="off" /></div>`;
+      }).join('');
+    }
+
+    // Auto-save indicator
+    const savedCount = Object.values(data).filter(v => v?.trim()).length;
 
     return `
       <div class="biz-onb__form">
-        <button class="biz-onb__back" data-onb="back-biz">${ICONS.arrowLeft} <span>${folder.name}</span></button>
-        <div class="biz-onb__form-head">
-          <div class="biz-onb__form-logo" style="background-image:url('${biz.photo}')"></div>
-          <div>
-            <h2 class="biz-onb__form-title">${biz.name}</h2>
-            <p class="biz-onb__form-sub">${folder.name} · ${filled}/${total} campos</p>
-          </div>
+        <button class="biz-onb__back" data-onb="${backAction}">${ICONS.arrowLeft} <span>${backLabel}</span></button>
+        ${headerHTML}
+        <div class="biz-onb__autosave">
+          <div class="biz-onb__autosave-dot"></div>
+          Guardado automático activo${savedCount ? ` · ${savedCount} campos guardados` : ''}
         </div>
-        <div class="biz-onb__fields">${fields}</div>
+        <div class="biz-onb__fields">${fieldsHTML}</div>
         <button class="biz-onb__btn biz-onb__btn--primary biz-onb__btn--full" data-onb="save-fields">
           Guardar y continuar
         </button>
@@ -2892,15 +3039,38 @@ export class BusinessDashboard {
     return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  _onbGetAllFields(folder) {
+    // Flatten fields from groups or fields array
+    if (folder.layout === 'paired' && folder.groups) {
+      const all = [];
+      for (const g of folder.groups) {
+        for (const f of g.fields) all.push(f);
+      }
+      return all;
+    }
+    return folder.fields.filter(f => f[2] !== 'tags' && !f[0].startsWith('_'));
+  }
+
+  _onbGetBizKeys(folder) {
+    if (folder.layout === 'global' || folder.layout === 'team') return ['_global'];
+    return this._clientBusinesses.map(b => b.id);
+  }
+
   _onbFolderPct(folderId) {
     const folder = this._onbFolderDefs.find(f => f.id === folderId);
     if (!folder) return 0;
-    const total = folder.fields.length * this._clientBusinesses.length;
+    const allFields = this._onbGetAllFields(folder);
+    const bizKeys = this._onbGetBizKeys(folder);
+    const total = allFields.length * bizKeys.length;
     if (!total) return 0;
     let filled = 0;
-    for (const b of this._clientBusinesses) {
-      const d = this._onbData?.[folderId]?.[b.id];
-      if (d) filled += Object.values(d).filter(v => v?.trim()).length;
+    for (const bk of bizKeys) {
+      const d = this._onbData?.[folderId]?.[bk];
+      if (d) {
+        for (const [fid] of allFields) {
+          if (d[fid]?.trim()) filled++;
+        }
+      }
     }
     return Math.round(filled / total * 100);
   }
@@ -2908,11 +3078,15 @@ export class BusinessDashboard {
   _onbMissing() {
     const result = [];
     for (const f of this._onbFolderDefs) {
-      for (const b of this._clientBusinesses) {
-        for (const [fieldId, label] of f.fields) {
-          const val = this._onbData?.[f.id]?.[b.id]?.[fieldId];
+      const allFields = this._onbGetAllFields(f);
+      const bizKeys = this._onbGetBizKeys(f);
+      for (const bk of bizKeys) {
+        const bizObj = this._clientBusinesses.find(b => b.id === bk);
+        const bname = bizObj ? bizObj.name : 'Global';
+        for (const [fieldId, label] of allFields) {
+          const val = this._onbData?.[f.id]?.[bk]?.[fieldId];
           if (!val?.trim()) {
-            result.push({ fid: f.id, fname: f.name, bid: b.id, bname: b.name, field: fieldId, label });
+            result.push({ fid: f.id, fname: f.name, bid: bk, bname, field: fieldId, label });
           }
         }
       }
@@ -2931,7 +3105,7 @@ export class BusinessDashboard {
   }
 
   async _onbSubmitToVault() {
-    const content = this.container.querySelector('#biz-onb-content');
+    const content = document.querySelector('#biz-onb-content');
     const submitBtn = content?.querySelector('[data-onb="submit"]');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<div class="biz-onb__spinner"></div> Guardando...'; }
 
@@ -2982,7 +3156,7 @@ export class BusinessDashboard {
   /* ── Particle Animation ─────────────────────────────────────────── */
 
   _onbInitParticles() {
-    const canvas = this.container.querySelector('#biz-onb-particles');
+    const canvas = document.querySelector('#biz-onb-particles');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
@@ -3061,6 +3235,7 @@ export class BusinessDashboard {
     document.querySelector('.eco-broadcast-overlay')?.remove();
     // Cleanup onboarding
     this._onbStopParticles();
+    document.getElementById('biz-onb-overlay')?.remove();
     // Cleanup modals (now inline in dashboard, removed with container)
     document.getElementById('cred-pin-overlay')?.remove();
     document.getElementById('cred-vault-overlay')?.remove();
