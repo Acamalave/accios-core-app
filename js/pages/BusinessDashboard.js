@@ -141,7 +141,7 @@ export class BusinessDashboard {
 
     // ─── Onboarding gate: block dashboard until onboarding is complete ───
     const onbKey = `onb_completed_${this.businessId}`;
-    if (!localStorage.getItem(onbKey)) {
+    if (!isSuperAdmin && !localStorage.getItem(onbKey)) {
       // Show full-screen onboarding — no dashboard behind
       this.container.innerHTML = `
         <section class="biz-dash biz-onb__gate" style="--biz-color:#F97316; --biz-rgb:249,115,22; --biz-color-dark:#EA580C;">
