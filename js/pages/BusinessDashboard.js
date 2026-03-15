@@ -260,7 +260,7 @@ export class BusinessDashboard {
 
     // Business display info (fallback for ML Parts)
     const defaults = {
-      'ml-parts': { name: 'ML Parts', icon: '⚙️', color: '#39FF14' },
+      'ml-parts': { name: 'ML Parts', icon: '⚙️', color: '#F97316' },
       'accios-core': { name: 'ACCIOS CORE', icon: '🔮', color: '#7C3AED' },
       'rush-ride': { name: 'Rush Ride Studio', icon: '🏋️', color: '#39FF14' },
       'xazai': { name: 'Xazai', icon: '🍽️', color: '#8B5CF6' }
@@ -323,10 +323,13 @@ export class BusinessDashboard {
       : '--';
 
     const cfg = BIZ_CONFIG[this.businessId] || {};
-    const rgb = cfg.colorRgb || '139,92,246';
+    const fallbackRgb = { 'ml-parts': '249,115,22' };
+    const fallbackColor = { 'ml-parts': '#F97316' };
+    const rgb = cfg.colorRgb || fallbackRgb[this.businessId] || '249,115,22';
+    const color = cfg.color || fallbackColor[this.businessId] || '#F97316';
 
     return `
-    <section class="biz-dash biz-dash--clients" style="--biz-color:${cfg.color}; --biz-rgb:${rgb}; --biz-color-dark:${cfg.colorDark || cfg.color};">
+    <section class="biz-dash biz-dash--clients" style="--biz-color:${color}; --biz-rgb:${rgb}; --biz-color-dark:${cfg.colorDark || color};">
       <!-- Dust particle canvas (full dashboard background) -->
       <canvas class="biz-dash__dust-canvas" aria-hidden="true"></canvas>
 
