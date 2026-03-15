@@ -2700,8 +2700,10 @@ export class BusinessDashboard {
     sessionStorage.setItem('onb_returning', '1');
     return `
       <div class="biz-onb__notime">
-        <div class="biz-onb__notime-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.6)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="biz-onb__notime-ambient"></div>
+        <div class="biz-onb__notime-orb">
+          <div class="biz-onb__notime-orb-core"></div>
+          <div class="biz-onb__notime-orb-ring"></div>
         </div>
         <h2 class="biz-onb__notime-title">¡Sin problema!</h2>
         <p class="biz-onb__notime-text">
@@ -2794,6 +2796,7 @@ export class BusinessDashboard {
       <div class="biz-onb__bizsel">
         <button class="biz-onb__back" data-onb="back-folders">${ICONS.arrowLeft} <span>Carpetas</span></button>
         <div class="biz-onb__bizsel-head">
+          <div class="biz-onb__bizsel-ambient" style="background:radial-gradient(circle, ${folder.color}12 0%, transparent 70%)"></div>
           <div class="biz-onb__bizsel-icon" style="color:${folder.color}">${folder.icon}</div>
           <h2 class="biz-onb__bizsel-title">${folder.name}</h2>
           <p class="biz-onb__bizsel-sub">Selecciona el negocio para ingresar sus credenciales</p>
@@ -3038,8 +3041,13 @@ export class BusinessDashboard {
   _onbConfirm() {
     return `
       <div class="biz-onb__confirm">
+        <div class="biz-onb__confirm-ambient"></div>
         <div class="biz-onb__confirm-shield">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.7)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div class="biz-onb__confirm-shield-glow"></div>
+          <div class="biz-onb__confirm-shield-ring"></div>
+          <div class="biz-onb__confirm-shield-core">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.8)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
         </div>
         <h2 class="biz-onb__confirm-title">Confirmación de Seguridad</h2>
         <p class="biz-onb__confirm-text">Al confirmar, declaras que:</p>
@@ -3064,11 +3072,16 @@ export class BusinessDashboard {
   _onbSuccess() {
     return `
       <div class="biz-onb__success">
-        <div class="biz-onb__success-ring">
-          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
+        <div class="biz-onb__success-ambient"></div>
+        <div class="biz-onb__success-orb">
+          <div class="biz-onb__success-orb-glow"></div>
+          <div class="biz-onb__success-orb-ring"></div>
+          <div class="biz-onb__success-orb-core">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
         </div>
         <h2 class="biz-onb__success-title">¡Bóveda Actualizada!</h2>
         <p class="biz-onb__success-text">Toda la información ha sido almacenada de forma segura y encriptada en tu Bóveda de Credenciales.</p>
