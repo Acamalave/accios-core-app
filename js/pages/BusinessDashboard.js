@@ -2538,6 +2538,31 @@ export class BusinessDashboard {
         this.render();
         break;
       }
+      case 'add-team-member': {
+        if (!this._onbData) this._onbData = {};
+        if (!this._onbData[this._onbCurrentFolder]) this._onbData[this._onbCurrentFolder] = {};
+        if (!this._onbData[this._onbCurrentFolder][this._onbCurrentBiz]) this._onbData[this._onbCurrentFolder][this._onbCurrentBiz] = {};
+        const td = this._onbData[this._onbCurrentFolder][this._onbCurrentBiz];
+        const count = parseInt(td._team_count || '1') + 1;
+        td._team_count = String(count);
+        try { sessionStorage.setItem('onb_data', JSON.stringify(this._onbData)); } catch (_) {}
+        this._onbGo('folder-form');
+        break;
+      }
+      case 'remove-file': {
+        const idx = parseInt(value);
+        const fKey = this._onbCurrentFolder;
+        const bKey = this._onbCurrentBiz;
+        if (!this._onbData?.[fKey]?.[bKey]?._brand_files) break;
+        try {
+          const files = JSON.parse(this._onbData[fKey][bKey]._brand_files);
+          files.splice(idx, 1);
+          this._onbData[fKey][bKey]._brand_files = JSON.stringify(files);
+          sessionStorage.setItem('onb_data', JSON.stringify(this._onbData));
+          this._onbGo('folder-form'); // re-render
+        } catch (_) {}
+        break;
+      }
     }
   }
 
@@ -2590,6 +2615,8 @@ export class BusinessDashboard {
       requestAnimationFrame(() => {
         box.style.opacity = '1';
         box.style.transform = 'translateY(0)';
+        // Attach file upload listeners if dropzone is present
+        this._onbAttachFileUpload();
       });
     }, 200);
   }
@@ -2653,15 +2680,15 @@ export class BusinessDashboard {
       },
       {
         id: 'brand', name: 'Marca & Identidad',
-        desc: 'Colores, tipografías, slogan y brand board',
+        desc: 'Colores, tipografías, slogan y archivos de marca',
         color: '#8B5CF6', time: '~2 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+        hasFiles: true,
         fields: [
           ['color1', 'Color Primario (HEX)', 'text'],
           ['color2', 'Color Secundario (HEX)', 'text'],
           ['fonts', 'Tipografías', 'text'],
           ['slogan', 'Slogan / Tagline', 'text'],
-          ['brand_url', 'URL Brand Board', 'url'],
         ]
       },
       {
@@ -2669,20 +2696,12 @@ export class BusinessDashboard {
         desc: 'Colaboradores, roles y negocios vinculados',
         color: '#10B981', time: '~2 min',
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-        layout: 'team', // special layout: name, email, phone + biz tags
+        layout: 'team', // special layout: name, email, phone + biz tags (dynamic count)
         fields: [
           ['c1_name', 'Nombre', 'text'],
           ['c1_email', 'Email', 'email'],
           ['c1_phone', 'Teléfono', 'tel'],
           ['c1_biz', 'Negocios', 'tags'],
-          ['c2_name', 'Nombre', 'text'],
-          ['c2_email', 'Email', 'email'],
-          ['c2_phone', 'Teléfono', 'tel'],
-          ['c2_biz', 'Negocios', 'tags'],
-          ['c3_name', 'Nombre', 'text'],
-          ['c3_email', 'Email', 'email'],
-          ['c3_phone', 'Teléfono', 'tel'],
-          ['c3_biz', 'Negocios', 'tags'],
         ]
       },
     ];
@@ -2943,49 +2962,59 @@ export class BusinessDashboard {
           </div>`;
       }).join('');
 
-    // ── TEAM: contact cards with business tags ──
+    // ── TEAM: dynamic contact cards with business tags ──
     } else if (folder.layout === 'team') {
-      const contacts = [
-        { prefix: 'c1', label: 'Colaborador 1' },
-        { prefix: 'c2', label: 'Colaborador 2' },
-        { prefix: 'c3', label: 'Colaborador 3' },
-      ];
+      // Determine how many contacts exist (at least 1, expand dynamically)
+      const teamCount = parseInt(data._team_count || '1');
       const bizTags = this._clientBusinesses.map(b => {
         return { id: b.id, name: b.name, photo: b.photo };
       });
-      fieldsHTML = contacts.map(c => {
-        const nameVal = data[c.prefix + '_name'] || '';
-        const emailVal = data[c.prefix + '_email'] || '';
-        const phoneVal = data[c.prefix + '_phone'] || '';
-        const tagsVal = data[c.prefix + '_biz'] || '';
+
+      let cardsHTML = '';
+      for (let i = 1; i <= teamCount; i++) {
+        const prefix = `c${i}`;
+        const nameVal = data[prefix + '_name'] || '';
+        const emailVal = data[prefix + '_email'] || '';
+        const phoneVal = data[prefix + '_phone'] || '';
+        const tagsVal = data[prefix + '_biz'] || '';
         const selectedBiz = tagsVal ? tagsVal.split(',') : [];
-        return `
+        cardsHTML += `
           <div class="biz-onb__team-card">
-            <div class="biz-onb__team-head">${c.label}</div>
+            <div class="biz-onb__team-head">Colaborador ${i}</div>
             <div class="biz-onb__team-row">
               <div class="biz-onb__field biz-onb__field--inline">
                 <label class="biz-onb__label">Nombre</label>
-                <input class="biz-onb__input" data-field="${c.prefix}_name" type="text" value="${this._onbEsc(nameVal)}" autocomplete="off" />
+                <input class="biz-onb__input" data-field="${prefix}_name" type="text" value="${this._onbEsc(nameVal)}" autocomplete="off" />
               </div>
               <div class="biz-onb__field biz-onb__field--inline">
                 <label class="biz-onb__label">Email</label>
-                <input class="biz-onb__input" data-field="${c.prefix}_email" type="email" value="${this._onbEsc(emailVal)}" autocomplete="off" />
+                <input class="biz-onb__input" data-field="${prefix}_email" type="email" value="${this._onbEsc(emailVal)}" autocomplete="off" />
               </div>
               <div class="biz-onb__field biz-onb__field--inline">
                 <label class="biz-onb__label">Teléfono</label>
-                <input class="biz-onb__input" data-field="${c.prefix}_phone" type="tel" value="${this._onbEsc(phoneVal)}" autocomplete="off" />
+                <input class="biz-onb__input" data-field="${prefix}_phone" type="tel" value="${this._onbEsc(phoneVal)}" autocomplete="off" />
               </div>
             </div>
             <div class="biz-onb__team-tags-label">Vincular a negocios:</div>
             <div class="biz-onb__team-tags">
               ${bizTags.map(bt => `
                 <button class="biz-onb__tag ${selectedBiz.includes(bt.id) ? 'biz-onb__tag--active' : ''}"
-                  data-onb="toggle-tag" data-onb-val="${c.prefix}_biz|${bt.id}" type="button">
+                  data-onb="toggle-tag" data-onb-val="${prefix}_biz|${bt.id}" type="button">
                   ${bt.name}
                 </button>`).join('')}
             </div>
           </div>`;
-      }).join('');
+      }
+
+      fieldsHTML = `
+        <div class="biz-onb__team-notice">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          El acceso de los colaboradores no se realiza de manera automática. Tu equipo designado deberá esperar las indicaciones de ACCIOS CORE para recibir sus credenciales.
+        </div>
+        ${cardsHTML}
+        <button class="biz-onb__btn-add" data-onb="add-team-member" type="button">
+          ${ICONS.plus} Agregar colaborador
+        </button>`;
 
     // ── ERP GLOBAL + expandable per-business ──
     } else if (folder.layout === 'global') {
@@ -3046,6 +3075,43 @@ export class BusinessDashboard {
     // Auto-save indicator
     const savedCount = Object.values(data).filter(v => v?.trim()).length;
 
+    // File upload zone for folders with hasFiles
+    let fileUploadHTML = '';
+    if (folder.hasFiles) {
+      const uploadedFiles = data._brand_files ? JSON.parse(data._brand_files) : [];
+      const fileListHTML = uploadedFiles.map((f, i) => `
+        <div class="biz-onb__file-item">
+          <div class="biz-onb__file-icon">
+            ${f.type?.startsWith('image/') ? `<img src="${f.url}" class="biz-onb__file-thumb" />` :
+              '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'}
+          </div>
+          <div class="biz-onb__file-info">
+            <span class="biz-onb__file-name">${this._onbEsc(f.name)}</span>
+            <span class="biz-onb__file-size">${(f.size / 1024 / 1024).toFixed(1)} MB</span>
+          </div>
+          <button class="biz-onb__file-remove" data-onb="remove-file" data-onb-val="${i}" type="button">×</button>
+        </div>`).join('');
+
+      fileUploadHTML = `
+        <div class="biz-onb__upload-section">
+          <label class="biz-onb__label" style="margin-bottom:8px;">Archivos de Marca (logos, brand board, assets)</label>
+          <div class="biz-onb__dropzone" id="biz-onb-dropzone">
+            <input type="file" id="biz-onb-file-input" multiple accept="image/*,.pdf,.ai,.psd,.svg,.eps,.zip" style="display:none" />
+            <div class="biz-onb__dropzone-content">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span class="biz-onb__dropzone-text">Arrastra archivos aquí o <em>haz click para seleccionar</em></span>
+              <span class="biz-onb__dropzone-hint">Logos, Brand Board, Assets · Alta resolución · Sin límite de archivos</span>
+            </div>
+          </div>
+          <div class="biz-onb__file-list" id="biz-onb-file-list">${fileListHTML}</div>
+          <div class="biz-onb__upload-status" id="biz-onb-upload-status"></div>
+        </div>`;
+    }
+
     return `
       <div class="biz-onb__form">
         <button class="biz-onb__back" data-onb="back-folders">${ICONS.arrowLeft} <span>Carpetas</span></button>
@@ -3056,6 +3122,7 @@ export class BusinessDashboard {
           Guardado automático activo${savedCount ? ` · ${savedCount} campos guardados` : ''}
         </div>
         <div class="biz-onb__fields">${fieldsHTML}</div>
+        ${fileUploadHTML}
       </div>`;
   }
 
@@ -3303,6 +3370,94 @@ export class BusinessDashboard {
       document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Error al guardar', type: 'error' } }));
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Reintentar'; }
     }
+  }
+
+  /* ── File Upload for Brand Assets ─────────────────────────────── */
+
+  _onbAttachFileUpload() {
+    const dropzone = document.getElementById('biz-onb-dropzone');
+    const fileInput = document.getElementById('biz-onb-file-input');
+    if (!dropzone || !fileInput) return;
+
+    // Click to select files
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    // Drag & drop
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('biz-onb__dropzone--active');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('biz-onb__dropzone--active');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('biz-onb__dropzone--active');
+      if (e.dataTransfer.files.length) this._onbUploadFiles(e.dataTransfer.files);
+    });
+
+    // File input change
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) this._onbUploadFiles(fileInput.files);
+    });
+  }
+
+  async _onbUploadFiles(fileList) {
+    const statusEl = document.getElementById('biz-onb-upload-status');
+    const fKey = this._onbCurrentFolder;
+    const bKey = this._onbCurrentBiz;
+    if (!fKey || !bKey) return;
+
+    // Ensure data structure
+    if (!this._onbData) this._onbData = {};
+    if (!this._onbData[fKey]) this._onbData[fKey] = {};
+    if (!this._onbData[fKey][bKey]) this._onbData[fKey][bKey] = {};
+
+    const existing = this._onbData[fKey][bKey]._brand_files
+      ? JSON.parse(this._onbData[fKey][bKey]._brand_files) : [];
+
+    const files = Array.from(fileList);
+    let uploaded = 0;
+
+    for (const file of files) {
+      uploaded++;
+      if (statusEl) statusEl.innerHTML = `
+        <div class="biz-onb__upload-progress">
+          <div class="biz-onb__spinner"></div>
+          <span>Subiendo ${uploaded} de ${files.length}: ${file.name}</span>
+        </div>`;
+
+      try {
+        const ts = Date.now();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `onboarding/${this.currentUser?.phone || 'anon'}/brand/${ts}_${safeName}`;
+        const ref = storageRef(storage, path);
+        await uploadBytes(ref, file);
+        const url = await getDownloadURL(ref);
+
+        existing.push({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url,
+          path,
+          uploadedAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error('[Onboarding] File upload error:', err);
+        if (statusEl) statusEl.innerHTML = `
+          <div class="biz-onb__upload-error">Error al subir: ${file.name}</div>`;
+      }
+    }
+
+    // Save to onb data
+    this._onbData[fKey][bKey]._brand_files = JSON.stringify(existing);
+    try { sessionStorage.setItem('onb_data', JSON.stringify(this._onbData)); } catch (_) {}
+
+    if (statusEl) statusEl.innerHTML = '';
+
+    // Re-render form to show uploaded files
+    this._onbGo('folder-form');
   }
 
   /* ── Particle Animation ─────────────────────────────────────────── */

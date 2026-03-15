@@ -5855,6 +5855,111 @@
   .biz-onb__confirm-title { font-size: 1.3rem; }
 }
 
+/* ═══ FILE UPLOAD — Brand Assets ═══ */
+
+.biz-onb__upload-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.biz-onb__dropzone {
+  position: relative;
+  border: 2px dashed rgba(139,92,246,0.2);
+  border-radius: 16px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+  background: rgba(139,92,246,0.02);
+}
+.biz-onb__dropzone:hover,
+.biz-onb__dropzone--active {
+  border-color: rgba(139,92,246,0.4);
+  background: rgba(139,92,246,0.05);
+  box-shadow: 0 0 30px rgba(139,92,246,0.08);
+}
+.biz-onb__dropzone-content {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.biz-onb__dropzone-text {
+  font-family: var(--dash-font); font-size: 0.75rem; font-weight: 500;
+  color: rgba(255,255,255,0.4);
+}
+.biz-onb__dropzone-text em {
+  color: #A78BFA; font-style: normal; font-weight: 600;
+}
+.biz-onb__dropzone-hint {
+  font-family: var(--dash-font); font-size: 0.58rem;
+  color: rgba(255,255,255,0.2);
+}
+
+/* File list */
+.biz-onb__file-list {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 12px;
+}
+.biz-onb__file-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  animation: onbCardIn 0.3s cubic-bezier(0.22,1,0.36,1) both;
+}
+.biz-onb__file-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: rgba(139,92,246,0.06);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(139,92,246,0.5);
+  flex-shrink: 0; overflow: hidden;
+}
+.biz-onb__file-thumb {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 8px;
+}
+.biz-onb__file-info {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.biz-onb__file-name {
+  font-family: var(--dash-font); font-size: 0.7rem; font-weight: 600;
+  color: var(--kpi-text-bright);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.biz-onb__file-size {
+  font-family: var(--dash-font); font-size: 0.55rem;
+  color: rgba(255,255,255,0.25);
+}
+.biz-onb__file-remove {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.3); font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+}
+.biz-onb__file-remove:hover {
+  background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2);
+  color: #EF4444;
+}
+
+/* Upload progress & error */
+.biz-onb__upload-progress {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; margin-top: 8px;
+  border-radius: 10px;
+  background: rgba(139,92,246,0.04);
+  font-family: var(--dash-font); font-size: 0.65rem;
+  color: rgba(255,255,255,0.5);
+}
+.biz-onb__upload-error {
+  padding: 10px 14px; margin-top: 8px;
+  border-radius: 10px;
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.12);
+  font-family: var(--dash-font); font-size: 0.65rem;
+  color: #EF4444;
+}
+
 /* ═══ FORM LAYOUT IMPROVEMENTS — Premium ═══ */
 
 /* Auto-save indicator — subtle floating */
@@ -5972,6 +6077,20 @@
   border-color: rgba(139,92,246,0.25);
   color: #A78BFA;
   transform: translateY(-1px);
+}
+
+/* ── Team Notice ──────────────────────────────────────────────── */
+.biz-onb__team-notice {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 14px 16px; border-radius: 12px;
+  background: rgba(139,92,246,0.04);
+  border: 1px solid rgba(139,92,246,0.1);
+  font-family: var(--dash-font); font-size: 0.65rem;
+  color: rgba(255,255,255,0.45); line-height: 1.6;
+  margin-bottom: 14px;
+}
+.biz-onb__team-notice svg {
+  color: #A78BFA; flex-shrink: 0; margin-top: 2px;
 }
 
 /* ── Team Contact Cards — Premium Glass ────────────────────────── */
