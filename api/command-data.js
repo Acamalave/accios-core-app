@@ -109,6 +109,7 @@ function getDb(name, envVar) {
 function generateMockData(range) {
   const days = range === '7d' ? 7 : range === '90d' ? 90 : range === '365d' ? 365 : 30;
   const now = new Date();
+  const rangeFactor = days / 30; // scale metrics by range
 
   const trend = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -122,16 +123,80 @@ function generateMockData(range) {
     });
   }
 
+  // ─── Monthly trend data per business (12 months) ───
+  const bizMonthlyTrend = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const month = d.toISOString().slice(0, 7);
+    const season = 1 + 0.15 * Math.sin((d.getMonth() - 3) * Math.PI / 6);
+    bizMonthlyTrend.push({
+      month,
+      'rush-ride': {
+        revenue: Math.round(18000 * season + Math.random() * 4000),
+        checkIns: Math.round(900 * season + Math.random() * 300),
+        reservations: Math.round(350 * season + Math.random() * 150),
+        newMembers: Math.round(12 + Math.random() * 13),
+        activeMembers: Math.round(160 + i * 2 + Math.random() * 20),
+      },
+      'xazai': {
+        revenue: Math.round(11000 * season + Math.random() * 5000),
+        orders: Math.round(700 * season + Math.random() * 200),
+        customers: Math.round(180 + Math.random() * 60),
+        sales: Math.round(550 * season + Math.random() * 150),
+      },
+      'accios-core': {
+        revenue: Math.round(9000 + Math.random() * 4000),
+        transactions: Math.round(160 + Math.random() * 60),
+        quotes: Math.round(15 + Math.random() * 20),
+      }
+    });
+  }
+
+  // ─── Staff data for Xazai ───
+  const xazaiStaff = [
+    { name: 'Carlos Méndez', role: 'Chef Principal', status: 'active', daysWorked: 26, totalDays: 28, punctuality: 96, rating: 4.8 },
+    { name: 'María García', role: 'Sous Chef', status: 'active', daysWorked: 24, totalDays: 28, punctuality: 92, rating: 4.6 },
+    { name: 'Juan Pérez', role: 'Cocinero', status: 'active', daysWorked: 25, totalDays: 28, punctuality: 89, rating: 4.3 },
+    { name: 'Ana Rodríguez', role: 'Mesera', status: 'active', daysWorked: 27, totalDays: 28, punctuality: 98, rating: 4.9 },
+    { name: 'Luis Torres', role: 'Mesero', status: 'active', daysWorked: 22, totalDays: 28, punctuality: 78, rating: 4.1 },
+    { name: 'Carmen Díaz', role: 'Cajera', status: 'active', daysWorked: 26, totalDays: 28, punctuality: 93, rating: 4.5 },
+    { name: 'Roberto Herrera', role: 'Ayudante Cocina', status: 'active', daysWorked: 23, totalDays: 28, punctuality: 82, rating: 4.0 },
+    { name: 'Sofía Castillo', role: 'Bartender', status: 'active', daysWorked: 20, totalDays: 24, punctuality: 88, rating: 4.4 },
+    { name: 'Pedro Morales', role: 'Delivery', status: 'active', daysWorked: 25, totalDays: 28, punctuality: 91, rating: 4.2 },
+    { name: 'Laura Vega', role: 'Hostess', status: 'active', daysWorked: 24, totalDays: 26, punctuality: 94, rating: 4.7 },
+    { name: 'Diego Santos', role: 'Auxiliar', status: 'inactive', daysWorked: 12, totalDays: 28, punctuality: 71, rating: 3.8 },
+    { name: 'Isabella Ríos', role: 'Mesera', status: 'active', daysWorked: 26, totalDays: 28, punctuality: 95, rating: 4.6 },
+  ];
+
+  // ─── Staff data for Rush Ride ───
+  const rushRideStaff = [
+    { name: 'Andrés Martínez', role: 'Instructor Cycling', status: 'active', classesGiven: 28, totalClasses: 30, punctuality: 97, rating: 4.9 },
+    { name: 'Valentina Rojas', role: 'Instructor CrossFit', status: 'active', classesGiven: 24, totalClasses: 26, punctuality: 94, rating: 4.7 },
+    { name: 'Miguel Á. Flores', role: 'Instructor Funcional', status: 'active', classesGiven: 22, totalClasses: 24, punctuality: 91, rating: 4.5 },
+    { name: 'Carolina Silva', role: 'Instructor Yoga', status: 'active', classesGiven: 20, totalClasses: 22, punctuality: 98, rating: 4.8 },
+    { name: 'Ricardo Núñez', role: 'Personal Trainer', status: 'active', classesGiven: 30, totalClasses: 30, punctuality: 88, rating: 4.3 },
+    { name: 'Daniela Moreno', role: 'Recepcionista', status: 'active', classesGiven: 0, totalClasses: 0, punctuality: 96, rating: 4.6 },
+    { name: 'Alejandro Ramírez', role: 'Manager', status: 'active', classesGiven: 0, totalClasses: 0, punctuality: 99, rating: 4.9 },
+    { name: 'Natalia Herrera', role: 'Instructor HIIT', status: 'active', classesGiven: 18, totalClasses: 22, punctuality: 85, rating: 4.2 },
+  ];
+
+  // Scale metrics by range
+  const rxRev = Math.round(22340 * rangeFactor);
+  const rxChk = Math.round(3400 * rangeFactor);
+  const xzRev = Math.round(13330 * rangeFactor);
+  const xzOrd = Math.round(876 * rangeFactor);
+
   return {
     mock: true,
     timestamp: now.toISOString(),
     range,
     kpis: {
       totalUsers: 847,
-      totalRevenue: 48520,
+      totalRevenue: Math.round(48520 * rangeFactor),
       activeMembers: 186,
-      totalOrders: 1243,
-      newUsersThisRange: Math.round(15 + Math.random() * 40),
+      totalOrders: Math.round(1243 * rangeFactor),
+      totalTransactions: Math.round(1243 * rangeFactor),
+      newUsersThisRange: Math.round((15 + Math.random() * 40) * rangeFactor),
       avgRevenuePerUser: 57.28
     },
     byBusiness: {
@@ -140,43 +205,74 @@ function generateMockData(range) {
         color: '#7C3AED',
         icon: 'hub',
         users: 342,
-        revenue: 12850,
-        collections: { users: 342, businesses: 8, fin_clients: 38, fin_transactions: 210, appointments: 55, quotes: 90 }
+        revenue: Math.round(12850 * rangeFactor),
+        collections: { users: 342, businesses: 8, fin_clients: 38, fin_transactions: Math.round(210 * rangeFactor), appointments: 55, quotes: Math.round(90 * rangeFactor) }
       },
       'rush-ride': {
         name: 'Rush Ride Studio',
         color: '#39FF14',
         icon: 'fitness',
         users: 285,
-        revenue: 22340,
+        revenue: rxRev,
         activeMembers: 186,
-        collections: { users: 285, transactions: 520, reservations: 1200, checkIns: 3400, userMemberships: 186 }
+        staff: rushRideStaff,
+        collections: { users: 285, transactions: Math.round(520 * rangeFactor), reservations: Math.round(1200 * rangeFactor), checkIns: rxChk, userMemberships: 186 }
       },
       'xazai': {
         name: 'Xazai',
-        color: '#F59E0B',
+        color: '#8B5CF6',
         icon: 'restaurant',
         users: 220,
-        revenue: 13330,
-        collections: { customers: 220, orders: 876, sales: 650, inventory: 124, rrhh_collaborators: 12 }
+        revenue: xzRev,
+        staff: xazaiStaff,
+        collections: { customers: 220, orders: xzOrd, sales: Math.round(650 * rangeFactor), inventory: 124, rrhh_collaborators: 12 }
       }
     },
+    bizMonthlyTrend,
     revenueTrend: trend,
     recentActivity: [
-      { type: 'order', business: 'xazai', description: 'Nuevo pedido #1243 - $18.50', date: new Date(now - 1800000).toISOString(), icon: 'receipt' },
-      { type: 'checkin', business: 'rush-ride', description: 'Check-in clase Cycling PM', date: new Date(now - 3600000).toISOString(), icon: 'fitness' },
-      { type: 'transaction', business: 'accios-core', description: 'Pago recibido - $150.00', date: new Date(now - 7200000).toISOString(), icon: 'payment' },
-      { type: 'reservation', business: 'rush-ride', description: 'Reserva clase manana 6AM', date: new Date(now - 10800000).toISOString(), icon: 'calendar' },
-      { type: 'sale', business: 'xazai', description: 'Venta mesa #4 - $45.00', date: new Date(now - 14400000).toISOString(), icon: 'storefront' },
-      { type: 'membership', business: 'rush-ride', description: 'Nueva membresia Premium', date: new Date(now - 18000000).toISOString(), icon: 'card' },
-      { type: 'quote', business: 'accios-core', description: 'Cotizacion enviada - $2,500', date: new Date(now - 21600000).toISOString(), icon: 'document' },
-      { type: 'expense', business: 'xazai', description: 'Compra ingredientes - $320', date: new Date(now - 25200000).toISOString(), icon: 'shopping' }
+      { type: 'order', business: 'xazai', description: 'Nuevo pedido #1243 — $18.50', date: new Date(now - 1800000).toISOString(), icon: 'receipt' },
+      { type: 'sale', business: 'xazai', description: 'Venta mesa #4 — $45.00', date: new Date(now - 5400000).toISOString(), icon: 'storefront' },
+      { type: 'order', business: 'xazai', description: 'Pedido delivery #1244 — $22.00', date: new Date(now - 9000000).toISOString(), icon: 'receipt' },
+      { type: 'sale', business: 'xazai', description: 'Venta especial del día — $38.50', date: new Date(now - 12600000).toISOString(), icon: 'storefront' },
+      { type: 'expense', business: 'xazai', description: 'Compra ingredientes — $320', date: new Date(now - 25200000).toISOString(), icon: 'shopping' },
+      { type: 'order', business: 'xazai', description: 'Pedido para llevar #1245 — $27.00', date: new Date(now - 28800000).toISOString(), icon: 'receipt' },
+      { type: 'checkin', business: 'rush-ride', description: 'Check-in clase Cycling 6PM', date: new Date(now - 3600000).toISOString(), icon: 'fitness' },
+      { type: 'reservation', business: 'rush-ride', description: 'Reserva clase mañana 6AM', date: new Date(now - 7200000).toISOString(), icon: 'calendar' },
+      { type: 'membership', business: 'rush-ride', description: 'Nueva membresía Premium', date: new Date(now - 10800000).toISOString(), icon: 'card' },
+      { type: 'checkin', business: 'rush-ride', description: 'Check-in clase HIIT 7AM', date: new Date(now - 14400000).toISOString(), icon: 'fitness' },
+      { type: 'membership', business: 'rush-ride', description: 'Renovación membresía Gold', date: new Date(now - 18000000).toISOString(), icon: 'card' },
+      { type: 'reservation', business: 'rush-ride', description: 'Reserva clase Yoga sábado', date: new Date(now - 21600000).toISOString(), icon: 'calendar' },
+      { type: 'checkin', business: 'rush-ride', description: 'Check-in CrossFit 5PM', date: new Date(now - 30600000).toISOString(), icon: 'fitness' },
+      { type: 'transaction', business: 'accios-core', description: 'Pago recibido — $150.00', date: new Date(now - 7200000).toISOString(), icon: 'payment' },
+      { type: 'quote', business: 'accios-core', description: 'Cotización enviada — $2,500', date: new Date(now - 21600000).toISOString(), icon: 'document' },
     ]
   };
 }
 
+// ─── Date helper — extract date from Firestore doc ──────────────────
+function getDocDate(data) {
+  const raw = data.createdAt || data.date || data.timestamp || data.fecha || data.created_at || data.dateCreated;
+  if (!raw) return null;
+  // Firestore Timestamp object
+  if (raw._seconds) return new Date(raw._seconds * 1000);
+  if (typeof raw.toDate === 'function') return raw.toDate();
+  // ISO string or number
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function filterDocsByDate(docs, startDate, endDate) {
+  if (!startDate || !endDate) return docs;
+  return docs.filter(d => {
+    const date = getDocDate(d.data());
+    if (!date) return true; // include docs without a date field
+    return date >= startDate && date <= endDate;
+  });
+}
+
 // ─── Real data fetching ─────────────────────────────────────────────
-async function fetchAcciosData(db, range) {
+async function fetchAcciosData(db, range, startDate, endDate) {
   const [usersSnap, bizSnap, clientsSnap, txnSnap, apptsSnap, quotesSnap] = await Promise.all([
     db.collection('users').get(),
     db.collection('businesses').get(),
@@ -186,7 +282,11 @@ async function fetchAcciosData(db, range) {
     db.collection('quotes').get()
   ]);
 
-  const revenue = txnSnap.docs.reduce((sum, d) => {
+  const filteredTxn = filterDocsByDate(txnSnap.docs, startDate, endDate);
+  const filteredAppts = filterDocsByDate(apptsSnap.docs, startDate, endDate);
+  const filteredQuotes = filterDocsByDate(quotesSnap.docs, startDate, endDate);
+
+  const revenue = filteredTxn.reduce((sum, d) => {
     const data = d.data();
     if (data.status === 'cobrado') sum += (data.totalAmount || 0);
     return sum;
@@ -202,14 +302,14 @@ async function fetchAcciosData(db, range) {
       users: usersSnap.size,
       businesses: bizSnap.size,
       fin_clients: clientsSnap.size,
-      fin_transactions: txnSnap.size,
-      appointments: apptsSnap.size,
-      quotes: quotesSnap.size
+      fin_transactions: filteredTxn.length,
+      appointments: filteredAppts.length,
+      quotes: filteredQuotes.length
     }
   };
 }
 
-async function fetchRushData(db, range) {
+async function fetchRushData(db, range, startDate, endDate) {
   const [usersSnap, txnSnap, membersSnap, reservSnap, checkInSnap] = await Promise.all([
     db.collection('users').get(),
     db.collection('transactions').get(),
@@ -218,7 +318,11 @@ async function fetchRushData(db, range) {
     db.collection('checkIns').get()
   ]);
 
-  const revenue = txnSnap.docs.reduce((sum, d) => {
+  const filteredTxn = filterDocsByDate(txnSnap.docs, startDate, endDate);
+  const filteredReserv = filterDocsByDate(reservSnap.docs, startDate, endDate);
+  const filteredCheckIns = filterDocsByDate(checkInSnap.docs, startDate, endDate);
+
+  const revenue = filteredTxn.reduce((sum, d) => {
     const data = d.data();
     sum += (data.amount || data.total || 0);
     return sum;
@@ -238,15 +342,15 @@ async function fetchRushData(db, range) {
     activeMembers,
     collections: {
       users: usersSnap.size,
-      transactions: txnSnap.size,
-      reservations: reservSnap.size,
-      checkIns: checkInSnap.size,
+      transactions: filteredTxn.length,
+      reservations: filteredReserv.length,
+      checkIns: filteredCheckIns.length,
       userMemberships: membersSnap.size
     }
   };
 }
 
-async function fetchXazaiData(db, range) {
+async function fetchXazaiData(db, range, startDate, endDate) {
   const [custSnap, ordersSnap, salesSnap, invSnap, staffSnap] = await Promise.all([
     db.collection('customers').get(),
     db.collection('orders').get(),
@@ -255,26 +359,122 @@ async function fetchXazaiData(db, range) {
     db.collection('rrhh_collaborators').get()
   ]);
 
-  const revenue = salesSnap.docs.reduce((sum, d) => {
+  const filteredOrders = filterDocsByDate(ordersSnap.docs, startDate, endDate);
+  const filteredSales = filterDocsByDate(salesSnap.docs, startDate, endDate);
+
+  const revenue = filteredSales.reduce((sum, d) => {
     const data = d.data();
     sum += (data.total || data.amount || 0);
     return sum;
   }, 0);
 
+  // ── Aggregate ALL sales by month (for trend chart) ──
+  // Uses ALL sales docs (not date-filtered) to build complete monthly history
+  const monthlyRevenue = {};
+  const monthlyOrders = {};
+  const monthlySalesCount = {};
+
+  salesSnap.docs.forEach(d => {
+    const data = d.data();
+    const date = getDocDate(data);
+    if (!date) return;
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    monthlyRevenue[monthKey] = (monthlyRevenue[monthKey] || 0) + (data.total || data.amount || 0);
+    monthlySalesCount[monthKey] = (monthlySalesCount[monthKey] || 0) + 1;
+  });
+
+  ordersSnap.docs.forEach(d => {
+    const data = d.data();
+    const date = getDocDate(data);
+    if (!date) return;
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    monthlyOrders[monthKey] = (monthlyOrders[monthKey] || 0) + 1;
+  });
+
+  // Build sorted monthly trend array
+  const allMonths = [...new Set([...Object.keys(monthlyRevenue), ...Object.keys(monthlyOrders)])].sort();
+  const monthlyTrend = allMonths.map(month => ({
+    month,
+    revenue: Math.round((monthlyRevenue[month] || 0) * 100) / 100,
+    orders: monthlyOrders[month] || 0,
+    sales: monthlySalesCount[month] || 0,
+    customers: custSnap.size // total (not monthly)
+  }));
+
+  // Extract staff details from rrhh_collaborators
+  const staff = staffSnap.docs.map(d => {
+    const data = d.data();
+    return {
+      name: data.nombre || data.name || 'Sin nombre',
+      role: data.cargo || data.role || data.puesto || 'Colaborador',
+      status: data.estado || data.status || 'active',
+      daysWorked: data.diasTrabajados || data.daysWorked || 0,
+      totalDays: data.diasLaborales || data.totalDays || 28,
+      punctuality: data.puntualidad || data.punctuality || 0,
+      rating: data.calificacion || data.rating || 0,
+    };
+  });
+
   return {
     name: 'Xazai',
-    color: '#F59E0B',
+    color: '#8B5CF6',
     icon: 'restaurant',
     users: custSnap.size,
     revenue: Math.round(revenue * 100) / 100,
+    staff,
+    monthlyTrend, // ← Real monthly aggregation for trend chart
     collections: {
       customers: custSnap.size,
-      orders: ordersSnap.size,
-      sales: salesSnap.size,
+      orders: filteredOrders.length,
+      sales: filteredSales.length,
       inventory: invSnap.size,
       rrhh_collaborators: staffSnap.size
     }
   };
+}
+
+// ─── Build real monthly trend (merge real data into mock structure) ──
+function buildRealBizMonthlyTrend(mockTrend, xazaiData, rushData) {
+  // Start with mock trend as base
+  const trend = mockTrend.map(m => ({ ...m }));
+
+  // Override Xazai data with real monthly aggregation if available
+  if (xazaiData?.monthlyTrend && xazaiData.monthlyTrend.length > 0) {
+    const realByMonth = {};
+    xazaiData.monthlyTrend.forEach(m => { realByMonth[m.month] = m; });
+
+    trend.forEach(m => {
+      if (realByMonth[m.month]) {
+        // Replace mock Xazai data with real data
+        m['xazai'] = {
+          revenue: realByMonth[m.month].revenue,
+          orders: realByMonth[m.month].orders,
+          sales: realByMonth[m.month].sales,
+          customers: realByMonth[m.month].customers
+        };
+      } else {
+        // No real data for this month — show 0 (not mock)
+        m['xazai'] = { revenue: 0, orders: 0, sales: 0, customers: 0 };
+      }
+    });
+
+    // Add months that exist in real data but not in mock (e.g., older months)
+    xazaiData.monthlyTrend.forEach(rm => {
+      if (!trend.find(t => t.month === rm.month)) {
+        trend.push({
+          month: rm.month,
+          'xazai': { revenue: rm.revenue, orders: rm.orders, sales: rm.sales, customers: rm.customers },
+          'rush-ride': { revenue: 0, checkIns: 0, reservations: 0, newMembers: 0, activeMembers: 0 },
+          'accios-core': { revenue: 0, transactions: 0, quotes: 0 }
+        });
+      }
+    });
+
+    // Re-sort by month
+    trend.sort((a, b) => a.month.localeCompare(b.month));
+  }
+
+  return trend;
 }
 
 // ─── Handler ────────────────────────────────────────────────────────
@@ -286,6 +486,12 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const range = req.query.range || '30d';
+  const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
+  const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
+
+  // Validate dates if provided
+  const validStart = startDate && !isNaN(startDate.getTime()) ? startDate : null;
+  const validEnd = endDate && !isNaN(endDate.getTime()) ? endDate : null;
 
   try {
     const dbAccios = getDb('accios-core', 'FIREBASE_SERVICE_ACCOUNT');
@@ -304,13 +510,18 @@ module.exports = async function handler(req, res) {
 
     // Fetch from available projects in parallel
     const results = await Promise.all([
-      dbAccios ? fetchAcciosData(dbAccios, range).catch(e => { console.error('Accios fetch error:', e.message); return null; }) : null,
-      dbRush ? fetchRushData(dbRush, range).catch(e => { console.error('Rush fetch error:', e.message); return null; }) : null,
-      dbXazai ? fetchXazaiData(dbXazai, range).catch(e => { console.error('Xazai fetch error:', e.message); return null; }) : null
+      dbAccios ? fetchAcciosData(dbAccios, range, validStart, validEnd).catch(e => { console.error('Accios fetch error:', e.message); return null; }) : null,
+      dbRush ? fetchRushData(dbRush, range, validStart, validEnd).catch(e => { console.error('Rush fetch error:', e.message); return null; }) : null,
+      dbXazai ? fetchXazaiData(dbXazai, range, validStart, validEnd).catch(e => { console.error('Xazai fetch error:', e.message); return null; }) : null
     ]);
 
     const [acciosData, rushData, xazaiData] = results;
     const mock = generateMockData(range);
+
+    // Merge mock staff into real data when no staff collection exists
+    if (rushData && !rushData.staff) {
+      rushData.staff = mock.byBusiness['rush-ride'].staff;
+    }
 
     // Use real data where available, mock where not
     const byBusiness = {
@@ -423,6 +634,7 @@ module.exports = async function handler(req, res) {
         avgRevenuePerUser: totalUsers > 0 ? Math.round((totalRevenue / totalUsers) * 100) / 100 : 0
       },
       byBusiness,
+      bizMonthlyTrend: buildRealBizMonthlyTrend(mock.bizMonthlyTrend, xazaiData, rushData),
       consumptionTrend: realTrends.consumptionTrend,
       recentActivity: mock.recentActivity
     });

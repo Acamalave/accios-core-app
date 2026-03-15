@@ -386,6 +386,8 @@
 }
 
 /* When logo replaces text, reset the text-gradient styles on parent */
+/* .lv-hero-client--has-logo is added via JS for Safari fallback */
+.lv-hero-client--has-logo,
 .lv-hero-client:has(.lv-hero-logo) {
   background: none;
   -webkit-background-clip: unset;

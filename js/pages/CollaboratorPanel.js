@@ -205,24 +205,27 @@ export class CollaboratorPanel {
     return `
     <div class="collab-quick">
       <div class="collab-quick__row">
-        <input class="collab-quick__input" id="collab-quick-input" placeholder="Escribe una solicitud o pega un link..." maxlength="500" />
+        <input class="collab-quick__input" id="collab-quick-input" placeholder="Título de la solicitud..." maxlength="500" />
         <button class="collab-quick__attach" id="collab-quick-attach" title="Adjuntar imagen">${IC.image}</button>
         <button class="collab-quick__send" id="collab-quick-send">${IC.send}</button>
         <input type="file" id="collab-file-input" accept="image/*" multiple hidden />
       </div>
+      <textarea class="collab-quick__desc" id="collab-quick-desc" placeholder="Descripción o detalles adicionales..." rows="2" maxlength="2000"></textarea>
       <div class="collab-quick__previews" id="collab-quick-previews"></div>
-      <div class="collab-quick__tags">
-        <span class="collab-quick__label">Prioridad</span>
-        <button class="collab-quick__tag collab-quick__tag--priority" data-priority="low">Baja</button>
-        <button class="collab-quick__tag collab-quick__tag--priority collab-quick__tag--active" data-priority="medium">Media</button>
-        <button class="collab-quick__tag collab-quick__tag--priority" data-priority="high">Alta</button>
-        <button class="collab-quick__tag collab-quick__tag--priority" data-priority="urgent">Urgente</button>
+      <div class="collab-quick__options">
+        <div class="collab-quick__tags">
+          <span class="collab-quick__label">Prioridad</span>
+          <button class="collab-quick__tag collab-quick__tag--priority" data-priority="low">Baja</button>
+          <button class="collab-quick__tag collab-quick__tag--priority collab-quick__tag--active" data-priority="medium">Media</button>
+          <button class="collab-quick__tag collab-quick__tag--priority" data-priority="high">Alta</button>
+          <button class="collab-quick__tag collab-quick__tag--priority" data-priority="urgent">Urgente</button>
+        </div>
+        ${bizTags.length ? `
+        <div class="collab-quick__tags">
+          <span class="collab-quick__label">Negocio</span>
+          ${bizTags.map(b => `<button class="collab-quick__tag collab-quick__tag--biz" data-biz="${b}">${b}</button>`).join('')}
+        </div>` : ''}
       </div>
-      ${bizTags.length ? `
-      <div class="collab-quick__tags">
-        <span class="collab-quick__label">Negocio</span>
-        ${bizTags.map(b => `<button class="collab-quick__tag collab-quick__tag--biz" data-biz="${b}">${b}</button>`).join('')}
-      </div>` : ''}
     </div>`;
   }
 
@@ -253,13 +256,6 @@ export class CollaboratorPanel {
     ];
 
     const bizTags = this._getUniqueBizTags();
-    const priorityFilters = [
-      { id: 'all',    label: 'Todas' },
-      { id: 'low',    label: 'Baja' },
-      { id: 'medium', label: 'Media' },
-      { id: 'high',   label: 'Alta' },
-      { id: 'urgent', label: 'Urgente' },
-    ];
 
     return `
     <div class="collab-filterbar" id="collab-filterbar">
@@ -279,15 +275,6 @@ export class CollaboratorPanel {
           <button class="collab-filter collab-filter--biz ${this._bizFilter === b ? 'collab-filter--active' : ''}" data-biz-filter="${b}">${b}</button>
         `).join('')}
       </div>` : ''}
-      <div class="collab-filterbar__buttons collab-filterbar__buttons--priority">
-        <span class="collab-filterbar__label">${IC.filter} Prioridad</span>
-        ${priorityFilters.map(p => `
-          <button class="collab-filter collab-filter--pri ${this._priorityFilter === p.id ? 'collab-filter--active' : ''}" data-pri-filter="${p.id}">
-            ${p.id !== 'all' ? `<span class="collab-filter__dot" style="background:${PRIORITIES[p.id]?.color || '#9CA3AF'}"></span>` : ''}
-            ${p.label}
-          </button>
-        `).join('')}
-      </div>
       <div class="collab-filterbar__search">
         ${IC.search}
         <input class="collab-filterbar__input" id="collab-search-input" placeholder="Buscar solicitud..." value="${this._searchQuery}" />
@@ -709,11 +696,6 @@ export class CollaboratorPanel {
       });
     }
 
-    // Priority filter
-    if (this._priorityFilter !== 'all') {
-      reqs = reqs.filter(r => (r.priority || 'medium') === this._priorityFilter);
-    }
-
     // Search filter
     if (this._searchQuery) {
       const q = this._searchQuery.toLowerCase();
@@ -769,10 +751,12 @@ export class CollaboratorPanel {
 
   async _handleQuickCreate() {
     const input = this.container.querySelector('#collab-quick-input');
+    const descInput = this.container.querySelector('#collab-quick-desc');
     if (!input) return;
 
     const title = input.value.trim();
-    if (!title && this._pendingImages.length === 0) return;
+    const description = descInput ? descInput.value.trim() : '';
+    if (!title && !description && this._pendingImages.length === 0) return;
 
     // Get selected priority
     const activePri = this.container.querySelector('.collab-quick__tag--priority.collab-quick__tag--active');
@@ -790,7 +774,7 @@ export class CollaboratorPanel {
       // Create doc first to get the ID for image paths
       const docData = {
         title: title || 'Solicitud con imagen',
-        description: '',
+        description,
         priority,
         status: 'inbox',
         assignedTo: null,
@@ -814,6 +798,7 @@ export class CollaboratorPanel {
       }
 
       input.value = '';
+      if (descInput) descInput.value = '';
       document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Solicitud creada', type: 'success' } }));
     } catch (err) {
       console.error('[CollabPanel] Quick create error:', err);
@@ -901,16 +886,6 @@ export class CollaboratorPanel {
       btn.addEventListener('click', () => {
         this._bizFilter = btn.dataset.bizFilter;
         this.container.querySelectorAll('.collab-filter--biz').forEach(b => b.classList.remove('collab-filter--active'));
-        btn.classList.add('collab-filter--active');
-        this._refreshFilteredView();
-      });
-    });
-
-    // Priority filter buttons
-    this.container.querySelectorAll('.collab-filter--pri').forEach(btn => {
-      btn.addEventListener('click', () => {
-        this._priorityFilter = btn.dataset.priFilter;
-        this.container.querySelectorAll('.collab-filter--pri').forEach(b => b.classList.remove('collab-filter--active'));
         btn.classList.add('collab-filter--active');
         this._refreshFilteredView();
       });

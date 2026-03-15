@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "accios-core",
-      "runtimeExecutable": "ruby",
-      "runtimeArgs": ["-e", "require 'webrick';s=WEBrick::HTTPServer.new(Port:8080,DocumentRoot:'/tmp/accios-preview');s.config[:MimeTypes]['js']='application/javascript';trap('INT'){s.shutdown};s.start"],
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "8080", "-s", "/Users/acamalave/Desktop/ACCIOS CORE"],
       "port": 8080
     }
   ]
