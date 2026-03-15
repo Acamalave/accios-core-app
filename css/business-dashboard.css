@@ -605,8 +605,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 24px;
+  justify-content: flex-start;
+  padding: 28px 24px 40px;
   gap: 12px;
   position: relative;
   z-index: 5;
@@ -901,7 +901,7 @@
 
 /* Override grid when in clients mode: sidebar | left | center(free) | right(cards) */
 .biz-dash--clients {
-  grid-template-columns: 60px 1fr 2fr 320px;
+  grid-template-columns: 60px 1fr 2fr 1fr;
 }
 
 /* Clients area sits inside the right panel */
@@ -959,11 +959,9 @@
   scrollbar-color: rgba(var(--biz-rgb),0.2) transparent;
 }
 
-/* Empty center */
-.biz-dash__center--empty {
-  justify-content: flex-end;
-  padding-bottom: 0;
-  overflow: hidden;
+/* Center with credential folder at top */
+.biz-dash__center .biz-cred__folder {
+  margin-top: 4px;
 }
 
 /* ── Concrete Floor — Infinite Depth with Grid Lines ── */
@@ -2307,7 +2305,7 @@
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 1200px) {
   .biz-dash--clients {
-    grid-template-columns: 60px 1fr 280px;
+    grid-template-columns: 60px 1fr 1fr;
   }
   .biz-dash--clients .biz-dash__panel--left {
     display: none;
@@ -2319,7 +2317,7 @@
     grid-template-columns: 60px 1fr 2fr;
   }
   .biz-dash--clients {
-    grid-template-columns: 60px 1fr 280px;
+    grid-template-columns: 60px 1fr 1fr;
   }
   .biz-dash--clients .biz-dash__panel--left {
     display: none;
@@ -2575,9 +2573,9 @@
 .biz-cred__folder {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  margin-top: 10px;
+  gap: 12px;
+  padding: 14px 20px;
+  margin-top: 0;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -2585,6 +2583,8 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: visible;
+  width: 100%;
+  max-width: 320px;
 }
 
 /* Folder body — the main rectangle */
@@ -3648,54 +3648,67 @@
   }
 }
 
-.biz-kpi__top {
+/* ── KPI Card Header (icon + titles + help) ── */
+.biz-kpi__header {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 .biz-kpi__icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: linear-gradient(135deg,
-    rgba(var(--kpi-accent-rgb), 0.12),
+    rgba(var(--kpi-accent-rgb), 0.14),
     rgba(var(--kpi-purple-rgb), 0.08));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 1px;
 }
 .biz-kpi__icon svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   stroke: var(--kpi-accent);
 }
-.biz-kpi__info {
+.biz-kpi__titles {
   flex: 1;
   min-width: 0;
 }
 .biz-kpi__label {
-  font-size: 0.68rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--kpi-text-secondary);
+  letter-spacing: 0.05em;
+  color: var(--kpi-text-primary);
   font-family: var(--dash-font);
-  margin-bottom: 3px;
+  margin-bottom: 2px;
+  line-height: 1.2;
 }
+.biz-kpi__sub {
+  font-size: 0.6rem;
+  color: var(--kpi-text-muted);
+  font-family: var(--dash-font);
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+/* ── KPI Value (big number, standalone row) ── */
 .biz-kpi__value {
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 700;
   color: var(--kpi-text-bright);
   font-family: var(--dash-font);
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -0.03em;
+  margin-bottom: 6px;
 }
 .biz-kpi__value--text {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  color: var(--kpi-text-muted);
+  color: var(--kpi-text-secondary);
 }
 .biz-kpi__unit {
   font-size: 0.78rem;
@@ -3733,14 +3746,7 @@
   width: 100%;
   height: 30px;
   display: block;
-  margin: 6px 0;
-}
-
-.biz-kpi__sub {
-  font-size: 0.63rem;
-  color: var(--kpi-text-muted);
-  font-family: var(--dash-font);
-  letter-spacing: 0.01em;
+  margin: 4px 0 0;
 }
 
 /* ── Marketing ROI bars ── */
@@ -3748,7 +3754,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 10px 0 8px;
+  margin: 6px 0 0;
 }
 .biz-kpi__bar-item {
   display: flex;
@@ -3967,6 +3973,20 @@
   justify-content: center;
   padding: 20px;
   animation: kpiDetailBgIn 300ms ease both;
+}
+.biz-kpi-detail--exit {
+  animation: kpiDetailBgOut 300ms ease both;
+}
+.biz-kpi-detail--exit .biz-kpi-detail__inner {
+  animation: kpiDetailOut 300ms ease both;
+}
+@keyframes kpiDetailBgOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes kpiDetailOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(12px) scale(0.97); }
 }
 @keyframes kpiDetailBgIn {
   from { opacity: 0; }
@@ -4367,7 +4387,7 @@
 /* ── Mobile responsive for KPI ── */
 @media (max-width: 768px) {
   .biz-kpi { padding: 14px 16px 12px; border-radius: 14px; }
-  .biz-kpi__value { font-size: 1.15rem; }
+  .biz-kpi__value { font-size: 1.4rem; }
   .biz-kpi-detail__inner { padding: 22px 18px; max-width: 100%; border-radius: 16px; }
   .biz-kpi-detail__mkt-summary { grid-template-columns: 1fr 1fr; gap: 6px; }
   .biz-kpi-detail__methods { grid-template-columns: 1fr; }

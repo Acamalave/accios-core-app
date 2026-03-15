@@ -389,8 +389,17 @@ export class BusinessDashboard {
       <!-- Concrete Floor — spans full width -->
       <div class="biz-dash__floor"></div>
 
-      <!-- Center: Free space -->
-      <div class="biz-dash__center biz-dash__center--empty"></div>
+      <!-- Center: Credential Folder + Free space -->
+      <div class="biz-dash__center">
+        <div class="biz-cred__folder" id="cred-folder-btn">
+          <div class="biz-cred__folder-icon">${ICONS.folderLock}</div>
+          <div class="biz-cred__folder-info">
+            <div class="biz-cred__folder-name">Credenciales</div>
+            <div class="biz-cred__folder-sub">Bóveda segura</div>
+          </div>
+          <div class="biz-cred__folder-shield">${ICONS.shield}</div>
+        </div>
+      </div>
 
       <!-- Right Panel: Client Business Cards (stacked) -->
       <div class="biz-dash__panel biz-dash__panel--right biz-dash__clients-area">
@@ -538,28 +547,29 @@ export class BusinessDashboard {
 
       <!-- 1. Facturación Global -->
       <div class="biz-kpi" data-kpi="billing">
-        <div class="biz-kpi__top">
+        <div class="biz-kpi__header">
           <div class="biz-kpi__icon">${ICONS.dollarSign}</div>
-          <div class="biz-kpi__info">
+          <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Facturación Global</div>
-            <div class="biz-kpi__value">$0<span class="biz-kpi__unit">.00</span></div>
+            <div class="biz-kpi__sub">Total facturado en todas las empresas</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="billing">?</button>
         </div>
+        <div class="biz-kpi__value">$0<span class="biz-kpi__unit">.00</span></div>
         ${this._buildMiniSparkline([0,0,0,0,0,0], 'bill')}
-        <div class="biz-kpi__sub">Total facturado en todas las empresas</div>
       </div>
 
       <!-- 2. Marketing ROI -->
       <div class="biz-kpi" data-kpi="marketing">
-        <div class="biz-kpi__top">
+        <div class="biz-kpi__header">
           <div class="biz-kpi__icon">${ICONS.trendingUp}</div>
-          <div class="biz-kpi__info">
+          <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Marketing ROI</div>
-            <div class="biz-kpi__value">0<span class="biz-kpi__unit">%</span></div>
+            <div class="biz-kpi__sub">Retorno sobre inversión publicitaria</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="marketing">?</button>
         </div>
+        <div class="biz-kpi__value">0<span class="biz-kpi__unit">%</span></div>
         <div class="biz-kpi__bar-row">
           <div class="biz-kpi__bar-item">
             <span class="biz-kpi__bar-label">Invertido</span>
@@ -572,19 +582,19 @@ export class BusinessDashboard {
             <span class="biz-kpi__bar-val">$0</span>
           </div>
         </div>
-        <div class="biz-kpi__sub">Retorno sobre inversión publicitaria</div>
       </div>
 
       <!-- 3. Cotizaciones -->
       <div class="biz-kpi" data-kpi="quotes">
-        <div class="biz-kpi__top">
+        <div class="biz-kpi__header">
           <div class="biz-kpi__icon">${ICONS.package}</div>
-          <div class="biz-kpi__info">
+          <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Cotizaciones</div>
-            <div class="biz-kpi__value">0<span class="biz-kpi__unit"> / 0</span></div>
+            <div class="biz-kpi__sub">Enviadas vs cerradas este mes</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="quotes">?</button>
         </div>
+        <div class="biz-kpi__value">0<span class="biz-kpi__unit"> / 0</span></div>
         <div class="biz-kpi__dual">
           <div class="biz-kpi__dual-item">
             <div class="biz-kpi__dual-ring">
@@ -612,19 +622,19 @@ export class BusinessDashboard {
             <span class="biz-kpi__dual-label">Cerradas</span>
           </div>
         </div>
-        <div class="biz-kpi__sub">Enviadas vs cerradas este mes</div>
       </div>
 
       <!-- 4. Top Vendedores -->
       <div class="biz-kpi" data-kpi="sellers">
-        <div class="biz-kpi__top">
+        <div class="biz-kpi__header">
           <div class="biz-kpi__icon">${ICONS.users}</div>
-          <div class="biz-kpi__info">
+          <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Top Vendedor</div>
-            <div class="biz-kpi__value biz-kpi__value--text">Sin datos</div>
+            <div class="biz-kpi__sub">Ejecutivo con más cierres por compañía</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="sellers">?</button>
         </div>
+        <div class="biz-kpi__value biz-kpi__value--text">Sin datos</div>
         <div class="biz-kpi__sellers-preview">
           <div class="biz-kpi__sellers-empty">
             <div class="biz-kpi__sellers-avatars">
@@ -635,37 +645,25 @@ export class BusinessDashboard {
             <span>Top 5 por empresa</span>
           </div>
         </div>
-        <div class="biz-kpi__sub">Ejecutivo con más cierres por compañía</div>
       </div>
 
       <!-- 5. Inventario -->
       <div class="biz-kpi" data-kpi="inventory">
-        <div class="biz-kpi__top">
+        <div class="biz-kpi__header">
           <div class="biz-kpi__icon">${ICONS.server}</div>
-          <div class="biz-kpi__info">
+          <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Inventario</div>
-            <div class="biz-kpi__value">0<span class="biz-kpi__unit"> alertas</span></div>
+            <div class="biz-kpi__sub">Productos que requieren revisión</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="inventory">?</button>
         </div>
+        <div class="biz-kpi__value">0<span class="biz-kpi__unit"> alertas</span></div>
         <div class="biz-kpi__inv-rows">
           <div class="biz-kpi__inv-empty">Sin productos en alerta</div>
         </div>
-        <div class="biz-kpi__sub">Productos que requieren revisión</div>
       </div>
 
-      <!-- Credential Folder (se mantiene) -->
-      <div class="biz-cred__folder" id="cred-folder-btn">
-        <div class="biz-cred__folder-icon">${ICONS.folderLock}</div>
-        <div class="biz-cred__folder-info">
-          <div class="biz-cred__folder-name">Credenciales</div>
-          <div class="biz-cred__folder-sub">Bóveda segura</div>
-        </div>
-        <div class="biz-cred__folder-shield">${ICONS.shield}</div>
-      </div>
-
-      <!-- KPI Detail Panel (rendered dynamically) -->
-      <div class="biz-kpi-detail" id="biz-kpi-detail" style="display:none;"></div>`;
+`;
   }
 
   /* ── Mini Sparkline (simpler, for KPI cards) ── */
@@ -1010,8 +1008,8 @@ export class BusinessDashboard {
   }
 
   _openKpiDetail(kpi) {
-    const detail = this.container.querySelector('#biz-kpi-detail');
-    if (!detail) return;
+    // Remove any existing detail overlay
+    document.querySelector('.biz-kpi-detail')?.remove();
 
     const companies = this._clientBusinesses;
 
@@ -1036,19 +1034,25 @@ export class BusinessDashboard {
         return;
     }
 
+    const detail = document.createElement('div');
+    detail.className = 'biz-kpi-detail';
     detail.innerHTML = `
       <div class="biz-kpi-detail__inner">
         <button class="biz-kpi-detail__close">&times;</button>
         ${content}
       </div>`;
-    detail.style.display = 'flex';
+
+    document.body.appendChild(detail);
 
     detail.querySelector('.biz-kpi-detail__close').addEventListener('click', () => {
-      detail.style.display = 'none';
-      detail.innerHTML = '';
+      detail.classList.add('biz-kpi-detail--exit');
+      setTimeout(() => detail.remove(), 300);
     });
     detail.addEventListener('click', (e) => {
-      if (e.target === detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
+      if (e.target === detail) {
+        detail.classList.add('biz-kpi-detail--exit');
+        setTimeout(() => detail.remove(), 300);
+      }
     });
   }
 
