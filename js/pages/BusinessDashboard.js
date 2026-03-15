@@ -98,16 +98,33 @@ export class BusinessDashboard {
       return;
     }
 
-    // Loading
+    // ─── Cinematic Greeting (Apple-style) ───
+    const userName = (this.currentUser?.name || '').split(' ')[0] || 'Usuario';
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Buenos dias' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
+
     this.container.innerHTML = `
-      <section class="biz-dash" style="display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;color:var(--text-muted);font-family:var(--font-mono);">
-          <div style="font-size:14px;letter-spacing:2px;">CARGANDO DASHBOARD...</div>
+      <section class="biz-dash biz-dash--intro" style="--biz-color:#F97316; --biz-rgb:249,115,22; --biz-color-dark:#EA580C;">
+        <canvas class="biz-dash__dust-canvas" aria-hidden="true"></canvas>
+        <div class="biz-intro">
+          <div class="biz-intro__greeting">${greeting},</div>
+          <div class="biz-intro__name">${this._esc(userName)}</div>
+          <div class="biz-intro__line"></div>
+          <div class="biz-intro__sub">Preparando tu ecosistema</div>
         </div>
       </section>`;
 
-    // Fetch data
-    await this._fetchData(this._currentRange);
+    // Start dust particles during intro
+    this._initDustParticles();
+
+    // Fetch data while greeting plays
+    const fetchPromise = this._fetchData(this._currentRange);
+
+    // Wait minimum greeting duration + data fetch
+    await Promise.all([
+      fetchPromise,
+      new Promise(r => setTimeout(r, 2400))
+    ]);
 
     // Resolve business metadata
     this._resolveBizMeta();
@@ -236,10 +253,20 @@ export class BusinessDashboard {
       }
     ];
 
+    // ─── Fade out intro → assemble dashboard ───
+    const intro = this.container.querySelector('.biz-intro');
+    if (intro) {
+      intro.classList.add('biz-intro--exit');
+      await new Promise(r => setTimeout(r, 800));
+    }
+
     // Render full dashboard
     this.container.innerHTML = this._buildHTML();
     this._attachListeners();
     this._attachPinListeners();
+
+    // Staggered card assembly — each section animates independently
+    this._runAssemblySequence();
   }
 
   _resolveBizMeta() {
@@ -1715,6 +1742,63 @@ export class BusinessDashboard {
     const el = document.createElement('span');
     el.textContent = str || '';
     return el.innerHTML;
+  }
+
+  /* ── XSS sanitizer ──────────────────────────────────────── */
+  _esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  /* ── Staggered Assembly Sequence (Apple-style) ─────────── */
+  _runAssemblySequence() {
+    // Phase 1: Sidebar slides in
+    const sidebar = this.container.querySelector('.biz-dash__sidebar');
+    if (sidebar) {
+      sidebar.classList.add('biz-assemble');
+      sidebar.style.animationDelay = '0ms';
+    }
+
+    // Phase 2: Left panel metrics cascade in
+    const leftPanel = this.container.querySelector('.biz-dash__panel--left');
+    if (leftPanel) {
+      leftPanel.classList.add('biz-assemble', 'biz-assemble--slide-up');
+      leftPanel.style.animationDelay = '200ms';
+
+      // Each metric card inside left panel
+      const metrics = leftPanel.querySelectorAll('.biz-dash__metric');
+      metrics.forEach((m, i) => {
+        m.classList.add('biz-assemble', 'biz-assemble--card');
+        m.style.animationDelay = `${350 + i * 120}ms`;
+      });
+    }
+
+    // Phase 3: Right panel (business cards) assemble independently
+    const rightPanel = this.container.querySelector('.biz-dash__panel--right');
+    if (rightPanel) {
+      rightPanel.classList.add('biz-assemble', 'biz-assemble--slide-up');
+      rightPanel.style.animationDelay = '300ms';
+
+      const cards = rightPanel.querySelectorAll('.biz-client__card');
+      cards.forEach((card, i) => {
+        card.classList.add('biz-assemble', 'biz-assemble--card');
+        card.style.animationDelay = `${500 + i * 150}ms`;
+      });
+    }
+
+    // Phase 4: Floor fades in
+    const floor = this.container.querySelector('.biz-dash__floor');
+    if (floor) {
+      floor.classList.add('biz-assemble', 'biz-assemble--fade');
+      floor.style.animationDelay = '400ms';
+    }
+
+    // Phase 5: Header elements
+    const headers = this.container.querySelectorAll('.biz-dash__panel-header, .biz-dash__clients-header');
+    headers.forEach((h, i) => {
+      h.classList.add('biz-assemble', 'biz-assemble--fade');
+      h.style.animationDelay = `${250 + i * 100}ms`;
+    });
   }
 
   unmount() {
