@@ -2424,16 +2424,17 @@ export class BusinessDashboard {
         const fDef = this._onbFolderDefs.find(f => f.id === value);
         if (fDef?.layout === 'global' || fDef?.layout === 'team') {
           this._onbCurrentBiz = '_global';
-          this._onbGo('folder-form');
         } else {
-          this._onbGo('biz-select');
+          // Auto-select first business
+          this._onbCurrentBiz = this._clientBusinesses[0]?.id || '_global';
         }
+        this._onbGo('folder-form');
         break;
       }
       case 'biz': this._onbCurrentBiz = value; this._onbGo('folder-form'); break;
       case 'back-folders': this._onbGo('folders'); break;
-      case 'back-biz': this._onbGo('biz-select'); break;
-      case 'save-fields': this._onbGo('biz-select'); break;
+      case 'back-biz': this._onbGo('folders'); break;
+      case 'save-fields': this._onbGo('folders'); break;
       case 'review': this._onbGo('review'); break;
       case 'confirm': this._onbGo('confirm'); break;
       case 'submit': this._onbSubmitToVault(); break;
@@ -2734,18 +2735,14 @@ export class BusinessDashboard {
     const cards = folders.map((f, i) => {
       const fp = this._onbFolderPct(f.id);
       return `
-        <button class="biz-onb__fcard" data-onb="folder" data-onb-val="${f.id}" style="animation-delay:${i * 0.06}s">
-          <div class="biz-onb__fcard-icon" style="color:${f.color};background:${f.color}15">${f.icon}</div>
-          <div class="biz-onb__fcard-body">
-            <div class="biz-onb__fcard-name">${f.name}</div>
-            <div class="biz-onb__fcard-desc">${f.desc}</div>
+        <button class="biz-onb__dossier" data-onb="folder" data-onb-val="${f.id}" style="--fc:${f.color};animation-delay:${i * 0.06}s">
+          <div class="biz-onb__dossier-tab"></div>
+          <div class="biz-onb__dossier-body">
+            <div class="biz-onb__dossier-icon">${f.icon}</div>
+            <div class="biz-onb__dossier-name">${f.name}</div>
+            <div class="biz-onb__dossier-pct">${fp}%</div>
+            ${fp === 100 ? '<div class="biz-onb__dossier-done">✓</div>' : ''}
           </div>
-          <div class="biz-onb__fcard-right">
-            <span class="biz-onb__fcard-time">${f.time}</span>
-            <div class="biz-onb__fcard-bar"><div class="biz-onb__fcard-bar-fill" style="width:${fp}%;background:${f.color}"></div></div>
-            <span class="biz-onb__fcard-pct" style="color:${fp > 0 ? f.color : 'rgba(255,255,255,0.2)'}">${fp}%</span>
-          </div>
-          ${fp === 100 ? '<div class="biz-onb__fcard-check">✓</div>' : ''}
         </button>`;
     }).join('');
 
@@ -2764,7 +2761,7 @@ export class BusinessDashboard {
           </div>
         </div>
 
-        <div class="biz-onb__fgrid">${cards}</div>
+        <div class="biz-onb__dgrid">${cards}</div>
 
         <button class="biz-onb__btn biz-onb__btn--vault ${pct === 0 ? 'biz-onb__btn--disabled' : ''}" data-onb="review">
           ${ICONS.shield} Enviar a la Bóveda
@@ -2813,10 +2810,8 @@ export class BusinessDashboard {
 
     const bizKey = isGlobal ? '_global' : biz.id;
     const data = this._onbData?.[folder.id]?.[bizKey] || {};
-    const backAction = isGlobal ? 'back-folders' : 'back-biz';
-    const backLabel = isGlobal ? 'Carpetas' : folder.name;
 
-    // Header
+    // Header — always shows folder info now
     const headerHTML = isGlobal ? `
       <div class="biz-onb__form-head">
         <div class="biz-onb__form-icon" style="color:${folder.color};background:${folder.color}15">${folder.icon}</div>
@@ -2826,12 +2821,35 @@ export class BusinessDashboard {
         </div>
       </div>` : `
       <div class="biz-onb__form-head">
-        <div class="biz-onb__form-logo" style="background-image:url('${biz.photo}')"></div>
+        <div class="biz-onb__form-icon" style="color:${folder.color};background:${folder.color}15">${folder.icon}</div>
         <div>
-          <h2 class="biz-onb__form-title">${biz.name}</h2>
-          <p class="biz-onb__form-sub">${folder.name}</p>
+          <h2 class="biz-onb__form-title">${folder.name}</h2>
+          <p class="biz-onb__form-sub">Selecciona un negocio y completa sus datos</p>
         </div>
       </div>`;
+
+    // Business strip for non-global layouts
+    let bizStripHTML = '';
+    if (!isGlobal) {
+      bizStripHTML = `
+        <div class="biz-onb__biz-strip">
+          ${this._clientBusinesses.map(b => {
+            const bd = this._onbData?.[folder.id]?.[b.id];
+            const allF = this._onbGetAllFields(folder);
+            let filled = 0;
+            if (bd) { for (const [fid] of allF) { if (bd[fid]?.trim()) filled++; } }
+            const done = filled === allF.length && allF.length > 0;
+            return `
+              <button class="biz-onb__biz-pill ${b.id === bizKey ? 'biz-onb__biz-pill--active' : ''}"
+                data-onb="biz" data-onb-val="${b.id}" type="button">
+                <div class="biz-onb__biz-pill-img" style="background-image:url('${b.photo}')">
+                  ${done ? '<div class="biz-onb__biz-pill-done">✓</div>' : ''}
+                </div>
+                <span class="biz-onb__biz-pill-name">${b.name}</span>
+              </button>`;
+          }).join('')}
+        </div>`;
+    }
 
     let fieldsHTML = '';
 
@@ -2960,8 +2978,9 @@ export class BusinessDashboard {
 
     return `
       <div class="biz-onb__form">
-        <button class="biz-onb__back" data-onb="${backAction}">${ICONS.arrowLeft} <span>${backLabel}</span></button>
+        <button class="biz-onb__back" data-onb="back-folders">${ICONS.arrowLeft} <span>Carpetas</span></button>
         ${headerHTML}
+        ${bizStripHTML}
         <div class="biz-onb__autosave">
           <div class="biz-onb__autosave-dot"></div>
           Guardado automático activo${savedCount ? ` · ${savedCount} campos guardados` : ''}
