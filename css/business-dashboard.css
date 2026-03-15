@@ -1050,10 +1050,10 @@
 
 /* Clients area sits inside the right panel */
 .biz-dash__clients-area {
-  gap: 8px;
-  padding: 24px 12px 20px;
+  gap: 12px;
+  padding: 24px 16px 20px;
   overflow-y: auto;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .biz-dash__clients-header {
