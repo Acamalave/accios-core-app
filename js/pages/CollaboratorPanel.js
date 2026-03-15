@@ -27,6 +27,9 @@ const IC = {
   link: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
   externalLink: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
   xCircle: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  expand: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>`,
+  building: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>`,
+  filter: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
 };
 
 /* ── Status config ────────────────────────────── */
@@ -57,6 +60,8 @@ export class CollaboratorPanel {
     this._unsubRequests = null;
     this._unsubCollabs = null;
     this._statusFilter = 'all';
+    this._bizFilter = 'all';
+    this._priorityFilter = 'all';
     this._searchQuery = '';
     this._searchTimeout = null;
     this._pendingImages = []; // Files staged for upload with quick-create
@@ -67,6 +72,12 @@ export class CollaboratorPanel {
   _esc(str) {
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  /** Strip URLs from text for clean display */
+  _stripUrls(text) {
+    if (!text) return '';
+    return text.replace(/https?:\/\/[^\s<>"']+/gi, '').replace(/\s{2,}/g, ' ').trim();
   }
 
   async render() {
@@ -241,13 +252,39 @@ export class CollaboratorPanel {
       { id: 'done',        label: 'Completado',  color: COLUMNS.find(c => c.id === 'done').color },
     ];
 
+    const bizTags = this._getUniqueBizTags();
+    const priorityFilters = [
+      { id: 'all',    label: 'Todas' },
+      { id: 'low',    label: 'Baja' },
+      { id: 'medium', label: 'Media' },
+      { id: 'high',   label: 'Alta' },
+      { id: 'urgent', label: 'Urgente' },
+    ];
+
     return `
     <div class="collab-filterbar" id="collab-filterbar">
       <div class="collab-filterbar__buttons">
         ${filters.map(f => `
-          <button class="collab-filter ${this._statusFilter === f.id ? 'collab-filter--active' : ''}" data-filter="${f.id}">
+          <button class="collab-filter collab-filter--status ${this._statusFilter === f.id ? 'collab-filter--active' : ''}" data-filter="${f.id}">
             <span class="collab-filter__dot" style="background:${f.color}"></span>
             ${f.label}
+          </button>
+        `).join('')}
+      </div>
+      ${bizTags.length ? `
+      <div class="collab-filterbar__buttons collab-filterbar__buttons--biz">
+        <span class="collab-filterbar__label">${IC.building} Negocio</span>
+        <button class="collab-filter collab-filter--biz ${this._bizFilter === 'all' ? 'collab-filter--active' : ''}" data-biz-filter="all">Todos</button>
+        ${bizTags.map(b => `
+          <button class="collab-filter collab-filter--biz ${this._bizFilter === b ? 'collab-filter--active' : ''}" data-biz-filter="${b}">${b}</button>
+        `).join('')}
+      </div>` : ''}
+      <div class="collab-filterbar__buttons collab-filterbar__buttons--priority">
+        <span class="collab-filterbar__label">${IC.filter} Prioridad</span>
+        ${priorityFilters.map(p => `
+          <button class="collab-filter collab-filter--pri ${this._priorityFilter === p.id ? 'collab-filter--active' : ''}" data-pri-filter="${p.id}">
+            ${p.id !== 'all' ? `<span class="collab-filter__dot" style="background:${PRIORITIES[p.id]?.color || '#9CA3AF'}"></span>` : ''}
+            ${p.label}
           </button>
         `).join('')}
       </div>
@@ -301,10 +338,42 @@ export class CollaboratorPanel {
     const images = card.images || [];
     const urls = this._extractUrls(card.title + ' ' + desc);
 
+    // Clean text: strip URLs from displayed title and description
+    const cleanTitle = this._stripUrls(card.title || '') || 'Sin titulo';
+    const cleanDesc = this._stripUrls(truncatedDesc);
+
+    // Determine right-side media preview
+    const hasImages = images.length > 0;
+    const hasLinks = urls.length > 0;
+    const showMediaPreview = hasImages || hasLinks;
+
+    // Build right-side media preview HTML
+    let mediaPreviewHtml = '';
+    if (hasImages) {
+      const extraCount = images.length - 1;
+      mediaPreviewHtml = `
+        <div class="collab-tcard__media-preview">
+          <div class="collab-tcard__thumb-wrap">
+            <img class="collab-tcard__thumb-img" src="${images[0]}" alt="Ref" loading="lazy" />
+            ${extraCount > 0 ? `<span class="collab-tcard__thumb-badge">+${extraCount}</span>` : ''}
+          </div>
+        </div>`;
+    } else if (hasLinks) {
+      const domain = this._getDomain(urls[0]);
+      const favicon = `https://www.google.com/s2/favicons?sz=32&domain=${domain}`;
+      mediaPreviewHtml = `
+        <div class="collab-tcard__media-preview collab-tcard__media-preview--link">
+          <div class="collab-tcard__link-thumb">
+            <img class="collab-tcard__link-favicon" src="${favicon}" alt="" loading="lazy" onerror="this.style.display='none'" />
+            <span class="collab-tcard__link-domain">${domain}</span>
+          </div>
+        </div>`;
+    }
+
     return `
     <div class="collab-tcard collab-tcard--${card.priority || 'medium'}" data-id="${card.id}">
-      <div class="collab-tcard__dot" style="background: ${statusColor}; box-shadow: 0 0 8px ${statusColor}40"></div>
-      <div class="collab-tcard__body">
+      <div class="collab-tcard__dot collab-tcard__dot--mobile-hide" style="background: ${statusColor}; box-shadow: 0 0 8px ${statusColor}40"></div>
+      <div class="collab-tcard__body" data-detail-id="${card.id}">
         <div class="collab-tcard__header">
           <div class="collab-tcard__creator">
             <span class="collab-tcard__avatar">${initial}</span>
@@ -312,11 +381,14 @@ export class CollaboratorPanel {
           </div>
           <span class="collab-tcard__time">${formattedTime}</span>
         </div>
-        <h4 class="collab-tcard__title">${this._linkifyText(card.title || 'Sin titulo')}</h4>
-        ${desc ? `<p class="collab-tcard__desc">${this._linkifyText(truncatedDesc)}</p>` : ''}
-        ${urls.length ? this._buildLinkPreviews(urls) : ''}
-        ${images.length ? this._buildImageGallery(images, card.id) : ''}
-        ${tags.length ? `<div class="collab-tcard__tags">${tags.map(t => `<span class="collab-tcard__tag">${t}</span>`).join('')}</div>` : ''}
+        <div class="collab-tcard__content-row">
+          <div class="collab-tcard__text-content">
+            <h4 class="collab-tcard__title">${this._esc(cleanTitle)}</h4>
+            ${cleanDesc ? `<p class="collab-tcard__desc">${this._esc(cleanDesc)}</p>` : ''}
+            ${tags.length ? `<div class="collab-tcard__tags">${tags.map(t => `<span class="collab-tcard__tag">${this._esc(t)}</span>`).join('')}</div>` : ''}
+          </div>
+          ${showMediaPreview ? mediaPreviewHtml : ''}
+        </div>
         <div class="collab-tcard__footer">
           <div class="collab-tcard__status-wrap" style="position:relative">
             <button class="collab-tcard__status-btn" data-id="${card.id}" style="color:${statusColor}">
@@ -332,6 +404,7 @@ export class CollaboratorPanel {
               `).join('')}
             </div>
           </div>
+          <span class="collab-tcard__priority-pill" style="background:${pri.color}20; color:${pri.color}">${pri.label}</span>
           ${sa ? `
           <div class="collab-tcard__actions">
             <button class="collab-card__action" data-attach-img="${card.id}" title="Adjuntar imagen">${IC.image}</button>
@@ -341,6 +414,166 @@ export class CollaboratorPanel {
         </div>
       </div>
     </div>`;
+  }
+
+  /* ═══════════════════════════════════════
+     DETAIL POPUP
+     ═══════════════════════════════════════ */
+
+  _showDetailPopup(card) {
+    const overlay = this.container.querySelector('#collab-modal-overlay');
+    if (!overlay) return;
+
+    const sa = this._isSuperAdmin;
+    const pri = PRIORITIES[card.priority || 'medium'];
+    const status = card.status || 'inbox';
+    const colCfg = COLUMNS.find(c => c.id === status) || COLUMNS[0];
+    const statusColor = colCfg.color;
+    const statusLabel = colCfg.label;
+    const creatorName = this._getCreatorName(card.createdBy);
+    const formattedTime = this._formatFullDate(card.createdAt);
+    const tags = card.tags || [];
+    const desc = card.description || '';
+    const images = card.images || [];
+    const urls = this._extractUrls(card.title + ' ' + desc);
+
+    overlay.classList.add('collab-modal-overlay--open');
+    overlay.innerHTML = `
+    <div class="collab-detail-popup">
+      <div class="collab-detail-popup__header">
+        <h2 class="collab-detail-popup__title">${this._esc(card.title || 'Sin titulo')}</h2>
+        <button class="collab-modal__close" id="collab-detail-close">${IC.x}</button>
+      </div>
+
+      <div class="collab-detail-popup__body">
+        ${desc ? `<p class="collab-detail-popup__desc">${this._esc(desc)}</p>` : ''}
+
+        <div class="collab-detail-popup__meta">
+          <div class="collab-detail-popup__meta-item">
+            <span class="collab-detail-popup__meta-label">Estado</span>
+            <div class="collab-detail-popup__status-wrap" style="position:relative">
+              <button class="collab-tcard__status-btn collab-detail-popup__status-btn" data-detail-status-id="${card.id}" style="color:${statusColor}">
+                <span class="collab-tcard__status-dot" style="background:${statusColor}"></span>
+                ${statusLabel} &#9662;
+              </button>
+              <div class="collab-tcard__status-menu" id="detail-status-menu-${card.id}">
+                ${COLUMNS.map(col => `
+                  <button class="collab-tcard__status-option ${col.id === status ? 'collab-tcard__status-option--active' : ''}" data-status="${col.id}" data-detail-change-id="${card.id}">
+                    <span class="collab-tcard__status-dot" style="background:${col.color}"></span>
+                    ${col.label}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="collab-detail-popup__meta-item">
+            <span class="collab-detail-popup__meta-label">Prioridad</span>
+            <span class="collab-tcard__priority-pill" style="background:${pri.color}20; color:${pri.color}">${pri.label}</span>
+          </div>
+          <div class="collab-detail-popup__meta-item">
+            <span class="collab-detail-popup__meta-label">Creado por</span>
+            <span>${this._esc(creatorName)}</span>
+          </div>
+          <div class="collab-detail-popup__meta-item">
+            <span class="collab-detail-popup__meta-label">Fecha</span>
+            <span>${formattedTime}</span>
+          </div>
+        </div>
+
+        ${tags.length ? `
+        <div class="collab-detail-popup__section">
+          <span class="collab-detail-popup__section-label">Etiquetas</span>
+          <div class="collab-tcard__tags">${tags.map(t => `<span class="collab-tcard__tag">${this._esc(t)}</span>`).join('')}</div>
+        </div>` : ''}
+
+        ${urls.length ? `
+        <div class="collab-detail-popup__section">
+          <span class="collab-detail-popup__section-label">${IC.link} Enlaces</span>
+          ${this._buildLinkPreviews(urls)}
+        </div>` : ''}
+
+        ${images.length ? `
+        <div class="collab-detail-popup__section">
+          <span class="collab-detail-popup__section-label">${IC.image} Imagenes</span>
+          <div class="collab-detail-popup__gallery">
+            ${images.map((img, i) => `
+              <div class="collab-detail-popup__gallery-thumb" data-detail-img="${img}" data-index="${i}">
+                <img src="${img}" alt="Ref ${i + 1}" loading="lazy" />
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+
+        ${sa ? `
+        <div class="collab-detail-popup__actions">
+          <button class="collab-btn collab-btn--ghost" data-detail-edit="${card.id}">${IC.edit} Editar</button>
+          <button class="collab-btn collab-btn--danger" data-detail-delete="${card.id}">${IC.trash} Eliminar</button>
+        </div>` : ''}
+      </div>
+    </div>`;
+
+    // Attach detail popup listeners
+    overlay.querySelector('#collab-detail-close')?.addEventListener('click', () => this._closeModal());
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) this._closeModal(); });
+
+    // Status toggle in detail popup
+    const statusBtn = overlay.querySelector('[data-detail-status-id]');
+    if (statusBtn) {
+      statusBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const menu = overlay.querySelector(`#detail-status-menu-${card.id}`);
+        if (menu) menu.classList.toggle('collab-tcard__status-menu--open');
+      });
+    }
+
+    // Status change options in detail popup
+    overlay.querySelectorAll('[data-detail-change-id]').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const newStatus = opt.dataset.status;
+        this._handleStatusChange(card.id, newStatus);
+        const menu = overlay.querySelector(`#detail-status-menu-${card.id}`);
+        if (menu) menu.classList.remove('collab-tcard__status-menu--open');
+        // Refresh popup after status change
+        setTimeout(() => {
+          const updatedCard = this._requests.find(r => r.id === card.id);
+          if (updatedCard) this._showDetailPopup(updatedCard);
+        }, 500);
+      });
+    });
+
+    // Image click -> lightbox
+    overlay.querySelectorAll('[data-detail-img]').forEach(thumb => {
+      thumb.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const fullUrl = thumb.dataset.detailImg;
+        if (fullUrl) this._showLightbox(fullUrl);
+      });
+    });
+
+    // Edit button in detail popup
+    const editBtn = overlay.querySelector(`[data-detail-edit="${card.id}"]`);
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        this._closeModal();
+        setTimeout(() => this._showRequestModal(card), 100);
+      });
+    }
+
+    // Delete button in detail popup
+    const deleteBtn = overlay.querySelector(`[data-detail-delete="${card.id}"]`);
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Eliminar esta solicitud?')) return;
+        try {
+          await deleteDoc(doc(db, 'solicitudes', card.id));
+          this._closeModal();
+          document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Solicitud eliminada', type: 'info' } }));
+        } catch (err) {
+          console.error('[CollabPanel] Delete error:', err);
+        }
+      });
+    }
   }
 
   /* ═══════════════════════════════════════
@@ -355,14 +588,6 @@ export class CollaboratorPanel {
 
   _getDomain(url) {
     try { return new URL(url).hostname.replace('www.', ''); } catch { return url; }
-  }
-
-  _linkifyText(text) {
-    if (!text) return '';
-    return text.replace(
-      /(https?:\/\/[^\s<>"']+)/gi,
-      '<a href="$1" target="_blank" rel="noopener" class="collab-tcard__inline-link">$1</a>'
-    );
   }
 
   _buildLinkPreviews(urls) {
@@ -474,6 +699,19 @@ export class CollaboratorPanel {
     // Status filter
     if (this._statusFilter !== 'all') {
       reqs = reqs.filter(r => (r.status || 'inbox') === this._statusFilter);
+    }
+
+    // Business tag filter
+    if (this._bizFilter !== 'all') {
+      reqs = reqs.filter(r => {
+        const cardTags = r.tags || [];
+        return cardTags.includes(this._bizFilter);
+      });
+    }
+
+    // Priority filter
+    if (this._priorityFilter !== 'all') {
+      reqs = reqs.filter(r => (r.priority || 'medium') === this._priorityFilter);
     }
 
     // Search filter
@@ -648,20 +886,33 @@ export class CollaboratorPanel {
       });
     });
 
-    // Filter buttons
-    this.container.querySelectorAll('.collab-filter').forEach(btn => {
+    // Status filter buttons
+    this.container.querySelectorAll('.collab-filter--status').forEach(btn => {
       btn.addEventListener('click', () => {
         this._statusFilter = btn.dataset.filter;
-        // Update active class on filter buttons
-        this.container.querySelectorAll('.collab-filter').forEach(b => b.classList.remove('collab-filter--active'));
+        this.container.querySelectorAll('.collab-filter--status').forEach(b => b.classList.remove('collab-filter--active'));
         btn.classList.add('collab-filter--active');
-        // Re-render timeline and overview only
-        const timeline = this.container.querySelector('#collab-timeline');
-        if (timeline) timeline.outerHTML = this._buildTimeline();
-        const overview = this.container.querySelector('#collab-overview');
-        if (overview) overview.outerHTML = this._buildOverview();
-        // Re-attach listeners for new timeline cards
-        this._attachTimelineCardListeners();
+        this._refreshFilteredView();
+      });
+    });
+
+    // Business filter buttons
+    this.container.querySelectorAll('.collab-filter--biz').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this._bizFilter = btn.dataset.bizFilter;
+        this.container.querySelectorAll('.collab-filter--biz').forEach(b => b.classList.remove('collab-filter--active'));
+        btn.classList.add('collab-filter--active');
+        this._refreshFilteredView();
+      });
+    });
+
+    // Priority filter buttons
+    this.container.querySelectorAll('.collab-filter--pri').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this._priorityFilter = btn.dataset.priFilter;
+        this.container.querySelectorAll('.collab-filter--pri').forEach(b => b.classList.remove('collab-filter--active'));
+        btn.classList.add('collab-filter--active');
+        this._refreshFilteredView();
       });
     });
 
@@ -672,11 +923,7 @@ export class CollaboratorPanel {
         if (this._searchTimeout) clearTimeout(this._searchTimeout);
         this._searchTimeout = setTimeout(() => {
           this._searchQuery = searchInput.value.trim();
-          const timeline = this.container.querySelector('#collab-timeline');
-          if (timeline) timeline.outerHTML = this._buildTimeline();
-          const overview = this.container.querySelector('#collab-overview');
-          if (overview) overview.outerHTML = this._buildOverview();
-          this._attachTimelineCardListeners();
+          this._refreshFilteredView();
         }, 300);
       });
     }
@@ -685,11 +932,37 @@ export class CollaboratorPanel {
     this._attachTimelineCardListeners();
   }
 
+  _refreshFilteredView() {
+    const timeline = this.container.querySelector('#collab-timeline');
+    if (timeline) timeline.outerHTML = this._buildTimeline();
+    const overview = this.container.querySelector('#collab-overview');
+    if (overview) overview.outerHTML = this._buildOverview();
+    this._attachTimelineCardListeners();
+  }
+
   _attachTimelineCardListeners() {
     const sa = this._isSuperAdmin;
 
+    // Card body click -> detail popup
+    this.container.querySelectorAll('.collab-tcard__body[data-detail-id]').forEach(body => {
+      body.addEventListener('click', (e) => {
+        // Don't open detail if clicking on interactive elements
+        if (e.target.closest('.collab-tcard__status-btn') ||
+            e.target.closest('.collab-tcard__status-menu') ||
+            e.target.closest('.collab-tcard__actions') ||
+            e.target.closest('.collab-card__action') ||
+            e.target.closest('a')) {
+          return;
+        }
+        const cardId = body.dataset.detailId;
+        const card = this._requests.find(r => r.id === cardId);
+        if (card) this._showDetailPopup(card);
+      });
+      body.style.cursor = 'pointer';
+    });
+
     // Status buttons: toggle menu
-    this.container.querySelectorAll('.collab-tcard__status-btn').forEach(btn => {
+    this.container.querySelectorAll('.collab-tcard__status-btn[data-id]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const cardId = btn.dataset.id;
@@ -704,7 +977,7 @@ export class CollaboratorPanel {
     });
 
     // Status menu options
-    this.container.querySelectorAll('.collab-tcard__status-option').forEach(opt => {
+    this.container.querySelectorAll('.collab-tcard__status-option[data-id]').forEach(opt => {
       opt.addEventListener('click', (e) => {
         e.stopPropagation();
         const cardId = opt.dataset.id;
@@ -713,15 +986,6 @@ export class CollaboratorPanel {
         // Close menu
         const menu = this.container.querySelector(`#status-menu-${cardId}`);
         if (menu) menu.classList.remove('collab-tcard__status-menu--open');
-      });
-    });
-
-    // Image gallery: lightbox on click
-    this.container.querySelectorAll('.collab-img-thumb').forEach(thumb => {
-      thumb.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const fullUrl = thumb.dataset.full;
-        if (fullUrl) this._showLightbox(fullUrl);
       });
     });
 
