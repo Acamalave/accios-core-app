@@ -4384,10 +4384,40 @@
   font-weight: 500;
 }
 
-/* ── Mobile responsive for KPI ── */
+/* ── Mobile responsive for KPI + Client Cards ── */
 @media (max-width: 768px) {
-  .biz-kpi { padding: 14px 16px 12px; border-radius: 14px; }
+  /* Panels: consistent full-width padding */
+  .biz-dash__panel {
+    padding: 16px;
+  }
+  .biz-dash__clients-area {
+    padding: 16px;
+  }
+
+  /* KPI cards: full width */
+  .biz-kpi {
+    padding: 14px 16px 12px;
+    border-radius: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+  }
   .biz-kpi__value { font-size: 1.4rem; }
+
+  /* Client cards: full width, matching KPI */
+  .biz-client__card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 16px 12px;
+    border-radius: 14px;
+  }
+
+  /* Credential folder: full width centered */
+  .biz-cred__folder {
+    max-width: 100%;
+  }
+
+  /* Detail panel: mobile friendly */
   .biz-kpi-detail__inner { padding: 22px 18px; max-width: 100%; border-radius: 16px; }
   .biz-kpi-detail__mkt-summary { grid-template-columns: 1fr 1fr; gap: 6px; }
   .biz-kpi-detail__methods { grid-template-columns: 1fr; }
