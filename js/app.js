@@ -2,7 +2,7 @@ import { Toast } from './components/Toast.js';
 import router from './router.js';
 import userAuth from './services/userAuth.js';
 import { db, doc, onSnapshot } from './services/firebase.js';
-import notificationSystem from './components/NotificationSystem.js?v=137';
+import notificationSystem from './components/NotificationSystem.js?v=138';
 import behaviorService from './services/behaviorService.js';
 import liveSessionService from './services/liveSessionService.js';
 
@@ -181,7 +181,7 @@ class App {
       }
 
       case 'home': {
-        const { Home } = await import('./pages/Home.js?v=137');
+        const { Home } = await import('./pages/Home.js?v=138');
         pageInstance = new Home(this.content, this.currentUser);
         break;
       }
@@ -235,25 +235,25 @@ class App {
       }
 
       case 'collaborators': {
-        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=137');
+        const { CollaboratorPanel } = await import('./pages/CollaboratorPanel.js?v=138');
         pageInstance = new CollaboratorPanel(this.content, this.currentUser, route.sub);
         break;
       }
 
       case 'command-center': {
-        const { CommandCenter } = await import('./pages/CommandCenter.js?v=137');
+        const { CommandCenter } = await import('./pages/CommandCenter.js?v=138');
         pageInstance = new CommandCenter(this.content, this.currentUser, route.sub);
         break;
       }
 
       case 'biz-dashboard': {
-        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=137');
+        const { BusinessDashboard } = await import('./pages/BusinessDashboard.js?v=138');
         pageInstance = new BusinessDashboard(this.content, this.currentUser, route.sub);
         break;
       }
 
       default: {
-        const { Home } = await import('./pages/Home.js?v=137');
+        const { Home } = await import('./pages/Home.js?v=138');
         pageInstance = new Home(this.content, this.currentUser);
         break;
       }

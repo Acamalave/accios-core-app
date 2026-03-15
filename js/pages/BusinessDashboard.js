@@ -2,7 +2,7 @@ import { apiUrl } from '../services/apiConfig.js';
 import userAuth from '../services/userAuth.js';
 import { bizIncludes, bizMatch, normBiz } from '../services/bizUtils.js';
 import {
-  db, collection, getDocs, query, where, addDoc, onSnapshot, orderBy, limit, Timestamp, doc, deleteDoc
+  db, collection, getDocs, query, where, onSnapshot, Timestamp, doc, setDoc
 } from '../services/firebase.js';
 
 /* ── Lucide-style SVG Icons (24x24 stroke-based) ─────────────────── */
@@ -1817,34 +1817,41 @@ export class BusinessDashboard {
     if (this._broadcastUnsub) { this._broadcastUnsub(); this._broadcastUnsub = null; }
 
     const bizNorm = normBiz(this.businessId);
-    // Listen to latest broadcast for this ecosystem
-    const q = query(
-      collection(db, 'ecosystem_broadcasts'),
-      where('bizNorm', '==', bizNorm),
-      orderBy('sentAt', 'desc'),
-      limit(1)
-    );
+    // Single document per ecosystem — no composite index needed
+    const docRef = doc(db, 'ecosystem_broadcasts', bizNorm);
 
     this._broadcastFirstSnapshot = true;
-    this._broadcastUnsub = onSnapshot(q, (snap) => {
-      // Skip the first snapshot (old data on page load)
-      if (this._broadcastFirstSnapshot) {
+    this._lastBroadcastNonce = null;
+
+    this._broadcastUnsub = onSnapshot(docRef, (snap) => {
+      if (!snap.exists()) {
         this._broadcastFirstSnapshot = false;
-        // Store current latest ID to avoid replaying
-        snap.forEach(d => { this._lastBroadcastId = d.id; });
         return;
       }
 
-      snap.docChanges().forEach(change => {
-        if (change.type === 'added' && change.doc.id !== this._lastBroadcastId) {
-          const data = change.doc.data();
-          this._lastBroadcastId = change.doc.id;
-          // Don't show to the sender themselves
-          const myPhone = this.currentUser?.phone;
-          if (data.sentByPhone === myPhone) return;
-          this._displayBroadcast(data.message, data.sentByName || 'Sistema');
-        }
-      });
+      const data = snap.data();
+
+      // First snapshot: just record the current nonce so we don't replay old messages
+      if (this._broadcastFirstSnapshot) {
+        this._broadcastFirstSnapshot = false;
+        this._lastBroadcastNonce = data.nonce || null;
+        return;
+      }
+
+      // Only show if nonce changed (new message) and it's recent (< 30s)
+      if (data.nonce && data.nonce !== this._lastBroadcastNonce) {
+        this._lastBroadcastNonce = data.nonce;
+
+        // Check freshness — don't show messages older than 30s
+        const sentMs = data.sentAt?.toMillis ? data.sentAt.toMillis() : (data.sentAt || 0);
+        if (Date.now() - sentMs > 30000) return;
+
+        // Don't show to the sender
+        const myPhone = this.currentUser?.phone;
+        if (data.sentByPhone === myPhone) return;
+
+        this._displayBroadcast(data.message, data.sentByName || 'Sistema');
+      }
     });
   }
 
@@ -1956,13 +1963,18 @@ export class BusinessDashboard {
     if (sendBtn) sendBtn.disabled = true;
 
     try {
-      await addDoc(collection(db, 'ecosystem_broadcasts'), {
+      const bizNorm = normBiz(this.businessId);
+      const nonce = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+      // Overwrite single doc per ecosystem — triggers onSnapshot for all listeners
+      await setDoc(doc(db, 'ecosystem_broadcasts', bizNorm), {
         businessId: this.businessId,
-        bizNorm: normBiz(this.businessId),
+        bizNorm,
         message,
         sentByPhone: this.currentUser?.phone || '',
         sentByName: this.currentUser?.name || 'Super Admin',
         sentAt: Timestamp.now(),
+        nonce,
       });
 
       // Clear input + show confirmation
