@@ -237,8 +237,13 @@ class NotificationSystem {
           // Incoming video call detection
           const vc = data.videoCall;
           if (vc && vc.status === 'ringing' && vc.initiatedBy !== this._user.phone && !this._pc) {
-            // Show global floating incoming call banner
-            this._showGlobalIncomingCall(chatId, data, vc);
+            // Guard: ignore stale ringing calls (>60s old — likely abandoned)
+            const vcStart = vc.startedAt ? new Date(vc.startedAt).getTime() : 0;
+            const isStale = vcStart > 0 && (Date.now() - vcStart) > 60_000;
+            if (!isStale) {
+              // Show global floating incoming call banner
+              this._showGlobalIncomingCall(chatId, data, vc);
+            }
           }
 
           // If video call ended while global banner is showing, remove it
@@ -693,7 +698,10 @@ class NotificationSystem {
       // Video call state changes
       const vc = data.videoCall;
       if (vc && vc.status === 'ringing' && vc.initiatedBy !== this._user.phone && !this._pc) {
-        this._handleIncomingCall(vc);
+        // Guard: ignore stale ringing calls (>60s old)
+        const vcStart = vc.startedAt ? new Date(vc.startedAt).getTime() : 0;
+        const isStale = vcStart > 0 && (Date.now() - vcStart) > 60_000;
+        if (!isStale) this._handleIncomingCall(vc);
       }
       if (vc && vc.status === 'active' && vc.answer && this._pc && !this._pc._answerSet) {
         // Caller receives answer
