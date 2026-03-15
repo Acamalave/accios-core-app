@@ -139,6 +139,20 @@ export class BusinessDashboard {
     // Resolve business metadata
     this._resolveBizMeta();
 
+    // ─── Onboarding gate: block dashboard until onboarding is complete ───
+    const onbKey = `onb_completed_${this.businessId}`;
+    if (!localStorage.getItem(onbKey)) {
+      // Show full-screen onboarding — no dashboard behind
+      this.container.innerHTML = `
+        <section class="biz-dash biz-onb__gate" style="--biz-color:#F97316; --biz-rgb:249,115,22; --biz-color-dark:#EA580C;">
+        </section>`;
+      // Initialize client businesses (needed for onboarding)
+      this._initClientBusinesses();
+      // Launch onboarding directly (full screen, no overlay needed)
+      this._onbGateLaunch();
+      return;
+    }
+
     // ─── Overview mode for Xazai / Rush Ride ───
     if (BIZ_CONFIG[this.businessId]) {
       this.container.innerHTML = this._buildBusinessOverview();
@@ -160,115 +174,7 @@ export class BusinessDashboard {
     ];
 
     // Client businesses to display as cards
-    this._clientBusinesses = [
-      {
-        id: 'iron-protocol',
-        name: 'IRON PROTOCOL',
-        subtitle: 'Protocolo interno de ML Parts',
-        website: 'ml.parts/iron',
-        photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
-        progress: 0,
-        emphasis: true,
-        iron: true, // special flag for epic styling
-        services: []
-      },
-      {
-        id: 'megalift',
-        name: 'Megalift',
-        subtitle: 'Elevación industrial & logística vertical',
-        website: 'megalifts.com',
-        photo: 'assets/images/Negocios Estephano/Megalift.jpg',
-        progress: 8,
-        services: [
-          { label: 'Auditoría integral del ecosistema digital', done: true },
-          { label: 'Verificación de usuario Meta', done: false },
-          { label: 'Optimización de sitio web — CRO para ventas y alquiler', done: false },
-          { label: 'Programación de CRM', done: false },
-          { label: 'Activación de CRM', done: false },
-          { label: 'Inyección de base de datos', done: false },
-          { label: 'Conexión de Meta Pixel', done: false },
-          { label: 'Pruebas', done: false },
-          { label: 'Pase a producción', done: false },
-          { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
-          { label: 'Despliegue publicitario', done: false },
-          { label: 'Monitoreo continuo', done: false },
-        ]
-      },
-      {
-        id: 'uniparts',
-        name: 'Uniparts',
-        subtitle: 'Distribución de partes',
-        website: 'upandina.com',
-        photo: 'assets/images/Negocios Estephano/Uniparts.png',
-        progress: 1,
-        services: [
-          { label: 'Auditoría integral del ecosistema digital', done: false },
-          { label: 'Verificación de usuario Meta', done: false },
-          { label: 'Optimización de sitio web — CRO para ventas y alquiler', done: false },
-          { label: 'Programación de CRM', done: false },
-          { label: 'Activación de CRM', done: false },
-          { label: 'Inyección de base de datos', done: false },
-          { label: 'Conexión de Meta Pixel', done: false },
-          { label: 'Pruebas', done: false },
-          { label: 'Pase a producción', done: false },
-          { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
-          { label: 'Despliegue publicitario', done: false },
-          { label: 'Monitoreo continuo', done: false },
-        ]
-      },
-      {
-        id: 'grupo-rca',
-        name: 'Grupo RCA',
-        subtitle: 'Grupo empresarial',
-        website: 'Sin página web',
-        photo: 'assets/images/Negocios Estephano/Grupo RCA.png',
-        progress: 8,
-        services: [
-          { label: 'Auditoría integral del ecosistema digital', done: true },
-          { label: 'Verificación de usuario Meta', done: false },
-          { label: 'Creación de sitio web', done: false },
-          { label: 'Programación de CRM', done: false },
-          { label: 'Activación de CRM', done: false },
-          { label: 'Inyección de base de datos', done: false },
-          { label: 'Conexión de Meta Pixel', done: false },
-          { label: 'Pruebas', done: false },
-          { label: 'Pase a producción', done: false },
-          { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
-          { label: 'Despliegue publicitario', done: false },
-          { label: 'Monitoreo continuo', done: false },
-        ]
-      },
-      {
-        id: 'parmonca',
-        name: 'Parmonca',
-        subtitle: 'Soluciones industriales & mantenimiento integral',
-        website: 'Sin página web',
-        photo: 'assets/images/Negocios Estephano/Parmonca.jpg',
-        progress: 1,
-        branches: [
-          { code: 'CR', name: 'Costa Rica', flag: '\uD83C\uDDE8\uD83C\uDDF7' },
-          { code: 'PA', name: 'Panam\u00e1', flag: '\uD83C\uDDF5\uD83C\uDDE6' }
-        ],
-        services: [
-          { label: 'Auditoría integral del ecosistema digital', done: false },
-          { label: 'Verificación de usuario Meta', done: false },
-          { label: 'Creación de sitio web', done: false },
-          { label: 'Programación de CRM', done: false },
-          { label: 'Activación de CRM', done: false },
-          { label: 'Inyección de base de datos', done: false },
-          { label: 'Conexión de Meta Pixel', done: false },
-          { label: 'Pruebas', done: false },
-          { label: 'Pase a producción', done: false },
-          { label: 'Revisión y ajustes', done: false },
-          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
-          { label: 'Despliegue publicitario', done: false },
-          { label: 'Monitoreo continuo', done: false },
-        ]
-      }
-    ];
+    this._initClientBusinesses();
 
     // ─── Fade out intro → assemble dashboard ───
     const intro = this.container.querySelector('.biz-intro');
@@ -2378,6 +2284,154 @@ export class BusinessDashboard {
     return ''; // rendered dynamically via _onbOpen
   }
 
+  _initClientBusinesses() {
+    if (this._clientBusinesses) return; // already initialized
+    this._clientBusinesses = [
+      {
+        id: 'iron-protocol',
+        name: 'IRON PROTOCOL',
+        subtitle: 'Protocolo interno de ML Parts',
+        website: 'ml.parts/iron',
+        photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
+        progress: 0,
+        emphasis: true,
+        iron: true,
+        services: []
+      },
+      {
+        id: 'megalift',
+        name: 'Megalift',
+        subtitle: 'Elevación industrial & logística vertical',
+        website: 'megalifts.com',
+        photo: 'assets/images/Negocios Estephano/Megalift.jpg',
+        progress: 8,
+        services: [
+          { label: 'Auditoría integral del ecosistema digital', done: true },
+          { label: 'Verificación de usuario Meta', done: false },
+          { label: 'Optimización de sitio web — CRO para ventas y alquiler', done: false },
+          { label: 'Programación de CRM', done: false },
+          { label: 'Activación de CRM', done: false },
+          { label: 'Inyección de base de datos', done: false },
+          { label: 'Conexión de Meta Pixel', done: false },
+          { label: 'Pruebas', done: false },
+          { label: 'Pase a producción', done: false },
+          { label: 'Revisión y ajustes', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
+          { label: 'Despliegue publicitario', done: false },
+          { label: 'Monitoreo continuo', done: false },
+        ]
+      },
+      {
+        id: 'uniparts',
+        name: 'Uniparts',
+        subtitle: 'Distribución de partes',
+        website: 'upandina.com',
+        photo: 'assets/images/Negocios Estephano/Uniparts.png',
+        progress: 1,
+        services: [
+          { label: 'Auditoría integral del ecosistema digital', done: false },
+          { label: 'Verificación de usuario Meta', done: false },
+          { label: 'Optimización de sitio web — CRO para ventas y alquiler', done: false },
+          { label: 'Programación de CRM', done: false },
+          { label: 'Activación de CRM', done: false },
+          { label: 'Inyección de base de datos', done: false },
+          { label: 'Conexión de Meta Pixel', done: false },
+          { label: 'Pruebas', done: false },
+          { label: 'Pase a producción', done: false },
+          { label: 'Revisión y ajustes', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
+          { label: 'Despliegue publicitario', done: false },
+          { label: 'Monitoreo continuo', done: false },
+        ]
+      },
+      {
+        id: 'grupo-rca',
+        name: 'Grupo RCA',
+        subtitle: 'Grupo empresarial',
+        website: 'Sin página web',
+        photo: 'assets/images/Negocios Estephano/Grupo RCA.png',
+        progress: 8,
+        services: [
+          { label: 'Auditoría integral del ecosistema digital', done: true },
+          { label: 'Verificación de usuario Meta', done: false },
+          { label: 'Creación de sitio web', done: false },
+          { label: 'Programación de CRM', done: false },
+          { label: 'Activación de CRM', done: false },
+          { label: 'Inyección de base de datos', done: false },
+          { label: 'Conexión de Meta Pixel', done: false },
+          { label: 'Pruebas', done: false },
+          { label: 'Pase a producción', done: false },
+          { label: 'Revisión y ajustes', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
+          { label: 'Despliegue publicitario', done: false },
+          { label: 'Monitoreo continuo', done: false },
+        ]
+      },
+      {
+        id: 'parmonca',
+        name: 'Parmonca',
+        subtitle: 'Soluciones industriales & mantenimiento integral',
+        website: 'Sin página web',
+        photo: 'assets/images/Negocios Estephano/Parmonca.jpg',
+        progress: 1,
+        branches: [
+          { code: 'CR', name: 'Costa Rica', flag: '\uD83C\uDDE8\uD83C\uDDF7' },
+          { code: 'PA', name: 'Panam\u00e1', flag: '\uD83C\uDDF5\uD83C\uDDE6' }
+        ],
+        services: [
+          { label: 'Auditoría integral del ecosistema digital', done: false },
+          { label: 'Verificación de usuario Meta', done: false },
+          { label: 'Creación de sitio web', done: false },
+          { label: 'Programación de CRM', done: false },
+          { label: 'Activación de CRM', done: false },
+          { label: 'Inyección de base de datos', done: false },
+          { label: 'Conexión de Meta Pixel', done: false },
+          { label: 'Pruebas', done: false },
+          { label: 'Pase a producción', done: false },
+          { label: 'Revisión y ajustes', done: false },
+          { label: 'Arquitectura de pauta', done: false, phase: 'Fase 2 — Pauta' },
+          { label: 'Despliegue publicitario', done: false },
+          { label: 'Monitoreo continuo', done: false },
+        ]
+      }
+    ];
+  }
+
+  /* ── Gate mode: full-screen onboarding (no dashboard behind) ─── */
+  _onbGateLaunch() {
+    this._onbGateMode = true;
+
+    // Load saved progress
+    try {
+      const saved = sessionStorage.getItem('onb_data');
+      this._onbData = saved ? JSON.parse(saved) : {};
+    } catch (_) { this._onbData = {}; }
+
+    this._onbCurrentFolder = null;
+    this._onbCurrentBiz = null;
+
+    // Build shell directly into the container (full screen, no overlay)
+    const section = this.container.querySelector('.biz-onb__gate') || this.container;
+    section.innerHTML = `
+      <div class="biz-onb__gate-shell">
+        <canvas class="biz-onb__particles" id="biz-onb-particles"></canvas>
+        <div class="biz-onb__content" id="biz-onb-content"></div>
+      </div>`;
+
+    // Event delegation
+    section.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-onb]');
+      if (btn) this._onbAction(btn.dataset.onb, btn.dataset.onbVal || '');
+    });
+    section.addEventListener('input', (e) => {
+      const el = e.target.closest('.biz-onb__input, .biz-onb__textarea');
+      if (el) this._onbSaveField(el);
+    });
+
+    this._onbInitParticles();
+    this._onbGo('precheck');
+  }
+
   _onbEnsureOverlay() {
     let overlay = document.getElementById('biz-onb-overlay');
     if (overlay) return overlay;
@@ -2478,6 +2532,12 @@ export class BusinessDashboard {
         this._onbGo('folder-form'); // re-render
         break;
       }
+      case 'enter-ecosystem': {
+        // Reload the page to render the full dashboard now that onboarding is complete
+        this._onbStopParticles();
+        this.render();
+        break;
+      }
     }
   }
 
@@ -2498,6 +2558,11 @@ export class BusinessDashboard {
   }
 
   _onbClose() {
+    // In gate mode, don't allow closing — user must complete onboarding
+    if (this._onbGateMode) {
+      this._onbGo('precheck');
+      return;
+    }
     const overlay = document.getElementById('biz-onb-overlay');
     if (overlay) overlay.classList.remove('biz-onb__overlay--show');
     this._onbStopParticles();
@@ -2692,13 +2757,23 @@ export class BusinessDashboard {
             Comenzar
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
-          <button class="biz-onb__pre-skip" data-onb="no">Ahora no</button>
+          ${this._onbGateMode ? '' : '<button class="biz-onb__pre-skip" data-onb="no">Ahora no</button>'}
         </div>
       </div>`;
   }
 
   _onbNoTime() {
     sessionStorage.setItem('onb_returning', '1');
+    const gateMsg = this._onbGateMode
+      ? 'Necesitamos esta información para habilitar tu ecosistema ML Parts. Vuelve cuando tengas unos minutos libres.'
+      : 'Vuelve cuando tengas unos minutos libres.<br/>Tu progreso se guardará automáticamente y podrás retomar exactamente donde lo dejaste.';
+    const gateHint = this._onbGateMode
+      ? 'Tu progreso se guarda automáticamente. Puedes volver a iniciar sesión cuando estés listo.'
+      : 'El botón de onboarding estará esperándote en el centro del ecosistema.';
+    const gateBtn = this._onbGateMode
+      ? `<button class="biz-onb__btn biz-onb__btn--primary" data-onb="yes">Mejor, continuemos →</button>
+         <button class="biz-onb__btn biz-onb__btn--ghost" style="margin-top:8px;" onclick="window.location.hash='#home'">Volver al inicio</button>`
+      : `<button class="biz-onb__btn biz-onb__btn--primary" data-onb="close">Entendido</button>`;
     return `
       <div class="biz-onb__notime">
         <div class="biz-onb__notime-ambient"></div>
@@ -2707,14 +2782,9 @@ export class BusinessDashboard {
           <div class="biz-onb__notime-orb-ring"></div>
         </div>
         <h2 class="biz-onb__notime-title">¡Sin problema!</h2>
-        <p class="biz-onb__notime-text">
-          Vuelve cuando tengas unos minutos libres.<br/>
-          Tu progreso se guardará automáticamente y podrás retomar exactamente donde lo dejaste.
-        </p>
-        <p class="biz-onb__notime-hint">
-          El botón de onboarding estará esperándote en el centro del ecosistema.
-        </p>
-        <button class="biz-onb__btn biz-onb__btn--primary" data-onb="close">Entendido</button>
+        <p class="biz-onb__notime-text">${gateMsg}</p>
+        <p class="biz-onb__notime-hint">${gateHint}</p>
+        ${gateBtn}
       </div>`;
   }
 
@@ -2748,7 +2818,7 @@ export class BusinessDashboard {
 
     return `
       <div class="biz-onb__folders">
-        <button class="biz-onb__x" data-onb="close">${ICONS.xClose}</button>
+        ${this._onbGateMode ? '' : `<button class="biz-onb__x" data-onb="close">${ICONS.xClose}</button>`}
 
         <div class="biz-onb__folders-head">
           <h2 class="biz-onb__folders-title">Tu Ecosistema</h2>
@@ -3102,10 +3172,16 @@ export class BusinessDashboard {
             </svg>
           </div>
         </div>
-        <h2 class="biz-onb__success-title">¡Bóveda Actualizada!</h2>
-        <p class="biz-onb__success-text">Toda la información ha sido almacenada de forma segura y encriptada en tu Bóveda de Credenciales.</p>
-        <p class="biz-onb__success-hint">Puedes acceder y editar estos datos en cualquier momento desde la carpeta de Credenciales.</p>
-        <button class="biz-onb__btn biz-onb__btn--primary" data-onb="close">Cerrar</button>
+        <h2 class="biz-onb__success-title">${this._onbGateMode ? '¡Ecosistema Desbloqueado!' : '¡Bóveda Actualizada!'}</h2>
+        <p class="biz-onb__success-text">${this._onbGateMode
+          ? 'Toda la información ha sido almacenada de forma segura. Tu ecosistema ML Parts está listo.'
+          : 'Toda la información ha sido almacenada de forma segura y encriptada en tu Bóveda de Credenciales.'}</p>
+        <p class="biz-onb__success-hint">${this._onbGateMode
+          ? 'Ahora tienes acceso completo al panel de control de ML Parts.'
+          : 'Puedes acceder y editar estos datos en cualquier momento desde la carpeta de Credenciales.'}</p>
+        <button class="biz-onb__btn biz-onb__btn--primary" data-onb="${this._onbGateMode ? 'enter-ecosystem' : 'close'}">
+          ${this._onbGateMode ? 'Ingresar al Ecosistema →' : 'Cerrar'}
+        </button>
       </div>`;
   }
 
@@ -3219,6 +3295,9 @@ export class BusinessDashboard {
       // Cleanup session
       sessionStorage.removeItem('onb_data');
       sessionStorage.removeItem('onb_returning');
+
+      // Mark onboarding as completed
+      localStorage.setItem(`onb_completed_${this.businessId}`, '1');
 
       document.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Credenciales almacenadas en la Bóveda', type: 'success' } }));
       this._onbGo('success');
