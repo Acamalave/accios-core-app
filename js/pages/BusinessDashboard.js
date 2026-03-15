@@ -160,13 +160,14 @@ export class BusinessDashboard {
     // Client businesses to display as cards
     this._clientBusinesses = [
       {
-        id: 'ml-parts',
-        name: 'ML Parts',
-        subtitle: 'Repuestos industriales & suministro técnico',
-        website: 'www.ml.parts',
-        photo: 'assets/images/Negocios Estephano/Ml Parts.001.jpeg',
-        progress: 1,
+        id: 'iron-protocol',
+        name: 'IRON PROTOCOL',
+        subtitle: 'Protocolo interno de ML Parts',
+        website: 'ml.parts/iron',
+        photo: null,
+        progress: 0,
         emphasis: true,
+        iron: true, // special flag for epic styling
         services: []
       },
       {
@@ -245,6 +246,10 @@ export class BusinessDashboard {
         website: 'Sin página web',
         photo: 'assets/images/Negocios Estephano/Parmonca.jpg',
         progress: 1,
+        branches: [
+          { code: 'CR', name: 'Costa Rica', flag: '\uD83C\uDDE8\uD83C\uDDF7' },
+          { code: 'PA', name: 'Panam\u00e1', flag: '\uD83C\uDDF5\uD83C\uDDE6' }
+        ],
         services: [
           { label: 'Auditoría integral del ecosistema digital', done: false },
           { label: 'Verificación de usuario Meta', done: false },
@@ -406,7 +411,10 @@ export class BusinessDashboard {
         <div class="biz-dash__clients-header">
           <div class="biz-dash__clients-title-row">
             <div class="biz-dash__panel-dot"></div>
-            <h2 class="biz-dash__clients-title">Negocios</h2>
+            <div>
+              <h2 class="biz-dash__clients-title">Negocios</h2>
+              <p class="biz-dash__clients-subtitle">Gestión de Accios Core</p>
+            </div>
           </div>
           <span class="biz-dash__clients-count">${this._clientBusinesses.length}</span>
         </div>
@@ -544,14 +552,18 @@ export class BusinessDashboard {
         <div class="biz-dash__panel-dot"></div>
         <div class="biz-dash__panel-name">${m.name}</div>
       </div>
+      <div class="biz-dash__panel-status">
+        <span class="biz-dash__status-dot biz-dash__status-dot--off"></span>
+        Datos en tiempo real &middot; Sin datos &middot; Conexión de datos reales no disponible
+      </div>
 
-      <!-- 1. Facturación Global -->
+      <!-- 1. Facturación -->
       <div class="biz-kpi" data-kpi="billing">
         <div class="biz-kpi__header">
           <div class="biz-kpi__icon">${ICONS.dollarSign}</div>
           <div class="biz-kpi__titles">
-            <div class="biz-kpi__label">Facturación Global</div>
-            <div class="biz-kpi__sub">Total facturado en todas las empresas</div>
+            <div class="biz-kpi__label">Facturación</div>
+            <div class="biz-kpi__sub">Total facturado en ML Parts</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="billing">?</button>
         </div>
@@ -565,7 +577,7 @@ export class BusinessDashboard {
           <div class="biz-kpi__icon">${ICONS.trendingUp}</div>
           <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Marketing ROI</div>
-            <div class="biz-kpi__sub">Retorno sobre inversión publicitaria</div>
+            <div class="biz-kpi__sub">Retorno publicitario de ML Parts</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="marketing">?</button>
         </div>
@@ -590,7 +602,7 @@ export class BusinessDashboard {
           <div class="biz-kpi__icon">${ICONS.package}</div>
           <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Cotizaciones</div>
-            <div class="biz-kpi__sub">Enviadas vs cerradas este mes</div>
+            <div class="biz-kpi__sub">Cotizaciones de ML Parts este mes</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="quotes">?</button>
         </div>
@@ -630,7 +642,7 @@ export class BusinessDashboard {
           <div class="biz-kpi__icon">${ICONS.users}</div>
           <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Top Vendedor</div>
-            <div class="biz-kpi__sub">Ejecutivo con más cierres por compañía</div>
+            <div class="biz-kpi__sub">Mejor ejecutivo de ML Parts</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="sellers">?</button>
         </div>
@@ -653,7 +665,7 @@ export class BusinessDashboard {
           <div class="biz-kpi__icon">${ICONS.server}</div>
           <div class="biz-kpi__titles">
             <div class="biz-kpi__label">Inventario</div>
-            <div class="biz-kpi__sub">Productos que requieren revisión</div>
+            <div class="biz-kpi__sub">Inventario de ML Parts en alerta</div>
           </div>
           <button class="biz-kpi__help" data-tooltip="inventory">?</button>
         </div>
@@ -712,8 +724,25 @@ export class BusinessDashboard {
       </div>`;
     }).join('');
 
+    // Branches (e.g. Parmonca CR / PA)
+    const branchesHTML = biz.branches ? `
+      <div class="biz-client__branches">
+        ${biz.branches.map(b => `
+          <div class="biz-client__branch">
+            <span class="biz-client__branch-flag">${b.flag}</span>
+            <span class="biz-client__branch-code">${b.code}</span>
+            <span class="biz-client__branch-name">${b.name}</span>
+          </div>`).join('')}
+      </div>` : '';
+
+    // Card modifier classes
+    const modifiers = [
+      biz.emphasis ? 'biz-client__card--emphasis' : '',
+      biz.iron ? 'biz-client__card--iron' : '',
+    ].filter(Boolean).join(' ');
+
     return `
-      <div class="biz-client__card${biz.emphasis ? ' biz-client__card--emphasis' : ''}" data-client-id="${biz.id}" style="animation-delay: ${index * 0.08}s;">
+      <div class="biz-client__card${modifiers ? ' ' + modifiers : ''}" data-client-id="${biz.id}" style="animation-delay: ${index * 0.08}s;">
         <!-- Card Header -->
         <div class="biz-client__header">
           <div class="biz-client__avatar">
@@ -724,6 +753,8 @@ export class BusinessDashboard {
             <p class="biz-client__subtitle">${biz.subtitle}</p>
           </div>
         </div>
+
+        ${branchesHTML}
 
         <!-- Website -->
         <div class="biz-client__website">
@@ -960,11 +991,11 @@ export class BusinessDashboard {
 
   _attachKpiListeners() {
     const TOOLTIPS = {
-      billing: 'Muestra el total facturado por todas las empresas del ecosistema. Incluye todas las formas de pago: transferencias bancarias, pagos con tarjeta en línea, efectivo y otros métodos.',
-      marketing: 'ROI (Retorno sobre Inversión) mide cuánto dinero generas por cada dólar invertido en publicidad. Un ROI de 300% significa que por cada $1 invertido, generaste $3 en ventas.',
-      quotes: 'Compara las cotizaciones enviadas a clientes contra las que se convirtieron en ventas reales. La tasa de cierre indica qué tan efectivo es el equipo comercial.',
-      sellers: 'Muestra el ejecutivo o vendedor con mejor desempeño por cada empresa. Se mide por cantidad de negocios cerrados y monto total vendido.',
-      inventory: 'Productos del inventario cuyo stock está por debajo del mínimo recomendado. Requieren reposición para evitar quiebres de stock.',
+      billing: 'Muestra el total facturado por ML Parts. Incluye todas las formas de pago: transferencias bancarias, pagos con tarjeta en línea, efectivo y otros métodos.',
+      marketing: 'ROI (Retorno sobre Inversión) de ML Parts. Mide cuánto dinero genera ML Parts por cada dólar invertido en publicidad.',
+      quotes: 'Compara las cotizaciones enviadas por ML Parts contra las que se convirtieron en ventas reales. La tasa de cierre indica la efectividad comercial.',
+      sellers: 'Muestra el ejecutivo o vendedor con mejor desempeño en ML Parts. Se mide por cantidad de negocios cerrados y monto total vendido.',
+      inventory: 'Productos del inventario de ML Parts cuyo stock está por debajo del mínimo recomendado. Requieren reposición para evitar quiebres de stock.',
     };
 
     // Help tooltips (? buttons)
