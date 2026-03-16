@@ -1670,13 +1670,63 @@ export class BusinessDashboard {
       </div>` : '';
 
     // KPI grid HTML
-    const kpiHTML = kpis.map((k, i) => `
+    const kpiHTML = kpis.map((k, i) => {
+      // First KPI (Ventas) for Xazai → double-wide with payment method breakdown
+      if (i === 0 && k.accent && this.businessId === 'xazai') {
+        const pm = biz.paymentMethods || {};
+        const METHOD_CFG = {
+          paguelofacil: { label: 'PagueloFacil', color: '#a855f7', icon: '💳' },
+          nfc:          { label: 'NFC',          color: '#60a5fa', icon: '📱' },
+          efectivo:     { label: 'Efectivo',     color: '#34d399', icon: '💵' },
+          transferencia:{ label: 'Transferencia',color: '#fb923c', icon: '🏦' },
+          otro:         { label: 'Otro',         color: '#9ca3af', icon: '📋' },
+        };
+        const totalRev = Object.values(pm).reduce((s, v) => s + v, 0) || 1;
+        const methodRows = Object.entries(pm)
+          .sort(([,a],[,b]) => b - a)
+          .map(([method, amount]) => {
+            const cfg = METHOD_CFG[method] || METHOD_CFG.otro;
+            const pct = Math.round((amount / totalRev) * 100);
+            return `
+              <div class="biz-overview__pm-row">
+                <span class="biz-overview__pm-icon">${cfg.icon}</span>
+                <span class="biz-overview__pm-name">${cfg.label}</span>
+                <div class="biz-overview__pm-bar-track">
+                  <div class="biz-overview__pm-bar-fill" style="width:${pct}%;background:${cfg.color}"></div>
+                </div>
+                <span class="biz-overview__pm-amt">${fmtMoney(amount)}</span>
+                <span class="biz-overview__pm-pct">${pct}%</span>
+              </div>`;
+          }).join('');
+
+        const noData = Object.keys(pm).length === 0;
+
+        return `
+          <div class="biz-overview__kpi biz-overview__kpi--accent biz-overview__kpi--wide biz-overview__card--assemble" style="--i:1">
+            <div class="biz-overview__kpi-main">
+              <div class="biz-overview__kpi-icon">${k.icon}</div>
+              <div class="biz-overview__kpi-value">${k.value}</div>
+              <div class="biz-overview__kpi-label">${k.label}</div>
+              <div class="biz-overview__kpi-sub">${k.sub}</div>
+            </div>
+            <div class="biz-overview__pm-breakdown">
+              <div class="biz-overview__pm-head">Métodos de Pago</div>
+              ${noData
+                ? '<div class="biz-overview__pm-empty">Sin datos de métodos de pago</div>'
+                : `<div class="biz-overview__pm-rows">${methodRows}</div>`
+              }
+            </div>
+          </div>`;
+      }
+
+      return `
       <div class="biz-overview__kpi${k.accent ? ' biz-overview__kpi--accent' : ''} biz-overview__card--assemble" style="--i:${i < 4 ? i + 1 : i + 1}">
         <div class="biz-overview__kpi-icon">${k.icon}</div>
         <div class="biz-overview__kpi-value">${k.value}</div>
         <div class="biz-overview__kpi-label">${k.label}</div>
         <div class="biz-overview__kpi-sub">${k.sub}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     return `
     <section class="biz-overview" style="--biz-color:${cfg.color}; --biz-rgb:${cfg.colorRgb};">

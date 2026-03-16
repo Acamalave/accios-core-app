@@ -362,9 +362,13 @@ async function fetchXazaiData(db, range, startDate, endDate) {
   const filteredOrders = filterDocsByDate(ordersSnap.docs, startDate, endDate);
   const filteredSales = filterDocsByDate(salesSnap.docs, startDate, endDate);
 
+  const paymentMethods = {};
   const revenue = filteredSales.reduce((sum, d) => {
     const data = d.data();
-    sum += (data.total || data.amount || 0);
+    const amt = data.total || data.amount || 0;
+    const method = (data.paymentMethod || data.metodo_pago || data.payment_method || 'otro').toLowerCase();
+    paymentMethods[method] = (paymentMethods[method] || 0) + amt;
+    sum += amt;
     return sum;
   }, 0);
 
@@ -421,6 +425,7 @@ async function fetchXazaiData(db, range, startDate, endDate) {
     icon: 'restaurant',
     users: custSnap.size,
     revenue: Math.round(revenue * 100) / 100,
+    paymentMethods,
     staff,
     monthlyTrend, // ← Real monthly aggregation for trend chart
     collections: {
