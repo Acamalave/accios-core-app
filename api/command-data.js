@@ -451,15 +451,22 @@ async function fetchXazaiData(db, range, startDate, endDate) {
   const filteredExpenses = filterDocsByDate(expSnap.docs || [], startDate, endDate);
   const expenses = filteredExpenses.map(d => {
     const data = d.data();
+    // Find image field: check all string fields that look like URLs or storage refs
+    let photoUrl = data.facturaUrl || data.invoiceUrl || data.receipt || data.foto
+      || data.imagen || data.image || data.imageUrl || data.photoUrl || data.photo
+      || data.comprobante || data.recibo || data.factura || data.adjunto || data.attachment || null;
+    // If it's a string that looks like a URL, keep it; otherwise null
+    if (photoUrl && typeof photoUrl === 'string' && !photoUrl.startsWith('http')) photoUrl = null;
     return {
       id: d.id,
-      description: data.descripcion || data.description || data.concepto || 'Gasto',
-      amount: data.monto || data.amount || data.total || 0,
-      category: data.categoria || data.category || 'General',
+      description: data.descripcion || data.description || data.concepto || data.nombre || data.name || 'Gasto',
+      amount: data.monto || data.amount || data.total || data.valor || data.precio || 0,
+      category: data.categoria || data.category || data.tipo || 'General',
       date: (getDocDate(data) || new Date()).toISOString(),
-      invoiceUrl: data.facturaUrl || data.invoiceUrl || data.receipt || data.foto || null,
-      vendor: data.proveedor || data.vendor || '',
+      invoiceUrl: photoUrl,
+      vendor: data.proveedor || data.vendor || data.supplier || '',
       status: data.estado || data.status || 'pagado',
+      _rawKeys: Object.keys(data), // temporary debug
     };
   }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
