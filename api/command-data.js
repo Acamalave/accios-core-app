@@ -451,12 +451,15 @@ async function fetchXazaiData(db, range, startDate, endDate) {
   const filteredExpenses = filterDocsByDate(expSnap.docs || [], startDate, endDate);
   const expenses = filteredExpenses.map(d => {
     const data = d.data();
-    // Find image field: check all string fields that look like URLs or storage refs
+    // Photo: check URL fields first, then base64
     let photoUrl = data.facturaUrl || data.invoiceUrl || data.receipt || data.foto
-      || data.imagen || data.image || data.imageUrl || data.photoUrl || data.photo
-      || data.comprobante || data.recibo || data.factura || data.adjunto || data.attachment || null;
-    // If it's a string that looks like a URL, keep it; otherwise null
-    if (photoUrl && typeof photoUrl === 'string' && !photoUrl.startsWith('http')) photoUrl = null;
+      || data.imagen || data.image || data.imageUrl || data.photoUrl || data.photo || null;
+    // Support base64-encoded images stored directly in Firestore
+    const imageBase64 = data.imageBase64 || data.imagenBase64 || data.fotoBase64 || null;
+    if (!photoUrl && imageBase64) {
+      // If it already has data URI prefix keep it, otherwise add it
+      photoUrl = imageBase64.startsWith('data:') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`;
+    }
     return {
       id: d.id,
       description: data.descripcion || data.description || data.concepto || data.nombre || data.name || 'Gasto',
@@ -466,7 +469,6 @@ async function fetchXazaiData(db, range, startDate, endDate) {
       invoiceUrl: photoUrl,
       vendor: data.proveedor || data.vendor || data.supplier || '',
       status: data.estado || data.status || 'pagado',
-      _rawKeys: Object.keys(data), // temporary debug
     };
   }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
