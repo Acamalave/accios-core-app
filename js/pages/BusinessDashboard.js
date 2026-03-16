@@ -1676,6 +1676,7 @@ export class BusinessDashboard {
       </div>` : '';
 
     // KPI grid HTML
+    const fmtMoney = (n) => '$' + (typeof n === 'number' ? n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00');
     const kpiHTML = kpis.map((k, i) => {
       // First KPI (Ventas) for Xazai → double-wide with payment method breakdown
       if (i === 0 && k.accent && this.businessId === 'xazai') {
