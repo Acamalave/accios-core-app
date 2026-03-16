@@ -608,6 +608,11 @@ module.exports = async function handler(req, res) {
       rushData.staff = mock.byBusiness['rush-ride'].staff;
     }
 
+    // Merge mock metaAds into Xazai when not connected yet
+    if (xazaiData && !xazaiData.metaAds) {
+      xazaiData.metaAds = mock.byBusiness['xazai']?.metaAds || null;
+    }
+
     // Use real data where available, mock where not
     const byBusiness = {
       'accios-core': acciosData || mock.byBusiness['accios-core'],
