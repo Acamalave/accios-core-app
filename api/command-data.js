@@ -351,12 +351,14 @@ async function fetchRushData(db, range, startDate, endDate) {
 }
 
 async function fetchXazaiData(db, range, startDate, endDate) {
-  const [custSnap, ordersSnap, salesSnap, invSnap, staffSnap] = await Promise.all([
+  const [custSnap, ordersSnap, salesSnap, invSnap, staffSnap, expSnap, metaSnap] = await Promise.all([
     db.collection('customers').get(),
     db.collection('orders').get(),
     db.collection('sales').get(),
     db.collection('inventory').get(),
-    db.collection('rrhh_collaborators').get()
+    db.collection('rrhh_collaborators').get(),
+    db.collection('expenses').get().catch(() => ({ docs: [], size: 0 })),
+    db.collection('meta_ads').get().catch(() => ({ docs: [], size: 0 })),
   ]);
 
   const filteredOrders = filterDocsByDate(ordersSnap.docs, startDate, endDate);
@@ -421,6 +423,46 @@ async function fetchXazaiData(db, range, startDate, endDate) {
     };
   });
 
+  // ── Expenses ──
+  const filteredExpenses = filterDocsByDate(expSnap.docs || [], startDate, endDate);
+  const expenses = filteredExpenses.map(d => {
+    const data = d.data();
+    return {
+      id: d.id,
+      description: data.descripcion || data.description || data.concepto || 'Gasto',
+      amount: data.monto || data.amount || data.total || 0,
+      category: data.categoria || data.category || 'General',
+      date: (getDocDate(data) || new Date()).toISOString(),
+      invoiceUrl: data.facturaUrl || data.invoiceUrl || data.receipt || data.foto || null,
+      vendor: data.proveedor || data.vendor || '',
+      status: data.estado || data.status || 'pagado',
+    };
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+
+  // ── Meta Ads ──
+  const metaDocs = (metaSnap.docs || []).map(d => ({ id: d.id, ...d.data() }));
+  const latestMeta = metaDocs.sort((a, b) => {
+    const da = getDocDate(a) || new Date(0);
+    const db2 = getDocDate(b) || new Date(0);
+    return db2 - da;
+  })[0] || null;
+
+  const metaAds = latestMeta ? {
+    spend: latestMeta.spend || latestMeta.gasto || latestMeta.inversion || 0,
+    impressions: latestMeta.impressions || latestMeta.impresiones || latestMeta.alcance_impresiones || 0,
+    reach: latestMeta.reach || latestMeta.alcance || 0,
+    clicks: latestMeta.clicks || latestMeta.clics || 0,
+    ctr: latestMeta.ctr || 0,
+    cpc: latestMeta.cpc || latestMeta.costo_por_clic || 0,
+    cpm: latestMeta.cpm || latestMeta.costo_por_mil || 0,
+    conversions: latestMeta.conversions || latestMeta.conversiones || latestMeta.resultados || 0,
+    costPerResult: latestMeta.costPerResult || latestMeta.costo_por_resultado || 0,
+    campaigns: latestMeta.campaigns || latestMeta.campanas || [],
+    lastUpdated: (getDocDate(latestMeta) || new Date()).toISOString(),
+  } : null;
+
   return {
     name: 'Xazai',
     color: '#8B5CF6',
@@ -429,7 +471,10 @@ async function fetchXazaiData(db, range, startDate, endDate) {
     revenue: Math.round(revenue * 100) / 100,
     paymentMethods,
     staff,
-    monthlyTrend, // ← Real monthly aggregation for trend chart
+    expenses,
+    totalExpenses: Math.round(totalExpenses * 100) / 100,
+    metaAds,
+    monthlyTrend,
     collections: {
       customers: custSnap.size,
       orders: filteredOrders.length,

@@ -1573,14 +1573,14 @@ export class BusinessDashboard {
       const ordersPerClient = customers > 0 ? (orders / customers) : 0;
 
       return [
-        { label: 'Ventas del Período', sub: 'Ingresos generados', value: fmtMoney(revenue), icon: ICONS.dollarSign, accent: true },
-        { label: 'Clientes', sub: 'Personas registradas', value: fmt(customers), icon: ICONS.users },
-        { label: 'Pedidos', sub: `Órdenes en ${rangeDays} días`, value: fmt(orders), icon: ICONS.activity },
-        { label: 'Ticket Promedio', sub: 'Gasto promedio por pedido', value: fmtMoney(avgOrder), icon: ICONS.zap },
-        { label: 'Inventario', sub: 'Productos en stock', value: fmt(inventory), icon: ICONS.package },
-        { label: 'Colaboradores', sub: 'Tu equipo de trabajo', value: fmt(staff), icon: ICONS.users },
-        { label: 'Ventas/Día', sub: 'Promedio diario', value: fmtMoney(revenuePerDay), icon: ICONS.barChart },
-        { label: 'Frecuencia', sub: 'Pedidos por cliente', value: ordersPerClient.toFixed(1) + 'x', icon: ICONS.trendingUp },
+        { label: 'Ventas del Período', sub: 'Ingresos generados', value: fmtMoney(revenue), icon: ICONS.dollarSign, accent: true, tip: 'Dinero total que ha entrado por ventas en el período seleccionado, sin descontar gastos.' },
+        { label: 'Clientes', sub: 'Personas registradas', value: fmt(customers), icon: ICONS.users, tip: 'Cantidad de personas diferentes que han comprado o se han registrado en tu negocio.' },
+        { label: 'Pedidos', sub: `Órdenes en ${rangeDays} días`, value: fmt(orders), icon: ICONS.activity, tip: 'Total de órdenes realizadas en el período. Incluye delivery, para llevar y en local.' },
+        { label: 'Ticket Promedio', sub: 'Gasto promedio por pedido', value: fmtMoney(avgOrder), icon: ICONS.zap, tip: 'En promedio, cuánto gasta cada cliente por visita. Se calcula dividiendo las ventas totales entre el número de pedidos.' },
+        { label: 'Inventario', sub: 'Productos en stock', value: fmt(inventory), icon: ICONS.package, tip: 'Productos diferentes que tienes registrados y disponibles para vender.' },
+        { label: 'Colaboradores', sub: 'Tu equipo de trabajo', value: fmt(staff), icon: ICONS.users, tip: 'Personas que trabajan actualmente en tu negocio, registradas en el sistema.' },
+        { label: 'Ventas/Día', sub: 'Promedio diario', value: fmtMoney(revenuePerDay), icon: ICONS.barChart, tip: 'Si divides las ventas totales entre los días del período, esto es lo que vendes en un día promedio.' },
+        { label: 'Frecuencia', sub: 'Pedidos por cliente', value: ordersPerClient.toFixed(1) + 'x', icon: ICONS.trendingUp, tip: 'Cuántas veces compra cada cliente en promedio. Un número mayor a 1 significa que los clientes vuelven.' },
       ];
     }
 
@@ -1732,9 +1732,14 @@ export class BusinessDashboard {
               <div class="biz-overview__kpi-value">${k.value}</div>
               <div class="biz-overview__kpi-label">${k.label}</div>
               <div class="biz-overview__kpi-sub">${k.sub}</div>
+              ${k.tip ? `<div class="biz-overview__kpi-tip">
+                <span class="biz-overview__kpi-tip-icon">?</span>
+                <div class="biz-overview__kpi-tip-text">${k.tip}</div>
+              </div>` : ''}
             </div>
             <div class="biz-overview__pm-breakdown">
               <div class="biz-overview__pm-head">Por dónde vendemos</div>
+              <div class="biz-overview__pm-head-tip">Desglose de tus ingresos según la plataforma o canal donde se generó la venta</div>
               ${noData
                 ? '<div class="biz-overview__pm-empty">Sin datos de métodos de pago</div>'
                 : `<div class="biz-overview__pm-rows">${methodRows}</div>`
@@ -1749,6 +1754,10 @@ export class BusinessDashboard {
         <div class="biz-overview__kpi-value">${k.value}</div>
         <div class="biz-overview__kpi-label">${k.label}</div>
         <div class="biz-overview__kpi-sub">${k.sub}</div>
+        ${k.tip ? `<div class="biz-overview__kpi-tip">
+          <span class="biz-overview__kpi-tip-icon">?</span>
+          <div class="biz-overview__kpi-tip-text">${k.tip}</div>
+        </div>` : ''}
       </div>`;
     }).join('');
 
@@ -1800,6 +1809,12 @@ export class BusinessDashboard {
         </div>
       </div>
 
+      <!-- Expenses Section -->
+      ${this.businessId === 'xazai' ? this._buildExpensesSection(biz) : ''}
+
+      <!-- Meta Marketing Section -->
+      ${this.businessId === 'xazai' ? this._buildMetaSection(biz) : ''}
+
       <!-- Staff / Colaboradores -->
       ${staffHTML}
 
@@ -1811,6 +1826,168 @@ export class BusinessDashboard {
 
       ${proposalHTML}
     </section>`;
+  }
+
+  _buildExpensesSection(biz) {
+    const expenses = biz.expenses || [];
+    const total = biz.totalExpenses || 0;
+    const fmtMoney = (n) => '$' + (typeof n === 'number' ? n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00');
+
+    // Group by category
+    const cats = {};
+    expenses.forEach(e => {
+      const cat = e.category || 'General';
+      if (!cats[cat]) cats[cat] = { total: 0, count: 0 };
+      cats[cat].total += e.amount;
+      cats[cat].count++;
+    });
+
+    const catIcons = {
+      'Ingredientes': '🥑', 'Insumos': '📦', 'Personal': '👥', 'Servicios': '⚡',
+      'Alquiler': '🏠', 'Marketing': '📣', 'Mantenimiento': '🔧', 'Transporte': '🚚',
+      'General': '📋', 'Impuestos': '🏛️', 'Equipo': '🖥️', 'Tecnología': '💻',
+    };
+
+    const catRows = Object.entries(cats)
+      .sort(([,a], [,b]) => b.total - a.total)
+      .map(([cat, data]) => {
+        const pct = total > 0 ? Math.round((data.total / total) * 100) : 0;
+        return `<div class="biz-overview__exp-cat">
+          <span class="biz-overview__exp-cat-icon">${catIcons[cat] || '📋'}</span>
+          <span class="biz-overview__exp-cat-name">${cat}</span>
+          <div class="biz-overview__exp-cat-bar"><div class="biz-overview__exp-cat-fill" style="width:${pct}%"></div></div>
+          <span class="biz-overview__exp-cat-amt">${fmtMoney(data.total)}</span>
+          <span class="biz-overview__exp-cat-pct">${pct}%</span>
+        </div>`;
+      }).join('');
+
+    const rows = expenses.slice(0, 10).map(e => {
+      const date = new Date(e.date);
+      const dateStr = date.toLocaleDateString('es-PA', { day: 'numeric', month: 'short' });
+      return `<div class="biz-overview__exp-row">
+        <div class="biz-overview__exp-info">
+          <div class="biz-overview__exp-desc">${this._esc(e.description)}</div>
+          <div class="biz-overview__exp-meta">${this._esc(e.vendor || e.category)} · ${dateStr}</div>
+        </div>
+        <div class="biz-overview__exp-amount">${fmtMoney(e.amount)}</div>
+        ${e.invoiceUrl ? `<button class="biz-overview__exp-invoice" data-invoice="${e.invoiceUrl}" title="Ver factura">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="13" r="4"/><line x1="12" y1="3" x2="12" y2="7"/></svg>
+        </button>` : '<span class="biz-overview__exp-no-inv">—</span>'}
+      </div>`;
+    }).join('');
+
+    const profit = (biz.revenue || 0) - total;
+
+    return `
+      <div class="biz-overview__expenses biz-overview__card--assemble" style="--i:6">
+        <div class="biz-overview__section-header">
+          <div class="biz-overview__section-title">💸 Gastos del Período</div>
+          <div class="biz-overview__exp-total">${fmtMoney(total)}</div>
+        </div>
+        <div class="biz-overview__exp-explain">Todo lo que tu negocio ha pagado: proveedores, servicios, personal y más. Incluye solo gastos con factura registrada.</div>
+
+        <div class="biz-overview__exp-summary">
+          <div class="biz-overview__exp-summary-item">
+            <span class="biz-overview__exp-summary-label">Ingresos</span>
+            <span class="biz-overview__exp-summary-val biz-overview__exp-summary-val--green">${fmtMoney(biz.revenue || 0)}</span>
+          </div>
+          <div class="biz-overview__exp-summary-sep">−</div>
+          <div class="biz-overview__exp-summary-item">
+            <span class="biz-overview__exp-summary-label">Gastos</span>
+            <span class="biz-overview__exp-summary-val biz-overview__exp-summary-val--red">${fmtMoney(total)}</span>
+          </div>
+          <div class="biz-overview__exp-summary-sep">=</div>
+          <div class="biz-overview__exp-summary-item">
+            <span class="biz-overview__exp-summary-label">Utilidad</span>
+            <span class="biz-overview__exp-summary-val ${profit >= 0 ? 'biz-overview__exp-summary-val--green' : 'biz-overview__exp-summary-val--red'}">${fmtMoney(profit)}</span>
+          </div>
+        </div>
+
+        ${Object.keys(cats).length ? `
+          <div class="biz-overview__exp-cats-title">¿En qué se gasta?</div>
+          <div class="biz-overview__exp-cats">${catRows}</div>` : ''}
+
+        ${expenses.length > 0 ? `
+          <div class="biz-overview__exp-list-title">Últimos gastos</div>
+          <div class="biz-overview__exp-list">${rows}</div>` : `
+          <div class="biz-overview__exp-empty">No hay gastos registrados en este período. Los gastos aparecerán aquí cuando se carguen facturas al sistema.</div>`}
+      </div>`;
+  }
+
+  _buildMetaSection(biz) {
+    const meta = biz.metaAds;
+    const fmtMoney = (n) => '$' + (typeof n === 'number' ? n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00');
+    const fmtNum = (n) => typeof n === 'number' ? n.toLocaleString('es-PA') : '0';
+
+    if (!meta) {
+      return `
+        <div class="biz-overview__meta biz-overview__card--assemble" style="--i:7">
+          <div class="biz-overview__section-header">
+            <div class="biz-overview__section-title">📣 Marketing · Meta</div>
+          </div>
+          <div class="biz-overview__meta-explain">Aquí verás los resultados de tu publicidad en Instagram y Facebook en tiempo real. Conecta tu cuenta de Meta para comenzar.</div>
+          <div class="biz-overview__meta-empty">
+            <div class="biz-overview__meta-empty-icon">📊</div>
+            <p>Sin datos de Meta Ads conectados</p>
+            <span>Cuando tu cuenta de publicidad esté vinculada, aquí aparecerán: personas alcanzadas, clics, costo por resultado y más.</span>
+          </div>
+        </div>`;
+    }
+
+    const updated = new Date(meta.lastUpdated);
+    const updatedStr = updated.toLocaleDateString('es-PA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+    const metrics = [
+      { label: 'Inversión', value: fmtMoney(meta.spend), tip: 'Dinero total que has gastado en anuncios de Instagram y Facebook.', icon: '💰', color: '#F59E0B' },
+      { label: 'Alcance', value: fmtNum(meta.reach), tip: 'Personas únicas que vieron tu anuncio. Cada persona se cuenta una sola vez.', icon: '👁️', color: '#8B5CF6' },
+      { label: 'Impresiones', value: fmtNum(meta.impressions), tip: 'Total de veces que apareció tu anuncio en pantalla. Una persona puede verlo varias veces.', icon: '📱', color: '#3B82F6' },
+      { label: 'Clics', value: fmtNum(meta.clicks), tip: 'Veces que alguien tocó tu anuncio para saber más o visitar tu página.', icon: '👆', color: '#10B981' },
+      { label: 'CTR', value: (meta.ctr || 0).toFixed(2) + '%', tip: 'De cada 100 personas que ven tu anuncio, cuántas le dan clic. Más alto = más atractivo tu anuncio.', icon: '📈', color: '#EC4899' },
+      { label: 'CPC', value: fmtMoney(meta.cpc), tip: 'Cuánto pagas cada vez que alguien hace clic en tu anuncio. Más bajo = más eficiente.', icon: '🎯', color: '#F97316' },
+      { label: 'CPM', value: fmtMoney(meta.cpm), tip: 'Costo por cada 1,000 veces que se muestra tu anuncio. Mide qué tan barato llegas a tu audiencia.', icon: '📊', color: '#6366F1' },
+      { label: 'Resultados', value: fmtNum(meta.conversions), tip: 'Acciones concretas logradas: mensajes, visitas al perfil, compras, según el objetivo de tu campaña.', icon: '🏆', color: '#22C55E' },
+    ];
+
+    const cpr = meta.costPerResult || (meta.conversions > 0 ? meta.spend / meta.conversions : 0);
+
+    const metricsHTML = metrics.map(m => `
+      <div class="biz-overview__meta-metric">
+        <div class="biz-overview__meta-metric-top">
+          <span class="biz-overview__meta-metric-icon" style="color:${m.color}">${m.icon}</span>
+          <span class="biz-overview__meta-metric-label">${m.label}</span>
+          <span class="biz-overview__kpi-tip-icon biz-overview__meta-tip-trigger" data-tip="${m.tip}">?</span>
+        </div>
+        <div class="biz-overview__meta-metric-val">${m.value}</div>
+        <div class="biz-overview__meta-metric-tip">${m.tip}</div>
+      </div>`).join('');
+
+    return `
+      <div class="biz-overview__meta biz-overview__card--assemble" style="--i:7">
+        <div class="biz-overview__section-header">
+          <div class="biz-overview__section-title">📣 Marketing · Meta</div>
+          <div class="biz-overview__meta-updated">Actualizado: ${updatedStr}</div>
+        </div>
+        <div class="biz-overview__meta-explain">Resultados de tu publicidad en Instagram y Facebook. Cada número tiene una explicación — toca el <span class="biz-overview__kpi-tip-icon" style="display:inline-flex;width:14px;height:14px;font-size:0.45rem;">?</span> para entenderlo.</div>
+
+        <div class="biz-overview__meta-highlight">
+          <div class="biz-overview__meta-highlight-item">
+            <span class="biz-overview__meta-highlight-val">${fmtMoney(meta.spend)}</span>
+            <span class="biz-overview__meta-highlight-label">Invertido</span>
+          </div>
+          <div class="biz-overview__meta-highlight-sep">→</div>
+          <div class="biz-overview__meta-highlight-item">
+            <span class="biz-overview__meta-highlight-val">${fmtNum(meta.conversions)}</span>
+            <span class="biz-overview__meta-highlight-label">Resultados</span>
+          </div>
+          <div class="biz-overview__meta-highlight-sep">→</div>
+          <div class="biz-overview__meta-highlight-item">
+            <span class="biz-overview__meta-highlight-val">${fmtMoney(cpr)}</span>
+            <span class="biz-overview__meta-highlight-label">Costo por resultado</span>
+          </div>
+        </div>
+
+        <div class="biz-overview__meta-grid">${metricsHTML}</div>
+      </div>`;
   }
 
   _buildStaffSection(staff, cfg) {
@@ -1971,8 +2148,39 @@ export class BusinessDashboard {
       });
     }
 
-    // Load evidence inbox
-    this._loadEvidenceInbox();
+    // Invoice photo viewer
+    this.container.querySelectorAll('.biz-overview__exp-invoice').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = btn.dataset.invoice;
+        if (!url) return;
+        const modal = document.createElement('div');
+        modal.className = 'biz-overview__invoice-modal';
+        modal.innerHTML = `
+          <div class="biz-overview__invoice-backdrop"></div>
+          <div class="biz-overview__invoice-content">
+            <button class="biz-overview__invoice-close">✕</button>
+            <img src="${url}" alt="Factura" class="biz-overview__invoice-img" />
+          </div>`;
+        document.body.appendChild(modal);
+        requestAnimationFrame(() => modal.classList.add('biz-overview__invoice-modal--show'));
+        modal.querySelector('.biz-overview__invoice-backdrop').addEventListener('click', () => {
+          modal.classList.remove('biz-overview__invoice-modal--show');
+          setTimeout(() => modal.remove(), 300);
+        });
+        modal.querySelector('.biz-overview__invoice-close').addEventListener('click', () => {
+          modal.classList.remove('biz-overview__invoice-modal--show');
+          setTimeout(() => modal.remove(), 300);
+        });
+      });
+    });
+
+    // Meta tip toggles
+    this.container.querySelectorAll('.biz-overview__meta-metric').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('biz-overview__meta-metric--expanded');
+      });
+    });
   }
 
   async _loadEvidenceInbox() {
