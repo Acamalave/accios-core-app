@@ -1701,14 +1701,16 @@ export class BusinessDashboard {
           .map(ch => {
             const pct = Math.round((ch.amount / totalRev) * 100);
             return `
-              <div class="biz-overview__pm-row">
-                <span class="biz-overview__pm-icon">${ch.icon}</span>
-                <span class="biz-overview__pm-name">${ch.label}</span>
-                <div class="biz-overview__pm-bar-track">
-                  <div class="biz-overview__pm-bar-fill" style="width:${pct}%;background:${ch.color}"></div>
+              <div class="biz-overview__ch">
+                <div class="biz-overview__ch-top">
+                  <span class="biz-overview__ch-icon">${ch.icon}</span>
+                  <span class="biz-overview__ch-name">${ch.label}</span>
+                  <span class="biz-overview__ch-amt">${fmtMoney(ch.amount)}</span>
                 </div>
-                <span class="biz-overview__pm-amt">${fmtMoney(ch.amount)}</span>
-                <span class="biz-overview__pm-pct">${pct}%</span>
+                <div class="biz-overview__ch-bar">
+                  <div class="biz-overview__ch-bar-fill" style="width:${pct}%;background:${ch.color}"></div>
+                </div>
+                <span class="biz-overview__ch-pct">${pct}%</span>
               </div>`;
           }).join('');
 
