@@ -2335,6 +2335,13 @@
   background: rgba(var(--biz-rgb),0.2);
   transform: scale(1.05);
 }
+.biz-overview__exp-arrow {
+  font-size: 0.7rem; color: rgba(255,255,255,0.15);
+  flex-shrink: 0; transition: transform 200ms ease;
+}
+.biz-overview__exp-row:hover .biz-overview__exp-arrow {
+  transform: translateX(3px); color: var(--biz-color);
+}
 .biz-overview__exp-no-inv {
   font-size: 0.6rem; color: rgba(255,255,255,0.1); width: 30px; text-align: center;
 }
@@ -2342,6 +2349,76 @@
   font-family: var(--dash-font); font-size: 0.62rem;
   color: rgba(255,255,255,0.2); line-height: 1.6;
   text-align: center; padding: 20px 0;
+}
+
+/* Expense Detail Popup */
+.biz-overview__exp-detail {
+  position: relative; z-index: 1;
+  width: 420px; max-width: 92vw; max-height: 90vh;
+  background: rgba(20,20,30,0.97);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  padding: 28px;
+}
+.biz-overview__exp-detail-header {
+  text-align: center; margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.biz-overview__exp-detail-amount {
+  font-family: var(--dash-font); font-size: 2rem; font-weight: 800;
+  letter-spacing: -0.03em; color: #F87171;
+  margin-bottom: 6px;
+}
+.biz-overview__exp-detail-desc {
+  font-family: var(--dash-font); font-size: 0.8rem; font-weight: 500;
+  color: rgba(255,255,255,0.6);
+}
+.biz-overview__exp-detail-fields {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 20px;
+}
+.biz-overview__exp-detail-field {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.biz-overview__exp-detail-label {
+  font-family: var(--dash-font); font-size: 0.6rem; font-weight: 500;
+  color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.biz-overview__exp-detail-value {
+  font-family: var(--dash-font); font-size: 0.72rem; font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+.biz-overview__exp-detail-status {
+  padding: 3px 10px; border-radius: 6px;
+  background: rgba(74,222,128,0.1); color: #4ADE80;
+  font-size: 0.58rem; text-transform: capitalize;
+}
+.biz-overview__exp-detail-photo-label {
+  font-family: var(--dash-font); font-size: 0.55rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.25); margin-bottom: 8px;
+}
+.biz-overview__exp-detail-photo {
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.3);
+}
+.biz-overview__exp-detail-photo img {
+  display: block; width: 100%;
+  object-fit: contain; max-height: 400px;
+}
+.biz-overview__exp-detail-no-photo {
+  font-family: var(--dash-font); font-size: 0.62rem;
+  color: rgba(255,255,255,0.15); text-align: center;
+  padding: 20px 0;
+  border: 1px dashed rgba(255,255,255,0.06);
+  border-radius: 12px;
 }
 
 /* Invoice Modal */

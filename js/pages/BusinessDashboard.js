@@ -1861,20 +1861,21 @@ export class BusinessDashboard {
         </div>`;
       }).join('');
 
-    const rows = expenses.slice(0, 10).map(e => {
+    const rows = expenses.slice(0, 10).map((e, idx) => {
       const date = new Date(e.date);
       const dateStr = date.toLocaleDateString('es-PA', { day: 'numeric', month: 'short' });
-      return `<div class="biz-overview__exp-row">
+      return `<div class="biz-overview__exp-row" data-exp-idx="${idx}" style="cursor:pointer;">
         <div class="biz-overview__exp-info">
           <div class="biz-overview__exp-desc">${this._esc(e.description)}</div>
           <div class="biz-overview__exp-meta">${this._esc(e.vendor || e.category)} · ${dateStr}</div>
         </div>
         <div class="biz-overview__exp-amount">${fmtMoney(e.amount)}</div>
-        ${e.invoiceUrl ? `<button class="biz-overview__exp-invoice" data-invoice="${e.invoiceUrl}" title="Ver factura">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="13" r="4"/><line x1="12" y1="3" x2="12" y2="7"/></svg>
-        </button>` : '<span class="biz-overview__exp-no-inv">—</span>'}
+        <span class="biz-overview__exp-arrow">→</span>
       </div>`;
     }).join('');
+
+    // Store expenses data for popup
+    this._expensesList = expenses;
 
     const profit = (biz.revenue || 0) - total;
 
@@ -2148,30 +2149,58 @@ export class BusinessDashboard {
       });
     }
 
-    // Invoice photo viewer
-    this.container.querySelectorAll('.biz-overview__exp-invoice').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const url = btn.dataset.invoice;
-        if (!url) return;
+    // Expense row detail popup
+    const fmtMoney = (n) => '$' + (typeof n === 'number' ? n.toLocaleString('es-PA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00');
+    this.container.querySelectorAll('.biz-overview__exp-row[data-exp-idx]').forEach(row => {
+      row.addEventListener('click', () => {
+        const idx = parseInt(row.dataset.expIdx);
+        const e = this._expensesList?.[idx];
+        if (!e) return;
+        const date = new Date(e.date);
+        const dateStr = date.toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         const modal = document.createElement('div');
         modal.className = 'biz-overview__invoice-modal';
         modal.innerHTML = `
           <div class="biz-overview__invoice-backdrop"></div>
-          <div class="biz-overview__invoice-content">
+          <div class="biz-overview__exp-detail">
             <button class="biz-overview__invoice-close">✕</button>
-            <img src="${url}" alt="Factura" class="biz-overview__invoice-img" />
+            <div class="biz-overview__exp-detail-header">
+              <div class="biz-overview__exp-detail-amount">${fmtMoney(e.amount)}</div>
+              <div class="biz-overview__exp-detail-desc">${this._esc(e.description)}</div>
+            </div>
+            <div class="biz-overview__exp-detail-fields">
+              <div class="biz-overview__exp-detail-field">
+                <span class="biz-overview__exp-detail-label">Categoría</span>
+                <span class="biz-overview__exp-detail-value">${this._esc(e.category || 'General')}</span>
+              </div>
+              ${e.vendor ? `<div class="biz-overview__exp-detail-field">
+                <span class="biz-overview__exp-detail-label">Proveedor</span>
+                <span class="biz-overview__exp-detail-value">${this._esc(e.vendor)}</span>
+              </div>` : ''}
+              <div class="biz-overview__exp-detail-field">
+                <span class="biz-overview__exp-detail-label">Fecha</span>
+                <span class="biz-overview__exp-detail-value">${dateStr}</span>
+              </div>
+              <div class="biz-overview__exp-detail-field">
+                <span class="biz-overview__exp-detail-label">Estado</span>
+                <span class="biz-overview__exp-detail-value biz-overview__exp-detail-status">${this._esc(e.status || 'pagado')}</span>
+              </div>
+            </div>
+            ${e.invoiceUrl ? `
+              <div class="biz-overview__exp-detail-photo-label">Factura / Comprobante</div>
+              <div class="biz-overview__exp-detail-photo">
+                <img src="${e.invoiceUrl}" alt="Factura" />
+              </div>` : `
+              <div class="biz-overview__exp-detail-no-photo">Sin foto de factura adjunta</div>`}
           </div>`;
         document.body.appendChild(modal);
         requestAnimationFrame(() => modal.classList.add('biz-overview__invoice-modal--show'));
-        modal.querySelector('.biz-overview__invoice-backdrop').addEventListener('click', () => {
+        const closeModal = () => {
           modal.classList.remove('biz-overview__invoice-modal--show');
           setTimeout(() => modal.remove(), 300);
-        });
-        modal.querySelector('.biz-overview__invoice-close').addEventListener('click', () => {
-          modal.classList.remove('biz-overview__invoice-modal--show');
-          setTimeout(() => modal.remove(), 300);
-        });
+        };
+        modal.querySelector('.biz-overview__invoice-backdrop').addEventListener('click', closeModal);
+        modal.querySelector('.biz-overview__invoice-close').addEventListener('click', closeModal);
       });
     });
 
