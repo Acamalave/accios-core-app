@@ -1681,41 +1681,33 @@ export class BusinessDashboard {
       // First KPI (Ventas) for Xazai → double-wide with payment method breakdown
       if (i === 0 && k.accent && this.businessId === 'xazai') {
         const pm = biz.paymentMethods || {};
-        const METHOD_CFG = {
-          // Restaurant / delivery platforms
-          pedidosya:    { label: 'PedidosYa',    color: '#FF2B85', icon: '🛵' },
-          uber:         { label: 'Uber Eats',    color: '#06C167', icon: '🚗' },
-          uber_eats:    { label: 'Uber Eats',    color: '#06C167', icon: '🚗' },
-          ubereats:     { label: 'Uber Eats',    color: '#06C167', icon: '🚗' },
-          rappi:        { label: 'Rappi',         color: '#FF441F', icon: '🧡' },
-          didi:         { label: 'Didi Food',     color: '#FF7A00', icon: '🟠' },
-          // Standard payment methods
-          tarjeta:      { label: 'Tarjeta',       color: '#a855f7', icon: '💳' },
-          visa:         { label: 'Visa',           color: '#1A1F71', icon: '💳' },
-          mastercard:   { label: 'Mastercard',     color: '#EB001B', icon: '💳' },
-          efectivo:     { label: 'Efectivo',       color: '#34d399', icon: '💵' },
-          cash:         { label: 'Efectivo',       color: '#34d399', icon: '💵' },
-          transferencia:{ label: 'Transferencia',  color: '#fb923c', icon: '🏦' },
-          yappy:        { label: 'Yappy',          color: '#00D26A', icon: '📲' },
-          nequi:        { label: 'Nequi',          color: '#E6007E', icon: '📲' },
-          paguelofacil: { label: 'PagueloFacil',   color: '#8B5CF6', icon: '💳' },
-          nfc:          { label: 'NFC',             color: '#60a5fa', icon: '📱' },
-          otro:         { label: 'Otro',            color: '#9ca3af', icon: '📋' },
-        };
-        const totalRev = Object.values(pm).reduce((s, v) => s + v, 0) || 1;
-        const methodRows = Object.entries(pm)
-          .sort(([,a],[,b]) => b - a)
-          .map(([method, amount]) => {
-            const cfg = METHOD_CFG[method] || METHOD_CFG.otro;
-            const pct = Math.round((amount / totalRev) * 100);
+        // Group into 3 sales channels: Xazai (in-house), PedidosYa, Uber Eats
+        const UBER_KEYS = ['uber', 'uber_eats', 'ubereats'];
+        const PEDIDOS_KEYS = ['pedidosya'];
+        let xazaiTotal = 0, pedidosTotal = 0, uberTotal = 0;
+        for (const [method, amount] of Object.entries(pm)) {
+          if (PEDIDOS_KEYS.includes(method)) pedidosTotal += amount;
+          else if (UBER_KEYS.includes(method)) uberTotal += amount;
+          else xazaiTotal += amount; // Everything else is in-house Xazai
+        }
+        const channels = [
+          { label: 'Xazai',      color: '#8B5CF6', icon: '🍽️', amount: xazaiTotal },
+          { label: 'PedidosYa',  color: '#FF2B85', icon: '🛵', amount: pedidosTotal },
+          { label: 'Uber Eats',  color: '#06C167', icon: '🚗', amount: uberTotal },
+        ].filter(c => c.amount > 0);
+        const totalRev = channels.reduce((s, c) => s + c.amount, 0) || 1;
+        const methodRows = channels
+          .sort((a, b) => b.amount - a.amount)
+          .map(ch => {
+            const pct = Math.round((ch.amount / totalRev) * 100);
             return `
               <div class="biz-overview__pm-row">
-                <span class="biz-overview__pm-icon">${cfg.icon}</span>
-                <span class="biz-overview__pm-name">${cfg.label}</span>
+                <span class="biz-overview__pm-icon">${ch.icon}</span>
+                <span class="biz-overview__pm-name">${ch.label}</span>
                 <div class="biz-overview__pm-bar-track">
-                  <div class="biz-overview__pm-bar-fill" style="width:${pct}%;background:${cfg.color}"></div>
+                  <div class="biz-overview__pm-bar-fill" style="width:${pct}%;background:${ch.color}"></div>
                 </div>
-                <span class="biz-overview__pm-amt">${fmtMoney(amount)}</span>
+                <span class="biz-overview__pm-amt">${fmtMoney(ch.amount)}</span>
                 <span class="biz-overview__pm-pct">${pct}%</span>
               </div>`;
           }).join('');
@@ -1731,7 +1723,7 @@ export class BusinessDashboard {
               <div class="biz-overview__kpi-sub">${k.sub}</div>
             </div>
             <div class="biz-overview__pm-breakdown">
-              <div class="biz-overview__pm-head">Métodos de Pago</div>
+              <div class="biz-overview__pm-head">Por dónde vendemos</div>
               ${noData
                 ? '<div class="biz-overview__pm-empty">Sin datos de métodos de pago</div>'
                 : `<div class="biz-overview__pm-rows">${methodRows}</div>`
