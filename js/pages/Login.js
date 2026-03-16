@@ -24,11 +24,11 @@ export class Login {
           <div class="login-logo">
             <div class="login-ring"></div>
             <div class="login-ring login-ring--2"></div>
-            <span class="login-icon">AC</span>
+            <img class="login-logo-img" src="assets/images/Accios.001.png" alt="ACCIOS CORE" draggable="false" />
           </div>
           <h1 class="login-title">
-            <span class="gradient-text">ACCIOS</span>
-            <span class="login-title-light">CORE</span>
+            <span class="login-title-word login-title-word--accent">ACCIOS</span>
+            <span class="login-title-word login-title-word--light">CORE</span>
           </h1>
           <p class="login-subtitle" id="login-subtitle">Ingresa tu numero para continuar</p>
 
