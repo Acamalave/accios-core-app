@@ -13,14 +13,17 @@ export class Login {
     this.userData = null;
     this._bioAvailable = false;
     this._bioRegistered = false;
+    this._particleRAF = null;
   }
 
   render() {
     this.container.innerHTML = `
       <section class="login-page">
+        <canvas id="login-particles" class="login-particles"></canvas>
         <div class="login-content">
           <div class="login-logo">
             <div class="login-ring"></div>
+            <div class="login-ring login-ring--2"></div>
             <span class="login-icon">AC</span>
           </div>
           <h1 class="login-title">
@@ -37,6 +40,7 @@ export class Login {
         </div>
       </section>
     `;
+    this._initParticles();
     this._attachListeners();
   }
 
@@ -49,10 +53,11 @@ export class Login {
           <span class="login-phone-prefix">+507</span>
           <input type="tel" id="login-phone" class="login-input" placeholder="XXXX-XXXX" maxlength="9" autocomplete="tel" inputmode="tel">
         </div>
+        <div class="login-phone-progress"><div class="login-phone-progress-fill" id="login-phone-fill"></div></div>
       </div>
-      <button id="login-submit" class="login-btn">
+      <button id="login-submit" class="login-btn login-btn--glow">
         <span>Continuar</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <svg class="login-btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     `;
   }
@@ -107,9 +112,9 @@ export class Login {
             <span>Protege tu informacion de negocio</span>
           </div>
         </div>
-        <button id="login-create-pin-btn" class="login-btn">
+        <button id="login-create-pin-btn" class="login-btn login-btn--glow">
           <span>Crear mi PIN</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <svg class="login-btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
     `;
@@ -117,11 +122,11 @@ export class Login {
 
   _renderPinStep(isNew = false) {
     const title = isNew ? 'Crea tu PIN de acceso' : 'Ingresa tu PIN';
-    const subtitle = isNew ? 'Elige 4 digitos que puedas recordar' : '';
+    const subtitle = isNew ? 'Elige 4 digitos que puedas recordar' : 'Tu PIN de 4 digitos';
 
     let html = `
       <p class="login-pin-title">${title}</p>
-      ${subtitle ? `<p class="login-pin-subtitle">${subtitle}</p>` : ''}
+      <p class="login-pin-subtitle">${subtitle}</p>
       <div class="login-pin-wrapper">
         <input type="password" id="login-pin-1" class="login-pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
         <input type="password" id="login-pin-2" class="login-pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
@@ -137,7 +142,7 @@ export class Login {
           <input type="password" id="login-pin-c4" class="login-pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
         </div>
       ` : ''}
-      <button id="login-pin-submit" class="login-btn">
+      <button id="login-pin-submit" class="login-btn login-btn--glow" style="display:${isNew ? 'inline-flex' : 'none'}">
         <span>${isNew ? 'Crear PIN' : 'Verificar'}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
       </button>
@@ -160,7 +165,8 @@ export class Login {
   _renderBiometricOffer() {
     return `
       <div class="login-bio-offer">
-        <div class="login-bio-offer-icon">
+        <div class="login-bio-offer-icon" id="login-bio-icon">
+          <canvas id="login-bio-particles" class="login-bio-canvas"></canvas>
           ${FINGERPRINT_LG}
         </div>
         <h3 class="login-bio-offer-title">Acceso rapido</h3>
@@ -189,11 +195,22 @@ export class Login {
 
       phoneInput?.focus();
 
-      // Auto-format phone
+      // Auto-format phone + auto-submit when 8 digits
       phoneInput?.addEventListener('input', (e) => {
         let val = e.target.value.replace(/\D/g, '');
         if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
         e.target.value = val;
+
+        // Update progress bar
+        const digits = val.replace(/\D/g, '').length;
+        const fill = form.querySelector('#login-phone-fill');
+        if (fill) fill.style.width = `${(digits / 8) * 100}%`;
+
+        // Auto-submit when 8 digits reached
+        if (digits === 8) {
+          phoneInput.blur();
+          setTimeout(() => this._handlePhoneSubmit(), 300);
+        }
       });
 
       phoneInput?.addEventListener('keydown', (e) => {
@@ -214,6 +231,7 @@ export class Login {
       this._attachPinListeners();
 
     } else if (this.step === 'biometric-offer') {
+      this._initBioParticles();
       form.querySelector('#login-bio-enable')?.addEventListener('click', () => this._handleBiometricRegister());
       form.querySelector('#login-bio-skip')?.addEventListener('click', () => {
         userAuth.declineBiometric(this.phone);
@@ -226,6 +244,7 @@ export class Login {
   _attachPinListeners() {
     const form = this.container.querySelector('#login-form');
     const pinInputs = form.querySelectorAll('.login-pin-input');
+    const isNew = this.step === 'create-pin';
 
     pinInputs[0]?.focus();
 
@@ -233,15 +252,46 @@ export class Login {
       input.addEventListener('input', (e) => {
         const val = e.target.value.replace(/\D/g, '');
         e.target.value = val;
+
+        // Visual feedback — filled dot animation
+        if (val) {
+          input.classList.add('login-pin-input--filled');
+        } else {
+          input.classList.remove('login-pin-input--filled');
+        }
+
         if (val && idx < pinInputs.length - 1) {
           pinInputs[idx + 1].focus();
         }
+
+        // Auto-submit when last PIN digit entered (verify mode only)
+        if (!isNew && val && idx === 3) {
+          // All 4 verify digits filled?
+          const pin = this._getPinValue('login-pin-');
+          if (pin.length === 4) {
+            input.blur();
+            setTimeout(() => this._handlePinSubmit(), 250);
+          }
+        }
+
+        // For create-pin: auto-submit when last confirm digit entered
+        if (isNew && val && idx === pinInputs.length - 1) {
+          const pin = this._getPinValue('login-pin-');
+          const confirm = this._getPinValue('login-pin-c');
+          if (pin.length === 4 && confirm.length === 4) {
+            input.blur();
+            setTimeout(() => this._handlePinSubmit(), 250);
+          }
+        }
       });
+
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace' && !e.target.value && idx > 0) {
           pinInputs[idx - 1].focus();
+          pinInputs[idx - 1].classList.remove('login-pin-input--filled');
         }
       });
+
       // Paste support for PIN
       input.addEventListener('paste', (e) => {
         e.preventDefault();
@@ -250,6 +300,7 @@ export class Login {
         chars.forEach((ch, i) => {
           if (pinInputs[idx + i]) {
             pinInputs[idx + i].value = ch;
+            pinInputs[idx + i].classList.add('login-pin-input--filled');
           }
         });
         const nextIdx = Math.min(idx + chars.length, pinInputs.length - 1);
@@ -279,20 +330,54 @@ export class Login {
     this._bioRegistered = false;
     const form = this.container.querySelector('#login-form');
     const subtitle = this.container.querySelector('#login-subtitle');
-    form.innerHTML = this._renderPhoneStep();
-    subtitle.textContent = 'Ingresa tu numero para continuar';
-    this._hideError();
-    this._attachListeners();
+    form.style.opacity = '0';
+    form.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      form.innerHTML = this._renderPhoneStep();
+      subtitle.textContent = 'Ingresa tu numero para continuar';
+      this._hideError();
+      this._attachListeners();
+      requestAnimationFrame(() => {
+        form.style.opacity = '1';
+        form.style.transform = 'translateY(0)';
+      });
+    }, 200);
   }
 
   _goToCreatePinStep() {
     this.step = 'create-pin';
     const form = this.container.querySelector('#login-form');
     const subtitle = this.container.querySelector('#login-subtitle');
-    form.innerHTML = this._renderPinStep(true);
-    subtitle.textContent = `Hola ${this.userData?.name || ''}`;
-    this._hideError();
-    this._attachPinListeners();
+    form.style.opacity = '0';
+    form.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      form.innerHTML = this._renderPinStep(true);
+      subtitle.textContent = `Hola ${this.userData?.name || ''}`;
+      this._hideError();
+      this._attachPinListeners();
+      requestAnimationFrame(() => {
+        form.style.opacity = '1';
+        form.style.transform = 'translateY(0)';
+      });
+    }, 200);
+  }
+
+  _transitionTo(stepName, renderFn, subtitleText) {
+    const form = this.container.querySelector('#login-form');
+    const subtitle = this.container.querySelector('#login-subtitle');
+    form.style.opacity = '0';
+    form.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      this.step = stepName;
+      form.innerHTML = renderFn();
+      if (subtitleText !== undefined) subtitle.textContent = subtitleText;
+      this._hideError();
+      this._attachListeners();
+      requestAnimationFrame(() => {
+        form.style.opacity = '1';
+        form.style.transform = 'translateY(0)';
+      });
+    }, 200);
   }
 
   // ─── Handlers ──────────────────────────────────────────
@@ -314,12 +399,7 @@ export class Login {
       this.phone = phone;
 
       if (!result.exists) {
-        this.step = 'denied';
-        const form = this.container.querySelector('#login-form');
-        const subtitle = this.container.querySelector('#login-subtitle');
-        form.innerHTML = this._renderDeniedStep();
-        subtitle.textContent = '';
-        this._attachListeners();
+        this._transitionTo('denied', () => this._renderDeniedStep(), '');
         this._setLoading(false);
         return;
       }
@@ -327,24 +407,13 @@ export class Login {
       this.userData = result.data;
 
       if (!result.data.pinHash) {
-        // First time — show explanation
-        this.step = 'explain-pin';
-        const form = this.container.querySelector('#login-form');
-        const subtitle = this.container.querySelector('#login-subtitle');
-        form.innerHTML = this._renderExplainPinStep();
-        subtitle.textContent = `Hola ${result.data.name || ''}!`;
-        this._attachListeners();
+        this._transitionTo('explain-pin', () => this._renderExplainPinStep(), `Hola ${result.data.name || ''}!`);
       } else {
-        // Has PIN — check biometric before showing PIN step
         this._bioAvailable = this._isMobile() && await userAuth.isBiometricAvailable();
         this._bioRegistered = this._bioAvailable && userAuth.isBiometricEnabled(this.phone);
-
-        this.step = 'pin';
-        const form = this.container.querySelector('#login-form');
-        const subtitle = this.container.querySelector('#login-subtitle');
-        form.innerHTML = this._renderPinStep(false);
-        subtitle.textContent = `Hola ${result.data.name || ''}`;
-        this._attachPinListeners();
+        this._transitionTo('pin', () => this._renderPinStep(false), `Hola ${result.data.name || ''}`);
+        // Re-attach PIN listeners after transition
+        setTimeout(() => this._attachPinListeners(), 250);
       }
     } catch (e) {
       this._showError(e.message || 'Error de conexion');
@@ -374,17 +443,10 @@ export class Login {
 
       try {
         await userAuth.createPin(this.phone, pin);
-
-        // After creating PIN on mobile, offer biometric
         this._bioAvailable = this._isMobile() && await userAuth.isBiometricAvailable();
 
         if (this._bioAvailable) {
-          this.step = 'biometric-offer';
-          const form = this.container.querySelector('#login-form');
-          const subtitle = this.container.querySelector('#login-subtitle');
-          form.innerHTML = this._renderBiometricOffer();
-          subtitle.textContent = `Bienvenido ${this.userData?.name || ''}`;
-          this._attachListeners();
+          this._transitionTo('biometric-offer', () => this._renderBiometricOffer(), `Bienvenido ${this.userData?.name || ''}`);
         } else {
           userAuth.saveSession(this.userData);
           this.onLogin?.(this.userData);
@@ -409,22 +471,27 @@ export class Login {
       try {
         const valid = await userAuth.verifyPin(this.phone, pin);
         if (valid) {
-          // Offer biometric if available, not registered, and not previously declined
-          if (this._bioAvailable && !this._bioRegistered && !userAuth.isBiometricDeclined(this.phone)) {
-            this.step = 'biometric-offer';
-            const form = this.container.querySelector('#login-form');
-            const subtitle = this.container.querySelector('#login-subtitle');
-            form.innerHTML = this._renderBiometricOffer();
-            subtitle.textContent = `Bienvenido ${this.userData?.name || ''}`;
-            this._attachListeners();
-          } else {
-            userAuth.saveSession(this.userData);
-            this.onLogin?.(this.userData);
-          }
+          // Success animation on PIN inputs
+          const inputs = form.querySelectorAll('.login-pin-input');
+          inputs.forEach(i => i.classList.add('login-pin-input--success'));
+
+          setTimeout(() => {
+            if (this._bioAvailable && !this._bioRegistered && !userAuth.isBiometricDeclined(this.phone)) {
+              this._transitionTo('biometric-offer', () => this._renderBiometricOffer(), `Bienvenido ${this.userData?.name || ''}`);
+            } else {
+              userAuth.saveSession(this.userData);
+              this.onLogin?.(this.userData);
+            }
+          }, 400);
         } else {
           this._showError('PIN incorrecto');
           const inputs = form.querySelectorAll('.login-pin-input');
-          inputs.forEach(i => { i.value = ''; });
+          inputs.forEach(i => {
+            i.value = '';
+            i.classList.remove('login-pin-input--filled');
+            i.classList.add('login-pin-input--error');
+          });
+          setTimeout(() => inputs.forEach(i => i.classList.remove('login-pin-input--error')), 500);
           inputs[0]?.focus();
         }
       } catch (e) {
@@ -452,6 +519,8 @@ export class Login {
   }
 
   async _handleBiometricRegister() {
+    // Start particle attraction animation
+    this._bioParticleAttract = true;
     this._setLoading(true);
     this._hideError();
     try {
@@ -459,10 +528,144 @@ export class Login {
       userAuth.saveSession(this.userData);
       this.onLogin?.(this.userData);
     } catch (e) {
-      // If registration fails (user cancelled, etc.), just login normally
       userAuth.saveSession(this.userData);
       this.onLogin?.(this.userData);
     }
+  }
+
+  // ─── Background Particles ───────────────────────────────
+
+  _initParticles() {
+    const canvas = this.container.querySelector('#login-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles = [];
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        a: Math.random() * 0.3 + 0.05,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139, 92, 246, ${p.a})`;
+        ctx.fill();
+      }
+      // Connection lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(139, 92, 246, ${0.04 * (1 - dist / 100)})`;
+            ctx.stroke();
+          }
+        }
+      }
+      this._particleRAF = requestAnimationFrame(draw);
+    };
+    draw();
+  }
+
+  // ─── Biometric Fingerprint Particles ────────────────────
+
+  _initBioParticles() {
+    const canvas = this.container.querySelector('#login-bio-particles');
+    if (!canvas) return;
+    const icon = this.container.querySelector('#login-bio-icon');
+    if (!icon) return;
+
+    const size = icon.offsetWidth || 88;
+    canvas.width = size * 2;
+    canvas.height = size * 2;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    this._bioParticleAttract = false;
+
+    const dots = [];
+    for (let i = 0; i < 30; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 40;
+      dots.push({
+        x: cx + Math.cos(angle) * dist,
+        y: cy + Math.sin(angle) * dist,
+        ox: cx + Math.cos(angle) * dist,
+        oy: cy + Math.sin(angle) * dist,
+        r: Math.random() * 2 + 1,
+        angle,
+        speed: 0.003 + Math.random() * 0.005,
+        dist,
+        a: Math.random() * 0.6 + 0.2,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const d of dots) {
+        if (this._bioParticleAttract) {
+          // Attract toward center (fingerprint)
+          const dx = cx - d.x;
+          const dy = cy - d.y;
+          d.x += dx * 0.08;
+          d.y += dy * 0.08;
+          d.a = Math.max(0, d.a - 0.008);
+        } else {
+          // Orbit around center
+          d.angle += d.speed;
+          d.x = cx + Math.cos(d.angle) * d.dist;
+          d.y = cy + Math.sin(d.angle) * d.dist;
+          // Gentle float
+          d.x += Math.sin(Date.now() * 0.001 + d.angle) * 2;
+          d.y += Math.cos(Date.now() * 0.001 + d.angle) * 2;
+        }
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(86, 204, 242, ${d.a})`;
+        ctx.fill();
+
+        // Connection lines to center
+        const distToCenter = Math.sqrt((d.x - cx) ** 2 + (d.y - cy) ** 2);
+        if (distToCenter < 70) {
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(cx, cy);
+          ctx.strokeStyle = `rgba(86, 204, 242, ${0.06 * (1 - distToCenter / 70)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+
+      this._bioRAF = requestAnimationFrame(draw);
+    };
+    draw();
   }
 
   // ─── Helpers ───────────────────────────────────────────
@@ -502,5 +705,8 @@ export class Login {
     }
   }
 
-  unmount() {}
+  unmount() {
+    if (this._particleRAF) cancelAnimationFrame(this._particleRAF);
+    if (this._bioRAF) cancelAnimationFrame(this._bioRAF);
+  }
 }
