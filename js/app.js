@@ -102,19 +102,14 @@ class App {
 
     router.resolve();
 
-    // Clean handoff: keep loading screen fully opaque until removed, then reveal app.
-    // This prevents the "two layers" overlap where login page bleeds through.
+    // Clean handoff: show app behind loading screen, then fade loading screen out as a whole.
+    // Login page is already rendered with identical branding — crossfade is seamless.
+    if (this.appShell) {
+      this.appShell.style.opacity = '1'; // Visible instantly, but behind loading screen (z-index 10000)
+    }
+    // Remove loading screen after its opacity fade completes (0.5s CSS transition)
     setTimeout(() => {
-      // First: make loading screen background transparent so it disappears instantly
-      if (loadingScreen) {
-        loadingScreen.style.background = 'transparent';
-        loadingScreen.remove();
-      }
-      // Then: fade in the app shell (login page is already rendered behind)
-      if (this.appShell) {
-        this.appShell.style.transition = 'opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
-        this.appShell.style.opacity = '1';
-      }
+      if (loadingScreen) loadingScreen.remove();
     }, 600);
 
     // Global toast event listener (used by Finance, ClientPortal, etc.)
