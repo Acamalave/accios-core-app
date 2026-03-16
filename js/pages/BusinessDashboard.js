@@ -139,10 +139,10 @@ export class BusinessDashboard {
     // Resolve business metadata
     this._resolveBizMeta();
 
-    // ─── Onboarding gate: block dashboard until approved ───
+    // ─── Onboarding gate: block ML Parts dashboard until approved ───
     const onbSubmittedKey = `onb_submitted_${this.businessId}`;
     const onbApprovedKey = `onb_approved_${this.businessId}`;
-    if (!isSuperAdmin && !localStorage.getItem(onbApprovedKey)) {
+    if (this.businessId === 'ml-parts' && !isSuperAdmin && !localStorage.getItem(onbApprovedKey)) {
       this._initClientBusinesses();
       // Already submitted? Show waiting screen
       if (localStorage.getItem(onbSubmittedKey)) {
@@ -176,6 +176,12 @@ export class BusinessDashboard {
 
     // ─── Overview mode for Xazai / Rush Ride ───
     if (BIZ_CONFIG[this.businessId]) {
+      // Fade out intro → assemble overview
+      const introOv = this.container.querySelector('.biz-intro');
+      if (introOv) {
+        introOv.classList.add('biz-intro--exit');
+        await new Promise(r => setTimeout(r, 800));
+      }
       this.container.innerHTML = this._buildBusinessOverview();
       this._attachOverviewListeners();
       this._initBroadcastListener();
