@@ -1623,11 +1623,11 @@ export class BusinessDashboard {
     // KPIs
     const kpis = this._computeKPIs(biz);
 
-    // Trend data from bizMonthlyTrend
+    // Trend data from bizMonthlyTrend — start from Jan 2026
     const bizTrend = this.data?.bizMonthlyTrend || [];
-    const last6 = bizTrend.slice(-6);
-    const trendData = last6.map(m => m[this.businessId]?.[cfg.trendKey] || 0);
-    const trendLabels = last6.map(m => {
+    const from2026 = bizTrend.filter(m => m.month && m.month >= '2026-01');
+    const trendData = from2026.map(m => m[this.businessId]?.[cfg.trendKey] || 0);
+    const trendLabels = from2026.map(m => {
       if (!m.month) return '';
       const [y, mo] = m.month.split('-');
       return new Date(+y, +mo - 1).toLocaleDateString('es', { month: 'short' });
@@ -1661,16 +1661,25 @@ export class BusinessDashboard {
         </div>`).join('')
       : '<div class="biz-overview__act-empty">Sin actividad reciente</div>';
 
-    // Staff section
-    const staff = biz.staff || [];
+    // Staff section — filter out admins, show only collaborators
+    const staff = (biz.staff || []).filter(s => {
+      const role = (s.role || '').toLowerCase();
+      return !role.includes('admin') && !role.includes('administrador') && !role.includes('super');
+    });
     const staffHTML = this._buildStaffSection(staff, cfg);
 
-    // Proposal card (Xazai only)
+    // Proposal card (Xazai only) — premium preview
     const proposalHTML = cfg.hasProposal ? `
       <div class="biz-overview__proposal biz-overview__card--assemble" style="--i:10">
-        <div class="biz-overview__proposal-icon">${ICONS.info}</div>
+        <div class="biz-overview__proposal-preview">
+          <img class="biz-overview__proposal-cover" src="assets/images/propuesta-xazai-cover.png" alt="Propuesta de Marketing" onerror="this.parentElement.innerHTML='<div class=\\'biz-overview__proposal-placeholder\\'>📊</div>'" />
+          <div class="biz-overview__proposal-overlay">
+            <span class="biz-overview__proposal-play">▶</span>
+          </div>
+        </div>
         <div class="biz-overview__proposal-info">
-          <div class="biz-overview__proposal-title">Propuesta de Marketing 2026</div>
+          <div class="biz-overview__proposal-tag">Marketing · 2026</div>
+          <div class="biz-overview__proposal-title">Propuesta de Marketing</div>
           <div class="biz-overview__proposal-sub">Ver presentación completa →</div>
         </div>
       </div>` : '';
@@ -1706,11 +1715,11 @@ export class BusinessDashboard {
                   <span class="biz-overview__ch-icon">${ch.icon}</span>
                   <span class="biz-overview__ch-name">${ch.label}</span>
                   <span class="biz-overview__ch-amt">${fmtMoney(ch.amount)}</span>
+                  <span class="biz-overview__ch-pct">${pct}%</span>
                 </div>
                 <div class="biz-overview__ch-bar">
                   <div class="biz-overview__ch-bar-fill" style="width:${pct}%;background:${ch.color}"></div>
                 </div>
-                <span class="biz-overview__ch-pct">${pct}%</span>
               </div>`;
           }).join('');
 
@@ -1764,9 +1773,10 @@ export class BusinessDashboard {
           </div>
         </div>
         <div class="biz-overview__brand">
-          <div class="biz-overview__brand-avatar">${brandImg}</div>
+          ${cfg.logo
+            ? `<img class="biz-overview__logo" src="${cfg.logo}" alt="${cfg.name}" />`
+            : `<div class="biz-overview__brand-avatar">${brandImg}</div>`}
           <div class="biz-overview__brand-text">
-            ${logoHTML}
             <h1 class="biz-overview__name">${cfg.name}</h1>
             <p class="biz-overview__tagline">${cfg.tagline}</p>
             <span class="biz-overview__range-label">${rangeLabel}</span>
@@ -1781,18 +1791,11 @@ export class BusinessDashboard {
 
       <!-- Charts Row -->
       <div class="biz-overview__charts">
-        <div class="biz-overview__chart-card biz-overview__card--assemble" style="--i:5">
+        <div class="biz-overview__chart-card biz-overview__chart-card--full biz-overview__card--assemble" style="--i:5">
           <div class="biz-overview__chart-title">${cfg.trendLabel}</div>
           <div class="biz-overview__chart-sub">${cfg.trendSub}</div>
           <div class="biz-overview__bar-chart">
             ${this._buildBarChart(trendData, trendLabels)}
-          </div>
-        </div>
-        <div class="biz-overview__chart-card biz-overview__chart-card--donut biz-overview__card--assemble" style="--i:5">
-          <div class="biz-overview__chart-title">${cfg.shareLabel}</div>
-          <div class="biz-overview__chart-sub">${cfg.shareSub}</div>
-          <div class="biz-overview__donut-wrap">
-            ${this._buildMiniDonut(sharePercent)}
           </div>
         </div>
       </div>
@@ -1804,14 +1807,6 @@ export class BusinessDashboard {
       <div class="biz-overview__activity biz-overview__card--assemble" style="--i:8">
         <div class="biz-overview__section-title">Actividad Reciente</div>
         <div class="biz-overview__act-list">${actHTML}</div>
-      </div>
-
-      <!-- Evidence Inbox -->
-      <div class="biz-overview__inbox biz-overview__card--assemble" style="--i:9">
-        <div class="biz-overview__section-title">📬 Bandeja de Evidencias</div>
-        <div class="biz-overview__inbox-list" id="biz-inbox-list">
-          <div class="biz-overview__inbox-loading">Cargando evidencias...</div>
-        </div>
       </div>
 
       ${proposalHTML}
