@@ -42,15 +42,10 @@ export class Home {
     }
 
     this.container.innerHTML = `
-      <section class="home-page">
-        <div class="home-content">
-          <div class="home-badge slide-up">Digital Ecosystem</div>
-          <h1 class="home-title home-title--cinematic">
-            <span class="gradient-text">ACCIOS</span> CORE
-          </h1>
-          <div style="text-align: center; padding: var(--space-6); color: var(--text-muted);">
-            Cargando tu ecosistema...
-          </div>
+      <section class="home-page" style="display:flex;align-items:center;justify-content:center;min-height:80vh;">
+        <div style="text-align:center;">
+          <div style="width:28px;height:28px;border:2px solid rgba(139,92,246,0.15);border-top-color:rgba(139,92,246,0.6);border-radius:50%;margin:0 auto 16px;animation:spin 0.7s linear infinite;"></div>
+          <p style="font-size:0.75rem;color:rgba(255,255,255,0.2);letter-spacing:0.05em;">Preparando ecosistema</p>
         </div>
       </section>
     `;
