@@ -1682,11 +1682,25 @@ export class BusinessDashboard {
       if (i === 0 && k.accent && this.businessId === 'xazai') {
         const pm = biz.paymentMethods || {};
         const METHOD_CFG = {
-          paguelofacil: { label: 'PagueloFacil', color: '#a855f7', icon: '💳' },
-          nfc:          { label: 'NFC',          color: '#60a5fa', icon: '📱' },
-          efectivo:     { label: 'Efectivo',     color: '#34d399', icon: '💵' },
-          transferencia:{ label: 'Transferencia',color: '#fb923c', icon: '🏦' },
-          otro:         { label: 'Otro',         color: '#9ca3af', icon: '📋' },
+          // Restaurant / delivery platforms
+          pedidosya:    { label: 'PedidosYa',    color: '#FF2B85', icon: '🛵' },
+          uber:         { label: 'Uber Eats',    color: '#06C167', icon: '🚗' },
+          uber_eats:    { label: 'Uber Eats',    color: '#06C167', icon: '🚗' },
+          ubereats:     { label: 'Uber Eats',    color: '#06C167', icon: '🚗' },
+          rappi:        { label: 'Rappi',         color: '#FF441F', icon: '🧡' },
+          didi:         { label: 'Didi Food',     color: '#FF7A00', icon: '🟠' },
+          // Standard payment methods
+          tarjeta:      { label: 'Tarjeta',       color: '#a855f7', icon: '💳' },
+          visa:         { label: 'Visa',           color: '#1A1F71', icon: '💳' },
+          mastercard:   { label: 'Mastercard',     color: '#EB001B', icon: '💳' },
+          efectivo:     { label: 'Efectivo',       color: '#34d399', icon: '💵' },
+          cash:         { label: 'Efectivo',       color: '#34d399', icon: '💵' },
+          transferencia:{ label: 'Transferencia',  color: '#fb923c', icon: '🏦' },
+          yappy:        { label: 'Yappy',          color: '#00D26A', icon: '📲' },
+          nequi:        { label: 'Nequi',          color: '#E6007E', icon: '📲' },
+          paguelofacil: { label: 'PagueloFacil',   color: '#8B5CF6', icon: '💳' },
+          nfc:          { label: 'NFC',             color: '#60a5fa', icon: '📱' },
+          otro:         { label: 'Otro',            color: '#9ca3af', icon: '📋' },
         };
         const totalRev = Object.values(pm).reduce((s, v) => s + v, 0) || 1;
         const methodRows = Object.entries(pm)

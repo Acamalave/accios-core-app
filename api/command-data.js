@@ -366,7 +366,9 @@ async function fetchXazaiData(db, range, startDate, endDate) {
   const revenue = filteredSales.reduce((sum, d) => {
     const data = d.data();
     const amt = data.total || data.amount || 0;
-    const method = (data.paymentMethod || data.metodo_pago || data.payment_method || 'otro').toLowerCase();
+    const rawMethod = (data.paymentMethod || data.metodo_pago || data.payment_method || data.metodo || data.tipo_pago || 'otro').toLowerCase().trim();
+    const methodAliases = { 'pedidos ya': 'pedidosya', 'uber eats': 'uber_eats', 'didi food': 'didi', 'tarjeta de credito': 'tarjeta', 'tarjeta de debito': 'tarjeta', 'credit card': 'tarjeta', 'debit card': 'tarjeta', 'cash': 'efectivo', 'transfer': 'transferencia' };
+    const method = methodAliases[rawMethod] || rawMethod.replace(/\s+/g, '_');
     paymentMethods[method] = (paymentMethods[method] || 0) + amt;
     sum += amt;
     return sum;
